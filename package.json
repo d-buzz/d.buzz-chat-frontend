@@ -1,0 +1,24 @@
+{
+  "name": "sting-message-protocol",
+  "version": "1.0.0",
+  "description": "To make it easy for you to get started with GitLab, here's a list of recommended next steps.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/peakd/sting-message-protocol.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/peakd/sting-message-protocol/issues"
+  },
+  "homepage": "https://gitlab.com/peakd/sting-message-protocol#readme",
+  "dependencies": {
+    "@hiveio/hive-js": "^2.0.4",
+    "express": "^4.18.1",
+    "gun": "^0.2020.1237"
+  }
+}
