@@ -18,8 +18,10 @@ function LoginModal(props) {
   }, [props]);
 
   const handleClose = () => {
-    if (props.gunPublicKey != "") {
-      setShow(false);
+    if (props.gunAccountData) {
+      if (props.gunAccountData.gunPublicKey) {
+        setShow(false);
+      }
     } else {
       //fixme handle when user is not authenticated but wants to close modal
     }
@@ -30,7 +32,7 @@ function LoginModal(props) {
   }
 
   function gunRegistration() {
-    if (gun && props.setGunPublicKey) {
+    if (gun && props.setGunAccountData) {
       if (register) {
         //login
         gunUser.auth(account, password, (params) => {
@@ -39,7 +41,10 @@ function LoginModal(props) {
           } else {
             if (params.sea) {
               if (params.sea.pub) {
-                props.setGunPublicKey(params.sea.pub);
+                props.setGunAccountData({
+                  gunPublicKey: params.sea.pub,
+                  account: account,
+                });
               }
             }
           }
@@ -52,7 +57,10 @@ function LoginModal(props) {
               //fixme treat general errors
             } else {
               if (params.pub) {
-                props.setGunPublicKey(params.pub);
+                props.setGunAccountData({
+                  gunPublicKey: params.pub,
+                  account: account,
+                });
               }
             }
           });
@@ -61,7 +69,7 @@ function LoginModal(props) {
         }
       }
     } else {
-      //fixme if gun or setGunPublicKey are not passed as prop
+      //fixme if gun or setGunAccountData are not passed as prop
     }
     handleClose();
   }

@@ -21,7 +21,10 @@ export default function App() {
   const [state, setState] = useState(initialState);
   const [gunUser, setGunUser] = useState();
   const [gun, setGun] = useState();
-  const [gunPublicKey, setGunPublicKey] = useState("");
+  const [gunAccountData, setGunAccountData] = useState({
+    gunPublicKey: "",
+    account: "",
+  });
 
   // when the app loads, fetch the current messages and load them into the state
   // this also subscribes to new data as it changes and updates the local state
@@ -69,8 +72,8 @@ export default function App() {
   return (
     <div style={{ padding: 30 }}>
       <LoginModal
-        gunPublicKey={gunPublicKey}
-        setGunPublicKey={setGunPublicKey}
+        gunAccountData={gunAccountData}
+        setGunAccountData={setGunAccountData}
         gun={gun}
         gunUser={gunUser}
       />
