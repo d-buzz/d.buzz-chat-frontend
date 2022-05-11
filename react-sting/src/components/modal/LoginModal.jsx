@@ -3,6 +3,7 @@ import { Button, Modal, Form, Alert } from "react-bootstrap";
 
 function LoginModal(props) {
   const [show, setShow] = useState(true);
+
   const [gun, setGun] = useState();
   const [gunUser, setGunUser] = useState();
 
@@ -13,9 +14,11 @@ function LoginModal(props) {
   useEffect(() => {
     setGun(props.gun);
     setGunUser(props.gunUser);
+    handleClose();
   }, [props]);
 
   const handleClose = () => {
+    console.log(props.gunPublicKey);
     if (props.gunPublicKey != "") {
       setShow(false);
     } else {
@@ -28,6 +31,15 @@ function LoginModal(props) {
   }
 
   function gunRegistration() {
+    // console.log(account)
+    console.log(account);
+
+    // console.log(password)
+    console.log(password);
+
+    // console.log(passwordConfirm)
+    console.log(passwordConfirm);
+
     if (gun && props.setGunPublicKey) {
       if (register) {
         //login
@@ -37,8 +49,10 @@ function LoginModal(props) {
           } else {
             if (params.sea) {
               if (params.sea.pub) {
-                params.setGunPublicKey();
-                params.setGunPublicKey(params.sea.pub);
+                // console.log(params.sea.pub)
+                console.log(params.sea.pub);
+
+                props.setGunPublicKey(params.sea.pub);
               }
             }
           }
@@ -51,7 +65,10 @@ function LoginModal(props) {
               //fixme treat general errors
             } else {
               if (params.pub) {
-                params.setGunPublicKey(params.pub);
+                // console.log(params.pub)
+                console.log(params.pub);
+
+                props.setGunPublicKey(params.pub);
               }
             }
           });
