@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 import Gun from "gun";
+import SEA from "gun/sea";
+import LoginModal from "./components/modal/LoginModal";
+import { Button } from "react-bootstrap";
 
 // initialize gun locally
-const gun = Gun({
-  peers: ["http://localhost:3030/gun"],
-});
-
-// create the initial state to hold the messages
-const initialState = {
-  messages: [],
-};
 
 export default function App() {
+  // create the initial state to hold the messages
+  const initialState = {
+    messages: [],
+  };
   // the form state manages the form input for creating a new message
   const [formState, setForm] = useState({
     name: "",
@@ -20,10 +19,19 @@ export default function App() {
 
   // initialize the reducer & state for holding the messages array
   const [state, setState] = useState(initialState);
+  const [gunUser, setGunUser] = useState();
+  const [gun, setGun] = useState();
+  const [gunPublicKey, setGunPublicKey] = useState("");
 
   // when the app loads, fetch the current messages and load them into the state
   // this also subscribes to new data as it changes and updates the local state
   useEffect(() => {
+    const gun = Gun({
+      peers: ["http://localhost:3030/gun"],
+    });
+    setGun(gun);
+    let newGun = gun.user().recall({ sessionStorage: true });
+    setGunUser(newGun);
     const messages = gun.get("messages");
     messages.map().once((m) => {
       setState((state) => ({
@@ -60,6 +68,12 @@ export default function App() {
 
   return (
     <div style={{ padding: 30 }}>
+      <LoginModal
+        gunPublicKey={gunPublicKey}
+        setGunPublicKey={setGunPublicKey}
+        gun={gun}
+        gunUser={gunUser}
+      />
       <input
         onChange={onChange}
         placeholder="Name"

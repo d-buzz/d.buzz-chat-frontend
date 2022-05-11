@@ -6,7 +6,7 @@ const { signup, login, changeUser } = require("./src/user");
 const port = 3030;
 app.use(Gun.serve);
 const server = app.listen(port, () => {
-    console.log(`listening at http://localhost:${port}`);
+  console.log(`listening at http://localhost:${port}`);
 });
 Gun({ web: server });
 // (async () => {
