@@ -7,7 +7,7 @@ function LoginModal(props) {
   const [gun, setGun] = useState();
   const [gunUser, setGunUser] = useState();
 
-  const [register, setRegister] = useState(true); //true=login mode (suggests registration)
+  const [register, setRegister] = useState(props.show); //true=login mode (suggests registration)
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");

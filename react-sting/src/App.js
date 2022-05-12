@@ -18,6 +18,7 @@ export default function App() {
   });
 
   // initialize the reducer & state for holding the messages array
+  const [showLoginModal, setShowLoginModal] = useState(true);
   const [state, setState] = useState(initialState);
   const [gunUser, setGunUser] = useState();
   const [gun, setGun] = useState();
@@ -71,11 +72,26 @@ export default function App() {
 
   return (
     <div style={{ padding: 30 }}>
+      <h6 className="font-weight-bold mb-3 text-lg-left">
+        {gunAccountData.account ? (
+          gunAccountData.account
+        ) : (
+          <Button
+            variant="primary"
+            onClick={() => {
+              setShowLoginModal(true);
+            }}
+          >
+            Login/Register
+          </Button>
+        )}
+      </h6>
       <LoginModal
         gunAccountData={gunAccountData}
         setGunAccountData={setGunAccountData}
         gun={gun}
         gunUser={gunUser}
+        show={showLoginModal}
       />
       <input
         onChange={onChange}
