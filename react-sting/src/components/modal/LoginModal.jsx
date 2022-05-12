@@ -14,6 +14,7 @@ function LoginModal(props) {
   useEffect(() => {
     setGun(props.gun);
     setGunUser(props.gunUser);
+    setShow(props.show);
     handleClose();
   }, [props]);
 

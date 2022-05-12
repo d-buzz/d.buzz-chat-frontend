@@ -74,7 +74,25 @@ export default function App() {
     <div style={{ padding: 30 }}>
       <h6 className="font-weight-bold mb-3 text-lg-left">
         {gunAccountData.account ? (
-          gunAccountData.account
+          <>
+            @{gunAccountData.account}{" "}
+            <Button
+              variant="primary"
+              onClick={() => {
+                console.log(gun.user());
+
+                gun.user().leave();
+                setGunAccountData({
+                  gunPublicKey: "",
+                  account: "",
+                });
+                setShowLoginModal(true);
+                console.log(gun.user());
+              }}
+            >
+              Logout
+            </Button>
+          </>
         ) : (
           <Button
             variant="primary"
