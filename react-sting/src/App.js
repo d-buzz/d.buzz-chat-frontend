@@ -7,8 +7,9 @@ import {
   Container,
   Row,
   Col,
-  Figure,
   ListGroup,
+  InputGroup,
+  FormControl,
 } from "react-bootstrap";
 
 // initialize gun locally
@@ -28,6 +29,10 @@ export default function App() {
   const [showLoginModal, setShowLoginModal] = useState(true);
   const [state, setState] = useState(initialState);
   const [gunUser, setGunUser] = useState();
+  const [gunChatHighlighted, setGunChatHighlighted] = useState("");
+  const [gunContacts, setGunContacts] = useState([]);
+  const [gunNewContact, setGunNewContact] = useState("");
+
   const [gun, setGun] = useState();
   const [gunAccountData, setGunAccountData] = useState({
     gunPublicKey: "",
@@ -117,38 +122,62 @@ export default function App() {
       />
       <Container fluid>
         <Row>
-          <Col xs={2}>
+          <Col xs={4}>
             <Container>
               <Container>
-                <input
+                <InputGroup className="mb-3">
+                  <InputGroup.Text id="basic-addon1">@</InputGroup.Text>
+
+                  <FormControl
+                    placeholder="Contact"
+                    aria-label="Contact"
+                    aria-describedby="Contact"
+                    onChange={(e) => {
+                      setGunNewContact(e.target.value);
+                    }}
+                  />
+                  <Button
+                    variant="outline-secondary"
+                    id="button-addon1"
+                    onClick={() => {
+                      if (
+                        !gunContacts.includes(gunNewContact) &&
+                        gunNewContact != ""
+                      ) {
+                        setGunContacts([gunNewContact, ...gunContacts]);
+                      }
+                      setGunChatHighlighted(gunNewContact);
+                    }}
+                  >
+                    Message
+                  </Button>
+                </InputGroup>
+                {/* <input
                   onChange={onChange}
                   placeholder="Message"
                   name="message"
                   value={formState.message}
-                />
+                /> */}
               </Container>
 
               <Container>
                 <ListGroup defaultActiveKey="#link1">
-                  <ListGroup.Item action href="#link1">
-                    Link 1
-                  </ListGroup.Item>
-                  <ListGroup.Item action href="#link2" disabled>
-                    Link 2
-                  </ListGroup.Item>
-                  <ListGroup.Item
-                    action
-                    onClick={() => {
-                      console.log("click");
-                    }}
-                  >
-                    This one is a button
-                  </ListGroup.Item>
+                  {gunContacts.map((contact) => (
+                    <ListGroup.Item
+                      action
+                      active={contact === gunChatHighlighted}
+                      onClick={() => {
+                        setGunChatHighlighted(contact);
+                      }}
+                    >
+                      {contact}
+                    </ListGroup.Item>
+                  ))}
                 </ListGroup>
               </Container>
             </Container>
           </Col>
-          <Col xs={10}>
+          <Col xs={8}>
             <Container>
               <input
                 onChange={onChange}
