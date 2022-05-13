@@ -2,7 +2,14 @@ import { useEffect, useState } from "react";
 import Gun from "gun";
 import SEA from "gun/sea";
 import LoginModal from "./components/modal/LoginModal";
-import { Button } from "react-bootstrap";
+import {
+  Button,
+  Container,
+  Row,
+  Col,
+  Figure,
+  ListGroup,
+} from "react-bootstrap";
 
 // initialize gun locally
 
@@ -41,7 +48,7 @@ export default function App() {
       setState((state) => ({
         messages: [
           {
-            name: m.name,
+            fromAccount: m.fromAccount,
             message: m.message,
             createdAt: m.createdAt,
           },
@@ -55,7 +62,7 @@ export default function App() {
   function saveMessage() {
     const messages = gun.get("messages");
     messages.set({
-      name: formState.name,
+      fromAccount: gunAccountData.account,
       message: formState.message,
       createdAt: Date.now(),
     });
@@ -79,15 +86,12 @@ export default function App() {
             <Button
               variant="primary"
               onClick={() => {
-                console.log(gun.user());
-
                 gun.user().leave();
                 setGunAccountData({
                   gunPublicKey: "",
                   account: "",
                 });
                 setShowLoginModal(true);
-                console.log(gun.user());
               }}
             >
               Logout
@@ -111,26 +115,61 @@ export default function App() {
         gunUser={gunUser}
         show={showLoginModal}
       />
-      <input
-        onChange={onChange}
-        placeholder="Name"
-        name="name"
-        value={formState.name}
-      />
-      <input
-        onChange={onChange}
-        placeholder="Message"
-        name="message"
-        value={formState.message}
-      />
-      <button onClick={saveMessage}>Send Message</button>
-      {state.messages.map((message) => (
-        <div key={message.createdAt}>
-          <h2>{message.message}</h2>
-          <h3>From: {message.name}</h3>
-          <p>Date: {message.createdAt}</p>
-        </div>
-      ))}
+      <Container fluid>
+        <Row>
+          <Col xs={2}>
+            <Container>
+              <Container>
+                <input
+                  onChange={onChange}
+                  placeholder="Message"
+                  name="message"
+                  value={formState.message}
+                />
+              </Container>
+
+              <Container>
+                <ListGroup defaultActiveKey="#link1">
+                  <ListGroup.Item action href="#link1">
+                    Link 1
+                  </ListGroup.Item>
+                  <ListGroup.Item action href="#link2" disabled>
+                    Link 2
+                  </ListGroup.Item>
+                  <ListGroup.Item
+                    action
+                    onClick={() => {
+                      console.log("click");
+                    }}
+                  >
+                    This one is a button
+                  </ListGroup.Item>
+                </ListGroup>
+              </Container>
+            </Container>
+          </Col>
+          <Col xs={10}>
+            <Container>
+              <input
+                onChange={onChange}
+                placeholder="Message"
+                name="message"
+                value={formState.message}
+              />
+              <button onClick={saveMessage}>Send Message</button>
+              {state.messages.map((message) => {
+                return (
+                  <div key={message.createdAt}>
+                    <h2>{message.message}</h2>
+                    <h3>From: {message.fromAccount}</h3>
+                    <p>Date: {message.createdAt}</p>
+                  </div>
+                );
+              })}
+            </Container>
+          </Col>
+        </Row>
+      </Container>
     </div>
   );
 }
