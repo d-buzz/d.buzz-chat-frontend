@@ -54,6 +54,7 @@ export default function App() {
         messages: [
           {
             fromAccount: m.fromAccount,
+            toAccount: m.toAccount,
             message: m.message,
             createdAt: m.createdAt,
           },
@@ -68,6 +69,7 @@ export default function App() {
     const messages = gun.get("messages");
     messages.set({
       fromAccount: gunAccountData.account,
+      toAccount: gunChatHighlighted,
       message: formState.message,
       createdAt: Date.now(),
     });
@@ -152,12 +154,6 @@ export default function App() {
                     Message
                   </Button>
                 </InputGroup>
-                {/* <input
-                  onChange={onChange}
-                  placeholder="Message"
-                  name="message"
-                  value={formState.message}
-                /> */}
               </Container>
 
               <Container>
@@ -186,15 +182,26 @@ export default function App() {
                 value={formState.message}
               />
               <button onClick={saveMessage}>Send Message</button>
-              {state.messages.map((message) => {
-                return (
-                  <div key={message.createdAt}>
-                    <h2>{message.message}</h2>
-                    <h3>From: {message.fromAccount}</h3>
-                    <p>Date: {message.createdAt}</p>
-                  </div>
-                );
-              })}
+              {state.messages
+                .filter((message) => {
+                  if (message.fromAccount != "" && message.toAccount != "") {
+                    return (
+                      message.fromAccount === gunChatHighlighted ||
+                      message.toAccount === gunAccountData.account ||
+                      (message.toAccount === gunChatHighlighted &&
+                        message.fromAccount === gunAccountData.account)
+                    );
+                  }
+                })
+                .map((message) => {
+                  return (
+                    <div key={message.createdAt}>
+                      <h2>{message.message}</h2>
+                      <h3>From: {message.fromAccount}</h3>
+                      <p>Date: {message.createdAt}</p>
+                    </div>
+                  );
+                })}
             </Container>
           </Col>
         </Row>
