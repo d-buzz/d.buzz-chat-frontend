@@ -186,8 +186,8 @@ export default function App() {
                 .filter((message) => {
                   if (message.fromAccount != "" && message.toAccount != "") {
                     return (
-                      message.fromAccount === gunChatHighlighted ||
-                      message.toAccount === gunAccountData.account ||
+                      (message.fromAccount === gunChatHighlighted &&
+                        message.toAccount === gunAccountData.account) ||
                       (message.toAccount === gunChatHighlighted &&
                         message.fromAccount === gunAccountData.account)
                     );
@@ -197,7 +197,8 @@ export default function App() {
                   return (
                     <div key={message.createdAt}>
                       <h2>{message.message}</h2>
-                      <h3>From: {message.fromAccount}</h3>
+                      <p>From: {message.fromAccount}</p>
+                      <p>To: {message.toAccount}</p>
                       <p>Date: {message.createdAt}</p>
                     </div>
                   );
