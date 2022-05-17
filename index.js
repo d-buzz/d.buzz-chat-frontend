@@ -15,17 +15,17 @@ Gun({ web: server });
 //     const server = app.listen(port, () => {
 //         console.log(`listening at http://localhost:${port}`);
 //     });
-//     const gun = new Gun({
-//         web: server,
-//         peers: ["http://localhost:3030/gun"],
-//         verify: {
-//             check: (params) => {
-//                 console.log("verify check params");
+// const gun = new Gun({
+//     web: server,
+//     peers: ["http://localhost:3030/gun"],
+//     verify: {
+//         check: (params) => {
+//             console.log("verify check params");
 
-//                 console.log(params);
-//             },
+//             console.log(params);
 //         },
-//     });
+//     },
+// });
 //     gun.on((params) => {
 //         console.log(params);
 //     });

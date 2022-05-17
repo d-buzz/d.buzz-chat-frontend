@@ -42,10 +42,11 @@ function LoginModal(props) {
           } else {
             if (params.sea) {
               if (params.sea.pub) {
-                props.setGunAccountData({
+                let newUser = {
                   gunPublicKey: params.sea.pub,
                   account: account,
-                });
+                };
+                props.setGunAccountData(newUser);
               }
             }
           }
@@ -58,10 +59,13 @@ function LoginModal(props) {
               //fixme treat general errors
             } else {
               if (params.pub) {
-                props.setGunAccountData({
+                let newUser = {
                   gunPublicKey: params.pub,
                   account: account,
-                });
+                };
+                const gunUsers = gun.get("users");
+                let ack = gunUsers.put({ [account]: newUser });
+                props.setGunAccountData(newUser);
               }
             }
           });

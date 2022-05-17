@@ -143,10 +143,18 @@ export default function App() {
                     id="button-addon1"
                     onClick={() => {
                       if (
-                        !gunContacts.includes(gunNewContact) &&
+                        !gunContacts.some((e) => {
+                          return e.account === gunNewContact;
+                        }) &&
                         gunNewContact != ""
                       ) {
-                        setGunContacts([gunNewContact, ...gunContacts]);
+                        gun.get("users").get(gunNewContact, function (ack) {
+                          if (ack) {
+                            if (ack.put) {
+                              setGunContacts([ack.put, ...gunContacts]);
+                            }
+                          }
+                        });
                       }
                       setGunChatHighlighted(gunNewContact);
                     }}
@@ -161,12 +169,12 @@ export default function App() {
                   {gunContacts.map((contact) => (
                     <ListGroup.Item
                       action
-                      active={contact === gunChatHighlighted}
+                      active={contact.account === gunChatHighlighted}
                       onClick={() => {
-                        setGunChatHighlighted(contact);
+                        setGunChatHighlighted(contact.account);
                       }}
                     >
-                      {contact}
+                      {contact.account}
                     </ListGroup.Item>
                   ))}
                 </ListGroup>

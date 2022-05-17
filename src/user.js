@@ -6,34 +6,29 @@
 let user;
 // const user = gun.user().recall({ sessionStorage: true });
 const signup = (username, password, newUser) => {
-    if (newUser) {
-        console.log("new user");
-        changeUser(newUser);
+  if (newUser) {
+    changeUser(newUser);
+  }
+  user.create(username, password, (params) => {
+    if (param.err) {
+    } else {
+      login(username, password);
     }
-    user.create(username, password, (params) => {
-        if (param.err) {
-            console.log("Error");
-            console.log(param.err);
-        } else {
-            login(username, password);
-        }
-    });
+  });
 };
 const login = (username, password, newUser) => {
-    if (newUser) {
-        console.log("new user");
-        changeUser(newUser);
+  if (newUser) {
+    changeUser(newUser);
+  }
+  user.auth(username, password, (params) => {
+    if (params.err) {
+      console.log(param.err);
     }
-    user.auth(username, password, (params) => {
-        if (params.err) {
-            console.log("Error");
-            console.log(param.err);
-        }
-    });
+  });
 };
 
 const changeUser = (newUser) => {
-    user = newUser;
+  user = newUser;
 };
 const initialState = { messages: [] };
 exports.signup = signup;
