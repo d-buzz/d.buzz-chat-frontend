@@ -11,6 +11,7 @@ import {
   InputGroup,
   FormControl,
 } from "react-bootstrap";
+import hive from "@hiveio/hive-js";
 
 // initialize gun locally
 
@@ -42,6 +43,9 @@ export default function App() {
   // when the app loads, fetch the current messages and load them into the state
   // this also subscribes to new data as it changes and updates the local state
   useEffect(() => {
+    hive.api.getAccounts(["igormuba"], function (err, result) {
+      console.log(err, result);
+    });
     const gun = Gun({
       peers: ["http://localhost:3030/gun"],
     });
