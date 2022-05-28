@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import Gun from "gun";
-import SEA from "gun/sea";
 import LoginModal from "./components/modal/LoginModal";
 import {
   Button,
@@ -16,67 +14,39 @@ import hive from "@hiveio/hive-js";
 // initialize gun locally
 
 export default function App() {
-  // create the initial state to hold the messages
-  const initialState = {
-    messages: [],
-  };
   // the form state manages the form input for creating a new message
   const [formState, setForm] = useState({
     name: "",
     message: "",
   });
 
-  // initialize the reducer & state for holding the messages array
   const [showLoginModal, setShowLoginModal] = useState(true);
-  const [state, setState] = useState(initialState);
-  const [gunUser, setGunUser] = useState();
-  const [gunChatHighlighted, setGunChatHighlighted] = useState("");
-  const [gunContacts, setGunContacts] = useState([]);
-  const [gunNewContact, setGunNewContact] = useState("");
+  const [user, setUser] = useState();
+  const [chatHighlighted, setChatHighlighted] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [contacts, setContacts] = useState([]);
+  const [newContact, setNewContact] = useState("");
 
-  const [gun, setGun] = useState();
-  const [gunAccountData, setGunAccountData] = useState({
-    gunPublicKey: "",
+  // const [gun, setGun] = useState();
+  const [accountData, setAccountData] = useState({
+    privateKey: "",
     account: "",
   });
 
-  // when the app loads, fetch the current messages and load them into the state
-  // this also subscribes to new data as it changes and updates the local state
-  useEffect(() => {
-    hive.api.getAccounts(["igormuba"], function (err, result) {
-      console.log(err, result);
-    });
-    const gun = Gun({
-      peers: ["http://localhost:3030/gun"],
-    });
-    setGun(gun);
-    let newGun = gun.user().recall({ sessionStorage: true });
-    setGunUser(newGun);
-    const messages = gun.get("messages");
-    messages.map().once((m) => {
-      setState((state) => ({
-        messages: [
-          {
-            fromAccount: m.fromAccount,
-            toAccount: m.toAccount,
-            message: m.message,
-            createdAt: m.createdAt,
-          },
-          ...state.messages,
-        ],
-      }));
-    });
-  }, []);
-
   // set a new message in gun, update the local state to reset the form field
   function saveMessage() {
-    const messages = gun.get("messages");
-    messages.set({
-      fromAccount: gunAccountData.account,
-      toAccount: gunChatHighlighted,
-      message: formState.message,
-      createdAt: Date.now(),
-    });
+    console.log("messages");
+    console.log(messages);
+
+    setMessages([
+      ...messages,
+      {
+        fromAccount: accountData.account,
+        toAccount: chatHighlighted,
+        message: formState.message,
+        createdAt: Date.now(),
+      },
+    ]);
     setForm({
       name: "",
       message: "",
@@ -91,15 +61,14 @@ export default function App() {
   return (
     <div style={{ padding: 30 }}>
       <h6 className="font-weight-bold mb-3 text-lg-left">
-        {gunAccountData.account ? (
+        {accountData.account ? (
           <>
-            @{gunAccountData.account}{" "}
+            @{accountData.account}{" "}
             <Button
               variant="primary"
               onClick={() => {
-                gun.user().leave();
-                setGunAccountData({
-                  gunPublicKey: "",
+                setAccountData({
+                  publicKey: "",
                   account: "",
                 });
                 setShowLoginModal(true);
@@ -120,10 +89,10 @@ export default function App() {
         )}
       </h6>
       <LoginModal
-        gunAccountData={gunAccountData}
-        setGunAccountData={setGunAccountData}
-        gun={gun}
-        gunUser={gunUser}
+        hive={hive}
+        accountData={accountData}
+        setAccountData={setAccountData}
+        user={user}
         show={showLoginModal}
       />
       <Container fluid>
@@ -139,7 +108,7 @@ export default function App() {
                     aria-label="Contact"
                     aria-describedby="Contact"
                     onChange={(e) => {
-                      setGunNewContact(e.target.value);
+                      setNewContact(e.target.value);
                     }}
                   />
                   <Button
@@ -147,20 +116,24 @@ export default function App() {
                     id="button-addon1"
                     onClick={() => {
                       if (
-                        !gunContacts.some((e) => {
-                          return e.account === gunNewContact;
+                        !contacts.some((e) => {
+                          return e.account === newContact;
                         }) &&
-                        gunNewContact != ""
+                        newContact != ""
                       ) {
-                        gun.get("users").get(gunNewContact, function (ack) {
-                          if (ack) {
-                            if (ack.put) {
-                              setGunContacts([ack.put, ...gunContacts]);
+                        hive.api.getAccounts(
+                          [newContact],
+                          function (err, result) {
+                            if (result && result.length > 0) {
+                              setContacts([
+                                { ...result[0], account: newContact },
+                                ...contacts,
+                              ]);
+                              setChatHighlighted(newContact);
                             }
                           }
-                        });
+                        );
                       }
-                      setGunChatHighlighted(gunNewContact);
                     }}
                   >
                     Message
@@ -170,12 +143,12 @@ export default function App() {
 
               <Container>
                 <ListGroup defaultActiveKey="#link1">
-                  {gunContacts.map((contact) => (
+                  {contacts.map((contact) => (
                     <ListGroup.Item
                       action
-                      active={contact.account === gunChatHighlighted}
+                      active={contact.account === chatHighlighted}
                       onClick={() => {
-                        setGunChatHighlighted(contact.account);
+                        setChatHighlighted(contact.account);
                       }}
                     >
                       {contact.account}
@@ -194,27 +167,31 @@ export default function App() {
                 value={formState.message}
               />
               <button onClick={saveMessage}>Send Message</button>
-              {state.messages
-                .filter((message) => {
-                  if (message.fromAccount != "" && message.toAccount != "") {
+              {messages.length > 0 ? (
+                messages
+                  .filter((message) => {
+                    if (message.fromAccount != "" && message.toAccount != "") {
+                      return (
+                        (message.fromAccount === chatHighlighted &&
+                          message.toAccount === accountData.account) ||
+                        (message.toAccount === chatHighlighted &&
+                          message.fromAccount === accountData.account)
+                      );
+                    }
+                  })
+                  .map((message) => {
                     return (
-                      (message.fromAccount === gunChatHighlighted &&
-                        message.toAccount === gunAccountData.account) ||
-                      (message.toAccount === gunChatHighlighted &&
-                        message.fromAccount === gunAccountData.account)
+                      <div key={message.createdAt}>
+                        <h2>{message.message}</h2>
+                        <p>From: {message.fromAccount}</p>
+                        <p>To: {message.toAccount}</p>
+                        <p>Date: {message.createdAt}</p>
+                      </div>
                     );
-                  }
-                })
-                .map((message) => {
-                  return (
-                    <div key={message.createdAt}>
-                      <h2>{message.message}</h2>
-                      <p>From: {message.fromAccount}</p>
-                      <p>To: {message.toAccount}</p>
-                      <p>Date: {message.createdAt}</p>
-                    </div>
-                  );
-                })}
+                  })
+              ) : (
+                <></>
+              )}
             </Container>
           </Col>
         </Row>

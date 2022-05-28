@@ -4,23 +4,22 @@ import { Button, Modal, Form, Alert } from "react-bootstrap";
 function LoginModal(props) {
   const [show, setShow] = useState(true);
 
-  const [gun, setGun] = useState();
-  const [gunUser, setGunUser] = useState();
+  // const [gun, setGun] = useState();
+  const [user, setUser] = useState();
 
   const [register, setRegister] = useState(props.show); //true=login mode (suggests registration)
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   useEffect(() => {
-    setGun(props.gun);
-    setGunUser(props.gunUser);
+    setUser(props.user);
     setShow(props.show);
     handleClose();
   }, [props]);
 
   const handleClose = () => {
-    if (props.gunAccountData) {
-      if (props.gunAccountData.gunPublicKey) {
+    if (props.accountData) {
+      if (props.accountData.privateKey) {
         setShow(false);
       }
     } else {
@@ -32,51 +31,23 @@ function LoginModal(props) {
     setRegister(!register);
   }
 
-  function gunRegistration() {
-    if (gun && props.setGunAccountData) {
+  function registration() {
+    if (props.setAccountData) {
       if (register) {
         //login
-        gunUser.auth(account, password, (params) => {
-          if (params.err) {
-            //fixme treat general errors
-          } else {
-            if (params.sea) {
-              if (params.sea.pub) {
-                let newUser = {
-                  gunPublicKey: params.sea.pub,
-                  account: account,
-                };
-                props.setGunAccountData(newUser);
-              }
-            }
-          }
+        props.hive.api.getAccounts([account], function (err, result) {
+          let newUser = {
+            ...result[0],
+            account,
+            privateKey: password,
+          };
+          props.setAccountData(newUser);
         });
       } else {
-        //register
-        if (password === passwordConfirm) {
-          gunUser.create(account, password, (params) => {
-            if (params.err) {
-              //fixme treat general errors
-            } else {
-              if (params.pub) {
-                let newUser = {
-                  gunPublicKey: params.pub,
-                  account: account,
-                };
-                const gunUsers = gun.get("users");
-                let ack = gunUsers.put({ [account]: newUser });
-                props.setGunAccountData(newUser);
-              }
-            }
-          });
-        } else {
-          //fixme if passwords don't match
-        }
+        //fixme if gun or setGunAccountData are not passed as prop
       }
-    } else {
-      //fixme if gun or setGunAccountData are not passed as prop
+      handleClose();
     }
-    handleClose();
   }
 
   function passwordField() {
@@ -84,42 +55,42 @@ function LoginModal(props) {
       return (
         <>
           <Form.Group className="mb-3" controlId="formBasicPassword">
-            <Form.Label>Password</Form.Label>
+            <Form.Label>Private MEMO Key</Form.Label>
             <Form.Control
               onChange={onChangePassword}
               type="password"
               placeholder="Password"
             />
             <Form.Text className="text-muted">
-              Preferrably a different password from your Hive keys
+              Never use your Active nor Posting keys.
             </Form.Text>
           </Form.Group>
         </>
       );
-    } else {
-      return (
-        <>
-          <Form.Group className="mb-3" controlId="formBasicPassword">
-            <Form.Label>Password</Form.Label>
-            <Form.Control
-              onChange={onChangePassword}
-              type="password"
-              placeholder="Password"
-            />
-          </Form.Group>
-          <Form.Group
-            className="mb-3"
-            controlId="formBasicPasswordConfirmation"
-          >
-            <Form.Label>confirm Password</Form.Label>
-            <Form.Control
-              onChange={onChangePasswordConfirm}
-              type="password"
-              placeholder="Confirm Password"
-            />
-          </Form.Group>
-        </>
-      );
+      // } else {
+      //   return (
+      //     <>
+      //       <Form.Group className="mb-3" controlId="formBasicPassword">
+      //         <Form.Label>Password</Form.Label>
+      //         <Form.Control
+      //           onChange={onChangePassword}
+      //           type="password"
+      //           placeholder="Password"
+      //         />
+      //       </Form.Group>
+      //       <Form.Group
+      //         className="mb-3"
+      //         controlId="formBasicPasswordConfirmation"
+      //       >
+      //         <Form.Label>confirm Password</Form.Label>
+      //         <Form.Control
+      //           onChange={onChangePasswordConfirm}
+      //           type="password"
+      //           placeholder="Confirm Password"
+      //         />
+      //       </Form.Group>
+      //     </>
+      //   );
     }
   }
 
@@ -150,7 +121,7 @@ function LoginModal(props) {
               />
             </Form.Group>
             {passwordField()}
-            <Form.Group className="mb-3" controlId="formRegister">
+            {/* <Form.Group className="mb-3" controlId="formRegister">
               <Alert key="light" variant="light">
                 {register ? "Not registered yet?" : "Already registered?"}
                 &nbsp;
@@ -158,14 +129,14 @@ function LoginModal(props) {
                   {register ? "Create an account" : "Log in"}
                 </Alert.Link>
               </Alert>
-            </Form.Group>
+            </Form.Group> */}
           </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={gunRegistration}>
+          <Button variant="primary" onClick={registration}>
             {register ? "Log in" : "Register"}
           </Button>
         </Modal.Footer>

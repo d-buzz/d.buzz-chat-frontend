@@ -4,7 +4,9 @@
   "description": "To make it easy for you to get started with GitLab, here's a list of recommended next steps.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "react-sting": "npm start --prefix react-sting",
+    "dev": "concurrently \"nodemon index.js\" \"npm run react-sting\""
   },
   "repository": {
     "type": "git",
