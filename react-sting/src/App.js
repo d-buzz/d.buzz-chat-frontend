@@ -10,6 +10,7 @@ import {
   FormControl,
 } from "react-bootstrap";
 import hive from "@hiveio/hive-js";
+import axios from "axios";
 
 // initialize gun locally
 
@@ -37,16 +38,24 @@ export default function App() {
   function saveMessage() {
     console.log("messages");
     console.log(messages);
-
-    setMessages([
-      ...messages,
-      {
-        fromAccount: accountData.account,
-        toAccount: chatHighlighted,
-        message: formState.message,
-        createdAt: Date.now(),
-      },
-    ]);
+    let newMessage = {
+      fromAccount: accountData.account,
+      toAccount: chatHighlighted,
+      message: formState.message,
+      createdAt: Date.now(),
+      fromPubKey: "dasdqa",
+      toPubKey: "4123ed3",
+    };
+    axios
+      .post("/message", newMessage)
+      .then((res) => {
+        console.log("res");
+        console.log(res);
+        if (res.status == 200) {
+          setMessages([...messages, newMessage]);
+        }
+      })
+      .catch((err) => console.log(err));
     setForm({
       name: "",
       message: "",

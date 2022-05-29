@@ -1,14 +1,30 @@
 const express = require("express");
-const Gun = require("gun");
 const app = express();
-const SEA = require("gun/sea");
 const { signup, login, changeUser } = require("./src/user");
+const hive = require("@hiveio/hive-js");
+const bodyParser = require("body-parser");
+const connectDB = require("./config/db");
+const Message = require("./models/message");
+
+app.use(bodyParser.json());
 const port = 3030;
-app.use(Gun.serve);
 const server = app.listen(port, () => {
   console.log(`listening at http://localhost:${port}`);
 });
-Gun({ web: server });
+
+connectDB();
+console.log(Message.find());
+
+app.post("/message", async function (req, res) {
+  // console.log("req.body");
+  // console.log(req.body);
+  // console.log(Message.find());
+
+  // const message = new Message({ ...req.body });
+  // message.save().then((res) => console.log(res));
+  res.send("POST request to the homepage");
+});
+
 // (async () => {
 //     const port = 3030;
 //     // Gun({ web: server });
