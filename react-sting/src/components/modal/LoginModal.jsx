@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button, Modal, Form, Alert } from "react-bootstrap";
-
+import { KeysUtils } from "../../utils/keys.utils";
 function LoginModal(props) {
   const [show, setShow] = useState(true);
 
@@ -36,12 +36,23 @@ function LoginModal(props) {
       if (register) {
         //login
         props.hive.api.getAccounts([account], function (err, result) {
-          let newUser = {
-            ...result[0],
-            account,
-            privateKey: password,
-          };
-          props.setAccountData(newUser);
+          // props.hive.api.verifyAccountAuthority(
+          //   account,
+          //   [password],
+          //   function (err, result) {
+          //     console.log(err, result);
+          //   }
+          // );
+          const pubUnknown =
+            KeysUtils.getPublicKeyFromPrivateKeyString(password);
+          if (pubUnknown === result[0].memo_key) {
+            let newUser = {
+              ...result[0],
+              account,
+              privateKey: password,
+            };
+            props.setAccountData(newUser);
+          }
         });
       } else {
         //fixme if gun or setGunAccountData are not passed as prop
