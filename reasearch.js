@@ -1,24 +1,36 @@
-const Gun = require("gun");
-const SEA = require("gun/sea");
+const hive = require("@hiveio/hive-js");
+const hived = require("@hiveio/dhive");
+const signature = require("@hiveio/hive-js/lib/auth/ecc");
 (async () => {
-  const gun = Gun({
-    peers: ["http://localhost:3030/gun"],
-  });
-  gun.on((params) => {
-    console.log(params);
-  });
-  login("username", "password");
-  gun
-    .get("igor")
-    .put(
-      {
-        fromAccount: "igor",
-        toAccount: m.toAccount,
-        message: m.message,
-        createdAt: m.createdAt,
-      },
-      (ack) => {
-        console.log(ack);
+  const signMessage = (message, privateKey) => {
+    let buf;
+    try {
+      const o = JSON.parse(message, (k, v) => {
+        if (
+          v !== null &&
+          typeof v === "object" &&
+          "type" in v &&
+          v.type === "Buffer" &&
+          "data" in v &&
+          Array.isArray(v.data)
+        ) {
+          return Buffer.from(v.data);
+        }
+        return v;
+      });
+      if (Buffer.isBuffer(o)) {
+        buf = o;
+      } else {
+        buf = message;
       }
-    );
+    } catch (e) {
+      buf = message;
+    }
+    let signed = signature.Signature.signBuffer(buf, privateKey).toHex();
+    console.log("signed");
+    console.log(signed);
+
+    return signed;
+  };
+  signMessage("testing", "privatekey");
 })();

@@ -11,6 +11,7 @@ import {
 } from "react-bootstrap";
 import hive from "@hiveio/hive-js";
 import axios from "axios";
+import { KeysUtils } from "./utils/keys.utils";
 
 // initialize gun locally
 
@@ -38,6 +39,10 @@ export default function App() {
   function saveMessage() {
     console.log("messages");
     console.log(messages);
+    let signed = KeysUtils.signMessage(
+      formState.message,
+      accountData.privateKey
+    );
     let newMessage = {
       fromAccount: accountData.account,
       toAccount: chatHighlighted,
@@ -45,7 +50,12 @@ export default function App() {
       createdAt: Date.now(),
       fromPubKey: "dasdqa",
       toPubKey: "4123ed3",
+      signed,
     };
+    console.log("signed");
+    console.log(signed);
+    console.log("newMessage");
+    console.log(newMessage);
     axios
       .post("/message", newMessage)
       .then((res) => {

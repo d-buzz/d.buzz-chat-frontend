@@ -19,6 +19,7 @@
   },
   "homepage": "https://gitlab.com/peakd/sting-message-protocol#readme",
   "dependencies": {
+    "@hiveio/dhive": "^1.2.0",
     "@hiveio/hive-js": "^2.0.4",
     "axios": "^0.27.2",
     "config": "^3.3.7",
