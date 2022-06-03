@@ -36,9 +36,7 @@ export default function App() {
   });
 
   // set a new message in gun, update the local state to reset the form field
-  function saveMessage() {
-    console.log("messages");
-    console.log(messages);
+  async function saveMessage() {
     let signed = KeysUtils.signMessage(
       formState.message,
       accountData.privateKey
@@ -50,19 +48,16 @@ export default function App() {
       createdAt: Date.now(),
       fromPubKey: "dasdqa",
       toPubKey: "4123ed3",
-      signed,
     };
-    console.log("signed");
-    console.log(signed);
-    console.log("newMessage");
-    console.log(newMessage);
+    let signedTransaction = await KeysUtils.signCustomJsonMessage(
+      newMessage,
+      accountData.privateKey
+    );
     axios
-      .post("/message", newMessage)
+      .post("/message", signedTransaction)
       .then((res) => {
-        console.log("res");
-        console.log(res);
         if (res.status == 200) {
-          setMessages([...messages, newMessage]);
+          setMessages([...messages, signedTransaction]);
         }
       })
       .catch((err) => console.log(err));
@@ -190,23 +185,33 @@ export default function App() {
                 messages
                   .filter((message) => {
                     if (message.fromAccount != "" && message.toAccount != "") {
-                      return (
-                        (message.fromAccount === chatHighlighted &&
-                          message.toAccount === accountData.account) ||
-                        (message.toAccount === chatHighlighted &&
-                          message.fromAccount === accountData.account)
-                      );
+                      if (message.operations) {
+                        if (message.operations[0][1]) {
+                          message = JSON.parse(message.operations[0][1].json);
+
+                          return (
+                            (message.fromAccount === chatHighlighted &&
+                              message.toAccount === accountData.account) ||
+                            (message.toAccount === chatHighlighted &&
+                              message.fromAccount === accountData.account)
+                          );
+                        }
+                      }
                     }
                   })
                   .map((message) => {
-                    return (
-                      <div key={message.createdAt}>
-                        <h2>{message.message}</h2>
-                        <p>From: {message.fromAccount}</p>
-                        <p>To: {message.toAccount}</p>
-                        <p>Date: {message.createdAt}</p>
-                      </div>
-                    );
+                    if (message.operations[0][1]) {
+                      message = JSON.parse(message.operations[0][1].json);
+
+                      return (
+                        <div key={message.createdAt}>
+                          <h2>{message.message}</h2>
+                          <p>From: {message.fromAccount}</p>
+                          <p>To: {message.toAccount}</p>
+                          <p>Date: {message.createdAt}</p>
+                        </div>
+                      );
+                    }
                   })
               ) : (
                 <></>

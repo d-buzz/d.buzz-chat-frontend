@@ -16,8 +16,8 @@ connectDB();
 console.log(Message.find());
 
 app.post("/message", async function (req, res) {
-  // console.log("req.body");
-  // console.log(req.body);
+  console.log("req.body");
+  console.log(req.body);
   // console.log(Message.find());
 
   // const message = new Message({ ...req.body });
