@@ -35,6 +35,19 @@ export default function App() {
     account: "",
   });
 
+  useEffect(() => {
+    fetchHighlightedMessages();
+  }, [chatHighlighted]);
+
+  async function fetchHighlightedMessages() {
+    let highlightedMessages = await axios.get("/messages", {
+      toAccount: chatHighlighted,
+    });
+    setMessages(
+      highlightedMessages.data.map((msg) => JSON.parse(msg.transaction))
+    );
+  }
+
   // set a new message in gun, update the local state to reset the form field
   async function saveMessage() {
     let signed = KeysUtils.signMessage(

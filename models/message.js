@@ -26,6 +26,10 @@ const MessageSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  transaction: {
+    type: String,
+    required: true,
+  },
 });
 
 module.exports = Message = mongoose.model("message", MessageSchema);

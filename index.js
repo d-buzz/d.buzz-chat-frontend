@@ -5,6 +5,7 @@ const hive = require("@hiveio/hive-js");
 const bodyParser = require("body-parser");
 const connectDB = require("./config/db");
 const Message = require("./models/message");
+const req = require("express/lib/request");
 
 app.use(bodyParser.json());
 const port = 3030;
@@ -16,42 +17,29 @@ connectDB();
 console.log(Message.find());
 
 app.post("/message", async function (req, res) {
-  console.log("req.body");
-  console.log(req.body);
-  // console.log(Message.find());
+  let data = JSON.parse(req.body.operations[0][1].json);
 
-  // const message = new Message({ ...req.body });
-  // message.save().then((res) => console.log(res));
-  res.send("POST request to the homepage");
+  let { fromAccount, toAccount, message, createdAt, fromPubKey, toPubKey } =
+    data;
+
+  const newMessage = new Message({
+    fromAccount,
+    toAccount,
+    message,
+    createdAt,
+    fromPubKey,
+    toPubKey,
+    transaction: JSON.stringify(req.body),
+  });
+  newMessage.save().then((msg) => {
+    res.send(msg);
+  });
 });
 
-// (async () => {
-//     const port = 3030;
-//     // Gun({ web: server });
-//     const server = app.listen(port, () => {
-//         console.log(`listening at http://localhost:${port}`);
-//     });
-// const gun = new Gun({
-//     web: server,
-//     peers: ["http://localhost:3030/gun"],
-//     verify: {
-//         check: (params) => {
-//             console.log("verify check params");
+app.get("/messages", async function (req, res) {
+  let { fromAccount, toAccount } = req.query;
 
-//             console.log(params);
-//         },
-//     },
-// });
-//     gun.on((params) => {
-//         console.log(params);
-//     });
-//     const user = gun.user().recall({ sessionStorage: true });
+  let messages = await Message.find();
 
-//     app.use(Gun.serve);
-
-//     changeUser(user);
-//     login("username", "password");
-//     gun.get("key").put({ hello: "world" }, (ack) => {
-//         console.log(ack);
-//     });
-// })();
+  res.send(messages);
+});
