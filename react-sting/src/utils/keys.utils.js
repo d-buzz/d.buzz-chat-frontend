@@ -65,6 +65,12 @@ const signCustomJsonMessage = async (newMessage, privateKey) => {
   return stx;
 };
 
+const verifyTransaction = async (stx) => {
+  const client = new Hive.Client("https://api.hive.blog");
+  const rv = await client.database.verifyAuthority(stx);
+  return rv;
+};
+
 export const KeysUtils = {
   getPublicKeyFromPrivateKeyString,
   signMessage,

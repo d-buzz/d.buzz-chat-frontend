@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const connectDB = require("./config/db");
 const Message = require("./models/message");
 const req = require("express/lib/request");
+const { verifyTransaction } = require("./src/utils/keys.utils");
 
 app.use(bodyParser.json());
 const port = 3030;
@@ -14,26 +15,32 @@ const server = app.listen(port, () => {
 });
 
 connectDB();
-console.log(Message.find());
 
 app.post("/message", async function (req, res) {
-  let data = JSON.parse(req.body.operations[0][1].json);
+  let rv = await verifyTransaction(req.body);
+  console.log(rv);
+  // let data = JSON.parse(req.body.operations[0][1].json);
+  // console.log("data");
+  // console.log(data);
 
-  let { fromAccount, toAccount, message, createdAt, fromPubKey, toPubKey } =
-    data;
+  // let { fromAccount, toAccount, message, createdAt, fromPubKey, toPubKey } =
+  //   data;
+  // let transaction = JSON.parse(req.body.transaction);
 
-  const newMessage = new Message({
-    fromAccount,
-    toAccount,
-    message,
-    createdAt,
-    fromPubKey,
-    toPubKey,
-    transaction: JSON.stringify(req.body),
-  });
-  newMessage.save().then((msg) => {
-    res.send(msg);
-  });
+  // const newMessage = new Message({
+  //   fromAccount,
+  //   toAccount,
+  //   message,
+  //   createdAt,
+  //   fromPubKey,
+  //   toPubKey,
+  //   transaction,
+  // });
+  // console.log("newMessage");
+  // console.log(newMessage);
+  // newMessage.save().then((msg) => {
+  //   res.send(msg);
+  // });
 });
 
 app.get("/messages", async function (req, res) {

@@ -13,27 +13,18 @@ import hive from "@hiveio/hive-js";
 import axios from "axios";
 import { KeysUtils } from "./utils/keys.utils";
 
-// initialize gun locally
-
 export default function App() {
-  // the form state manages the form input for creating a new message
   const [formState, setForm] = useState({
     name: "",
     message: "",
   });
 
   const [showLoginModal, setShowLoginModal] = useState(true);
-  const [user, setUser] = useState();
   const [chatHighlighted, setChatHighlighted] = useState("");
   const [messages, setMessages] = useState([]);
   const [contacts, setContacts] = useState([]);
   const [newContact, setNewContact] = useState("");
-
-  // const [gun, setGun] = useState();
-  const [accountData, setAccountData] = useState({
-    privateKey: "",
-    account: "",
-  });
+  const [accountData, setAccountData] = useState({});
 
   useEffect(() => {
     fetchHighlightedMessages();
@@ -48,7 +39,6 @@ export default function App() {
     );
   }
 
-  // set a new message in gun, update the local state to reset the form field
   async function saveMessage() {
     let signed = KeysUtils.signMessage(
       formState.message,
@@ -80,7 +70,6 @@ export default function App() {
     });
   }
 
-  // update the form state as the user types
   function onChange(e) {
     setForm({ ...formState, [e.target.name]: e.target.value });
   }
@@ -88,9 +77,9 @@ export default function App() {
   return (
     <div style={{ padding: 30 }}>
       <h6 className="font-weight-bold mb-3 text-lg-left">
-        {accountData.account ? (
+        {accountData.name ? (
           <>
-            @{accountData.account}{" "}
+            @{accountData.name}{" "}
             <Button
               variant="primary"
               onClick={() => {
@@ -119,7 +108,6 @@ export default function App() {
         hive={hive}
         accountData={accountData}
         setAccountData={setAccountData}
-        user={user}
         show={showLoginModal}
       />
       <Container fluid>
