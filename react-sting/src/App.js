@@ -40,18 +40,42 @@ export default function App() {
   }
 
   async function saveMessage() {
-    let signed = KeysUtils.signMessage(
-      formState.message,
-      accountData.privateKey
+    const fromAccount = accountData.account;
+    const toAccount = chatHighlighted;
+    const message = formState.message;
+    const createdAt = Date.now();
+    window.hive_keychain.requestEncodeMessage(
+      fromAccount,
+      toAccount,
+      message,
+      "Posting",
+      (encryptedMessage) => {
+        const newMessage = {
+          fromAccount,
+          toAccount,
+          message: encryptedMessage,
+          createdAt: Date.now(),
+        };
+        let data = {
+          required_auths: [],
+          required_posting_auths: [fromAccount],
+          id: "sting_private_text_message",
+          json: JSON.stringify(newMessage),
+        };
+
+        let operation = {
+          ref_block_num: dynamicGlobalProperties.head_block_number,
+          ref_block_prefix: Buffer.from(
+            dynamicGlobalProperties.head_block_id,
+            "hex"
+          ).readUInt32LE(4),
+          expiration: new Date(Date.now() + 1).toISOString().slice(0, -5),
+          extensions: [],
+          operations: [["custom_json", data]], //content of your json
+        };
+      }
     );
-    let newMessage = {
-      fromAccount: accountData.account,
-      toAccount: chatHighlighted,
-      message: formState.message,
-      createdAt: Date.now(),
-      fromPubKey: "dasdqa",
-      toPubKey: "4123ed3",
-    };
+
     let signedTransaction = await KeysUtils.signCustomJsonMessage(
       newMessage,
       accountData.privateKey

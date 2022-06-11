@@ -1,16 +1,25 @@
-import * as Hive from "@hiveio/dhive";
 import hive from "@hiveio/hive-js";
 import signature from "@hiveio/hive-js/lib/auth/ecc";
+import {
+  Client,
+  BlockHeader,
+  SignedBlock,
+  SignedTransaction,
+  AppliedOperation,
+  DynamicGlobalProperties,
+  PrivateKey,
+} from "@hiveio/dhive";
 
-const getPublicKeyFromPrivateKeyString = (privateKeyS) => {
-  try {
-    const privateKey = Hive.PrivateKey.fromString(privateKeyS);
-    const publicKey = privateKey.createPublic();
-    return publicKey.toString();
-  } catch (e) {
-    return null;
-  }
-};
+const nodes = [
+  "https://api.hive.blog",
+  "https://api.deathwing.me",
+  "https://api.openhive.network",
+];
+const client = new Client(nodes, {
+  failoverThreshold: nodes.length,
+  timeout: 1,
+});
+
 const signMessage = (message, privateKey) => {
   let buf;
   try {
@@ -39,7 +48,6 @@ const signMessage = (message, privateKey) => {
   return signed;
 };
 const signCustomJsonMessage = async (newMessage, privateKey) => {
-  const client = new Hive.Client("https://api.hive.blog");
   const dynamicGlobalProperties =
     await client.database.getDynamicGlobalProperties();
   let data = {
@@ -60,19 +68,12 @@ const signCustomJsonMessage = async (newMessage, privateKey) => {
     operations: [["custom_json", data]], //content of your json
   };
 
-  let privateKeyObject = Hive.PrivateKey.fromString(privateKey);
+  let privateKeyObject = PrivateKey.fromString(privateKey);
   let stx = client.broadcast.sign(operation, privateKeyObject);
   return stx;
 };
 
-const verifyTransaction = async (stx) => {
-  const client = new Hive.Client("https://api.hive.blog");
-  const rv = await client.database.verifyAuthority(stx);
-  return rv;
-};
-
 export const KeysUtils = {
-  getPublicKeyFromPrivateKeyString,
   signMessage,
   signCustomJsonMessage,
 };
