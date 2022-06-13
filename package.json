@@ -1,30 +1,16 @@
 {
-  "name": "sting-message-protocol",
-  "version": "1.0.0",
-  "description": "To make it easy for you to get started with GitLab, here's a list of recommended next steps.",
-  "main": "index.js",
+  "name": "vue-sting",
+  "version": "0.0.0",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "react-sting": "npm start --prefix react-sting",
-    "dev": "concurrently \"nodemon index.js\" \"npm run react-sting\""
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 5050"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://gitlab.com/peakd/sting-message-protocol.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://gitlab.com/peakd/sting-message-protocol/issues"
-  },
-  "homepage": "https://gitlab.com/peakd/sting-message-protocol#readme",
   "dependencies": {
-    "@hiveio/dhive": "^1.2.0",
-    "@hiveio/hive-js": "^2.0.4",
-    "axios": "^0.27.2",
-    "config": "^3.3.7",
-    "express": "^4.18.1",
-    "gun": "^0.2020.1237",
-    "mongoose": "^6.3.4"
+    "vue": "^3.2.33"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^2.3.1",
+    "vite": "^2.9.5"
   }
 }
