@@ -1,8 +1,4 @@
 <template>
-  <header></header>
-
-  <main>
-    <h1 class="text-3xl font-bold underline">Hello world!</h1>
-  </main>
+  <SideBar></SideBar>
 </template>
 <script setup></script>

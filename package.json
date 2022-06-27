@@ -7,13 +7,17 @@
     "preview": "vite preview --port 5050"
   },
   "dependencies": {
-    "vue": "^3.2.33"
+    "vue": "^3.2.33",
+    "@vueuse/core": "^8.6.0",
+    "@vueuse/head": "^0.7.6"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.3.1",
     "autoprefixer": "^10.4.7",
     "postcss": "^8.4.14",
     "tailwindcss": "^3.1.4",
+    "unplugin-auto-import": "^0.9.1",
+    "unplugin-vue-components": "^0.20.1",
     "vite": "^2.9.5"
   }
 }
