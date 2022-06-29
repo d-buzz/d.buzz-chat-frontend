@@ -7,9 +7,12 @@
     "preview": "vite preview --port 5050"
   },
   "dependencies": {
-    "vue": "^3.2.33",
+    "@headlessui/vue": "^1.6.5",
     "@vueuse/core": "^8.6.0",
-    "@vueuse/head": "^0.7.6"
+    "@vueuse/head": "^0.7.6",
+    "pinia": "^2.0.14",
+    "vue": "^3.2.33",
+    "vue-router": "^4.0.16"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.3.1",
