@@ -1,16 +1,10 @@
 <template>
-  <LoginModal
-    :openModal="openModal"
-    :closeModalAction="closeModalAction"
-  ></LoginModal>
+  <LoginModal :show="true" @close="toggleLoginModal(false)"></LoginModal>
   <SideBar></SideBar>
 </template>
 <script setup>
-let openModal = ref(true);
-const openModalAction = () => {
-  openModal.value = true;
-};
-const closeModalAction = () => {
-  openModal.value = false;
+let loginModalOpen = ref(true);
+const toggleLoginModal = (open = false) => {
+  loginModalOpen.value = open;
 };
 </script>
