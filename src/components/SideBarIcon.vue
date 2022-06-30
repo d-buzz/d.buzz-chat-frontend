@@ -4,12 +4,14 @@
       <img
         class="rounded-full"
         :src="`https://images.hive.blog/u/${img}/avatar/small`"
-        alt="witness.owner"
+        alt="@"
       />
     </div>
   </div>
 </template>
 <script setup>
+import Login from "../assets/images/icons/login.svg";
+
 const props = defineProps({
   img: String,
 });
