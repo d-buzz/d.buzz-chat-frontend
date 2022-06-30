@@ -8,9 +8,8 @@ type AccountData = {
 
 export const useAccountStore = defineStore("account", () => {
   const account: Ref<AccountData> = ref({ name: null, authenticated: false });
-  const authenticate = () =>
+  const authenticate = (user: string) =>
     new Promise(function (resolve, reject) {
-      const user = account.value.name;
       window.hive_keychain.requestEncodeMessage(
         user,
         user,
@@ -23,6 +22,7 @@ export const useAccountStore = defineStore("account", () => {
             "Active",
             function (decrypted) {
               if (decrypted.result === "#login-HiveHub.Dev") {
+                account.value.name = user;
                 account.value.authenticated = true;
                 return resolve(account.value);
               }

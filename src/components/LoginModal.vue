@@ -184,7 +184,6 @@ const accountName = ref("");
 const accountStore = useAccountStore();
 const authenticate = async (account: string) => {
   if (isLoading.value) return;
-
   try {
     isLoading.value = true;
     await accountStore.authenticate(account);
