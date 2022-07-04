@@ -4,6 +4,7 @@ import { HeadlessUiResolver } from "unplugin-vue-components/resolvers";
 import AutoImport from "unplugin-auto-import/vite";
 import { defineConfig } from "vite";
 import Vue from "@vitejs/plugin-vue";
+import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -14,14 +15,7 @@ export default defineConfig({
     }),
 
     AutoImport({
-      imports: [
-        "vue",
-        "vue-router",
-        "vue-i18n",
-        "vue/macros",
-        "@vueuse/head",
-        "@vueuse/core",
-      ],
+      imports: ["vue", "vue-router", "vue-i18n", "vue/macros", "@vueuse/head", "@vueuse/core"],
       dts: "src/auto-imports.d.ts",
     }),
     ,
@@ -40,6 +34,34 @@ export default defineConfig({
       dts: "src/components.d.ts",
       // filters for transforming targets
       include: [/\.vue$/, /\.vue\?vue/],
+    }),
+    VitePWA({
+      registerType: "autoUpdate",
+      includeAssets: ["favicon-16x16.png", "favicon-32x32.png", "favicon.ico", "robots.txt", "apple-touch-icon.png"],
+      manifest: {
+        name: "HiveHub.dev",
+        short_name: "HiveHub.dev",
+        description: "A block explorer for the Hive ecosystem",
+        theme_color: "#1e293b",
+        icons: [
+          {
+            src: "pwa-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
+          {
+            src: "pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any maskable",
+          },
+        ],
+      },
     }),
   ],
   resolve: {
