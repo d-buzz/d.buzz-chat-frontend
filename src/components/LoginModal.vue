@@ -10,15 +10,11 @@
         leave-from="opacity-100"
         leave-to="opacity-0"
       >
-        <div
-          class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-        ></div>
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
       </TransitionChild>
 
       <div class="fixed z-10 inset-0 overflow-y-auto">
-        <div
-          class="flex items-end sm:items-center justify-center min-h-full p-4 text-center sm:p-0"
-        >
+        <div class="flex items-end sm:items-center justify-center min-h-full p-4 text-center sm:p-0">
           <TransitionChild
             as="template"
             enter="ease-out duration-300"
@@ -33,22 +29,13 @@
             >
               <div class="min-h-full flex flex-col justify-center">
                 <div class="sm:mx-auto sm:w-full sm:max-w-md">
-                  <h2
-                    class="text-center mt-6 text-3xl font-extrabold text-gray-900"
-                  >
-                    Sign into your account
-                  </h2>
+                  <h2 class="text-center mt-6 text-3xl font-extrabold text-gray-900">Sign into your account</h2>
                 </div>
 
                 <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                   <div class="space-y-6">
                     <div>
-                      <label
-                        for="username"
-                        class="block text-sm font-medium text-gray-700"
-                      >
-                        Account name:
-                      </label>
+                      <label for="username" class="block text-sm font-medium text-gray-700"> Account name: </label>
                       <div class="mt-1">
                         <input
                           id="username"
@@ -71,23 +58,9 @@
                         class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-75"
                         :disabled="isLoading"
                       >
-                        <span
-                          v-if="isLoading"
-                          class="inline-flex items-center transition ease-in-out duration-150 cursor-not-allowed"
-                          ><svg
-                            class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              class="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              stroke-width="4"
-                            ></circle>
+                        <span v-if="isLoading" class="inline-flex items-center transition ease-in-out duration-150 cursor-not-allowed"
+                          ><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path
                               class="opacity-75"
                               fill="currentColor"
@@ -107,9 +80,7 @@
                         <div class="w-full border-t border-gray-300" />
                       </div>
                       <div class="relative flex justify-center text-sm">
-                        <span class="px-2 bg-white text-gray-500">
-                          Or register at
-                        </span>
+                        <span class="px-2 bg-white text-gray-500"> Or register at </span>
                       </div>
                     </div>
 
@@ -120,11 +91,7 @@
                           class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                         >
                           <span class="sr-only">Hive.io</span>
-                          <img
-                            :src="HiveBlogLogo"
-                            class="w-5 h-5 grayscale opacity-50"
-                            aria-hidden="true"
-                          />
+                          <img :src="HiveBlogLogo" class="w-5 h-5 grayscale opacity-50" aria-hidden="true" />
                         </a>
                       </div>
 
@@ -134,11 +101,7 @@
                           class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                         >
                           <span class="sr-only">PeakD</span>
-                          <img
-                            :src="PeakdLogo"
-                            class="w-5 h-5 grayscale opacity-50"
-                            aria-hidden="true"
-                          />
+                          <img :src="PeakdLogo" class="w-5 h-5 grayscale opacity-50" aria-hidden="true" />
                         </a>
                       </div>
 
@@ -148,11 +111,7 @@
                           class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                         >
                           <span class="sr-only">Ecency</span>
-                          <img
-                            :src="EcencyLogo"
-                            class="w-5 h-5 grayscale opacity-50"
-                            aria-hidden="true"
-                          />
+                          <img :src="EcencyLogo" class="w-5 h-5 grayscale opacity-50" aria-hidden="true" />
                         </a>
                       </div>
                     </div>
@@ -172,6 +131,7 @@ import PeakdLogo from "../assets/images/icons/peakd.svg";
 import EcencyLogo from "../assets/images/icons//ecency.svg";
 import HiveBlogLogo from "../assets/images/icons/hive-blog.svg";
 import { useAccountStore } from "../stores/account";
+const router = useRouter();
 
 const emit = defineEmits(["close"]);
 
@@ -190,6 +150,7 @@ const authenticate = async (account: string) => {
     emit("close");
   } finally {
     isLoading.value = false;
+    router.push("/controlpanel");
   }
 };
 </script>
