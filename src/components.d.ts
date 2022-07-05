@@ -13,6 +13,7 @@ declare module '@vue/runtime-core' {
     IconEcosystem: typeof import('./components/icons/IconEcosystem.vue')['default']
     IconSupport: typeof import('./components/icons/IconSupport.vue')['default']
     IconTooling: typeof import('./components/icons/IconTooling.vue')['default']
+    Landing: typeof import('./components/Landing.vue')['default']
     LoginModal: typeof import('./components/LoginModal.vue')['default']
     PrivateChat: typeof import('./components/PrivateChat.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
