@@ -15,6 +15,8 @@ declare module '@vue/runtime-core' {
     IconTooling: typeof import('./components/icons/IconTooling.vue')['default']
     Landing: typeof import('./components/Landing.vue')['default']
     LoginModal: typeof import('./components/LoginModal.vue')['default']
+    MessageReceived: typeof import('./components/MessageReceived.vue')['default']
+    MessageSent: typeof import('./components/MessageSent.vue')['default']
     PrivateChat: typeof import('./components/PrivateChat.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
