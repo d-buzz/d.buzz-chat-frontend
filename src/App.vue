@@ -1,9 +1,11 @@
 <template>
-  <div class="fixed top-0 left-0 h-screen w-16 m-0 flex flex-col bg-primary text-secondary shadow-lg overflow-x-scroll">
-    <SideBar></SideBar>
-  </div>
-  <div class="ml-16">
-    <router-view></router-view>
+  <div class="flex min-h-full h-screen">
+    <div class="h-screen flex flex-col bg-primary text-secondary shadow-lg mr-3">
+      <SideBar></SideBar>
+    </div>
+    <div class="grow">
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 <script setup></script>
