@@ -3,9 +3,9 @@
     <SideBarLoginIcon />
 
     <hr class="mt-1 mb-1" />
-    <router-link to="/privatechat">
+    
       <SideBarIcon v-for="account in accounts" class="mt-1 mb-1" :img="account" />
-    </router-link>
+    
   </div>
 </template>
 <script setup>

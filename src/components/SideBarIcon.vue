@@ -1,11 +1,13 @@
 <template>
   <div class="flex items-center justify-start">
     <div class="flex-shrink-0">
-      <img
-        class="rounded-full"
-        :src="`https://images.hive.blog/u/${img}/avatar/small`"
-        alt="@"
-      />
+        <router-link :to="`/p/@${img}`">
+            <img
+            class="rounded-full"
+            :src="`https://images.hive.blog/u/${img}/avatar/small`"
+            alt="@"
+            />
+        </router-link>
     </div>
   </div>
 </template>

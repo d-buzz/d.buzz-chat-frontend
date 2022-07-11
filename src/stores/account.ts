@@ -7,7 +7,11 @@ type AccountData = {
 };
 
 export const useAccountStore = defineStore("account", () => {
-  const account: Ref<AccountData> = ref({ name: null, authenticated: false });
+    var userData = localStorage.getItem("_user");
+    if(userData == null) userData = { name: null, authenticated: false }; 
+    else userData = JSON.parse(userData);
+
+  const account: Ref<AccountData> = ref(userData);
   const authenticate = (user: string) =>
     new Promise(function (resolve, reject) {
       window.hive_keychain.requestEncodeMessage(
@@ -24,6 +28,7 @@ export const useAccountStore = defineStore("account", () => {
               if (decrypted.result === "#login-HiveHub.Dev") {
                 account.value.name = user;
                 account.value.authenticated = true;
+                localStorage.setItem("_user", JSON.stringify(account.value));
                 return resolve(account.value);
               }
               account.value.authenticated = false;

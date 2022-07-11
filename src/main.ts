@@ -3,6 +3,22 @@ import App from "./App.vue";
 
 import "./assets/styles/index.css";
 
+var currentManager = null;
+window.getManager = function() {
+    if(currentManager == null) {
+        currentManager = new stlib.MessageManager();
+        currentManager.onmessage = function(json) {
+		    /*var msgType = json[0];
+		    if(msgType === "w") {
+			    addMSG([json]);
+		    }*/
+            console.log(json);
+	    };
+        currentManager.setNodes(["http://localhost:3001"]);
+    }
+    return currentManager;
+};
+
 const app = createApp(App);
 
 // init/config libraries
@@ -11,3 +27,4 @@ Object.values(import.meta.globEager("./config/*.ts"))
   .map((i) => i.install?.({ app }));
 
 app.mount("#app");
+

@@ -14,7 +14,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("./ControlPanel.vue"),
   },
   {
-    path: "/privatechat",
+    path: "/p/@:user",
     name: "Private Chat",
     component: () => import("./PrivateChat.vue"),
   },

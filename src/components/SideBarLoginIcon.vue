@@ -9,7 +9,9 @@
         </router-link>
       </div>
       <div v-else>
-        <img class="rounded-full w-16" :src="Login" alt="+" @click="toggleLoginModal" />
+        
+            <img class="rounded-full w-16" :src="Login" alt="+" @click="toggleLoginModal" />
+        
       </div>
     </div>
   </div>
