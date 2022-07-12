@@ -1,6 +1,6 @@
 <template>
   <div class="w-full h-full flex flex-col justify-end overflow-y-scroll">
-    <Message v-for="message in messageStore.messages" :message="message"/>
+    <Message v-for="message in messageStore.getMessages" :message="message"/>
     <div class="flex mt-4">
       <input
         class="shadow appearance-none border rounded-full w-[calc(100%-4rem)] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline grow"
@@ -42,9 +42,8 @@ const enterMessage = async (message) => {
     var signableMessage = textMsg.forUser(user, [user, user2] );
     await signableMessage.signWithKeychain('Posting');
     
-    client.write(signableMessage, (result)=>{
-        console.log(result);
-    });
+    var result = await client.write(signableMessage);
+    console.log(result);
 };
 
 </script>

@@ -14,7 +14,22 @@ export const useAccountStore = defineStore("account", () => {
   const account: Ref<AccountData> = ref(userData);
   const authenticate = (user: string) =>
     new Promise(function (resolve, reject) {
-      window.hive_keychain.requestEncodeMessage(
+        window.hive_keychain.requestSignBuffer(
+            user,
+            `{login:"${user}"}`,
+            "Posting",
+            function (result) {
+                if(result.success) {
+                    account.value.name = user;
+                    account.value.authenticated = true;
+                    localStorage.setItem("_user", JSON.stringify(account.value));
+                    return resolve(account.value);
+                }
+                account.value.authenticated = false;
+                return reject("error");
+            }
+        );
+      /*window.hive_keychain.requestEncodeMessage(
         user,
         user,
         "#login-HiveHub.Dev",
@@ -36,7 +51,7 @@ export const useAccountStore = defineStore("account", () => {
             }
           );
         }
-      );
+      );*/
     });
   const signOut = () => {
     account.value.authenticated = false;

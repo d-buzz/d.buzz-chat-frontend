@@ -1,4 +1,5 @@
 <template>
+    
     <div class="inline-flex">
         <div class="flex-shrink-0">
             <img
@@ -8,8 +9,8 @@
             />
         </div>
         <div> 
-            <div>{{message.getUser()}} | {{message.getTimestamp()}}</div>
-            <div>{{message.getContent().getText()}}</div>
+            <div>{{message.getUser()}}</div>
+            <div v-if="message.getContent()">{{message.getContent().getText()}}</div>
         </div>
     </div>
 </template>

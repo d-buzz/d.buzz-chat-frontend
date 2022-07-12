@@ -8,10 +8,6 @@ window.getManager = function() {
     if(currentManager == null) {
         currentManager = new stlib.MessageManager();
         currentManager.onmessage = function(json) {
-		    /*var msgType = json[0];
-		    if(msgType === "w") {
-			    addMSG([json]);
-		    }*/
             console.log(json);
 	    };
         currentManager.setNodes(["http://localhost:3001"]);

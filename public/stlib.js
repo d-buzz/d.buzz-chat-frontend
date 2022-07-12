@@ -653,11 +653,24 @@ exports.DataStream = DataStream;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DisplayableMessage = void 0;
 class DisplayableMessage {
+    constructor(message) {
+        this.message = message;
+        this.content = undefined;
+        this.verified = null;
+    }
+    init() {
+        this.usernames = this.message.getGroupUsernames();
+    }
+    hasUser(user) { return this.usernames.indexOf(user) !== -1; }
     getUser() { return this.message.user; }
     getConversation() { return this.message.conversation; }
     getTimestamp() { return this.message.timestamp; }
-    getContent() { return this.content; }
-    isVerified() { return this.verified; }
+    getContent() {
+        return this.content;
+    }
+    isVerified() {
+        return this.verified;
+    }
 }
 exports.DisplayableMessage = DisplayableMessage;
 
@@ -743,6 +756,8 @@ class MessageManager {
         if (this.user != null) {
         }
         this.user = user;
+        var client = this.getClient();
+        client.join(user);
     }
     setUseKeychain() { this.loginmethod = new LoginWithKeychain(); }
     readUserMessages() {
@@ -762,17 +777,21 @@ class MessageManager {
         return __awaiter(this, void 0, void 0, function* () {
             var list = [];
             var array = result.getResult();
-            for (var msgJSON of array) {
-                var msg = signable_message_1.SignableMessage.fromJSON(msgJSON);
-                var verified = yield msg.verify();
-                var content = msg.getContent();
-                var displayableMessage = new displayable_message_1.DisplayableMessage();
-                displayableMessage.message = msg;
-                displayableMessage.content = content;
-                displayableMessage.verified = verified;
-                list.push(displayableMessage);
-            }
+            for (var msgJSON of array)
+                list.push(yield this.jsonToDisplayable(msgJSON));
             return list;
+        });
+    }
+    jsonToDisplayable(msgJSON) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var msg = signable_message_1.SignableMessage.fromJSON(msgJSON);
+            var verified = yield msg.verify();
+            var content = msg.getContent();
+            var displayableMessage = new displayable_message_1.DisplayableMessage(msg);
+            displayableMessage.content = content;
+            displayableMessage.verified = verified;
+            displayableMessage.init();
+            return displayableMessage;
         });
     }
 }
