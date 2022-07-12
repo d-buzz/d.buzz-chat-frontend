@@ -3,13 +3,13 @@
         <div class="flex-shrink-0">
             <img
             class="rounded-full"
-            :src="`https://images.hive.blog/u/${message.user}/avatar/small`"
+            :src="`https://images.hive.blog/u/${message.getUser()}/avatar/small`"
             alt="@"
             />
         </div>
         <div> 
-            <div>{{message.user}}</div>
-            <div> Message {{message.text}}</div>
+            <div>{{message.getUser()}} | {{message.getTimestamp()}}</div>
+            <div>{{message.getContent().getText()}}</div>
         </div>
     </div>
 </template>
