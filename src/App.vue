@@ -1,7 +1,10 @@
 <template>
   <div class="flex min-h-full h-screen">
+    <div class="h-screen flex flex-col bg-primary text-secondary shadow-lg">
+        <SideBar></SideBar>
+    </div>
     <div class="h-screen flex flex-col bg-primary text-secondary shadow-lg mr-3">
-      <SideBar></SideBar>
+        <StreamBar></StreamBar>
     </div>
     <div class="grow">
       <router-view></router-view>

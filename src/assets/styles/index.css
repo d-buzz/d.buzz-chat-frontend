@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.border-r-1 {
+    border-right: 1px solid #950017;
+}

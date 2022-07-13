@@ -5,7 +5,8 @@ export const useMessageStore = defineStore("messageStore", {
     state: () => {
         return {
               messages: [],
-              fetching: false
+              fetching: false,
+              communities: []
         }
     },
     getters: {
@@ -17,6 +18,15 @@ export const useMessageStore = defineStore("messageStore", {
         }
     },
     actions: {
+        async loadCommunities(user) {
+             console.log("loading communities " + window.hive);
+            for(var i = 0; i < 10; i++)
+                if(window.hive === undefined)
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+            console.log("loading communities " + window.hive);
+            this.communities = await window.hive.api.callAsync("bridge.list_all_subscriptions", {"account":user});
+        },
         async loadUserMessages(user) {
             var _this = this;
             const manager = getManager();
