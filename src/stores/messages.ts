@@ -4,9 +4,10 @@ import { Ref } from "vue";
 export const useMessageStore = defineStore("messageStore", {
     state: () => {
         return {
-              messages: [],
               fetching: false,
-              communities: []
+              messages: [],
+              communities: [],
+              conversations: []
         }
     },
     getters: {
@@ -19,13 +20,15 @@ export const useMessageStore = defineStore("messageStore", {
     },
     actions: {
         async loadCommunities(user) {
-             console.log("loading communities " + window.hive);
-            for(var i = 0; i < 10; i++)
-                if(window.hive === undefined)
-                    await new Promise(resolve => setTimeout(resolve, 500));
-
-            console.log("loading communities " + window.hive);
-            this.communities = await window.hive.api.callAsync("bridge.list_all_subscriptions", {"account":user});
+            this.communities = await hive.api.callAsync("bridge.list_all_subscriptions", {"account":user});
+        },
+        async loadConversations(user) {
+            console.log("conversations load " + user);
+            const manager = getManager();
+            manager.setUser(user);
+            this.conversations = await manager.readUserConversations();
+            console.log("conversations done ");
+            console.log(this.conversations);
         },
         async loadUserMessages(user) {
             var _this = this;

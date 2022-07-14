@@ -6,6 +6,7 @@ import '@vue/runtime-core'
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     ControlPanel: typeof import('./components/ControlPanel.vue')['default']
+    Conversation: typeof import('./components/Conversation.vue')['default']
     Dialog: typeof import('@headlessui/vue')['Dialog']
     DialogPanel: typeof import('@headlessui/vue')['DialogPanel']
     IconCommunity: typeof import('./components/icons/IconCommunity.vue')['default']
@@ -22,10 +23,10 @@ declare module '@vue/runtime-core' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SideBar: typeof import('./components/SideBar.vue')['default']
-    'SideBar (copy)': typeof import('./components/SideBar (copy).vue')['default']
     SideBarIcon: typeof import('./components/SideBarIcon.vue')['default']
     SideBarLoginIcon: typeof import('./components/SideBarLoginIcon.vue')['default']
     StreamBar: typeof import('./components/StreamBar.vue')['default']
+    'StreamBar (copy)': typeof import('./components/StreamBar (copy).vue')['default']
     TransitionChild: typeof import('@headlessui/vue')['TransitionChild']
     TransitionRoot: typeof import('@headlessui/vue')['TransitionRoot']
   }

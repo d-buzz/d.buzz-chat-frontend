@@ -3,7 +3,7 @@
     <div class="flex-shrink-0">
         <router-link :to="`/p/@${img}`">
             <img
-            class="rounded-full"
+            class="rounded-full avCommunity"
             :src="`https://images.hive.blog/u/${img}/avatar/small`"
             alt="@"
             />

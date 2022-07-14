@@ -39,6 +39,11 @@ class Client {
             return yield this.emit("r", ["r", '@', username]);
         });
     }
+    readUserConversations(username) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.emit("r", ["r", '@@', username]);
+        });
+    }
     readUserMessages(username, fromTimestamp, toTimestamp) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.read('@' + username, fromTimestamp, toTimestamp);
@@ -760,6 +765,18 @@ class MessageManager {
         client.join(user);
     }
     setUseKeychain() { this.loginmethod = new LoginWithKeychain(); }
+    readUserConversations() {
+        return __awaiter(this, void 0, void 0, function* () {
+            var user = this.user;
+            if (user === null)
+                return [];
+            var client = this.getClient();
+            var result = yield client.readUserConversations(user);
+            if (!result.isSuccess())
+                throw result.getError();
+            return result.getResult();
+        });
+    }
     readUserMessages() {
         return __awaiter(this, void 0, void 0, function* () {
             var user = this.user;

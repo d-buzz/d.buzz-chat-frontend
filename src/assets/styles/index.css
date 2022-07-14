@@ -5,3 +5,20 @@
 .border-r-1 {
     border-right: 1px solid #950017;
 }
+.border-b-1 {
+    border-bottom: 1px solid #950017;
+}
+.avCommunity {
+    width: 54px;
+    height: 54px;
+}
+.avMessage {
+    width: 42px;
+    height: 42px;
+}
+.avConversation {
+    width: 35px;
+    height: 35px;
+}
+.w-200 { width: 200px; }
+.mr-5px { margin-right: 5px;}

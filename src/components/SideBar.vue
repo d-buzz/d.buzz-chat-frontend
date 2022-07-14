@@ -1,10 +1,8 @@
 <template>
   <div class="h-screen m-0 flex flex-col bg-primary text-secondary shadow-lg overflow-y-scroll border-r-1">
-    <div class="pr-1 pl-1">
+    <div class="pt-1 pr-2 pl-2 pb-1 border-b-1">
         <SideBarLoginIcon/>
     </div>
-
-    <hr class="mt-1 mb-1" />
     
       <SideBarIcon v-for="community in messageStore.communities" class="mt-1 mb-1 pr-2 pl-2" :img="community[0]" />
     

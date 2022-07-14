@@ -1,15 +1,14 @@
 <template>
-    
-    <div class="inline-flex">
-        <div class="flex-shrink-0">
+    <div class="flex pt-2">
+        <div class="flex-shrink-0 mr-5px">
             <img
-            class="rounded-full"
+            class="rounded-full avMessage"
             :src="`https://images.hive.blog/u/${message.getUser()}/avatar/small`"
             alt="@"
             />
         </div>
-        <div> 
-            <div>{{message.getUser()}}</div>
+        <div style="margin-top:-7px;"> 
+            <div><small><b>{{message.getUser()}}</b></small></div>
             <div v-if="message.getContent()">{{message.getContent().getText()}}</div>
         </div>
     </div>
