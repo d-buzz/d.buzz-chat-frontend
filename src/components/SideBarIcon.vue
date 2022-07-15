@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center justify-start">
     <div class="flex-shrink-0">
-        <router-link :to="`/p/@${img}`">
+        <router-link :to="`/c/${img}`">
             <img
             class="rounded-full avCommunity"
             :src="`https://images.hive.blog/u/${img}/avatar/small`"

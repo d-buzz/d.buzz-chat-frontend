@@ -21,11 +21,15 @@ import { useRoute } from "vue-router";
 const route = useRoute();
 const accountStore = useAccountStore();
 const messageStore = useMessageStore();
-
-function initChat() {
+var communityData = null;
+async function initChat() {
     var user = accountStore.account.name;
     if(user == null) return; //TODO ask to login
-    messageStore.loadUserMessages(user);
+    var user2 = route.params.user;
+    if(user2 == null || user2 == "") return;
+    communityData = await stlib.Utils.getCommunityData(user2);
+
+    //messageStore.loadUserMessages(user);
 }
 initChat();
 

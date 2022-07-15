@@ -5,8 +5,10 @@ import '@vue/runtime-core'
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    Community: typeof import('./components/Community.vue')['default']
     ControlPanel: typeof import('./components/ControlPanel.vue')['default']
     Conversation: typeof import('./components/Conversation.vue')['default']
+    'Conversation (copy)': typeof import('./components/Conversation (copy).vue')['default']
     Dialog: typeof import('@headlessui/vue')['Dialog']
     DialogPanel: typeof import('@headlessui/vue')['DialogPanel']
     IconCommunity: typeof import('./components/icons/IconCommunity.vue')['default']
@@ -20,13 +22,14 @@ declare module '@vue/runtime-core' {
     MessageReceived: typeof import('./components/MessageReceived.vue')['default']
     MessageSent: typeof import('./components/MessageSent.vue')['default']
     PrivateChat: typeof import('./components/PrivateChat.vue')['default']
+    'PrivateChat (copy)': typeof import('./components/PrivateChat (copy).vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SideBar: typeof import('./components/SideBar.vue')['default']
     SideBarIcon: typeof import('./components/SideBarIcon.vue')['default']
     SideBarLoginIcon: typeof import('./components/SideBarLoginIcon.vue')['default']
+    Stream: typeof import('./components/Stream.vue')['default']
     StreamBar: typeof import('./components/StreamBar.vue')['default']
-    'StreamBar (copy)': typeof import('./components/StreamBar (copy).vue')['default']
     TransitionChild: typeof import('@headlessui/vue')['TransitionChild']
     TransitionRoot: typeof import('@headlessui/vue')['TransitionRoot']
   }
