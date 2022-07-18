@@ -39,7 +39,9 @@ const enterMessage = async (message) => {
     const manager = getManager();
     var client = manager.client;
     var textMsg = stlib.Content.text(message);
-    var signableMessage = textMsg.forUser(user, [user, user2] );
+    var conversation = [user, user2];
+    textMsg = await textMsg.encodeWithKeychain(user, conversation, "Posting"); 
+    var signableMessage = textMsg.forUser(user, conversation);
     await signableMessage.signWithKeychain('Posting');
     
     var result = await client.write(signableMessage);

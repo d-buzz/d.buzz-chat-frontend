@@ -19,10 +19,16 @@ export const install: ViteSetupModule = ({ app }) => {
     })
   );
 
-  const router = createRouter({
-    scrollBehavior: () => ({ left: 0, top: 0 }),
-    history: createWebHistory(),
-    routes,
-  });
-  app.use(router);
+    const router = createRouter({
+        scrollBehavior: () => ({ left: 0, top: 0 }),
+        history: createWebHistory(),
+        routes,
+    });
+    /*router.beforeEach((to, from, next) => {
+        console.log("route " + to);
+        console.log(to);
+        next();
+    });*/
+    app.router = router;
+    app.use(router);
 };

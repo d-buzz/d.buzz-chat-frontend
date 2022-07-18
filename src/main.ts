@@ -16,7 +16,7 @@ window.getManager = function() {
 };
 
 const app = createApp(App);
-
+window.app = app;
 // init/config libraries
 Object.values(import.meta.globEager("./config/*.ts"))
   .sort((m, n) => (n.priority || 0) - (m.priority || 0))

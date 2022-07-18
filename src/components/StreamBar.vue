@@ -3,12 +3,10 @@
     
     <b class="border-b-1">{{title}}</b>
 
-    <div v-if="$route.name == 'Community'">
-        <Stream v-for="stream in streams" 
-            :conversation="stream.getPath()==null?'':stream.getPath().toString()"
-            :name="stream.getName()"/>
+    <div v-if="isCommunity">
+        <Stream v-for="stream in streams" :stream="stream"/>
     </div>
-    <div v-if="$route.name != 'Community'">
+    <div v-else>
         <Conversation v-for="conversation in messageStore.conversations" :conversation="conversation" :username="username"/>
     </div>
   </div>
@@ -24,12 +22,16 @@ const messageStore = useMessageStore();
 const username = accountStore.account.name;
 const streams = ref([]);
 const title = ref("Direct Messages");
-async function initConversations() {
+const isCommunity = ref(false);
+async function initConversations(route) {
+    console.log(route);
     console.log("load community " + route.name);
     if(username == null) return;
-    if(route.name === 'Community') {
+    isCommunity.value = route.name.startsWith('Community');
+    if(isCommunity.value) {
         var user2 = route.params.user;
         if(user2 == null || user2 == "") return;
+
         var community = await stlib.Community.load(user2);
 
         console.log("community data ");
@@ -42,5 +44,9 @@ async function initConversations() {
     }
     else messageStore.loadConversations(username);
 }
-initConversations();
+initConversations(route);
+/*app.router.beforeEach(async (to, from, next) => {
+    await initConversations(to);
+    next();
+});*/
 </script>

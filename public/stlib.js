@@ -704,6 +704,8 @@ class LoginWithKeychain extends LoginMethod {
 exports.LoginWithKeychain = LoginWithKeychain;
 class MessageManager {
     constructor() {
+        this.selectedConversation = null;
+        this.conversations = new utils_1.AccountDataCache();
         this.defaultReadHistoryMS = 30 * 24 * 60 * 60000;
     }
     setNodes(nodes) {
@@ -765,6 +767,27 @@ class MessageManager {
         client.join(user);
     }
     setUseKeychain() { this.loginmethod = new LoginWithKeychain(); }
+    setConversation(username) {
+        this.selectedConversation = username;
+    }
+    getSelectedConversations() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.selectedConversation == null)
+                return null;
+            var _this = this;
+            return yield this.conversations.cacheLogic(this.selectedConversation, (conversation) => {
+                var client = _this.getClient();
+                var timeNow = utils_1.Utils.utcTime();
+                return client.read(_this.selectedConversation, timeNow - _this.defaultReadHistoryMS, timeNow + 600000).then((result) => {
+                    if (!result.isSuccess())
+                        throw result.getError();
+                    return _this.toDisplayable(result);
+                }).then((messages) => {
+                    return { messages };
+                });
+            });
+        });
+    }
     readUserConversations() {
         return __awaiter(this, void 0, void 0, function* () {
             var user = this.user;
@@ -1202,6 +1225,9 @@ class Utils {
         var key = pi.createPublic("STM").toString();
         lastRandomPublicKey = key;
         return key;
+    }
+    static newCache() {
+        return new AccountDataCache();
     }
 }
 exports.Utils = Utils;
