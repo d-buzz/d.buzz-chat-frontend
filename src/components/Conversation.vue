@@ -1,5 +1,5 @@
 <template>
-    <router-link :to="`/p/@${iconUsername}`">
+    <router-link :to="`/p/${iconUsername}`">
         <div class="flex pt-1">
             <div class="flex-shrink-0 mr-5px">
                 <img

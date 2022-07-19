@@ -164,7 +164,7 @@ class Community {
             data_stream_1.DataStream.fromJSON(community, ["About", "/about"]),
             data_stream_1.DataStream.fromJSON(community, ["Posts", "/created"]),
             data_stream_1.DataStream.fromJSON(community, ["Text"]),
-            data_stream_1.DataStream.fromJSON(community, ["General", "/0"])
+            data_stream_1.DataStream.fromJSON(community, ["General", "0"])
         ];
     }
     static load(communityUsername) {
@@ -696,6 +696,7 @@ const client_1 = require("./client");
 const utils_1 = require("./utils");
 const signable_message_1 = require("./signable-message");
 const displayable_message_1 = require("./displayable-message");
+const imports_1 = require("./content/imports");
 class LoginMethod {
 }
 exports.LoginMethod = LoginMethod;
@@ -704,6 +705,8 @@ class LoginWithKeychain extends LoginMethod {
 exports.LoginWithKeychain = LoginWithKeychain;
 class MessageManager {
     constructor() {
+        this.joined = {};
+        this.cachedUserMessages = null;
         this.selectedConversation = null;
         this.conversations = new utils_1.AccountDataCache();
         this.defaultReadHistoryMS = 30 * 24 * 60 * 60000;
@@ -742,9 +745,15 @@ class MessageManager {
             });
             this.client = new client_1.Client(socket);
             this.client.onmessage = function (json) {
-                var onmessage = _this.onmessage;
-                if (onmessage != null)
-                    onmessage(json);
+                return __awaiter(this, void 0, void 0, function* () {
+                    var onmessage = _this.onmessage;
+                    var displayableMessage = yield _this.jsonToDisplayable(json);
+                    var data = _this.conversations.lookupValue(displayableMessage.getConversation());
+                    if (data != null)
+                        data.messages.push(displayableMessage);
+                    if (onmessage != null)
+                        onmessage(displayableMessage);
+                });
             };
             utils_1.Utils.setClient(this.client);
             this.connectionStart = false;
@@ -763,28 +772,59 @@ class MessageManager {
         if (this.user != null) {
         }
         this.user = user;
+        this.join(user);
+    }
+    join(room) {
+        if (room == null)
+            return;
+        if (room.indexOf('|') != -1)
+            return;
+        if (this.joined[room])
+            return;
+        this.joined[room] = true;
         var client = this.getClient();
-        client.join(user);
+        client.join(room);
     }
     setUseKeychain() { this.loginmethod = new LoginWithKeychain(); }
     setConversation(username) {
         this.selectedConversation = username;
+        this.join(username);
     }
     getSelectedConversations() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.selectedConversation == null)
+            var conversation = this.selectedConversation;
+            if (conversation == null)
                 return null;
+            var isPrivate = conversation.indexOf('|') !== -1;
             var _this = this;
-            return yield this.conversations.cacheLogic(this.selectedConversation, (conversation) => {
+            return yield this.conversations.cacheLogic(conversation, (conversation) => {
                 var client = _this.getClient();
                 var timeNow = utils_1.Utils.utcTime();
-                return client.read(_this.selectedConversation, timeNow - _this.defaultReadHistoryMS, timeNow + 600000).then((result) => {
-                    if (!result.isSuccess())
-                        throw result.getError();
-                    return _this.toDisplayable(result);
-                }).then((messages) => {
-                    return { messages };
-                });
+                var promise = null;
+                if (isPrivate) {
+                    if (this.cachedUserMessages == null) {
+                        promise = _this.readUserMessages().then((result) => {
+                            this.cachedUserMessages = result;
+                            return result;
+                        });
+                    }
+                    else
+                        promise = Promise.resolve(this.cachedUserMessages);
+                    promise = promise.then((allMessages) => {
+                        var messages = allMessages.filter((m) => m.getConversation() === conversation);
+                        return { messages };
+                    });
+                }
+                else {
+                    promise = client.read(conversation, timeNow - _this.defaultReadHistoryMS, timeNow + 600000).then((result) => {
+                        if (!result.isSuccess())
+                            throw result.getError();
+                        return _this.toDisplayable(result);
+                    }).then((messages) => {
+                        return { messages };
+                    });
+                }
+                return promise;
             });
         });
     }
@@ -827,6 +867,10 @@ class MessageManager {
             var msg = signable_message_1.SignableMessage.fromJSON(msgJSON);
             var verified = yield msg.verify();
             var content = msg.getContent();
+            if (content instanceof imports_1.Encoded) {
+                var decoded = yield content.decodeWithKeychain(this.user, msg.getGroupUsernames());
+                content = decoded;
+            }
             var displayableMessage = new displayable_message_1.DisplayableMessage(msg);
             displayableMessage.content = content;
             displayableMessage.verified = verified;
@@ -837,7 +881,7 @@ class MessageManager {
 }
 exports.MessageManager = MessageManager;
 
-},{"./client":1,"./displayable-message":15,"./signable-message":18,"./utils":20}],17:[function(require,module,exports){
+},{"./client":1,"./content/imports":6,"./displayable-message":15,"./signable-message":18,"./utils":20}],17:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PermissionSet = void 0;
@@ -1246,6 +1290,12 @@ class AccountDataCache {
     }
     lookup(user) {
         return this.data[user];
+    }
+    lookupValue(user) {
+        var item = this.data[user];
+        if (item === undefined)
+            return undefined;
+        return item.value;
     }
     storeLater(user, promise) {
         this.data[user] = { promise };

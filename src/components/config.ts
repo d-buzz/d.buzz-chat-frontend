@@ -19,14 +19,14 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("./Community.vue"),
   },
   {
-    path: "/c/:user/:path",
+    path: "/t/:user/:path",
     name: "CommunityPath",
     component: () => import("./Community.vue"),
   },
   {
-    path: "/p/@:user",
-    name: "Private Chat",
-    component: () => import("./PrivateChat.vue"),
+    path: "/p/:user",
+    name: "PrivateChat",
+    component: () => import("./Community.vue"),
   },
 ];
 

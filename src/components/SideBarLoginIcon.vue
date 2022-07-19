@@ -22,7 +22,7 @@ import { useAccountStore } from "../stores/account";
 const accountStore = useAccountStore();
 
 const props = defineProps({});
-let loginModalOpen = ref(accountStore.account.authenticated);
+let loginModalOpen = ref(false);
 const toggleLoginModal = () => {
   loginModalOpen.value = !loginModalOpen.value;
 };

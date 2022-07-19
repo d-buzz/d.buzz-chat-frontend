@@ -26,7 +26,7 @@ const isCommunity = ref(false);
 async function initConversations(route) {
     console.log(route);
     console.log("load community " + route.name);
-    if(username == null) return;
+    if(username == null || route.name == null) return;
     isCommunity.value = route.name.startsWith('Community');
     if(isCommunity.value) {
         var user2 = route.params.user;
