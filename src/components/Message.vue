@@ -1,5 +1,5 @@
 <template>
-    <div class="flex pt-2">
+    <div class="message flex" style="margin-top: 0.5rem;" :data-verified="message.isVerified()">
         <div class="flex-shrink-0 mr-5px">
             <img
             class="rounded-full avMessage"
@@ -7,8 +7,14 @@
             alt="@"
             />
         </div>
-        <div style="margin-top:-7px;"> 
-            <div><small><b>{{message.getUser()}}</b></small></div>
+        <div class="grow" style="margin-top:-7px;"> 
+            <div>
+                <small><b>{{message.getUser()}}</b></small>
+                <span class="pr-2 float-right">
+                    <small class="text-gray-700" :title="toAbsoluteTimeString(message.getTimestamp())">{{toRelativeTimeString(message.getTimestamp())}}</small>
+                    <span v-if="!message.isVerified()" class="pl-1">&#10008;</span>
+                </span>
+            </div>
             <div v-if="message.getContent()">
                 <div v-if="message.getContent().getType() == 'x'">
                     <button class="bg-primary text-white font-bold py-1 px-2 rounded-full" v-on:click="decrypt(message)">Click to decrypt</button>
@@ -31,4 +37,28 @@ const decrypt = async function(message) {
     console.log("decrypt");
     console.log(message);
 };
+function toAbsoluteTimeString(ti) {
+    var date = new Date(ti);
+    return date.toString()+'\n'+date.toUTCString();
+}
+function toRelativeTimeString(ti) {
+    ti -= stlib.Utils.utcTime();
+	var d = Math.floor(ti/86400000); ti -= d*86400000;  
+	var h = Math.floor(ti/3600000); ti -= h*3600000;
+	var m = Math.floor(ti/60000);
+	var str = null;
+	if(d > 0) str = `${d}d ${h}h ${m}m`;
+	else if(h > 0) str = `${h}h ${m}m`;
+	else str = `${m}m`;
+	return str;
+}
 </script>
+<style scoped>
+.message { background-color: lightsalmon; }
+.message[data-verified="true"] {
+    background-color: white;
+}
+</style>
+
+
+

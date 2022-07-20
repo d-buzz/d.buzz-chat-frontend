@@ -1,5 +1,4 @@
 <template>
-   <!-- w-full h-full flex flex-col justify-end --> 
   <div class="w-full h-full flex flex-col justify-end" v-if='messageKey'>
     <div id="messages" :key="messageKey" class="flex flex-col overflow-y-scroll">
         <Message v-for="message in displayableMessages" :message="message" />
@@ -62,14 +61,8 @@ async function initChat() {
             messageKey.value = conversation+"#"+data.messages.length;
             nextTick(() => {
                 var container = document.getElementById("messages");
-                if(container) {
-                    if(scrollToBottom) {
-                        container.scrollTop = container.scrollHeight;
-                    }
-                    else {
-                        container.scrollTop = scrollTop;
-                    }
-                }
+                if(container) container.scrollTop = scrollToBottom?
+                              container.scrollHeight:scrollTop;
             });
         };
         await updateMessages();
