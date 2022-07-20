@@ -20,7 +20,6 @@ declare module '@vue/runtime-core' {
     Message: typeof import('./components/Message.vue')['default']
     MessageReceived: typeof import('./components/MessageReceived.vue')['default']
     MessageSent: typeof import('./components/MessageSent.vue')['default']
-    PrivateChat: typeof import('./components/PrivateChat.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SideBar: typeof import('./components/SideBar.vue')['default']

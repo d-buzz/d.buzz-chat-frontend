@@ -1,27 +1,26 @@
 <template>
-    
-  <div class="w-full h-full flex flex-col justify-end overflow-y-scroll">
-    <div v-if='messageKey'>
-        <div :key="messageKey">
-            <Message v-for="message in displayableMessages" :message="message" />
-        </div>
-        <div class="flex mt-4 mb-2">
-          <input
-            class="shadow appearance-none border rounded-full w-[calc(100%-4rem)] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline grow"
-            id="Message"
-            v-model="messageText"
-            @keyup.enter="enterMessage(messageText)"
-            type="text"
-            placeholder="Message"
-          />
-       </div>
+   <!-- w-full h-full flex flex-col justify-end --> 
+  <div class="w-full h-full flex flex-col justify-end" v-if='messageKey'>
+    <div id="messages" :key="messageKey" class="flex flex-col overflow-y-scroll">
+        <Message v-for="message in displayableMessages" :message="message" />
     </div>
+    <div class="flex mt-4 mb-2">
+      <input
+        class="shadow appearance-none border border-gray-700 rounded-full w-[calc(100%-4rem)] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline grow"
+        id="Message"
+        v-model="messageText"
+        @keyup.enter="enterMessage(messageText)"
+        type="text"
+        placeholder="Message"
+      />
+   </div>
  </div>
 </template>
 <script setup>
 import { useAccountStore } from "../stores/account";
 import { useRoute } from "vue-router";
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue';
+
 const route = useRoute();
 const accountStore = useAccountStore();
 const displayableMessages = ref([]);
@@ -48,26 +47,35 @@ async function initChat() {
 
     if(conversation != null) {
         manager.setConversation(conversation);
-        var data = await manager.getSelectedConversations();
-        displayableMessages.value = data.messages;
-        messageKey.value = conversation+"#"+data.messages.length;
-        console.log("messageKey " + messageKey.value );
-
-        console.log("Messages are ");
-        console.log(data.messages);
-    
-        manager.onmessage = async function(message) {
-            var data2 = await manager.getSelectedConversations();
-            displayableMessages.value = data2.messages;
+       
+        var updateMessages = async () => {
+            var container = document.getElementById("messages");
+            var scrollToBottom = true;
+            var scrollTop = 0;
+            if(container) { 
+                scrollToBottom = isAtScrollBottom(container); 
+                scrollTop = container.scrollTop;
+            }
+            var data = await manager.getSelectedConversations();
+            data.messages.sort((a,b)=>a.getTimestamp()-b.getTimestamp());
+            displayableMessages.value = data.messages;
             messageKey.value = conversation+"#"+data.messages.length;
-
-            console.log("messageKey " + messageKey.value );
-            console.log("Messages are ");
-            console.log(data2.messages);
+            nextTick(() => {
+                var container = document.getElementById("messages");
+                if(container) {
+                    if(scrollToBottom) {
+                        container.scrollTop = container.scrollHeight;
+                    }
+                    else {
+                        container.scrollTop = scrollTop;
+                    }
+                }
+            });
         };
+        await updateMessages();
+       
+        manager.onmessage = updateMessages;
     }
-
-    //messageStore.loadUserMessages(user);
 }
 initChat();
 const enterMessage = async (message) => {
@@ -94,9 +102,16 @@ const enterMessage = async (message) => {
     await signableMessage.signWithKeychain('Posting');
     
     var result = await client.write(signableMessage);
-    console.log(result);
+    if(result.isSuccess()) {
+        document.getElementById("Message").value = "";
+    }
+    else { 
+        console.log(result);
+    }
 };
-
+function isAtScrollBottom(e) {
+    return e.scrollTop + e.clientHeight >= e.scrollHeight;
+}
 /*app.router.beforeEach(async (to, from, next) => {
     await initChat();
     next();
