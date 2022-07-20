@@ -42,7 +42,7 @@ function toAbsoluteTimeString(ti) {
     return date.toString()+'\n'+date.toUTCString();
 }
 function toRelativeTimeString(ti) {
-    ti -= stlib.Utils.utcTime();
+    ti = stlib.Utils.utcTime()-ti;
 	var d = Math.floor(ti/86400000); ti -= d*86400000;  
 	var h = Math.floor(ti/3600000); ti -= h*3600000;
 	var m = Math.floor(ti/60000);

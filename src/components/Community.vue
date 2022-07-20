@@ -1,5 +1,6 @@
 <template>
   <div class="w-full h-full flex flex-col justify-end" v-if='messageKey'>
+    <div class="flex border-b-1 font-bold">{{streamName}}</div>
     <div id="messages" :key="messageKey" class="flex flex-col overflow-y-scroll">
         <Message v-for="message in displayableMessages" :message="message" />
     </div>
@@ -24,6 +25,7 @@ const route = useRoute();
 const accountStore = useAccountStore();
 const displayableMessages = ref([]);
 const messageKey = ref("");
+const streamName = ref("");
 
 async function initChat() {
     var user = accountStore.account.name;
@@ -37,11 +39,17 @@ async function initChat() {
     var conversation = null;
     if(route.name === 'CommunityPath') {
         conversation = user2+'/'+route.params.path;
+        //var community = await stlib.Community.load(user2);
+        streamName.value = conversation;
+        /*if(community) {
+            streamName.value = 
+        }*/
     }
     else if(route.name === 'PrivateChat') {
         var users = [user, user2];
         users.sort();
         conversation = users.join('|');
+        streamName.value = conversation;
     }
 
     if(conversation != null) {

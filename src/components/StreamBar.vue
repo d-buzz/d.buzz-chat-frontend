@@ -1,12 +1,17 @@
 <template>
+    <NewUserMessageModal :show="newUserMessageModalOpen" @close="toggleNewUserMessageModalOpen(false)"></NewUserMessageModal>
+
   <div class="h-screen m-0 flex flex-col bg-primary text-secondary shadow-lg overflow-y-scroll border-r-1 pr-1 pl-1 w-200">
     
-    <b class="border-b-1">{{title}}</b>
-
     <div v-if="isCommunity">
+        <b class="border-b-1">{{title}}</b>
         <Stream v-for="stream in streams" :stream="stream"/>
     </div>
     <div v-else>
+        <div>
+            <b class="border-b-1">{{title}}</b>
+            <button class="float-right px-1" @click="toggleNewUserMessageModalOpen">+</button>
+        </div>
         <Conversation v-for="conversation in messageStore.conversations" :conversation="conversation" :username="username"/>
     </div>
   </div>
@@ -23,6 +28,12 @@ const username = accountStore.account.name;
 const streams = ref([]);
 const title = ref("Direct Messages");
 const isCommunity = ref(false);
+
+let newUserMessageModalOpen = ref(false);
+const toggleNewUserMessageModalOpen = () => {
+  newUserMessageModalOpen.value = !newUserMessageModalOpen.value;
+};
+
 async function initConversations(route) {
     console.log(route);
     console.log("load community " + route.name);
