@@ -13,7 +13,12 @@ const routes: Array<RouteRecordRaw> = [
     name: "Control Panel",
     component: () => import("./ControlPanel.vue"),
   },
-    {
+  {
+    path: "/s/:user",
+    name: "CommunitySettings",
+    component: () => import("./CommunitySettings.vue"),
+  },
+  {
     path: "/c/:user",
     name: "Community",
     component: () => import("./Community.vue"),

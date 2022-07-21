@@ -6,6 +6,8 @@ import '@vue/runtime-core'
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Community: typeof import('./components/Community.vue')['default']
+    'Community (copy)': typeof import('./components/Community (copy).vue')['default']
+    CommunitySettings: typeof import('./components/CommunitySettings.vue')['default']
     ControlPanel: typeof import('./components/ControlPanel.vue')['default']
     Conversation: typeof import('./components/Conversation.vue')['default']
     Dialog: typeof import('@headlessui/vue')['Dialog']
@@ -17,7 +19,6 @@ declare module '@vue/runtime-core' {
     IconTooling: typeof import('./components/icons/IconTooling.vue')['default']
     Landing: typeof import('./components/Landing.vue')['default']
     LoginModal: typeof import('./components/LoginModal.vue')['default']
-    'LoginModal (copy)': typeof import('./components/LoginModal (copy).vue')['default']
     Message: typeof import('./components/Message.vue')['default']
     MessageReceived: typeof import('./components/MessageReceived.vue')['default']
     MessageSent: typeof import('./components/MessageSent.vue')['default']

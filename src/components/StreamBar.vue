@@ -4,13 +4,20 @@
   <div class="h-screen m-0 flex flex-col bg-primary text-secondary shadow-lg overflow-y-scroll border-r-1 pr-1 pl-1 w-200">
     
     <div v-if="isCommunity">
-        <b class="border-b-1">{{title}}</b>
+        <div class="flex justify-between">
+            <b class="border-b-1">{{title}}</b>
+            <router-link :to="`/s/${route.params.user}`">
+               <span class="oi oi-cog"></span>
+            </router-link>
+        </div>
         <Stream v-for="stream in streams" :stream="stream"/>
     </div>
     <div v-else>
-        <div>
+        <div class="flex justify-between">
             <b class="border-b-1">{{title}}</b>
-            <button class="float-right px-1" @click="toggleNewUserMessageModalOpen">+</button>
+            <button class="text-sm" @click="toggleNewUserMessageModalOpen">
+                <span class="oi oi-plus"></span>
+            </button>
         </div>
         <Conversation v-for="conversation in messageStore.conversations" :conversation="conversation" :username="username"/>
     </div>
