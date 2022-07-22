@@ -2985,6 +2985,11 @@ vue-router@^4.1.0:
   dependencies:
     "@vue/devtools-api" "^6.1.4"
 
+vue3-draggable@^2.0.9:
+  version "2.0.9"
+  resolved "https://registry.yarnpkg.com/vue3-draggable/-/vue3-draggable-2.0.9.tgz#cca733432dbca51c0ba88c5c33a8843f26b8f8c9"
+  integrity sha512-OpjCSzGpkXsraBJzYrMS5LKXHThb0r+V8zItUNOZF7gZgdH0Cg2IL3XT0x4IhJdMaLvzRZCXE6UQj/459npJIw==
+
 vue@^3.2.33:
   version "3.2.37"
   resolved "https://registry.yarnpkg.com/vue/-/vue-3.2.37.tgz#da220ccb618d78579d25b06c7c21498ca4e5452e"

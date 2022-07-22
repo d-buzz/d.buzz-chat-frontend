@@ -3,16 +3,26 @@
     <div class="flex border-b-1 font-bold">{{pageTitle}}</div>
 
     <div>
-        <button class="btn"><span class="oi oi-plus"></span> text</button>
-        <button class="btn"><span class="oi oi-plus"></span> category</button>
-        <button class="btn"><span class="oi oi-plus"></span> info</button>
-        <button class="btn"><span class="oi oi-chevron-top"></span></button>
-        <button class="btn"><span class="oi oi-chevron-bottom"></span></button>
-        <button class="btn"><span class="oi oi-x"></span></button>
+        <button class="btn" @click="addText()"><span class="oi oi-plus"></span> text</button>
+        <button class="btn" @click="addCategory()"><span class="oi oi-plus"></span> category</button>
+        <button class="btn" @click="addInfo()"><span class="oi oi-plus"></span> info</button>
+        <button class="btn" @click="moveUp()"><span class="oi oi-chevron-top"></span></button>
+        <button class="btn" @click="moveDown()"><span class="oi oi-chevron-bottom"></span></button>
+        <button class="btn" @click="remove()"><span class="oi oi-x"></span></button>
     </div>
 
+    <Draggable v-model="streams" :key="messageKey">
+        <template v-slot:item="{item}">
+            <div class="item border rounded-md border-gray-700 my-1 p-1"
+                @click="select(item)"
+                :data-selected="item.selected"
+            >{{item.getName()}}</div>
+        </template>
+    </Draggable>
+
+
     <div v-for="stream in streams" :stream="stream">
-        <div class="border rounded-md border-gray-700 my-1 p-1">{{stream.getName()}}</div>
+        
     </div>
 
     <div>
@@ -35,6 +45,7 @@
  </div>
 </template>
 <script setup>
+import Draggable from "vue3-draggable";
 import { useAccountStore } from "../stores/account";
 import { useRoute } from "vue-router";
 import { ref, nextTick } from 'vue';
@@ -44,19 +55,55 @@ const accountStore = useAccountStore();
 const displayableMessages = ref([]);
 const messageKey = ref("");
 
+var community = null;
 const pageTitle = ref("");
 const streams = ref([]);
 
+function update() {
+    messageKey.value = community.getName()+'#'+stlib.Utils.utcTime();
+}
+
+function select(item) {
+    for(var stream of streams.value) stream.selected = false;
+    item.selected = true;
+}
+function addText() {
+    community.setStreams(streams.value);
+    community.newTextStream("Text");
+    update();
+}
+function addCategory() {
+    community.setStreams(streams.value);
+    community.newCategory("Category");
+    update();
+}
+function addInfo() {
+    community.setStreams(streams.value);
+    community.newCategory("About", '/about');
+    update();
+}
+function moveUp() {
+    //community.newCategory("About", '/about');
+}
+function moveDown() {
+    //community.newCategory("About", '/about');
+}
+function remove() {
+    
+}
 async function initChat() {
     var user = accountStore.account.name;
     if(user == null) return; //TODO ask to login
     var user2 = route.params.user;
     if(user2 == null || user2 == "") return;
 
-    var community = await stlib.Community.load(user2);
+    community = await stlib.Community.load(user2);
     if(community) {
+        community = community.copy();
+
         pageTitle.value = community.getTitle();
         streams.value = community.getStreams();
+        update();
     }
     
     /*const manager = getManager();
@@ -142,3 +189,10 @@ function isAtScrollBottom(e) {
     next();
 });*/
 </script>
+<style>
+.item[data-selected="true"] {
+    color: white;
+    background-color: teal;
+}
+
+</style>

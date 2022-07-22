@@ -6,7 +6,6 @@ import '@vue/runtime-core'
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Community: typeof import('./components/Community.vue')['default']
-    'Community (copy)': typeof import('./components/Community (copy).vue')['default']
     CommunitySettings: typeof import('./components/CommunitySettings.vue')['default']
     ControlPanel: typeof import('./components/ControlPanel.vue')['default']
     Conversation: typeof import('./components/Conversation.vue')['default']

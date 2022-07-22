@@ -109,17 +109,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Community = void 0;
 const data_stream_1 = require("./data-stream");
+const data_path_1 = require("./data-path");
 const utils_1 = require("./utils");
 class Community {
-    getName() { return this.communityData.name; }
-    getTitle() { return this.communityData.title; }
-    getAbout() { return this.communityData.about; }
-    getDescription() { return this.communityData.description; }
-    getRules() { return this.communityData.flag_text; }
-    getSettings() { return this.communityData.settings; }
-    getStreams() { return this.streams; }
-    setStreams(streams) { this.streams = streams; }
-    addStream(stream) { this.streams.push(stream); }
     initialize(communityData) {
         this.communityData = communityData;
         var settings = this.getSettings();
@@ -130,6 +122,50 @@ class Community {
         this.streams = [];
         for (var stream of settings.streams)
             this.streams.push(data_stream_1.DataStream.fromJSON(this.getName(), stream));
+    }
+    getName() { return this.communityData.name; }
+    getTitle() { return this.communityData.title; }
+    getAbout() { return this.communityData.about; }
+    getDescription() { return this.communityData.description; }
+    getRules() { return this.communityData.flag_text; }
+    getSettings() { return this.communityData.settings; }
+    getStreams() { return this.streams; }
+    setStreams(streams) { this.streams = streams; }
+    addStream(stream) { this.streams.push(stream); }
+    newCategory(name) {
+        var category = data_stream_1.DataStream.fromJSON(this.getName(), [name]);
+        this.addStream(category);
+        return category;
+    }
+    newTextStream(name) {
+        var groupId = this.findFreeTextStreamId();
+        if (groupId === -1)
+            throw "maximum limit of " + Community.MAX_TEXT_STREAMS + " text streams reached";
+        var stream = data_stream_1.DataStream.fromJSON(this.getName(), [name, '' + groupId]);
+        this.addStream(stream);
+        return stream;
+    }
+    newInfo(name, path) {
+        var info = data_stream_1.DataStream.fromJSON(this.getName(), [name, path]);
+        this.addStream(info);
+        return info;
+    }
+    findFreeTextStreamId() {
+        var name = this.getName();
+        var streams = this.getStreams();
+        loop: for (var i = 0; i < Community.MAX_TEXT_STREAMS; i++) {
+            for (var stream of streams) {
+                if (stream.hasPath()) {
+                    var path = stream.getPath();
+                    if (path.getType() === data_path_1.DataPath.TYPE_TEXT &&
+                        path.getUser() === name &&
+                        path.getPath() === '' + i)
+                        continue loop;
+                }
+            }
+            return i;
+        }
+        return -1;
     }
     /*canUpdateSettings(user: string): boolean {
         return true;
@@ -159,6 +195,12 @@ class Community {
             settings.streams.push(stream.toJSON());
         return this.updateSettingsCustomJSON(settings.streams);
     }
+    copy() {
+        var copy = new Community();
+        copy.communityData = this.communityData;
+        copy.streams = [...this.streams];
+        return copy;
+    }
     static defaultStreams(community) {
         return [
             data_stream_1.DataStream.fromJSON(community, ["About", "/about"]),
@@ -184,8 +226,9 @@ class Community {
     }
 }
 exports.Community = Community;
+Community.MAX_TEXT_STREAMS = 64;
 
-},{"./data-stream":14,"./utils":20}],3:[function(require,module,exports){
+},{"./data-path":13,"./data-stream":14,"./utils":20}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Preferences = exports.Emote = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.Encoded = exports.JSONContent = exports.decodedMessage = exports.encodedMessage = exports.preferences = exports.emote = exports.quote = exports.thread = exports.text = exports.fromJSON = exports.type = void 0;
