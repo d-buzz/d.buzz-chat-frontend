@@ -193,12 +193,14 @@ class Community {
         settings.streams = [];
         for (var stream of this.streams)
             settings.streams.push(stream.toJSON());
-        return this.updateSettingsCustomJSON(settings.streams);
+        return this.updateSettingsCustomJSON(settings);
     }
     copy() {
         var copy = new Community();
         copy.communityData = this.communityData;
-        copy.streams = [...this.streams];
+        copy.streams = [];
+        for (var stream of this.streams)
+            copy.streams.push(data_stream_1.DataStream.fromJSON(stream.community, stream.toJSON()));
         return copy;
     }
     static defaultStreams(community) {
@@ -1193,16 +1195,17 @@ const utils_1 = require("./utils");
 const signable_message_1 = require("./signable-message");
 const permission_set_1 = require("./permission-set");
 const data_stream_1 = require("./data-stream");
+const data_path_1 = require("./data-path");
 if (window !== undefined) {
     window.stlib = {
-        Client: client_1.Client, Community: community_1.Community, Content: imports_1.Content, DataStream: data_stream_1.DataStream, DisplayableMessage: displayable_message_1.DisplayableMessage,
+        Client: client_1.Client, Community: community_1.Community, Content: imports_1.Content, DataStream: data_stream_1.DataStream, DataPath: data_path_1.DataPath, DisplayableMessage: displayable_message_1.DisplayableMessage,
         PermissionSet: permission_set_1.PermissionSet, MessageManager: message_manager_1.MessageManager, Utils: utils_1.Utils, SignableMessage: signable_message_1.SignableMessage,
         newSignableMessage: signable_message_1.SignableMessage.create,
         utcTime: utils_1.Utils.utcTime
     };
 }
 
-},{"./client":1,"./community":2,"./content/imports":6,"./data-stream":14,"./displayable-message":15,"./message-manager":16,"./permission-set":17,"./signable-message":18,"./utils":20}],20:[function(require,module,exports){
+},{"./client":1,"./community":2,"./content/imports":6,"./data-path":13,"./data-stream":14,"./displayable-message":15,"./message-manager":16,"./permission-set":17,"./signable-message":18,"./utils":20}],20:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }

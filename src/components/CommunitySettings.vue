@@ -11,23 +11,56 @@
         <button class="btn" @click="remove()"><span class="oi oi-x"></span></button>
     </div>
 
-    <Draggable v-model="streams" :key="messageKey">
-        <template v-slot:item="{item}">
-            <div class="item border rounded-md border-gray-700 my-1 p-1"
-                @click="select(item)"
-                :data-selected="item.selected"
-            >{{item.getName()}}</div>
-        </template>
-    </Draggable>
+    <div class="grid grid-cols-2 gap-2">
 
+        <div>
 
-    <div v-for="stream in streams" :stream="stream">
+            <!--<label class="block text-sm font-medium text-gray-700">Streams: </label>-->
+            <Draggable v-model="streams" :key="messageKey">
+                <template v-slot:item="{item}">
+                    <div class="item border rounded-md border-gray-700 my-1 p-1"
+                        @mousedown="select(item)"
+                        :data-selected="item.selected"
+                    >{{item.getName()}}</div>
+                </template>
+            </Draggable>
+
+        </div>
+
+        <div> 
+            <div>
+                <label for="streamname" class="block text-sm font-medium text gray-700">            Stream name: 
+                </label>
+                <input id="streamname" name="streamname" type="text" class="inputText1" placeholder="Stream Name" @input="setStreamName">    
+            </div>
+
+            <div>
+                <label for="datapath" class="block text-sm font-medium text gray-700">            Data path: 
+                </label>
+                <input id="datapath" name="datapath" type="text" class="inputText1" placeholder="Data Path" @input="setDataPath"> 
+                   
+            </div>
+
+            <!--<div>
+                <label for="readpermissions" class="block text-sm font-medium text gray-700">            Read Permissions: 
+                </label>
+                <input id="readpermissions" name="readpermissions" type="text" class="inputText1" placeholder="Read Permissions" > 
+                   
+            </div>
         
+            <div>
+                <label for="writepermissions" class="block text-sm font-medium text gray-700">            Write Permissions: 
+                </label>
+                <input id="writepermissions" name="writepermissions" type="text" class="inputText1" placeholder="Write Permissions" > 
+                   
+            </div>-->
+        </div>
     </div>
 
+    <div><small>{{updateMessage}}</small></div>
     <div>
-        <button class="btn">Update</button>
-        <button class="btn2"><span class="oi oi-reload"></span> Reset</button>
+        <button class="btn" @click="updateSettings">Update</button>
+        <button class="btn2" @click="resetSettings"><span class="oi oi-reload"></span> Reset</button>
     </div>
     <!--<div id="messages" :key="messageKey" class="flex flex-col overflow-y-scroll">
         <Message v-for="message in displayableMessages" :message="message" />
@@ -59,13 +92,51 @@ var community = null;
 const pageTitle = ref("");
 const streams = ref([]);
 
+const updateMessage = ref("");
+function updateSettings() {
+    var user = accountStore.account.name;
+    if(user == null) return;
+    var json = community.updateStreamsCustomJSON();
+    updateMessage.value = "";
+    window.hive_keychain.requestCustomJson(user, "community", "Posting",
+         JSON.stringify(json), "Update Community Data", (result)=>{
+        if(result.success) updateMessage.value="Succesfully updated settings."
+        else updateMessage.value="Error: " + result.error;
+    });
+}
+function resetSettings() {
+    
+}
 function update() {
     messageKey.value = community.getName()+'#'+stlib.Utils.utcTime();
 }
-
+function setStreamName(event) {
+    var item = getSelected();
+    if(item == null) return;
+    var value = event.target.value;
+    item.name = value;
+} 
+function setDataPath(event) {
+    var item = getSelected();
+    if(item == null) return;
+    var value = event.target.value;
+    item.dataPath = stlib.DataPath.fromString(value, item.community);
+}
 function select(item) {
     for(var stream of streams.value) stream.selected = false;
     item.selected = true;
+    var streamname = document.getElementById("streamname");
+    var datapath = document.getElementById("datapath");
+    //var readpermissions = document.getElementById("readpermissions");
+    //var writepermissions = document.getElementById("writepermissions");
+    streamname.value = item.getName();
+    datapath.value = item.getCompactPath();
+    //readpermissions.value = item.getReadPermissions().toJSON();
+    //writepermissions.value = item.getWritePermissions().toJSON();
+}
+function getSelected() {
+    for(var stream of streams.value) if(stream.selected) return stream;
+    return null;
 }
 function addText() {
     community.setStreams(streams.value);
@@ -83,14 +154,39 @@ function addInfo() {
     update();
 }
 function moveUp() {
-    //community.newCategory("About", '/about');
+    for(var i = 1; i < streams.value.length; i++) {
+        if(streams.value[i].selected) {
+            swap(streams.value, i-1, i);
+            update();
+            return;
+        }
+    }
 }
 function moveDown() {
-    //community.newCategory("About", '/about');
+    for(var i = 0; i < streams.value.length-1; i++) {
+        if(streams.value[i].selected) {
+            swap(streams.value, i, i+1);
+            update();
+            return;
+        }
+    }
 }
 function remove() {
-    
+    for(var i = 0; i < streams.value.length; i++) {
+        if(streams.value[i].selected) {
+            streams.value.splice(i, 1);
+            update();
+            return;
+        }
+    }
 }
+function swap(array,x,y) {
+    var tmp = array[x];
+    array[x] = array[y];
+    array[y] = tmp;
+    return array;
+}
+
 async function initChat() {
     var user = accountStore.account.name;
     if(user == null) return; //TODO ask to login
@@ -103,6 +199,7 @@ async function initChat() {
 
         pageTitle.value = community.getTitle();
         streams.value = community.getStreams();
+        if(streams.value.length > 0) select(streams.value[0]);
         update();
     }
     
