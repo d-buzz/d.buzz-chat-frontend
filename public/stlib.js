@@ -167,6 +167,22 @@ class Community {
         }
         return -1;
     }
+    findTextStreamById(id) {
+        var name = this.getName();
+        var streams = this.getStreams();
+        loop: for (var i = 0; i < Community.MAX_TEXT_STREAMS; i++) {
+            for (var stream of streams) {
+                if (stream.hasPath()) {
+                    var path = stream.getPath();
+                    if (path.getType() === data_path_1.DataPath.TYPE_TEXT &&
+                        path.getUser() === name &&
+                        path.getPath() === id)
+                        return stream;
+                }
+            }
+        }
+        return null;
+    }
     /*canUpdateSettings(user: string): boolean {
         return true;
     }*/

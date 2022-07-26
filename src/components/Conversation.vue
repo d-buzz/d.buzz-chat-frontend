@@ -14,7 +14,9 @@
         </div>
     </router-link>
 </template>
-<script setup>
+<script setup type="ts">
+import { useAccountStore } from "../stores/account";
+const accountStore = useAccountStore();
 const props = defineProps({
     username: String,
     conversation: String,
@@ -22,13 +24,20 @@ const props = defineProps({
 var iconUsername = "";
 var users = "";
 function initConversation() {
-    var list = props.conversation.split('|');
-    var i = list.indexOf(props.username);
-    var iconIndex = i!=0?0:1;
-    if(iconIndex < list.length) iconUsername = list[iconIndex];
-    for(var j = 0; j < list.length; j++) {
-        if(j == i) continue;
-        users += (users.length>0?',':'')+list[j];
+    var conversation = props.conversation;
+    if(conversation === undefined) {
+        iconUsername = props.username;
+        users = props.username;
+    }
+    else {
+        var list = conversation.split('|');
+        var i = list.indexOf(props.username);
+        var iconIndex = i!=0?0:1;
+        if(iconIndex < list.length) iconUsername = list[iconIndex];
+        for(var j = 0; j < list.length; j++) {
+            if(j == i) continue;
+            users += (users.length>0?',':'')+list[j];
+        }
     }
 }
 initConversation();

@@ -5,9 +5,21 @@
         </div>
         <div v-else-if="stream.getPathType() === 't'">
             <router-link :to="`/${path}`">
-                    <div>
-                        <div class="pl-2"><b>{{stream.getName()}}</b></div>
-                    </div>
+                <div>
+                    <div class="pl-2"><b>{{stream.getName()}}</b></div>
+                </div>
+            </router-link>
+        </div>
+        <div v-else-if="stream.getPathType() === 'i'">
+            <a v-if="path.startsWith('https://')" :href="path" target="_blank" rel="noreferrer noopener">
+                <div>
+                    <div><b>{{stream.getName()}}</b></div>
+                </div>
+            </a>
+            <router-link v-else :to="`/${path}`">
+                <div>
+                    <div><b>{{stream.getName()}}</b></div>
+                </div>
             </router-link>
         </div>
         <div v-else>
@@ -17,15 +29,20 @@
         </div>
     </div>
 </template>
-<script setup>
+<script setup type="ts">
 const props = defineProps({
     stream: Object
 });
 function getPath() {
     var path = props.stream.getPath();
     if(path==null) return '';
-    if(path.getType() === 't') {
+    if(path.getType() === 't')
         return 't/'+path.getUser()+'/'+path.getPath();
+    if(path.getType() === 'i') {
+        if(path.getPath() === 'created')
+            return 'https://peakd.com/c/'+path.getUser()+'/created';
+
+        return 'i/'+path.getUser()+'/'+path.getPath();
     }
     return '';
 }

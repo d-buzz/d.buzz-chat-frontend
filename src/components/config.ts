@@ -29,6 +29,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("./Community.vue"),
   },
   {
+    path: "/i/:user/about",
+    name: "CommunityAbout",
+    component: () => import("./info/CommunityAbout.vue"),
+  },
+  {
     path: "/p/:user",
     name: "PrivateChat",
     component: () => import("./Community.vue"),

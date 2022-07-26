@@ -16,7 +16,7 @@
    </div>
  </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import { useAccountStore } from "../stores/account";
 import { useRoute } from "vue-router";
 import { ref, nextTick } from 'vue';
@@ -39,11 +39,9 @@ async function initChat() {
     var conversation = null;
     if(route.name === 'CommunityPath') {
         conversation = user2+'/'+route.params.path;
-        //var community = await stlib.Community.load(user2);
-        streamName.value = conversation;
-        /*if(community) {
-            streamName.value = 
-        }*/
+        var community = await stlib.Community.load(user2);
+        var stream = (community)?community.findTextStreamById(''+route.params.path):null;
+        streamName.value = stream?stream.getName():conversation;
     }
     else if(route.name === 'PrivateChat') {
         var users = [user, user2];
@@ -51,7 +49,7 @@ async function initChat() {
         conversation = users.join('|');
         streamName.value = conversation;
     }
-
+    
     if(conversation != null) {
         manager.setConversation(conversation);
        
