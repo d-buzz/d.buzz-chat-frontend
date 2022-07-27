@@ -5,6 +5,7 @@ import '@vue/runtime-core'
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    AddTitleModal: typeof import('./components/settings/AddTitleModal.vue')['default']
     Community: typeof import('./components/Community.vue')['default']
     CommunityAbout: typeof import('./components/info/CommunityAbout.vue')['default']
     CommunitySettings: typeof import('./components/CommunitySettings.vue')['default']
@@ -22,7 +23,6 @@ declare module '@vue/runtime-core' {
     Message: typeof import('./components/Message.vue')['default']
     MessageReceived: typeof import('./components/MessageReceived.vue')['default']
     MessageSent: typeof import('./components/MessageSent.vue')['default']
-    'MessageSent (copy)': typeof import('./components/MessageSent (copy).vue')['default']
     NewUserMessageModal: typeof import('./components/NewUserMessageModal.vue')['default']
     PermissionSet: typeof import('./components/PermissionSet.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

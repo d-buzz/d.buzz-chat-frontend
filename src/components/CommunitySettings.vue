@@ -1,4 +1,5 @@
 <template>
+  
   <div class="w-full h-full flex flex-col">
     <div class="flex border-b-1 font-bold">{{pageTitle}}</div>
 
@@ -45,12 +46,12 @@
 
             <div v-if="selected">
                 <label class="block text-sm font-medium text gray-700">Read Permissions:</label>
-                <PermissionSet :set="selected.readSet" :key="messageKey"/>
+                <PermissionSet :set="selected.readSet" :key="selectKey"/>
             </div>
         
             <div v-if="selected">
                 <label class="block text-sm font-medium text gray-700">Write Permissions:</label>
-                <PermissionSet :set="selected.writeSet" :key="messageKey"/>
+                <PermissionSet :set="selected.writeSet" :key="selectKey"/>
             </div>
         </div>
     </div>
@@ -85,6 +86,7 @@ const route = useRoute();
 const accountStore = useAccountStore();
 const displayableMessages = ref([]);
 const messageKey = ref("");
+const selectKey = ref("");
 
 var community = null;
 const pageTitle = ref("");
@@ -123,6 +125,7 @@ function setDataPath(event) {
 }
 function select(item) {
     for(var stream of streams.value) stream.selected = false;
+    if(item == null) return;    
     item.selected = true;
     var streamname = document.getElementById("streamname");
     var datapath = document.getElementById("datapath");
@@ -133,7 +136,7 @@ function select(item) {
     //readpermissions.value = item.getReadPermissions().toJSON();
     //writepermissions.value = item.getWritePermissions().toJSON();
     selected.value = item;
-    update();
+    selectKey.value = community.getName()+'#'+stlib.Utils.utcTime();
 }
 function getSelected() {
     for(var stream of streams.value) if(stream.selected) return stream;
@@ -141,17 +144,17 @@ function getSelected() {
 }
 function addText() {
     community.setStreams(streams.value);
-    community.newTextStream("Text");
+    select(community.newTextStream("Text"));
     update();
 }
 function addCategory() {
     community.setStreams(streams.value);
-    community.newCategory("Category");
+    select(community.newCategory("Category"));
     update();
 }
 function addInfo() {
     community.setStreams(streams.value);
-    community.newCategory("About", '/about');
+    select(community.newCategory("About", '/about'));
     update();
 }
 function moveUp() {

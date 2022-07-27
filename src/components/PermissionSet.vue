@@ -1,4 +1,5 @@
 <template>
+    <AddTitleModal :show="addTitleModal" @oninput="onAddTitle" @close="closeModal()"></AddTitleModal>
     <div>
         <select class="inputSelect1" v-model="set.role">
             <option value="">Any</option>
@@ -19,11 +20,15 @@
 const props = defineProps({
     set: Object
 });
-console.log("set is ", props.set);
+const addTitleModal = ref(false);
 const set = props.set;
 function addTitle() {
-
+    addTitleModal.value = true;
 }
+function onAddTitle(title) {
+    set.addTitle(title);
+}
+function closeModal() { addTitleModal.value = false; }
 function setJSON(set) {
     return set.toJSON();
 }
