@@ -41,19 +41,17 @@
                    
             </div>
 
-            <!--<div>
-                <label for="readpermissions" class="block text-sm font-medium text gray-700">            Read Permissions: 
-                </label>
-                <input id="readpermissions" name="readpermissions" type="text" class="inputText1" placeholder="Read Permissions" > 
-                   
+            
+
+            <div v-if="selected">
+                <label class="block text-sm font-medium text gray-700">Read Permissions:</label>
+                <PermissionSet :set="selected.readSet" :key="messageKey"/>
             </div>
         
-            <div>
-                <label for="writepermissions" class="block text-sm font-medium text gray-700">            Write Permissions: 
-                </label>
-                <input id="writepermissions" name="writepermissions" type="text" class="inputText1" placeholder="Write Permissions" > 
-                   
-            </div>-->
+            <div v-if="selected">
+                <label class="block text-sm font-medium text gray-700">Write Permissions:</label>
+                <PermissionSet :set="selected.writeSet" :key="messageKey"/>
+            </div>
         </div>
     </div>
 
@@ -91,6 +89,7 @@ const messageKey = ref("");
 var community = null;
 const pageTitle = ref("");
 const streams = ref([]);
+const selected = ref(null);
 
 const updateMessage = ref("");
 function updateSettings() {
@@ -133,6 +132,8 @@ function select(item) {
     datapath.value = item.getCompactPath();
     //readpermissions.value = item.getReadPermissions().toJSON();
     //writepermissions.value = item.getWritePermissions().toJSON();
+    selected.value = item;
+    update();
 }
 function getSelected() {
     for(var stream of streams.value) if(stream.selected) return stream;

@@ -6,9 +6,7 @@ import '@vue/runtime-core'
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Community: typeof import('./components/Community.vue')['default']
-    'Community (copy)': typeof import('./components/Community (copy).vue')['default']
     CommunityAbout: typeof import('./components/info/CommunityAbout.vue')['default']
-    CommunityInfo: typeof import('./components/CommunityInfo.vue')['default']
     CommunitySettings: typeof import('./components/CommunitySettings.vue')['default']
     ControlPanel: typeof import('./components/ControlPanel.vue')['default']
     Conversation: typeof import('./components/Conversation.vue')['default']
@@ -24,7 +22,9 @@ declare module '@vue/runtime-core' {
     Message: typeof import('./components/Message.vue')['default']
     MessageReceived: typeof import('./components/MessageReceived.vue')['default']
     MessageSent: typeof import('./components/MessageSent.vue')['default']
+    'MessageSent (copy)': typeof import('./components/MessageSent (copy).vue')['default']
     NewUserMessageModal: typeof import('./components/NewUserMessageModal.vue')['default']
+    PermissionSet: typeof import('./components/PermissionSet.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SideBar: typeof import('./components/SideBar.vue')['default']
