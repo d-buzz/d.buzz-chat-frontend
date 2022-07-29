@@ -97,6 +97,7 @@ const updateMessage = ref("");
 function updateSettings() {
     var user = accountStore.account.name;
     if(user == null) return;
+    community.setStreams(streams.value);
     var json = community.updateStreamsCustomJSON();
     updateMessage.value = "";
     window.hive_keychain.requestCustomJson(user, "community", "Posting",

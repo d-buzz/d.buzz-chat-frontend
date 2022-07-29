@@ -38,6 +38,16 @@ const routes: Array<RouteRecordRaw> = [
     name: "PrivateChat",
     component: () => import("./Community.vue"),
   },
+  {
+    path: "/p/:user/:user2",
+    name: "PrivateChat2",
+    component: () => import("./Community.vue"),
+  },
+  {
+    path: "/p/:user/:user2/:user3",
+    name: "PrivateChat3",
+    component: () => import("./Community.vue"),
+  },
 ];
 
 export const config = {

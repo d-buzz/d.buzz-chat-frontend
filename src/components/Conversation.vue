@@ -1,5 +1,5 @@
 <template>
-    <router-link :to="`/p/${iconUsername}`">
+    <router-link :to="`/p/${link}`">
         <div class="flex pt-1">
             <div class="flex-shrink-0 mr-5px">
                 <img
@@ -21,23 +21,25 @@ const props = defineProps({
     username: String,
     conversation: String,
 });
-var iconUsername = "";
-var users = "";
+const link = ref("");
+const iconUsername = ref("");
+const users = ref("");
 function initConversation() {
     var conversation = props.conversation;
     if(conversation === undefined) {
-        iconUsername = props.username;
-        users = props.username;
+        iconUsername.value = props.username;
+        users.value = props.username;
     }
     else {
         var list = conversation.split('|');
         var i = list.indexOf(props.username);
         var iconIndex = i!=0?0:1;
-        if(iconIndex < list.length) iconUsername = list[iconIndex];
+        if(iconIndex < list.length) iconUsername.value = list[iconIndex];
         for(var j = 0; j < list.length; j++) {
             if(j == i) continue;
-            users += (users.length>0?',':'')+list[j];
+            link.value += (link.value.length>0?'/':'')+list[j];
         }
+        users.value = link.value.replaceAll('/', ', ');
     }
 }
 initConversation();

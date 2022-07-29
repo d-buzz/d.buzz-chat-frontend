@@ -43,8 +43,12 @@ async function initChat() {
         var stream = (community)?community.findTextStreamById(''+route.params.path):null;
         streamName.value = stream?stream.getName():conversation;
     }
-    else if(route.name === 'PrivateChat') {
+    else if(route.name.startsWith('PrivateChat')) {
         var users = [user, user2];
+        if(route.params.user2) {
+            users.push(route.params.user2);
+            if(route.params.user3) users.push(route.params.user3);
+        }
         users.sort();
         conversation = users.join('|');
         streamName.value = conversation;
@@ -94,6 +98,10 @@ const enterMessage = async (message) => {
     }
     else {
         conversation = [user, user2];
+        if(route.params.user2) {
+            conversation.push(route.params.user2);
+            if(route.params.user3) conversation.push(route.params.user3);
+        }
         textMsg = await textMsg.encodeWithKeychain(user, conversation, "Posting"); 
     }
 
