@@ -766,6 +766,7 @@ class LoginWithKeychain extends LoginMethod {
 exports.LoginWithKeychain = LoginWithKeychain;
 class MessageManager {
     constructor() {
+        this.userPreferences = null;
         this.joined = {};
         this.cachedUserMessages = null;
         this.selectedConversation = null;
@@ -831,9 +832,24 @@ class MessageManager {
         if (this.user == user)
             return;
         if (this.user != null) {
+            this.userPreferences = null;
         }
         this.user = user;
         this.join(user);
+    }
+    getPreferences() {
+        return __awaiter(this, void 0, void 0, function* () {
+            var p = this.userPreferences;
+            if (p != null)
+                return p;
+            if (this.user == null)
+                return null;
+            p = yield utils_1.Utils.getAccountPreferences(this.user);
+            if (p === null)
+                p = imports_1.Content.preferences();
+            this.userPreferences = p;
+            return p;
+        });
     }
     join(room) {
         if (room == null)
@@ -1292,7 +1308,7 @@ class Utils {
                         }
                         else
                             throw res.getError();
-                        return null;
+                        throw "failed to load";
                     }));
                 });
             }

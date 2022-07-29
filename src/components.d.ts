@@ -32,7 +32,6 @@ declare module '@vue/runtime-core' {
     SideBarLoginIcon: typeof import('./components/SideBarLoginIcon.vue')['default']
     Stream: typeof import('./components/Stream.vue')['default']
     StreamBar: typeof import('./components/StreamBar.vue')['default']
-    Tab: typeof import('@headlessui/vue')['Tab']
     TransitionChild: typeof import('@headlessui/vue')['TransitionChild']
     TransitionRoot: typeof import('@headlessui/vue')['TransitionRoot']
   }

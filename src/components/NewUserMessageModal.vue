@@ -79,7 +79,52 @@
 
 
     </TabPanel>
-    <TabPanel>Content 2</TabPanel>
+    <TabPanel>
+        <div>
+            <button class="btn float-right" @click="generateKey()">Generate</button>
+            <small>Enter or generate a public key.</small>
+        </div>
+        <div class="mt-1">
+            <label class="text-sm font-medium text-gray-700 mb-1"> Group public key: </label>
+            <div class="flex"><input id="grouppublickey" type="text" class="inputText1" placeholder="STM123... group public key">
+            <button class="btn py-2 ml-1 my-0" title="copy to clipboard" @click="copyToClipboard('grouppublickey')"><span class="oi oi-clipboard"></span></button>
+            </div>
+        </div> 
+
+        <hr class="mt-3">
+
+        <div class="mt-1">
+            <small>Select how you would like to store the private key:</small>
+            <div class="flex flex-col">
+                <div>
+                    <input type="radio" id="store_none" name="store_type" value="none">
+                    <label for="store_none"> Do not store.</label>
+                </div>
+                <div>
+                    <input type="radio" id="store_local" name="store_type" value="local">
+                    <label for="store_local"> Encrypted locally in browser.</label>
+                </div>
+                <div>
+                    <input type="radio" id="store_preferences" name="store_type" value="preferences">
+                    <label for="store_preferences"> Encrypted in public user prefernces.</label>      
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-1">
+            <label class="block text-sm font-medium text-gray-700 mb-1"> Group private key: </label>
+            <div class="flex">
+            <input id="groupprivatekey" type="password" class="inputText1 mr-1 " placeholder="optional">
+            <button class="btn py-2 my-0" title="copy to clipboard" @click="copyToClipboard('groupprivatekey')"><span class="oi oi-clipboard"></span></button>
+            <button class="btn py-2 my-0" title="show or hide" @click="showHide('groupprivatekey')"><span class="oi oi-eye"></span></button>
+            </div>
+        </div> 
+
+
+        <div class="mt-1">
+            <button class="w-full btn" @click="createGroup()">Create Group</button>
+        </div>
+    </TabPanel>
 </TabPanels>
 </TabGroup>
 
@@ -93,7 +138,9 @@
 </template>
 
 <script setup lang="ts">
+import { useAccountStore } from "../stores/account";
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
+const accountStore = useAccountStore();
 const router = useRouter();
 const emit = defineEmits(["close"]);
 
@@ -120,4 +167,36 @@ const authenticate = async (account: string) => {
     isLoading.value = false;
   }
 };
+function createGroup() {
+    var puKey = document.getElementById("grouppublickey").value.trim(); 
+    var piKey = document.getElementById("groupprivatekey").value.trim();
+}
+async function generateKey() {
+    var user = accountStore.account.name;
+    if(user == null) return;
+    var timestamp = stlib.Utils.utcTime();
+    //generate a random key by using signature as entropy
+    var p = new Promise<SignableMessage>((resolve, error)=>{
+        hive_keychain.requestSignBuffer(user,
+             "generateKey " + timestamp + " " + Math.random(), 'Posting', (result)=>{
+		    if(result.success) {
+			    resolve(dhive.cryptoUtils.sha256(result.result));
+		    }
+		    else error(result);
+	    });
+    });
+    var signature = await p;    
+    var piKey = dhive.PrivateKey.fromSeed(signature+(""+Math.random()));
+    document.getElementById("grouppublickey").value = piKey.createPublic("STM").toString(); 
+    document.getElementById("groupprivatekey").value = piKey.toString();
+}
+function copyToClipboard(id: string) {
+    if(navigator.clipboard) {
+        navigator.clipboard.writeText(document.getElementById(id).value) 
+    }
+}
+function showHide(id: string) {
+    var input = document.getElementById(id);
+    input.type = input.type==="password"?"text":"password";
+}
 </script>

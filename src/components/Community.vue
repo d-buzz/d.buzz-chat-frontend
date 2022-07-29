@@ -81,40 +81,46 @@ async function initChat() {
     }
 }
 initChat();
+var sendingMessage = false;
 const enterMessage = async (message) => {
-    var user = accountStore.account.name;
-    var user2 = route.params.user;
+    if(sendingMessage) return;
+    try {
+        sendingMessage = true;
+        var user = accountStore.account.name;
+        var user2 = route.params.user;
 
-    if(user == null) return; //TODO ask to login
-    if(user2 == null || user2 == "") return;
+        if(user == null) return; //TODO ask to login
+        if(user2 == null || user2 == "") return;
 
-    const manager = getManager();
-    var client = manager.client;
-    var textMsg = stlib.Content.text(message);
+        const manager = getManager();
+        var client = manager.client;
+        var textMsg = stlib.Content.text(message);
 
-    var conversation = null;
-    if(route.name === 'CommunityPath') {
-        conversation = user2+'/'+route.params.path;
-    }
-    else {
-        conversation = [user, user2];
-        if(route.params.user2) {
-            conversation.push(route.params.user2);
-            if(route.params.user3) conversation.push(route.params.user3);
+        var conversation = null;
+        if(route.name === 'CommunityPath') {
+            conversation = user2+'/'+route.params.path;
         }
-        textMsg = await textMsg.encodeWithKeychain(user, conversation, "Posting"); 
-    }
+        else {
+            conversation = [user, user2];
+            if(route.params.user2) {
+                conversation.push(route.params.user2);
+                if(route.params.user3) conversation.push(route.params.user3);
+            }
+            textMsg = await textMsg.encodeWithKeychain(user, conversation, "Posting"); 
+        }
 
-    var signableMessage = textMsg.forUser(user, conversation);
-    await signableMessage.signWithKeychain('Posting');
-    
-    var result = await client.write(signableMessage);
-    if(result.isSuccess()) {
-        document.getElementById("Message").value = "";
+        var signableMessage = textMsg.forUser(user, conversation);
+        await signableMessage.signWithKeychain('Posting');
+        
+        var result = await client.write(signableMessage);
+        if(result.isSuccess()) {
+            document.getElementById("Message").value = "";
+        }
+        else { 
+            console.log(result);
+        }
     }
-    else { 
-        console.log(result);
-    }
+    finally { sendingMessage = false; }
 };
 function isAtScrollBottom(e) {
     return e.scrollTop + e.clientHeight >= e.scrollHeight;
