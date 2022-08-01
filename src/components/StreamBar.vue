@@ -19,6 +19,7 @@
                 <span class="oi oi-plus"></span>
             </button>
         </div>
+        <Conversation v-for="(group,id) in groups" :conversation="'#'+username+'/'+id" :id="id" :username="username"/>
         <Conversation v-for="conversation in messageStore.conversations" :conversation="conversation" :username="username"/>
     </div>
   </div>
@@ -33,6 +34,7 @@ const accountStore = useAccountStore();
 const messageStore = useMessageStore();
 const username = accountStore.account.name;
 const streams = ref([]);
+const groups = ref({});
 const title = ref("Direct Messages");
 const isCommunity = ref(false);
 
@@ -60,7 +62,14 @@ async function initConversations(route) {
         
         //var streams = temp0.getStreams;
     }
-    else messageStore.loadConversations(username);
+    else {
+        messageStore.loadConversations(username);
+
+        const manager = getManager();
+        var pref = await manager.getPreferences();
+        
+        groups.value = pref.getGroups();
+    }
 }
 initConversations(route);
 /*app.router.beforeEach(async (to, from, next) => {

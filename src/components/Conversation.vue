@@ -1,5 +1,5 @@
 <template>
-    <router-link :to="`/p/${link}`">
+    <router-link :to="`/${link}`">
         <div class="flex pt-1">
             <div class="flex-shrink-0 mr-5px">
                 <img
@@ -18,17 +18,29 @@
 import { useAccountStore } from "../stores/account";
 const accountStore = useAccountStore();
 const props = defineProps({
+    id: Number,
     username: String,
     conversation: String,
 });
 const link = ref("");
 const iconUsername = ref("");
 const users = ref("");
-function initConversation() {
+async function initConversation() {
     var conversation = props.conversation;
     if(conversation === undefined) {
         iconUsername.value = props.username;
         users.value = props.username;
+    }
+    else if(conversation.startsWith('#')) {
+        var id = props.id;
+
+        var pref = await stlib.Utils.getAccountPreferences(props.username);
+        var groups = pref.getGroups();
+        var group = groups[id];
+
+        iconUsername.value = props.username;
+        users.value = (group !== null && group.name != null)?`${group.name} (${id})`:conversation;
+        link.value = 'g/'+conversation.substring(1);
     }
     else {
         var list = conversation.split('|');
@@ -40,6 +52,7 @@ function initConversation() {
             link.value += (link.value.length>0?'/':'')+list[j];
         }
         users.value = link.value.replaceAll('/', ', ');
+        link.value = 'p/'+link.value;
     }
 }
 initConversation();

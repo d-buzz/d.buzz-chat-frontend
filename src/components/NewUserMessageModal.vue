@@ -80,6 +80,11 @@
 
     </TabPanel>
     <TabPanel>
+        <div class="mt-1">
+            <label class="text-sm font-medium text-gray-700 mb-1"> Group name: </label>
+            <div class="flex"><input id="groupname" type="text" class="inputText1" placeholder="group name" value="Group">
+            </div>
+        </div> 
         <div>
             <button class="btn float-right" @click="generateKey()">Generate</button>
             <small>Enter or generate a public key.</small>
@@ -105,7 +110,7 @@
                     <label for="store_local"> Encrypted locally in browser.</label>
                 </div>
                 <div>
-                    <input type="radio" id="store_preferences" name="store_type" value="preferences">
+                    <input type="radio" id="store_preferences" name="store_type" value="preferences" checked>
                     <label for="store_preferences"> Encrypted in public user prefernces.</label>      
                 </div>
             </div>
@@ -120,7 +125,7 @@
             </div>
         </div> 
 
-
+        <div><small>{{errorMessage}}</small></div>
         <div class="mt-1">
             <button class="w-full btn" @click="createGroup()">Create Group</button>
         </div>
@@ -167,9 +172,53 @@ const authenticate = async (account: string) => {
     isLoading.value = false;
   }
 };
-function createGroup() {
+async function createGroup() {
+    var groupname = document.getElementById("groupname").value.trim(); 
     var puKey = document.getElementById("grouppublickey").value.trim(); 
     var piKey = document.getElementById("groupprivatekey").value.trim();
+
+    if(puKey.length === 0) return;
+
+    const manager = getManager();
+    var pref = await manager.getPreferences();
+    
+    if(pref === null) return;
+
+    var storeType = document.querySelector("input[type='radio'][name=store_type]:checked").value; 
+
+    var groupId = pref.findFreeGroupId(); 
+    if(groupId === -1) { 
+        errorMessage.value = "Limit reached. Delete groups to create new ones.";
+        return;
+    }
+    
+    var encodedText = null;
+    if(piKey.length > 0 && storeType !== 'none') { 
+        var encoded = await stlib.Content.text(piKey)
+            .encodeWithKeychain(manager.user, [manager.user], 'Posting');
+        encodedText = encoded.toJSON()[2];
+    }
+
+    var group = pref.setGroup(groupId, puKey);
+    group['name'] = groupname;
+    if(encodedText !== null) switch(storeType) {
+        case "local":
+            var key = "#"+manager.user+"/"+groupId;
+            window.localStorage.setItem(key, encodedText);
+            break;
+        case "preferences":
+            group['p'] = encodedText;
+            break;
+    }
+
+    var result = await manager.updatePreferences(pref);
+    if(result.isSuccess()) {
+        emit("close");
+    }
+    else {
+        pref.setGroup(groupId, null);
+        errorMessage.value = "Failed to update preferences. " + result.getError();
+    }
 }
 async function generateKey() {
     var user = accountStore.account.name;
@@ -199,4 +248,9 @@ function showHide(id: string) {
     var input = document.getElementById(id);
     input.type = input.type==="password"?"text":"password";
 }
+/*function storeLocal(piKey: string) {
+    const manager = getManager();
+    var key = "#"+manager.user+"/"+groupId);
+    window.localStorage.setItem(key, piKey);
+}*/
 </script>

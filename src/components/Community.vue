@@ -43,6 +43,13 @@ async function initChat() {
         var stream = (community)?community.findTextStreamById(''+route.params.path):null;
         streamName.value = stream?stream.getName():conversation;
     }
+    else if(route.name === 'Group') {
+        var pref = await stlib.Utils.getAccountPreferences(user2);
+        var groups = pref.getGroups();
+        var group = groups[route.params.path];
+        conversation = 'g/'+user2+'/'+route.params.path;
+        streamName.value = (group !== null && group.name != null)?`${group.name} ${conversation}`:conversation;
+    }
     else if(route.name.startsWith('PrivateChat')) {
         var users = [user, user2];
         if(route.params.user2) {

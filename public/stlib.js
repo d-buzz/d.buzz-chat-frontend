@@ -466,7 +466,7 @@ class JSONContent {
             groupUsers.sort();
             var encoded = [imports_1.Encoded.TYPE, keychainKeyType.toLowerCase().charAt(0)];
             for (var groupUser of groupUsers) {
-                if (user === groupUser) {
+                if (groupUsers.length > 1 && user === groupUser) {
                     encoded.push(null);
                     continue;
                 }
@@ -513,10 +513,14 @@ class Preferences extends imports_1.JSONContent {
             throw "out of bounds";
         var json = this.getPreferencesJSON();
         var groups = json.groups;
-        if (publicKey == null)
+        if (publicKey == null) {
             delete groups[groupId];
-        else
+            return null;
+        }
+        else {
             groups[groupId] = { "key": publicKey };
+            return groups[groupId];
+        }
     }
     getGroup(groupId) {
         var groups = this.getGroups();
@@ -849,6 +853,16 @@ class MessageManager {
                 p = imports_1.Content.preferences();
             this.userPreferences = p;
             return p;
+        });
+    }
+    updatePreferences(preferences) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.user == null)
+                return null;
+            var signableMessage = preferences.forUser(this.user);
+            yield signableMessage.signWithKeychain('Posting');
+            var client = this.getClient();
+            return yield client.write(signableMessage);
         });
     }
     join(room) {
