@@ -5,7 +5,7 @@
     
     <div v-if="isCommunity">
         <div class="flex justify-between">
-            <b class="border-b-1">{{title}}</b>
+            <b class="border-b-1">C/{{title}}</b>
             <router-link :to="`/s/${route.params.user}`">
                <span class="oi oi-cog"></span>
             </router-link>

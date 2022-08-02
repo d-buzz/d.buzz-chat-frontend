@@ -1,30 +1,30 @@
 <template>
     <div class="flex pt-1">
         <div v-if="stream.getPathType() === null">
-            <b>{{stream.getName()}}</b>
+            <b class="text-sm">{{stream.getName()}}</b>
         </div>
         <div v-else-if="stream.getPathType() === 't'">
             <router-link :to="`/${path}`">
                 <div>
-                    <div class="pl-2"><b>{{stream.getName()}}</b></div>
+                    <div class="pl-2 font-bold"><span class="oi oi-chat"></span> {{stream.getName()}}</div>
                 </div>
             </router-link>
         </div>
         <div v-else-if="stream.getPathType() === 'i'">
             <a v-if="path.startsWith('https://')" :href="path" target="_blank" rel="noreferrer noopener">
                 <div>
-                    <div><b>{{stream.getName()}}</b></div>
+                    <div class="font-bold"><span class="oi oi-external-link text-sm"></span> {{stream.getName()}}</div>
                 </div>
             </a>
             <router-link v-else :to="`/${path}`">
                 <div>
-                    <div><b>{{stream.getName()}}</b></div>
+                    <div class="font-bold"><span class="oi oi-info text-center" style="width:14px;"></span> {{stream.getName()}}</div>
                 </div>
             </router-link>
         </div>
         <div v-else>
             <div>
-                <div><b>{{stream.getName()}}</b></div>
+                <div>{{stream.getName()}}</div>
             </div>
         </div>
     </div>

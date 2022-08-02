@@ -11,10 +11,12 @@
             <option value="Admin">Admin</option>
             <option value="Owner">Owner</option>
         </select>
-        <span class="float-right">
+        <span class="ml-2">
         <button class="btn" @click="addTitle()"><span class="oi oi-plus"></span> title</button> </span>
     </div>
-     <input id="permissions" type="text" class="inputText1" v-bind:value="setJSON(set)"> 
+    <span v-for="title in set.titles">
+        <button class="btn" @click="delTitle(title)">{{title}} <span class="oi oi-circle-x"></span></button>
+    </span>
 </template>
 <script setup type="ts">
 const props = defineProps({
@@ -24,6 +26,9 @@ const addTitleModal = ref(false);
 const set = props.set;
 function addTitle() {
     addTitleModal.value = true;
+}
+function delTitle(title) {
+    set.delTitle(title);
 }
 function onAddTitle(title) {
     set.addTitle(title);

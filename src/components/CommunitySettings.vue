@@ -15,22 +15,34 @@
     <div class="grid grid-cols-2 gap-2">
 
         <div>
-
             <!--<label class="block text-sm font-medium text-gray-700">Streams: </label>-->
-            <Draggable v-model="streams" :key="messageKey">
-                <template v-slot:item="{item}">
-                    <div class="item border rounded-md border-gray-700 my-1 p-1"
-                        @mousedown="select(item)"
-                        :data-selected="item.selected"
-                    >{{item.getName()}}</div>
-                </template>
-            </Draggable>
+    <Draggable v-model="streams" :key="messageKey">
+        <template v-slot:item="{item}">
+            <div class="item border rounded-md border-gray-700 my-1 p-1"
+                @mousedown="select(item)"
+                :data-selected="item.selected"
+            >
+            <span v-if="item.getPathType() == null" 
+                class="font-bold">{{item.getName()}} 
+                <span class="float-right font-normal text-sm">(category)</span>
+            </span>
+            <span v-else-if="item.getPathType() == 't'" 
+                class="pl-2"><span class="oi oi-chat"></span> {{item.getName()}} 
+                <span class="float-right text-sm">(text)</span>
+            </span>
+            <span v-else-if="item.getPathType() == 'i'"><span class="oi oi-info text-center" style="width:14px;"></span> {{item.getName()}} 
+                <span class="float-right text-sm">(info)</span>
+            </span>              
+            <span v-else>{{item.getName()}}</span>
+            </div>
+        </template>
+    </Draggable>
 
         </div>
 
         <div> 
             <div>
-                <label for="streamname" class="block text-sm font-medium text gray-700">            Stream name: 
+                <label for="streamname" class="block text-sm font-medium text gray-700">            Displayable name: 
                 </label>
                 <input id="streamname" name="streamname" type="text" class="inputText1" placeholder="Stream Name" @input="setStreamName">    
             </div>
@@ -45,11 +57,11 @@
             
 
             <div v-if="selected">
-                <label class="block text-sm font-medium text gray-700">Read Permissions:</label>
+                <label class="block text-sm font-medium text gray-700">Shown for:</label>
                 <PermissionSet :set="selected.readSet" :key="selectKey"/>
             </div>
         
-            <div v-if="selected">
+            <div v-if="selected && selected.dataPath != null && selected.dataPath.getType() != 'i'">
                 <label class="block text-sm font-medium text gray-700">Write Permissions:</label>
                 <PermissionSet :set="selected.writeSet" :key="selectKey"/>
             </div>

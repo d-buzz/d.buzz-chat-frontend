@@ -990,6 +990,12 @@ class PermissionSet {
             return;
         this.titles.push(title);
     }
+    delTitle(title) {
+        var i = this.titles.indexOf(title);
+        if (i !== -1)
+            this.titles.splice(i, 1);
+        return i !== -1;
+    }
     getHiveRole() {
         if (this.role == "" || this.role == "Onboard" || this.role == "Joined")
             return "";
