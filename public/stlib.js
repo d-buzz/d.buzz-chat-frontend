@@ -248,8 +248,17 @@ Community.MAX_TEXT_STREAMS = 64;
 
 },{"./data-path":13,"./data-stream":14,"./utils":20}],3:[function(require,module,exports){
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Preferences = exports.Emote = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.Encoded = exports.JSONContent = exports.decodedMessage = exports.encodedMessage = exports.preferences = exports.emote = exports.quote = exports.thread = exports.text = exports.fromJSON = exports.type = void 0;
+exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.Encoded = exports.JSONContent = exports.decodeTextWithKeychain = exports.decodedMessage = exports.encodedMessage = exports.preferences = exports.emote = exports.quote = exports.thread = exports.text = exports.fromJSON = exports.type = void 0;
 const imports_1 = require("./imports");
 Object.defineProperty(exports, "JSONContent", { enumerable: true, get: function () { return imports_1.JSONContent; } });
 Object.defineProperty(exports, "Encoded", { enumerable: true, get: function () { return imports_1.Encoded; } });
@@ -259,6 +268,7 @@ Object.defineProperty(exports, "Thread", { enumerable: true, get: function () { 
 Object.defineProperty(exports, "Quote", { enumerable: true, get: function () { return imports_1.Quote; } });
 Object.defineProperty(exports, "Emote", { enumerable: true, get: function () { return imports_1.Emote; } });
 Object.defineProperty(exports, "Preferences", { enumerable: true, get: function () { return imports_1.Preferences; } });
+Object.defineProperty(exports, "PrivatePreferences", { enumerable: true, get: function () { return imports_1.PrivatePreferences; } });
 function type(content) {
     if (Array.isArray(content) && content.length > 0)
         return content[0];
@@ -324,6 +334,24 @@ function decodedMessage(msg, privateK) {
     return JSON.parse(string);
 }
 exports.decodedMessage = decodedMessage;
+function decodeTextWithKeychain(user, message, keychainKeyType = 'Posting') {
+    return __awaiter(this, void 0, void 0, function* () {
+        var p = new Promise((resolve, error) => {
+            hive_keychain.requestVerifyKey(user, message, keychainKeyType, (result) => {
+                if (result.success) {
+                    var string = result.result;
+                    if (string.startsWith("#"))
+                        string = string.substring(1);
+                    resolve(string);
+                }
+                else
+                    error(result);
+            });
+        });
+        return yield p;
+    });
+}
+exports.decodeTextWithKeychain = decodeTextWithKeychain;
 
 },{"./imports":6}],4:[function(require,module,exports){
 "use strict";
@@ -403,7 +431,7 @@ Encoded.TYPE = "x";
 },{"./imports":6}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Preferences = exports.Emote = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.Encoded = exports.JSONContent = exports.Content = exports.SignableMessage = void 0;
+exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.Encoded = exports.JSONContent = exports.Content = exports.SignableMessage = void 0;
 const signable_message_1 = require("../signable-message");
 Object.defineProperty(exports, "SignableMessage", { enumerable: true, get: function () { return signable_message_1.SignableMessage; } });
 const Content = require("./content");
@@ -424,6 +452,7 @@ const emote_1 = require("./emote");
 Object.defineProperty(exports, "Emote", { enumerable: true, get: function () { return emote_1.Emote; } });
 const preferences_1 = require("./preferences");
 Object.defineProperty(exports, "Preferences", { enumerable: true, get: function () { return preferences_1.Preferences; } });
+Object.defineProperty(exports, "PrivatePreferences", { enumerable: true, get: function () { return preferences_1.PrivatePreferences; } });
 
 },{"../signable-message":18,"./content":3,"./emote":4,"./encoded":5,"./jsoncontent":7,"./preferences":8,"./quote":9,"./text":10,"./thread":11,"./with-reference":12}],7:[function(require,module,exports){
 "use strict";
@@ -494,13 +523,49 @@ exports.JSONContent = JSONContent;
 
 },{"./imports":6}],8:[function(require,module,exports){
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Preferences = void 0;
+exports.Preferences = exports.PrivatePreferences = void 0;
 const imports_1 = require("./imports");
+class PrivatePreferences {
+    constructor(json) {
+        this.updated = false;
+        this.json = json;
+    }
+    keys() {
+        var json = this.json;
+        var keys = json.keys;
+        if (keys === undefined)
+            json.keys = keys = {};
+        return keys;
+    }
+    setKeyFor(group, key) {
+        var keys = this.keys();
+        keys[group] = key;
+        this.updated = true;
+    }
+    getKeyFor(group) {
+        var keys = this.keys();
+        var key = keys[group];
+        return key == null ? null : key;
+    }
+}
+exports.PrivatePreferences = PrivatePreferences;
 class Preferences extends imports_1.JSONContent {
-    constructor(json) { super(json); }
+    constructor(json) {
+        super(json);
+        this.privatePreferences = null;
+    }
     getPreferencesJSON() { return this.json[1]; }
-    setPreferencesJSON(json) { this.json[1] = json; }
+    /*setPreferencesJSON(json: any): void { this.json[1] = json; }*/
     newGroup(publicKey) {
         var groupId = this.findFreeGroupId();
         if (groupId === -1)
@@ -541,9 +606,47 @@ class Preferences extends imports_1.JSONContent {
                 return i;
         return -1;
     }
+    getPrivatePreferencesWithKeychain(user, keychainKeyType = 'Posting') {
+        return __awaiter(this, void 0, void 0, function* () {
+            var pref = this.privatePreferences;
+            if (pref !== null)
+                return pref;
+            var json = this.getPreferencesJSON();
+            var message = json['#'];
+            if (message !== undefined && typeof message === 'string') {
+                var result = yield imports_1.Content.decodeTextWithKeychain(user, message, keychainKeyType);
+                this.privatePreferences = new PrivatePreferences(JSON.parse(result));
+            }
+            else
+                this.privatePreferences = new PrivatePreferences({});
+            return this.privatePreferences;
+        });
+    }
+    encodePrivatePreferencsWithKeychan(user, keychainKeyType = 'Posting', onlyIfUpdated = true) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var pref = this.privatePreferences;
+            if (pref == null || (onlyIfUpdated && !pref.updated))
+                return;
+            var p = new Promise((resolve, error) => {
+                hive_keychain.requestEncodeMessage(user, user, '#' + JSON.stringify(pref.json), keychainKeyType, (result) => {
+                    if (result.success)
+                        resolve(result.result);
+                    else
+                        error(result);
+                });
+            });
+            var text = yield p;
+            var json = this.getPreferencesJSON();
+            json['#'] = text;
+            pref.updated = false;
+        });
+    }
     forUser(user, conversation = '@') {
         if (conversation !== '@')
             throw "conversation is not '@'";
+        var pref = this.privatePreferences;
+        if (pref != null && pref.updated)
+            throw "private preference changes have not been encoded";
         return imports_1.SignableMessage.create(user, conversation, this.json);
     }
 }
@@ -775,6 +878,7 @@ class MessageManager {
         this.cachedUserMessages = null;
         this.selectedConversation = null;
         this.conversations = new utils_1.AccountDataCache();
+        this.keys = {};
         this.defaultReadHistoryMS = 30 * 24 * 60 * 60000;
     }
     setNodes(nodes) {
@@ -855,10 +959,41 @@ class MessageManager {
             return p;
         });
     }
+    getPrivatePreferences() {
+        return __awaiter(this, void 0, void 0, function* () {
+            var p = yield this.getPreferences();
+            return yield p.getPrivatePreferencesWithKeychain(this.user);
+        });
+    }
+    storeKeyLocallyEncryptedWithKeychain(group, key) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var encoded = yield imports_1.Content.text(key).encodeWithKeychain(this.user, [this.user], 'Posting');
+            var encodedText = encoded.toJSON()[2];
+            window.localStorage.setItem(this.user + "|" + group, encodedText);
+            var keys = this.keys;
+            keys[group] = key;
+        });
+    }
+    getKeyFor(group) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var keys = this.keys;
+            if (keys[group] != null)
+                return keys[group];
+            var pref = yield this.getPrivatePreferences();
+            var key = pref.getKeyFor(group);
+            if (key === null) {
+                var text = window.localStorage.getItem(this.user + "|" + group);
+                if (text != null)
+                    keys[group] = key = yield imports_1.Content.decodeTextWithKeychain(this.user, text);
+            }
+            return key;
+        });
+    }
     updatePreferences(preferences) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.user == null)
                 return null;
+            yield preferences.encodePrivatePreferencsWithKeychan(this.user);
             var signableMessage = preferences.forUser(this.user);
             yield signableMessage.signWithKeychain('Posting');
             var client = this.getClient();
@@ -948,14 +1083,27 @@ class MessageManager {
         return __awaiter(this, void 0, void 0, function* () {
             var list = [];
             var array = result.getResult();
-            for (var msgJSON of array)
-                list.push(yield this.jsonToDisplayable(msgJSON));
+            for (var msgJSON of array) {
+                try {
+                    list.push(yield this.jsonToDisplayable(msgJSON));
+                }
+                catch (e) {
+                    console.log("Error reading message: ", msgJSON);
+                    console.log(e);
+                }
+            }
             return list;
         });
     }
     jsonToDisplayable(msgJSON) {
         return __awaiter(this, void 0, void 0, function* () {
             var msg = signable_message_1.SignableMessage.fromJSON(msgJSON);
+            if (msg.isSignedWithGroupKey()) {
+                var key = yield this.getKeyFor(msg.getConversation());
+                if (key === null)
+                    throw 'key not found';
+                msg.decodeWithKey(key);
+            }
             var verified = yield msg.verify();
             var content = msg.getContent();
             if (content instanceof imports_1.Encoded) {
@@ -1200,7 +1348,9 @@ class SignableMessage {
                 if (accountPreferences == null)
                     return false;
                 var key = accountPreferences.getGroup(groupId);
-                return (key == null) ? false : this.verifyWithKey(key);
+                if (key == null)
+                    return false;
+                return (key == null) ? false : this.verifyWithKey(key.key);
             }
             else {
                 var accountData = yield utils_1.Utils.getAccountData(user);
@@ -1344,6 +1494,7 @@ class Utils {
                             name: array[0].name,
                             posting: array[0].posting,
                             memo_key: array[0].memo_key,
+                            posting_json_metadata: array[0].posting_json_metadata
                         };
                     }
                     return null;

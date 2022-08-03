@@ -219,49 +219,6 @@ async function initChat() {
         if(streams.value.length > 0) select(streams.value[0]);
         update();
     }
-    
-    /*const manager = getManager();
-    manager.setUser(user);
-
-    var conversation = null;
-    if(route.name === 'CommunityPath') {
-        conversation = user2+'/'+route.params.path;
-        //var community = await stlib.Community.load(user2);
-        streamName.value = conversation;
-        
-    }
-    else if(route.name === 'PrivateChat') {
-        var users = [user, user2];
-        users.sort();
-        conversation = users.join('|');
-        streamName.value = conversation;
-    }
-
-    if(conversation != null) {
-        manager.setConversation(conversation);
-       
-        var updateMessages = async () => {
-            var container = document.getElementById("messages");
-            var scrollToBottom = true;
-            var scrollTop = 0;
-            if(container) { 
-                scrollToBottom = isAtScrollBottom(container); 
-                scrollTop = container.scrollTop;
-            }
-            var data = await manager.getSelectedConversations();
-            data.messages.sort((a,b)=>a.getTimestamp()-b.getTimestamp());
-            displayableMessages.value = data.messages;
-            messageKey.value = conversation+"#"+data.messages.length;
-            nextTick(() => {
-                var container = document.getElementById("messages");
-                if(container) container.scrollTop = scrollToBottom?
-                              container.scrollHeight:scrollTop;
-            });
-        };
-        await updateMessages();
-       
-        manager.onmessage = updateMessages;
-    }*/
 }
 initChat();
 const enterMessage = async (message) => {

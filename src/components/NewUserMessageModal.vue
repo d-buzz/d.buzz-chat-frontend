@@ -192,25 +192,20 @@ async function createGroup() {
         return;
     }
     
-    var encodedText = null;
-    if(piKey.length > 0 && storeType !== 'none') { 
-        var encoded = await stlib.Content.text(piKey)
-            .encodeWithKeychain(manager.user, [manager.user], 'Posting');
-        encodedText = encoded.toJSON()[2];
-    }
-
     var group = pref.setGroup(groupId, puKey);
     group['name'] = groupname;
-    if(encodedText !== null) switch(storeType) {
-        case "local":
-            var key = "#"+manager.user+"/"+groupId;
-            window.localStorage.setItem(key, encodedText);
-            break;
-        case "preferences":
-            group['p'] = encodedText;
-            break;
+    if(piKey.length > 0 && storeType !== 'none') {
+        var conversation = "#"+manager.user+"/"+groupId;
+        switch(storeType) {
+            case "local":
+                await manager.storeKeyLocallyEncryptedWithKeychain(conversation, piKey);
+                break;
+            case "preferences":
+                var privatePref = await manager.getPrivatePreferences();
+                privatePref.setKeyFor(conversation, piKey);
+                break;
+        }
     }
-
     var result = await manager.updatePreferences(pref);
     if(result.isSuccess()) {
         emit("close");

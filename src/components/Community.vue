@@ -47,7 +47,7 @@ async function initChat() {
         var pref = await stlib.Utils.getAccountPreferences(user2);
         var groups = pref.getGroups();
         var group = groups[route.params.path];
-        conversation = 'g/'+user2+'/'+route.params.path;
+        conversation = '#'+user2+'/'+route.params.path;
         streamName.value = (group !== null && group.name != null)?`${group.name} ${conversation}`:conversation;
     }
     else if(route.name.startsWith('PrivateChat')) {
@@ -103,9 +103,18 @@ const enterMessage = async (message) => {
         var client = manager.client;
         var textMsg = stlib.Content.text(message);
 
+        var encodeKey = null;
         var conversation = null;
         if(route.name === 'CommunityPath') {
             conversation = user2+'/'+route.params.path;
+        }
+        if(route.name === 'Group') {
+            conversation = '#'+user2+'/'+route.params.path;
+            encodeKey = await manager.getKeyFor(conversation);
+            if(encodeKey === null) {
+                console.log("unknown key"); //TODO ask to enter key
+                return;
+            }
         }
         else {
             conversation = [user, user2];
@@ -118,6 +127,9 @@ const enterMessage = async (message) => {
 
         var signableMessage = textMsg.forUser(user, conversation);
         await signableMessage.signWithKeychain('Posting');
+        if(encodeKey !== null) signableMessage.encodeWithKey(encodeKey);
+
+        console.log("write ", signableMessage);
         
         var result = await client.write(signableMessage);
         if(result.isSuccess()) {
