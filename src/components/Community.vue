@@ -1,6 +1,18 @@
 <template>
+    <AddGroupUserModal :show="showGroupUserModal" @close="toggleShareGroup"></AddGroupUserModal>
+    <CloseGroupModal :show="showCloseGroupModal" @close="toggleCloseGroup"></CloseGroupModal>
   <div class="w-full h-full flex flex-col justify-end" v-if='messageKey'>
-    <div class="flex border-b-1 font-bold">{{streamName}}</div>
+    <div class="border-b-1 font-bold">
+        {{streamName}}
+        <span v-if="messageKey.startsWith('#')" class="float-right mr-2">
+            <button class="text-sm mr-2" @click="toggleShareGroup" title="share group">
+                <span class="oi oi-people"></span>
+            </button>
+            <button class="text-sm" @click="toggleCloseGroup" title="close group">
+                <span class="oi oi-x align-top"></span>
+            </button>
+        </span>
+    </div>
     <div id="messages" :key="messageKey" class="flex flex-col overflow-y-scroll">
         <Message v-for="message in displayableMessages" :message="message" />
     </div>
@@ -27,6 +39,15 @@ const displayableMessages = ref([]);
 const messageKey = ref("");
 const streamName = ref("");
 
+const showGroupUserModal = ref(false);
+const showCloseGroupModal = ref(false);
+
+function toggleShareGroup() {
+    showGroupUserModal.value = !showGroupUserModal.value;
+}
+function toggleCloseGroup() {
+    showCloseGroupModal.value = !showCloseGroupModal.value;
+}
 async function initChat() {
     var user = accountStore.account.name;
     if(user == null) return; //TODO ask to login

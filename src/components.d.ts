@@ -5,12 +5,17 @@ import '@vue/runtime-core'
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    AddGroupModal: typeof import('./components/modals/AddGroupModal.vue')['default']
+    AddGroupUserModal: typeof import('./components/modals/AddGroupUserModal.vue')['default']
+    'AddGroupUserModal (copy)': typeof import('./components/modals/AddGroupUserModal (copy).vue')['default']
     AddTitleModal: typeof import('./components/settings/AddTitleModal.vue')['default']
+    CloseGroupModal: typeof import('./components/modals/CloseGroupModal.vue')['default']
     Community: typeof import('./components/Community.vue')['default']
     CommunityAbout: typeof import('./components/info/CommunityAbout.vue')['default']
     CommunitySettings: typeof import('./components/CommunitySettings.vue')['default']
     ControlPanel: typeof import('./components/ControlPanel.vue')['default']
     Conversation: typeof import('./components/Conversation.vue')['default']
+    DefaultModal: typeof import('./components/modals/DefaultModal.vue')['default']
     Dialog: typeof import('@headlessui/vue')['Dialog']
     DialogPanel: typeof import('@headlessui/vue')['DialogPanel']
     IconCommunity: typeof import('./components/icons/IconCommunity.vue')['default']
@@ -34,6 +39,7 @@ declare module '@vue/runtime-core' {
     StreamBar: typeof import('./components/StreamBar.vue')['default']
     TransitionChild: typeof import('@headlessui/vue')['TransitionChild']
     TransitionRoot: typeof import('@headlessui/vue')['TransitionRoot']
+    YesNoModal: typeof import('./components/modals/YesNoModal.vue')['default']
   }
 }
 

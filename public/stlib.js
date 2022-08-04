@@ -258,7 +258,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.Encoded = exports.JSONContent = exports.decodeTextWithKeychain = exports.decodedMessage = exports.encodedMessage = exports.preferences = exports.emote = exports.quote = exports.thread = exports.text = exports.fromJSON = exports.type = void 0;
+exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.Encoded = exports.JSONContent = exports.decodeTextWithKeychain = exports.encodeTextWithKeychain = exports.decodedMessage = exports.encodedMessage = exports.preferences = exports.emote = exports.quote = exports.thread = exports.text = exports.fromJSON = exports.type = void 0;
 const imports_1 = require("./imports");
 Object.defineProperty(exports, "JSONContent", { enumerable: true, get: function () { return imports_1.JSONContent; } });
 Object.defineProperty(exports, "Encoded", { enumerable: true, get: function () { return imports_1.Encoded; } });
@@ -334,6 +334,20 @@ function decodedMessage(msg, privateK) {
     return JSON.parse(string);
 }
 exports.decodedMessage = decodedMessage;
+function encodeTextWithKeychain(user, message, keychainKeyType = 'Posting') {
+    return __awaiter(this, void 0, void 0, function* () {
+        var p = new Promise((resolve, error) => {
+            hive_keychain.requestEncodeMessage(user, user, '#' + message, keychainKeyType, (result) => {
+                if (result.success)
+                    resolve(result.result);
+                else
+                    error(result);
+            });
+        });
+        return yield p;
+    });
+}
+exports.encodeTextWithKeychain = encodeTextWithKeychain;
 function decodeTextWithKeychain(user, message, keychainKeyType = 'Posting') {
     return __awaiter(this, void 0, void 0, function* () {
         var p = new Promise((resolve, error) => {
@@ -967,8 +981,7 @@ class MessageManager {
     }
     storeKeyLocallyEncryptedWithKeychain(group, key) {
         return __awaiter(this, void 0, void 0, function* () {
-            var encoded = yield imports_1.Content.text(key).encodeWithKeychain(this.user, [this.user], 'Posting');
-            var encodedText = encoded.toJSON()[2];
+            var encodedText = yield imports_1.Content.encodeTextWithKeychain(this.user, key, 'Posting');
             window.localStorage.setItem(this.user + "|" + group, encodedText);
             var keys = this.keys;
             keys[group] = key;
