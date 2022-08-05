@@ -1,5 +1,7 @@
 <template>
-    <NewUserMessageModal :show="newUserMessageModalOpen" @close="toggleNewUserMessageModalOpen(false)"></NewUserMessageModal>
+    <TransitionRoot :show="newUserMessageModalOpen">
+        <NewUserMessageModal @close="toggleNewUserMessageModalOpen(false)"></NewUserMessageModal>
+    </TransitionRoot>
 
   <div class="h-screen m-0 flex flex-col bg-primary text-secondary shadow-lg overflow-y-scroll border-r-1 pr-1 pl-1 w-200">
     

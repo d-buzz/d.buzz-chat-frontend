@@ -19,6 +19,11 @@
                 <div v-if="message.getContent().getType() == 'x'">
                     <button class="bg-primary text-white font-bold py-1 px-2 rounded-full" v-on:click="decrypt(message)">Click to decrypt</button>
                 </div>
+                <div v-if="message.getContent().getType() == 'g'" class="border border-solid border-green-700 rounded p-1">
+                    <small>{{message.getContent().getGroup()}}</small>
+                    <div>{{message.getContent().getText()}}</div>
+                    <button class="btn">Join</button>
+                </div>
                 <div v-else-if="message.getContent().getText">
                     {{message.getContent().getText()}}
                 </div>

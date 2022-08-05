@@ -5,10 +5,8 @@ import '@vue/runtime-core'
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    AddGroupModal: typeof import('./components/modals/AddGroupModal.vue')['default']
     AddGroupUserModal: typeof import('./components/modals/AddGroupUserModal.vue')['default']
-    'AddGroupUserModal (copy)': typeof import('./components/modals/AddGroupUserModal (copy).vue')['default']
-    AddTitleModal: typeof import('./components/settings/AddTitleModal.vue')['default']
+    AddTitleModal: typeof import('./components/modals/AddTitleModal.vue')['default']
     CloseGroupModal: typeof import('./components/modals/CloseGroupModal.vue')['default']
     Community: typeof import('./components/Community.vue')['default']
     CommunityAbout: typeof import('./components/info/CommunityAbout.vue')['default']
@@ -28,7 +26,7 @@ declare module '@vue/runtime-core' {
     Message: typeof import('./components/Message.vue')['default']
     MessageReceived: typeof import('./components/MessageReceived.vue')['default']
     MessageSent: typeof import('./components/MessageSent.vue')['default']
-    NewUserMessageModal: typeof import('./components/NewUserMessageModal.vue')['default']
+    NewUserMessageModal: typeof import('./components/modals/NewUserMessageModal.vue')['default']
     PermissionSet: typeof import('./components/PermissionSet.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
@@ -39,7 +37,6 @@ declare module '@vue/runtime-core' {
     StreamBar: typeof import('./components/StreamBar.vue')['default']
     TransitionChild: typeof import('@headlessui/vue')['TransitionChild']
     TransitionRoot: typeof import('@headlessui/vue')['TransitionRoot']
-    YesNoModal: typeof import('./components/modals/YesNoModal.vue')['default']
   }
 }
 

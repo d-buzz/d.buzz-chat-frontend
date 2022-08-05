@@ -1,5 +1,21 @@
 <template>
-  <DefaultModal title="Add Group User" :show="show">
+  <DefaultModal title="Add Group User">
+        <div class="mt-1">
+          <label for="message" class="block text-sm font-medium text-gray-700">Group Invite Message: </label>
+          <div class="mt-1">
+            <input
+              id="message"
+              name="message"
+              v-model="message"
+              type="text"
+              class="inputText1"
+              placeholder="Group Invite message"
+              :read-only="isLoading"
+              :disabled="isLoading"
+            />
+          </div>
+        </div>
+
         <div class="mt-1">
           <label for="username" class="block text-sm font-medium text-gray-700"> Account name/s: </label>
           <div class="mt-1">
@@ -8,8 +24,7 @@
               name="username"
               v-model="accountName"
               @keyup.enter="authenticate(accountName)"
-              type="username"
-              autocomplete="username"
+              type="text"
               class="inputText1"
               placeholder="Account name"
               :read-only="isLoading"
@@ -35,7 +50,7 @@
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 ></path>
               </svg>
-              Loading...</span
+              Sending invite...</span
             >
             <span v-else>Add Group User</span>
           </button>
@@ -50,11 +65,11 @@ import { useAccountStore } from "../../stores/account";
 const accountStore = useAccountStore();
 const router = useRouter();
 const emit = defineEmits();
-const props = defineProps<{
-  show: boolean;
-}>();
+//const props = defineProps<{
+//}>();
 const isLoading = ref(false);
 const accountName = ref("");
+const message = ref("You are invited to join group:");
 const errorMessage = ref("");
 
 const action = async (account: string) => {
@@ -62,11 +77,27 @@ const action = async (account: string) => {
   try {
     isLoading.value = true;
     var users = account.split(/[ ,]+/);
+    const manager = getManager();
+    var group = manager.selectedConversation;
+    var groupKey = await manager.getKeyFor(group);
+    if(groupKey == null) {
+        errorMessage.value = "Group key not found.";
+        return;
+    }
     for(var user of users) {
-        console.log("user", user);
+        var msg = stlib.Content.groupInvite(message.value, group, groupKey);
+        var result = await manager.sendMessage(msg, [manager.user, user]);
+        if(!result.isSuccess()) {
+            errorMessage.value = "Error sending invite: " + result.getError();
+            return;
+        }
     }
     emit("close");
-  } finally {
+  } 
+  catch(e) {
+    errorMessage.value = "Error sending message.";
+  }  
+  finally {
     isLoading.value = false;
   }
 };

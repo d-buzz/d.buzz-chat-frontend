@@ -1,5 +1,8 @@
 <template>
-    <AddTitleModal :show="addTitleModal" @oninput="onAddTitle" @close="closeModal()"></AddTitleModal>
+    <TransitionRoot :show="addTitleModal">
+        <AddTitleModal @oninput="onAddTitle" @close="closeModal()"></AddTitleModal>
+    </TransitionRoot>
+
     <div>
         <select class="inputSelect1" v-model="set.role">
             <option value="">Any</option>

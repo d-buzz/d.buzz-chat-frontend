@@ -1,5 +1,4 @@
 <template>
-  <TransitionRoot as="template" :show="show">
     <Dialog as="div" class="relative z-10" @close="$emit('close')">
       <TransitionChild
         as="template"
@@ -36,12 +35,10 @@
         </div>
       </div>
     </Dialog>
-  </TransitionRoot>
 </template>
 <script setup lang="ts">
 const emit = defineEmits(["close"]);
 const props = defineProps<{
-    title: String,
-    show: boolean;
+    title: String
 }>();
 </script>

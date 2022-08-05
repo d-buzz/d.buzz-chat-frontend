@@ -1,6 +1,10 @@
 <template>
-    <AddGroupUserModal :show="showGroupUserModal" @close="toggleShareGroup"></AddGroupUserModal>
-    <CloseGroupModal :show="showCloseGroupModal" @close="toggleCloseGroup"></CloseGroupModal>
+    <TransitionRoot :show="showGroupUserModal">
+        <AddGroupUserModal @close="toggleShareGroup"></AddGroupUserModal>
+    </TransitionRoot>
+    <TransitionRoot :show="showCloseGroupModal">
+        <CloseGroupModal @close="toggleCloseGroup"></CloseGroupModal>
+    </TransitionRoot>
   <div class="w-full h-full flex flex-col justify-end" v-if='messageKey'>
     <div class="border-b-1 font-bold">
         {{streamName}}

@@ -1,5 +1,5 @@
 <template>
-  <DefaultModal title="Close Group?" :show="show">
+  <DefaultModal title="Close Group?">
         <div class="mt-1">
           <label class="block text-sm font-medium text-gray-700"></label>          
         </div>
@@ -26,7 +26,7 @@
             <span v-else>Close Group</span>
           </button>
         </div>
-         </DefaultModal>
+    </DefaultModal>
 </template>
 
 <script setup lang="ts">
@@ -34,9 +34,8 @@ import { useAccountStore } from "../../stores/account";
 const accountStore = useAccountStore();
 const router = useRouter();
 const emit = defineEmits();
-const props = defineProps<{
-  show: boolean;
-}>();
+//const props = defineProps<{
+//}>();
 const isLoading = ref(false);
 const accountName = ref("");
 const errorMessage = ref("");
