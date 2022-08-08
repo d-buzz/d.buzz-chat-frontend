@@ -13,7 +13,7 @@
       </TransitionChild>
 
       <div class="fixed z-10 inset-0 overflow-y-auto">
-        <div class="flex items-end sm:items-center justify-center min-h-full p-4 text-center sm:p-0">
+        <div class="flex items-start justify-center min-h-full p-4 text-center sm:p-0">
           <TransitionChild
             as="template"
             enter="ease-out duration-300"
@@ -24,7 +24,7 @@
             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
             <DialogPanel
-              class="relative bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-sm sm:w-full sm:p-6"
+              class="relative bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md sm:w-full sm:p-6"
             >
               <div class="min-h-full flex flex-col justify-center"> 
                  <b v-if="title!=null">{{title}}</b>

@@ -21,7 +21,7 @@
                 <span class="oi oi-plus"></span>
             </button>
         </div>
-        <Conversation v-for="(group,id) in groups" :conversation="'#'+username+'/'+id" :id="id" :username="username"/>
+        <Conversation v-for="group in groups" :conversation="group.conversation" :id="group.id" :username="group.username"/>
         <Conversation v-for="conversation in messageStore.conversations" :conversation="conversation" :username="username"/>
     </div>
   </div>
@@ -69,8 +69,20 @@ async function initConversations(route) {
 
         const manager = getManager();
         var pref = await manager.getPreferences();
-        
-        groups.value = pref.getGroups();
+        var groupsArray = [];
+        var privatePref = await manager.getPrivatePreferences();
+        var joinedGroup = privatePref.keys();
+        for(var conversation in joinedGroup) {
+            var slash = conversation.indexOf('/');
+            if(!conversation.startsWith('#') || slash === -1) continue;
+            var uname = conversation.substring(1, slash);
+            var id = conversation.substring(slash+1);
+            groupsArray.push({"conversation":conversation, "id":id,"username":uname});
+        }
+        for(var groupId in pref.getGroups()) {
+            groupsArray.push({"conversation":'#'+username+'/'+groupId,"id":groupId,"username":username});
+        }
+        groups.value = groupsArray;
     }
 }
 initConversations(route);

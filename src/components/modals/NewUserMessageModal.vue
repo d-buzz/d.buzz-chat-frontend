@@ -1,6 +1,6 @@
 <template>
   <DefaultModal>        
-<TabGroup>
+<TabGroup :selectedIndex="selectedTab">
     <TabList class="tab">
       <Tab>Direct Message</Tab>
       <Tab>Group Message</Tab>
@@ -154,8 +154,11 @@ import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 const accountStore = useAccountStore();
 const router = useRouter();
 const emit = defineEmits();
-//const props = defineProps<{
-//}>();
+const props = defineProps<{
+    selectedTab: Number,
+    data: Object
+}>();
+const selectedTab = props.selectedTab || 0;
 const isLoading = ref(false);
 const accountName = ref("");
 const errorMessage = ref("");
@@ -176,6 +179,19 @@ const authenticate = async (account: string) => {
     isLoading.value = false;
   }
 };
+if(props.data != null) {
+    console.log("defaultData: ", props.data);
+    if(selectedTab == 2) {
+        var data = props.data;
+        nextTick(() => {
+            var content = data.getContent();
+            var conversation = document.getElementById("group"); 
+            var piKey = document.getElementById("groupprivatekey2");
+            conversation.value = content.getGroup();
+            piKey.value = content.getKey();
+        });
+    }
+}
 async function joinGroup() {
     var conversation = document.getElementById("group").value.trim(); 
     var piKey = document.getElementById("groupprivatekey2").value.trim();

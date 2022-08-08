@@ -1,4 +1,7 @@
 <template>
+    <TransitionRoot :show="newUserMessageModalOpen">
+        <NewUserMessageModal :selectedTab="2" :data="joinData" @close="toggleNewUserMessageModalOpen(false)"></NewUserMessageModal>
+    </TransitionRoot>
     <div class="message flex" style="margin-top: 0.5rem;" :data-verified="message.isVerified()">
         <div class="flex-shrink-0 mr-5px">
             <img
@@ -22,7 +25,7 @@
                 <div v-if="message.getContent().getType() == 'g'" class="border border-solid border-green-700 rounded p-1">
                     <small>{{message.getContent().getGroup()}}</small>
                     <div>{{message.getContent().getText()}}</div>
-                    <button class="btn">Join</button>
+                    <button class="btn" v-on:click="join(message)">Join</button>
                 </div>
                 <div v-else-if="message.getContent().getText">
                     {{message.getContent().getText()}}
@@ -34,14 +37,24 @@
         </div>
     </div>
 </template>
-<script setup>
+<script setup type="ts">
+import { ref } from 'vue'
 const props = defineProps({
   message: Object,
 });
+const joinData = ref(null);
+const newUserMessageModalOpen = ref(false);
+const toggleNewUserMessageModalOpen = () => {
+  newUserMessageModalOpen.value = !newUserMessageModalOpen.value;
+};
 const decrypt = async function(message) {
     console.log("decrypt");
     console.log(message);
 };
+function join(message) {
+    joinData.value = message;
+    newUserMessageModalOpen.value = true;
+}
 function toAbsoluteTimeString(ti) {
     var date = new Date(ti);
     return date.toString()+'\n'+date.toUTCString();

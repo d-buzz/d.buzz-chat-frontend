@@ -916,6 +916,7 @@ class MessageManager {
         this.selectedConversation = null;
         this.conversations = new utils_1.AccountDataCache();
         this.keys = {};
+        this.keychainPromise = null;
         this.defaultReadHistoryMS = 30 * 24 * 60 * 60000;
     }
     setNodes(nodes) {
@@ -999,7 +1000,11 @@ class MessageManager {
     getPrivatePreferences() {
         return __awaiter(this, void 0, void 0, function* () {
             var p = yield this.getPreferences();
-            return yield p.getPrivatePreferencesWithKeychain(this.user);
+            if (this.keychainPromise != null)
+                yield this.keychainPromise;
+            var promise = p.getPrivatePreferencesWithKeychain(this.user);
+            this.keychainPromise = promise;
+            return yield promise;
         });
     }
     storeKeyLocallyEncryptedWithKeychain(group, key) {
@@ -1019,8 +1024,9 @@ class MessageManager {
             var key = pref.getKeyFor(group);
             if (key === null) {
                 var text = window.localStorage.getItem(this.user + "|" + group);
-                if (text != null)
+                if (text != null) {
                     keys[group] = key = yield imports_1.Content.decodeTextWithKeychain(this.user, text);
+                }
             }
             return key;
         });

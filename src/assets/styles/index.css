@@ -14,8 +14,10 @@
 }
 
 .tab > button {
-    @apply px-1;
+    @apply mx-1;
+    padding: 0px 1px;
     font-weight: bold;
+    border-bottom: 5px solid #c7c7c7;
 }
 .tab > button[aria-selected="true"] {
     border-bottom: 5px solid #059669;
