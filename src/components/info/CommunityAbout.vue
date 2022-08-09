@@ -1,15 +1,20 @@
 <template>
   <div class="w-full h-full flex flex-col overflow-y-scroll" v-if='community'>
-    <div class="flex border-b-1 font-bold">About</div>
+    <div class="flex font-bold">About</div>
     <div>{{community.getAbout()}}</div>
-    <div class="flex border-b-1 font-bold">Description</div>
+    <hr>
+    <div class="flex font-bold">Description</div>
     <div>{{community.getDescription()}}</div>
-    <div class="flex border-b-1 font-bold">Rules</div>
+    <hr>
+    <div class="flex font-bold">Rules</div>
     <div>{{community.getRules()}}</div>
-    <div class="flex border-b-1 font-bold">Team</div>
-    <div v-for="team in community.communityData.team">
-        <small class="ml-10"><b>{{team[1]}} {{team[2]}}</b></small>
-        <Conversation :username="team[0]"/> 
+    <hr>
+    <div class="flex font-bold">Team and Moderators</div>
+    <div class="flex flex-wrap justify-between">
+        <div v-for="team in community.communityData.team">
+            <small class="ml-10"><b>{{team[1]}} {{team[2]}}</b></small>
+            <Conversation :username="team[0]"/> 
+        </div>
     </div>
  </div>
 </template>

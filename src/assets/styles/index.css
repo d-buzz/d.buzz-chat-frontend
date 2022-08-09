@@ -26,6 +26,9 @@
 .border-r-1 {
     border-right: 1px solid #950017;
 }
+.border-t-1 {
+    border-top: 1px solid #950017;
+}
 .border-b-1 {
     border-bottom: 1px solid #950017;
 }
@@ -47,4 +50,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+hr {
+    border-top: 1px solid #0000003d;
+    height: 1px;
+    width: 100%;
+    margin: 3px 0px 0px 0px;
+}
 
