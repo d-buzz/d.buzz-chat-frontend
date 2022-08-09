@@ -1,6 +1,6 @@
 <template>
   <div class="h-screen m-0 flex flex-col bg-primary text-secondary shadow-lg overflow-y-scroll border-r-1"
-        style="overflow-y: clip;">
+        style="overflow-x: clip;">
     <div class="pt-1 pr-1 pl-1 pb-1 border-b-1">
         <SideBarLoginIcon/>
     </div>

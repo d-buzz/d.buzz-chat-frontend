@@ -28,7 +28,8 @@ const props = defineProps({
     display: block;
     position: absolute;
     z-index: 7;
-    background: rgba(0,0,0,0.25);
+    /*background: rgba(0,0,0,0.25);*/
+    background: rgba(227, 19, 55, 0.5);
     padding: 0;
     margin: 0;
     align-self: flex-start;
