@@ -1,6 +1,6 @@
 <template>
-    <router-link :to="`/${link}`">
-        <div class="flex pt-1">
+    <router-link :to="`${link}`">
+        <div class="flex style" :class="{selected: $route.path == link}">
             <div class="flex-shrink-0 mr-5px">
                 <img
                 class="rounded-full avConversation"
@@ -40,7 +40,7 @@ async function initConversation() {
 
         iconUsername.value = props.username;
         users.value = (group !== null && group.name != null)?`${group.name} (${id})`:conversation;
-        link.value = 'g/'+conversation.substring(1);
+        link.value = '/g/'+conversation.substring(1);
     }
     else {
         var list = conversation.split('|');
@@ -52,8 +52,21 @@ async function initConversation() {
             link.value += (link.value.length>0?'/':'')+list[j];
         }
         users.value = link.value.replaceAll('/', ', ');
-        link.value = 'p/'+link.value;
+        link.value = '/p/'+link.value;
     }
 }
 initConversation();
 </script>
+<style scoped>
+.style {
+    border: 1px solid transparent;
+    padding:3px;
+}
+.selected { 
+    @apply rounded;
+    /*background: linear-gradient(rgba(255,255,255,0.25), rgba(0,0,0,0.1));*/
+    background: rgba(255,255,255,0.37);
+    border: 1px solid rgba(0,0,0,0.1);
+    border-top-color: rgba(255,255,255,0.1);
+}
+</style>

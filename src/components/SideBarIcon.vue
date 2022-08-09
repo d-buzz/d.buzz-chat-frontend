@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center justify-start">
-    <div class="flex-shrink-0">
+    <div class="flex-shrink-0 p-1" :class="{selected: $route.params.user == img}">
         <router-link :to="`/i/${img}/about`">
             <img
             class="rounded-full avCommunity"
@@ -17,4 +17,10 @@ import Login from "../assets/images/icons/login.svg";
 const props = defineProps({
   img: String,
 });
-</script>
+</script> 
+<style scoped>
+.selected { 
+    @apply rounded;
+    background: rgba(255,255,255,0.37);
+}
+</style>

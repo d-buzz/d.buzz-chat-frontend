@@ -69,18 +69,24 @@ async function initConversations(route) {
 
         const manager = getManager();
         var pref = await manager.getPreferences();
+        var groupSetDuplicateCheck = {};
         var groupsArray = [];
         var privatePref = await manager.getPrivatePreferences();
         var joinedGroup = privatePref.keys();
         for(var conversation in joinedGroup) {
+            if(groupSetDuplicateCheck[conversation]) continue;
             var slash = conversation.indexOf('/');
             if(!conversation.startsWith('#') || slash === -1) continue;
             var uname = conversation.substring(1, slash);
             var id = conversation.substring(slash+1);
+            groupSetDuplicateCheck[conversation] = true;
             groupsArray.push({"conversation":conversation, "id":id,"username":uname});
         }
         for(var groupId in pref.getGroups()) {
-            groupsArray.push({"conversation":'#'+username+'/'+groupId,"id":groupId,"username":username});
+            var conversation = '#'+username+'/'+groupId;
+            if(groupSetDuplicateCheck[conversation]) continue;
+            groupSetDuplicateCheck[conversation] = true;
+            groupsArray.push({"conversation":conversation,"id":groupId,"username":username});
         }
         groups.value = groupsArray;
     }
