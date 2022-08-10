@@ -5,30 +5,39 @@
     <TransitionRoot :show="showCloseGroupModal">
         <CloseGroupModal @close="toggleCloseGroup"></CloseGroupModal>
     </TransitionRoot>
-  <div class="w-full h-full flex flex-col justify-end" v-if='messageKey'>
-    <div class="border-b-1 font-bold">
-        {{streamName}}
-        <span v-if="messageKey.startsWith('#')" class="float-right mr-2">
-            <button class="text-sm mr-2" @click="toggleShareGroup" title="share group">
-                <span class="oi oi-people"></span>
-            </button>
-            <button class="text-sm" @click="toggleCloseGroup" title="close group">
-                <span class="oi oi-x align-top"></span>
-            </button>
-        </span>
+  <div class="w-full h-full" v-if='messageKey'>
+     <div class="h-full border-l-1 float-right pr-1 pl-1 w-200 overflow-y-scroll hidden md:block" v-if="$route.name === 'CommunityPath'">
+
+        <div v-for="(users,role) in communityUsers">
+            <small><b>{{role}}</b></small>
+            <Conversation v-for="team in users" :username="team[0]"/> 
+        </div>
+      </div>
+    <div class="h-full flex flex-col justify-end pr-3">
+        <div class="border-b-1 font-bold">
+            {{streamName}}
+            <span v-if="messageKey.startsWith('#')" class="float-right mr-2">
+                <button class="text-sm mr-2" @click="toggleShareGroup" title="share group">
+                    <span class="oi oi-people"></span>
+                </button>
+                <button class="text-sm" @click="toggleCloseGroup" title="close group">
+                    <span class="oi oi-x align-top"></span>
+                </button>
+            </span>
+        </div>
+        <div id="messages" :key="messageKey" class="flex flex-col overflow-y-scroll">
+            <Message v-for="message in displayableMessages" :message="message" />
+        </div>
+        <div class="flex mt-4 mb-2">
+          <input
+            class="shadow appearance-none border border-gray-700 rounded-full w-[calc(100%-4rem)] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline grow"
+            id="Message"
+            v-model="messageText"
+            @keyup.enter="enterMessage(messageText)"
+            type="text"
+            placeholder="Message"
+          />
     </div>
-    <div id="messages" :key="messageKey" class="flex flex-col overflow-y-scroll">
-        <Message v-for="message in displayableMessages" :message="message" />
-    </div>
-    <div class="flex mt-4 mb-2">
-      <input
-        class="shadow appearance-none border border-gray-700 rounded-full w-[calc(100%-4rem)] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline grow"
-        id="Message"
-        v-model="messageText"
-        @keyup.enter="enterMessage(messageText)"
-        type="text"
-        placeholder="Message"
-      />
    </div>
  </div>
 </template>
@@ -42,6 +51,8 @@ const accountStore = useAccountStore();
 const displayableMessages = ref([]);
 const messageKey = ref("");
 const streamName = ref("");
+const community = ref(null);
+const communityUsers = ref({});
 
 const showGroupUserModal = ref(false);
 const showCloseGroupModal = ref(false);
@@ -64,9 +75,16 @@ async function initChat() {
     var conversation = null;
     if(route.name === 'CommunityPath') {
         conversation = user2+'/'+route.params.path;
-        var community = await stlib.Community.load(user2);
-        var stream = (community)?community.findTextStreamById(''+route.params.path):null;
+        var community0 = await stlib.Community.load(user2);
+        var stream = (community0)?community0.findTextStreamById(''+route.params.path):null;
         streamName.value = stream?stream.getName():conversation;
+        community.value = community0;
+        var usersCategories = {};
+        for(var team of community0.communityData.team) {
+            if(usersCategories[team[1]] === undefined) usersCategories[team[1]] = [];
+            usersCategories[team[1]].push(team);
+        }
+        communityUsers.value = usersCategories;
     }
     else if(route.name === 'Group') {
         var pref = await stlib.Utils.getAccountPreferences(user2);

@@ -26,10 +26,12 @@ const link = ref("");
 const iconUsername = ref("");
 const users = ref("");
 async function initConversation() {
+    var username = props.username;
     var conversation = props.conversation;
     if(conversation === undefined) {
         iconUsername.value = props.username;
         users.value = props.username;
+        link.value = '/p/'+props.username;
     }
     else if(conversation.startsWith('#')) {
         var id = props.id;

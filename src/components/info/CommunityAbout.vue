@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full flex flex-col overflow-y-scroll" v-if='community'>
+  <div class="w-full h-full flex flex-col overflow-y-scroll pr-3" v-if='community'>
     <div class="flex font-bold">About</div>
     <div>{{community.getAbout()}}</div>
     <hr>
