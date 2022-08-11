@@ -5,18 +5,41 @@
     <div class="message flex" style="margin-top: 0.5rem;" :data-verified="message.isVerified()">
         <div class="flex-shrink-0 mr-5px">
             <img
+            @click.right.prevent.stop="clickOnIcon($event)"
             class="rounded-full avMessage"
             :src="`https://images.hive.blog/u/${message.getUser()}/avatar/small`"
             alt="@"
             />
+
+            <vue-simple-context-menu
+              element-id="iconMenuId"
+              :options="iconMenuOptions"
+              ref="iconMenu"
+              @option-clicked="clickOnIconOption"
+            />
+
         </div>
-        <div class="grow" style="margin-top:-7px;"> 
+        <div class="grow" style="margin-top:-7px;" @click.right.prevent.stop="clickOnMsg($event)"> 
+            <vue-simple-context-menu
+              element-id="msgMenuId"
+              :options="msgMenuOptions"
+              ref="msgMenu"
+              @option-clicked="clickOnMsgOption"
+            />
             <div>
                 <small><b>{{message.getUser()}}</b></small>
                 <span class="pr-2 float-right">
                     <small class="text-gray-700" :title="toAbsoluteTimeString(message.getTimestamp())">{{toRelativeTimeString(message.getTimestamp())}}</small>
                     <span v-if="!message.isVerified()" class="pl-1">&#10008;</span>
                 </span>
+            </div>
+            <div class="visibleOnHover relative float-right">
+                <div class="flex">
+                    <span class="btn0 bg1"><span class="oi oi-heart"></span></span>
+                    <span class="btn0 bg2"><span class="oi oi-share"></span></span>
+                    <span class="btn0 bg3"><span class="oi oi-pencil"></span></span>
+                    <span class="btn0 bg4"><span class="oi oi-trash"></span></span>
+                </div>
             </div>
             <div v-if="message.getContent()">
                 <div v-if="message.getContent().getType() == 'x'">
@@ -38,7 +61,9 @@
     </div>
 </template>
 <script setup type="ts">
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
+import VueSimpleContextMenu from 'vue-simple-context-menu';
+
 const props = defineProps({
   message: Object,
 });
@@ -47,6 +72,25 @@ const newUserMessageModalOpen = ref(false);
 const toggleNewUserMessageModalOpen = () => {
   newUserMessageModalOpen.value = !newUserMessageModalOpen.value;
 };
+/*icon menu*/
+const iconMenuOptions = [
+    {name:"test1"},{name:"test2"},{name:"test2"},{name:"test2"}
+];
+const iconMenu = ref(null);
+function clickOnIcon(event) { iconMenu.value.showMenu(event, "item"); }
+function clickOnIconOption(item) {
+    console.log("clickOnIconOption ", item);
+}
+/*message menu*/
+const msgMenuOptions = [
+    {name:"emote"},{name:"quote"},{name:"edit"},{name:"delete"}
+];
+const msgMenu = ref(null);
+function clickOnMsg(event) { msgMenu.value.showMenu(event, "item"); }
+function clickOnMsgOption(item) {
+    console.log("clickOnMsgOption ", item);
+}
+/**/
 const decrypt = async function(message) {
     console.log("decrypt");
     console.log(message);
@@ -76,6 +120,34 @@ function toRelativeTimeString(ti) {
 .message[data-verified="true"] {
     background-color: white;
 }
+.visibleOnHover > div {
+    visibility: hidden;
+}
+.visibleOnHover:hover > div {
+    visibility: visible;
+}
+.btn0 {
+    border: 1px solid rgba(0,0,0,0.25);
+    border-radius: 20px;
+    padding: 5px;
+    line-height: 0;
+    display: inline-block;
+    margin-left: 3px;
+    color: #fffa;
+}
+.btn0:hover { 
+    color: #fff;
+    border-color: rgba(0,0,0,0.5);
+}
+.btn0 .oi { top: -1px; } 
+.bg1 { background-color: #ffab83;}
+.bg2 { background-color: #6aaeae;}
+.bg3 { background-color: #f2dd00;}
+.bg4 { background-color: #dd5169;}
+.btn0 .oi-share { top: -2px; } 
+.btn0 .oi-heart { top: 0px; }
+.btn0 .oi-pencil { top: 0px; }
+.btn0 .oi-trash { left: 1px; } 
 </style>
 
 
