@@ -2,7 +2,17 @@
     <TransitionRoot :show="newUserMessageModalOpen">
         <NewUserMessageModal :selectedTab="2" :data="joinData" @close="toggleNewUserMessageModalOpen(false)"></NewUserMessageModal>
     </TransitionRoot>
-    <div class="message flex" style="margin-top: 0.5rem;" :data-verified="message.isVerified()">
+    <hr style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
+    <div v-if="hasQuotedText(message)" class="flex mb-1">
+        <img
+            @click.right.prevent.stop="clickOnIcon($event)"
+            class="rounded-full avMini"
+            :src="`https://images.hive.blog/u/${message.reference.getUser()}/avatar/small`"
+            alt="@"
+            />
+        <small class="pl-1"><b>{{message.reference.getUser()}}</b> {{getQuotedText(message)}}</small>
+    </div>
+    <div class="message flex" :data-verified="message.isVerified()">
         <div class="flex-shrink-0 mr-5px">
             <img
             @click.right.prevent.stop="clickOnIcon($event)"
@@ -19,7 +29,7 @@
             />
 
         </div>
-        <div class="grow" style="margin-top:-7px;" @click.right.prevent.stop="clickOnMsg($event)"> 
+        <div class="grow relative" style="margin-top:-7px;" @click.right.prevent.stop="clickOnMsg($event)"> 
             <vue-simple-context-menu
               element-id="msgMenuId"
               :options="msgMenuOptions"
@@ -33,10 +43,10 @@
                     <span v-if="!message.isVerified()" class="pl-1">&#10008;</span>
                 </span>
             </div>
-            <div class="visibleOnHover relative float-right">
+            <div class="visibleOnHover absolute float-right" style="right: 8px;">
                 <div class="flex">
                     <span class="btn0 bg1"><span class="oi oi-heart"></span></span>
-                    <span class="btn0 bg2"><span class="oi oi-share"></span></span>
+                    <span class="btn0 bg2" @click="quoteAction" title="Quote, select text to quote part of message."><span class="oi oi-share"></span></span>
                     <span class="btn0 bg3"><span class="oi oi-pencil"></span></span>
                     <span class="btn0 bg4"><span class="oi oi-trash"></span></span>
                 </div>
@@ -47,11 +57,11 @@
                 </div>
                 <div v-if="message.getContent().getType() == 'g'" class="border border-solid border-green-700 rounded p-1">
                     <small>{{message.getContent().getGroup()}}</small>
-                    <div>{{message.getContent().getText()}}</div>
+                    <div ref="messageText">{{message.getContent().getText()}}</div>
                     <button class="btn" v-on:click="join(message)">Join</button>
                 </div>
                 <div v-else-if="message.getContent().getText">
-                    {{message.getContent().getText()}}
+                    <div ref="messageText">{{message.getContent().getText()}}</div>
                 </div>
                 <div v-else>
                     Unsupported message type.
@@ -63,7 +73,7 @@
 <script setup type="ts">
 import { ref, nextTick } from 'vue'
 import VueSimpleContextMenu from 'vue-simple-context-menu';
-
+const emit = defineEmits(["quote"]);
 const props = defineProps({
   message: Object,
 });
@@ -72,6 +82,30 @@ const newUserMessageModalOpen = ref(false);
 const toggleNewUserMessageModalOpen = () => {
   newUserMessageModalOpen.value = !newUserMessageModalOpen.value;
 };
+function hasQuotedText(message) {
+    return message && message.getContent() && message.getContent().getType() == 'q' && message.reference && message.reference.getContent() && message.reference.getContent().getText();
+}
+function getQuotedText(message) {
+    try {
+        var text = message.reference.getContent().getText();
+        var quote = message.getContent();
+        var from = quote.getFrom();
+        var to = quote.getTo();
+        if(to === -1) {
+            if(from >= 0 && from < text.length)
+                return text.substring(from);
+        }
+        else {
+            if(from >= 0 && from < text.length && from < to && to <= text.length)
+                return text.substring(from, to);
+        }
+        return text;
+    }
+    catch(e) {
+        console.log(e);
+    }
+    return null;
+}
 /*icon menu*/
 const iconMenuOptions = [
     {name:"test1"},{name:"test2"},{name:"test2"},{name:"test2"}
@@ -89,6 +123,25 @@ const msgMenu = ref(null);
 function clickOnMsg(event) { msgMenu.value.showMenu(event, "item"); }
 function clickOnMsgOption(item) {
     console.log("clickOnMsgOption ", item);
+}
+const messageText = ref();
+function quoteAction() {
+    var msg = messageText.value;
+    if(msg != null) {
+        var text = msg.innerText; 
+        var selected = getSelectionText();
+        var i;
+        if(selected == null || selected.length === 0 || (i=text.indexOf(selected))===-1) 
+            emit("quote", {msg: props.message, text: text, from: 0, to: -1});
+        else emit("quote", {msg: props.message, text: selected, from: i, to: (i+selected.length)});
+    }
+}
+function getSelectionText() {
+    var s = null;
+    if (window.getSelection) s = window.getSelection();
+    else if (document.getSelection) s = document.getSelection();
+    if(s == null) return null;
+    return s.toString();
 }
 /**/
 const decrypt = async function(message) {

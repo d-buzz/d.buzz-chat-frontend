@@ -2,8 +2,8 @@ import { createApp } from "vue";
 import App from "./App.vue";
 
 import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
-import "./assets/styles/index.css";
 import './assets/styles/open-iconic.css';
+import "./assets/styles/index.css";
 
 const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_APP_STING_NODES.split(",") : ["http://localhost:3001"];
 

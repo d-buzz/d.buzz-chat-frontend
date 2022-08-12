@@ -5,7 +5,7 @@
     <TransitionRoot :show="showCloseGroupModal">
         <CloseGroupModal @close="toggleCloseGroup"></CloseGroupModal>
     </TransitionRoot>
-  <div class="w-full h-full" v-if='messageKey'>
+  <div class="w-full h-full break-all" v-if='messageKey'>
      <div class="h-full border-l-1 float-right pr-1 pl-1 w-200 overflow-y-scroll hidden md:block" v-if="$route.name === 'CommunityPath'">
 
         <div v-for="(users,role) in communityUsers">
@@ -26,7 +26,11 @@
             </span>
         </div>
         <div id="messages" :key="messageKey" class="flex flex-col overflow-y-scroll">
-            <Message v-for="message in displayableMessages" :message="message" />
+            <Message v-for="message in displayableMessages" :message="message" @quote="quote" />
+        </div>
+        <div v-if="quoteMsg" class="text-sm border-t-1">
+            <button class="float-right" @click="quote(null)"><span class="oi oi-circle-x align-top"></span></button>
+            <div class="overflow-x-hidden" style="text-overflow: ellipsis;"><span class="font-bold">{{quoteMsg.msg.getUser()}}:</span> {{quoteMsg.text}}</div>
         </div>
         <div class="flex mt-4 mb-2">
           <input
@@ -131,6 +135,11 @@ async function initChat() {
     }
 }
 initChat();
+const quoteMsg = ref(null);
+function quote(obj) {
+    console.log("quote", obj)
+    quoteMsg.value = obj;
+}
 var sendingMessage = false;
 const enterMessage = async (message) => {
     if(sendingMessage) return;
@@ -144,14 +153,21 @@ const enterMessage = async (message) => {
 
         const manager = getManager();
         var client = manager.client;
-        var textMsg = stlib.Content.text(message);
+        var textMsg = null;
+        var quoteValue = quoteMsg.value;
+        if(quoteValue !== null) {
+            textMsg = stlib.Content.quote(message, quoteValue.msg.message, quoteValue.from, quoteValue.to);
+        }
+        else textMsg = stlib.Content.text(message);
+
+        console.log(textMsg);
 
         var encodeKey = null;
         var conversation = null;
         if(route.name === 'CommunityPath') {
             conversation = user2+'/'+route.params.path;
         }
-        if(route.name === 'Group') {
+        else if(route.name === 'Group') {
             conversation = '#'+user2+'/'+route.params.path;
             encodeKey = await manager.getKeyFor(conversation);
             if(encodeKey === null) {
@@ -177,6 +193,7 @@ const enterMessage = async (message) => {
         var result = await client.write(signableMessage);
         if(result.isSuccess()) {
             document.getElementById("Message").value = "";
+            if(quoteMsg.value !== null) quoteMsg.value = null;
         }
         else { 
             console.log(result);

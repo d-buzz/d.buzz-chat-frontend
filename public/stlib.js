@@ -864,6 +864,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DisplayableMessage = void 0;
 class DisplayableMessage {
     constructor(message) {
+        this.reference = null;
         this.message = message;
         this.content = undefined;
         this.verified = null;
@@ -957,8 +958,10 @@ class MessageManager {
                     var onmessage = _this.onmessage;
                     var displayableMessage = yield _this.jsonToDisplayable(json);
                     var data = _this.conversations.lookupValue(displayableMessage.getConversation());
-                    if (data != null)
+                    if (data != null) {
                         data.messages.push(displayableMessage);
+                        _this.resolveReference(data.messages, displayableMessage);
+                    }
                     if (onmessage != null)
                         onmessage(displayableMessage);
                 });
@@ -1089,6 +1092,7 @@ class MessageManager {
                             throw result.getError();
                         return _this.toDisplayable(result);
                     }).then((messages) => {
+                        _this.resolveReferences(messages);
                         return { messages };
                     });
                 }
@@ -1118,7 +1122,9 @@ class MessageManager {
             var result = yield client.readUserMessages(user, timeNow - this.defaultReadHistoryMS, timeNow + 600000);
             if (!result.isSuccess())
                 throw result.getError();
-            return yield this.toDisplayable(result);
+            var messages = yield this.toDisplayable(result);
+            this.resolveReferences(messages);
+            return messages;
         });
     }
     sendMessage(msg, conversation, keychainKeyType = 'Posting') {
@@ -1143,6 +1149,29 @@ class MessageManager {
                 signableMessage.encodeWithKey(encodeKey);
             return yield client.write(signableMessage);
         });
+    }
+    resolveReferences(messages) {
+        for (var msg of messages)
+            this.resolveReference(messages, msg);
+    }
+    resolveReference(messages, msg) {
+        try {
+            var content = msg.getContent();
+            if (content instanceof imports_1.WithReference) {
+                var ref = content.getReference().split('|');
+                var user = ref[0];
+                var time = Number(ref[1]);
+                for (var m of messages) {
+                    if (m.getUser() == user && m.getTimestamp() == time) {
+                        msg.reference = m;
+                        return;
+                    }
+                }
+            }
+        }
+        catch (e) {
+            console.log("error resolving reference ", msg, e);
+        }
     }
     toDisplayable(result) {
         return __awaiter(this, void 0, void 0, function* () {
