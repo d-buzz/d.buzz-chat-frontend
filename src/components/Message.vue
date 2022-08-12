@@ -27,15 +27,14 @@
               ref="iconMenu"
               @option-clicked="clickOnIconOption"
             />
-
-        </div>
-        <div class="grow relative" style="margin-top:-7px;" @click.right.prevent.stop="clickOnMsg($event)"> 
             <vue-simple-context-menu
               element-id="msgMenuId"
               :options="msgMenuOptions"
               ref="msgMenu"
               @option-clicked="clickOnMsgOption"
             />
+        </div>
+        <div class="grow relative" style="margin-top:-7px;" @click.right.prevent.stop="clickOnMsg($event)"> 
             <div>
                 <small><b>{{message.getUser()}}</b></small>
                 <span class="pr-2 float-right">
@@ -47,8 +46,8 @@
                 <div class="flex">
                     <span class="btn0 bg1"><span class="oi oi-heart"></span></span>
                     <span class="btn0 bg2" @click="quoteAction" title="Quote, select text to quote part of message."><span class="oi oi-share"></span></span>
-                    <span class="btn0 bg3"><span class="oi oi-pencil"></span></span>
-                    <span class="btn0 bg4"><span class="oi oi-trash"></span></span>
+                    <span class="btn0 bg3" @click="editAction"><span class="oi oi-pencil"></span></span>
+                    <span class="btn0 bg4" @click="deleteAction"><span class="oi oi-trash"></span></span>
                 </div>
             </div>
             <div v-if="message.getContent()">
@@ -73,7 +72,7 @@
 <script setup type="ts">
 import { ref, nextTick } from 'vue'
 import VueSimpleContextMenu from 'vue-simple-context-menu';
-const emit = defineEmits(["quote"]);
+const emit = defineEmits(["quote", "action"]);
 const props = defineProps({
   message: Object,
 });
@@ -122,7 +121,11 @@ const msgMenuOptions = [
 const msgMenu = ref(null);
 function clickOnMsg(event) { msgMenu.value.showMenu(event, "item"); }
 function clickOnMsgOption(item) {
-    console.log("clickOnMsgOption ", item);
+    switch(item.option.name) {
+        case "quote":
+            quoteAction();
+            break;
+    }
 }
 const messageText = ref();
 function quoteAction() {
@@ -132,9 +135,25 @@ function quoteAction() {
         var selected = getSelectionText();
         var i;
         if(selected == null || selected.length === 0 || (i=text.indexOf(selected))===-1) 
-            emit("quote", {msg: props.message, text: text, from: 0, to: -1});
-        else emit("quote", {msg: props.message, text: selected, from: i, to: (i+selected.length)});
+            emit("action", {
+                msg: props.message,
+                type: stlib.Content.Quote.TYPE,
+                text: text, from: 0, to: -1});
+        else emit("action", {
+                msg: props.message,
+                type: stlib.Content.Quote.TYPE,
+                text: selected, from: i, to: (i+selected.length)});
     }
+}
+function editAction() {
+    /*emit("action", {
+        msg: props.message,
+        type: stlib.Content.Edit.TYPE,
+        text: 
+    });*/
+}
+function deleteAction() {
+
 }
 function getSelectionText() {
     var s = null;
@@ -187,6 +206,7 @@ function toRelativeTimeString(ti) {
     display: inline-block;
     margin-left: 3px;
     color: #fffa;
+    cursor: pointer;
 }
 .btn0:hover { 
     color: #fff;

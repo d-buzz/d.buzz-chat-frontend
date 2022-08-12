@@ -13,7 +13,7 @@
             <Conversation v-for="team in users" :username="team[0]"/> 
         </div>
       </div>
-    <div class="h-full flex flex-col justify-end pr-3">
+    <div class="h-full flex flex-col justify-end">
         <div class="border-b-1 font-bold">
             {{streamName}}
             <span v-if="messageKey.startsWith('#')" class="float-right mr-2">
@@ -25,17 +25,16 @@
                 </button>
             </span>
         </div>
-        <div id="messages" :key="messageKey" class="flex flex-col overflow-y-scroll">
-            <Message v-for="message in displayableMessages" :message="message" @quote="quote" />
+        <div ref="messages" :key="messageKey" class="flex flex-col overflow-y-scroll pr-3">
+            <Message v-for="message in displayableMessages" :message="message" @action="setContentMessage" />
         </div>
-        <div v-if="quoteMsg" class="text-sm border-t-1">
-            <button class="float-right" @click="quote(null)"><span class="oi oi-circle-x align-top"></span></button>
-            <div class="overflow-x-hidden" style="text-overflow: ellipsis;"><span class="font-bold">{{quoteMsg.msg.getUser()}}:</span> {{quoteMsg.text}}</div>
+        <div v-if="contentMsg" class="text-sm border-t-1 pr-3">
+            <button class="float-right" @click="contentMessage(null)"><span class="oi oi-circle-x align-top"></span></button>
+            <div class="overflow-x-hidden" style="text-overflow: ellipsis;"><span class="font-bold">{{contentMsg.msg.getUser()}}:</span> {{contentMsg.text}}</div>
         </div>
         <div class="flex mt-4 mb-2">
           <input
             class="shadow appearance-none border border-gray-700 rounded-full w-[calc(100%-4rem)] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline grow"
-            id="Message"
             v-model="messageText"
             @keyup.enter="enterMessage(messageText)"
             type="text"
@@ -57,6 +56,8 @@ const messageKey = ref("");
 const streamName = ref("");
 const community = ref(null);
 const communityUsers = ref({});
+const messageText = ref();
+const messages = ref();
 
 const showGroupUserModal = ref(false);
 const showCloseGroupModal = ref(false);
@@ -112,7 +113,7 @@ async function initChat() {
         manager.setConversation(conversation);
        
         var updateMessages = async () => {
-            var container = document.getElementById("messages");
+            var container = messages.value;
             var scrollToBottom = true;
             var scrollTop = 0;
             if(container) { 
@@ -124,7 +125,7 @@ async function initChat() {
             displayableMessages.value = data.messages;
             messageKey.value = conversation+"#"+data.messages.length;
             nextTick(() => {
-                var container = document.getElementById("messages");
+                var container = messages.value;
                 if(container) container.scrollTop = scrollToBottom?
                               container.scrollHeight:scrollTop;
             });
@@ -135,10 +136,11 @@ async function initChat() {
     }
 }
 initChat();
-const quoteMsg = ref(null);
-function quote(obj) {
-    console.log("quote", obj)
-    quoteMsg.value = obj;
+const contentMsg = ref(null);
+function setContentMessage(obj) {
+    console.log("contentMessage", obj)
+    contentMsg.value = obj;
+    
 }
 var sendingMessage = false;
 const enterMessage = async (message) => {
@@ -154,11 +156,15 @@ const enterMessage = async (message) => {
         const manager = getManager();
         var client = manager.client;
         var textMsg = null;
-        var quoteValue = quoteMsg.value;
-        if(quoteValue !== null) {
-            textMsg = stlib.Content.quote(message, quoteValue.msg.message, quoteValue.from, quoteValue.to);
+        var contentMessage = contentMsg.value;
+        if(contentMessage !== null) {
+            switch(contentMessage.type) {
+                case stlib.Content.Quote.TYPE:
+                    textMsg = stlib.Content.quote(message, contentMessage.msg.message, contentMessage.from, contentMessage.to);
+                break;
+            }
         }
-        else textMsg = stlib.Content.text(message);
+        if(textMsg === null) textMsg = stlib.Content.text(message);
 
         console.log(textMsg);
 
@@ -192,8 +198,8 @@ const enterMessage = async (message) => {
         
         var result = await client.write(signableMessage);
         if(result.isSuccess()) {
-            document.getElementById("Message").value = "";
-            if(quoteMsg.value !== null) quoteMsg.value = null;
+            messageText.value = "";
+            if(contentMsg.value !== null) contentMsg.value = null;
         }
         else { 
             console.log(result);
