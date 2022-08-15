@@ -2,7 +2,6 @@
     <TransitionRoot :show="newUserMessageModalOpen">
         <NewUserMessageModal :selectedTab="2" :data="joinData" @close="toggleNewUserMessageModalOpen(false)"></NewUserMessageModal>
     </TransitionRoot>
-    <hr style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
     <div v-if="hasQuotedText(message)" class="flex mb-1">
         <img
             @click.right.prevent.stop="clickOnIcon($event)"
@@ -22,12 +21,14 @@
             />
 
             <vue-simple-context-menu
+                v-if="!displayOnly"
               element-id="iconMenuId"
               :options="iconMenuOptions"
               ref="iconMenu"
               @option-clicked="clickOnIconOption"
             />
             <vue-simple-context-menu
+                v-if="!displayOnly"
               element-id="msgMenuId"
               :options="msgMenuOptions"
               ref="msgMenu"
@@ -42,12 +43,12 @@
                     <span v-if="!message.isVerified()" class="pl-1">&#10008;</span>
                 </span>
             </div>
-            <div class="visibleOnHover absolute float-right" style="right: 8px;">
+            <div v-if="!displayOnly" class="visibleOnHover absolute float-right" style="right: 8px;">
                 <div class="flex">
                     <span class="btn0 bg1"><span class="oi oi-heart"></span></span>
                     <span class="btn0 bg2" @click="quoteAction" title="Quote, select text to quote part of message."><span class="oi oi-share"></span></span>
-                    <span class="btn0 bg3" @click="editAction"><span class="oi oi-pencil"></span></span>
-                    <span class="btn0 bg4" @click="deleteAction"><span class="oi oi-trash"></span></span>
+                    <span class="btn0 bg3" @click="editAction" title="Edit message."><span class="oi oi-pencil"></span></span>
+                    <span class="btn0 bg4" @click="deleteAction" title="Delete message."><span class="oi oi-trash"></span></span>
                 </div>
             </div>
             <div v-if="message.getContent()">
@@ -75,6 +76,7 @@ import VueSimpleContextMenu from 'vue-simple-context-menu';
 const emit = defineEmits(["quote", "action"]);
 const props = defineProps({
   message: Object,
+  displayOnly: Boolean
 });
 const joinData = ref(null);
 const newUserMessageModalOpen = ref(false);
@@ -146,14 +148,18 @@ function quoteAction() {
     }
 }
 function editAction() {
-    /*emit("action", {
+    emit("action", {
         msg: props.message,
         type: stlib.Content.Edit.TYPE,
-        text: 
-    });*/
+        text: 'editing message'
+    });  
 }
 function deleteAction() {
-
+    emit("action", {
+        msg: props.message,
+        type: 'delete',
+        text: 'delete message'
+    }); 
 }
 function getSelectionText() {
     var s = null;

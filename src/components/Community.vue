@@ -5,6 +5,9 @@
     <TransitionRoot :show="showCloseGroupModal">
         <CloseGroupModal @close="toggleCloseGroup"></CloseGroupModal>
     </TransitionRoot>
+    <TransitionRoot :show="showDeleteMessageModal">
+        <DeleteMessageModal @close="toggleDeleteMessage" :msg="deleteMessageRef"></DeleteMessageModal>
+    </TransitionRoot>
   <div class="w-full h-full break-all" v-if='messageKey'>
      <div class="h-full border-l-1 float-right pr-1 pl-1 w-200 overflow-y-scroll hidden md:block" v-if="$route.name === 'CommunityPath'">
 
@@ -26,10 +29,13 @@
             </span>
         </div>
         <div ref="messages" :key="messageKey" class="flex flex-col overflow-y-scroll pr-3">
-            <Message v-for="message in displayableMessages" :message="message" @action="setContentMessage" />
+            <div v-for="message in displayableMessages" >
+                <hr style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
+                <Message :message="message" @action="setContentMessage" />
+           </div>
         </div>
         <div v-if="contentMsg" class="text-sm border-t-1 pr-3">
-            <button class="float-right" @click="contentMessage(null)"><span class="oi oi-circle-x align-top"></span></button>
+            <button class="float-right" @click="setContentMessage(null)"><span class="oi oi-circle-x align-top"></span></button>
             <div class="overflow-x-hidden" style="text-overflow: ellipsis;"><span class="font-bold">{{contentMsg.msg.getUser()}}:</span> {{contentMsg.text}}</div>
         </div>
         <div class="flex mt-4 mb-2">
@@ -61,12 +67,17 @@ const messages = ref();
 
 const showGroupUserModal = ref(false);
 const showCloseGroupModal = ref(false);
+const showDeleteMessageModal = ref(false);
+const deleteMessageRef = ref();
 
 function toggleShareGroup() {
     showGroupUserModal.value = !showGroupUserModal.value;
 }
 function toggleCloseGroup() {
     showCloseGroupModal.value = !showCloseGroupModal.value;
+}
+function toggleDeleteMessage() {
+    showDeleteMessageModal.value = !showDeleteMessageModal.value;
 }
 async function initChat() {
     var user = accountStore.account.name;
@@ -138,9 +149,22 @@ async function initChat() {
 initChat();
 const contentMsg = ref(null);
 function setContentMessage(obj) {
-    console.log("contentMessage", obj)
+    console.log("contentMessage", obj);
+    if(obj == null) {
+        var val = contentMsg.value; //clear message field if closing edit action
+        if(val && val.type === stlib.Content.Edit.TYPE) messageText.value = "";
+        contentMsg.value = null;
+        return;
+    }
+    if(obj.type === 'delete') {
+        deleteMessageRef.value = obj.msg;
+        toggleDeleteMessage();
+        return;
+    }
     contentMsg.value = obj;
-    
+    if(obj.type === stlib.Content.Edit.TYPE) {
+        messageText.value = obj.msg.getContent().getText();
+    }
 }
 var sendingMessage = false;
 const enterMessage = async (message) => {
@@ -154,7 +178,7 @@ const enterMessage = async (message) => {
         if(user2 == null || user2 == "") return;
 
         const manager = getManager();
-        var client = manager.client;
+        //var client = manager.client;
         var textMsg = null;
         var contentMessage = contentMsg.value;
         if(contentMessage !== null) {
@@ -162,24 +186,29 @@ const enterMessage = async (message) => {
                 case stlib.Content.Quote.TYPE:
                     textMsg = stlib.Content.quote(message, contentMessage.msg.message, contentMessage.from, contentMessage.to);
                 break;
+                case stlib.Content.Edit.TYPE:
+                    var editContent = contentMessage.msg.message.getContent().copy();
+                    editContent.setText(message);
+                    textMsg = stlib.Content.edit(editContent, contentMessage.msg.message);
+                break;
             }
         }
         if(textMsg === null) textMsg = stlib.Content.text(message);
 
         console.log(textMsg);
 
-        var encodeKey = null;
+        //var encodeKey = null;
         var conversation = null;
         if(route.name === 'CommunityPath') {
             conversation = user2+'/'+route.params.path;
         }
         else if(route.name === 'Group') {
             conversation = '#'+user2+'/'+route.params.path;
-            encodeKey = await manager.getKeyFor(conversation);
-            if(encodeKey === null) {
-                console.log("unknown key"); //TODO ask to enter key
-                return;
-            }
+            //encodeKey = await manager.getKeyFor(conversation);
+            //if(encodeKey === null) {
+             //   console.log("unknown key"); //TODO ask to enter key
+            //    return;
+           // }
         }
         else {
             conversation = [user, user2];
@@ -187,16 +216,17 @@ const enterMessage = async (message) => {
                 conversation.push(route.params.user2);
                 if(route.params.user3) conversation.push(route.params.user3);
             }
-            textMsg = await textMsg.encodeWithKeychain(user, conversation, "Posting"); 
+           // textMsg = await textMsg.encodeWithKeychain(user, conversation, "Posting"); 
         }
 
-        var signableMessage = textMsg.forUser(user, conversation);
-        await signableMessage.signWithKeychain('Posting');
-        if(encodeKey !== null) signableMessage.encodeWithKey(encodeKey);
+        //var signableMessage = textMsg.forUser(user, conversation);
+        //await signableMessage.signWithKeychain('Posting');
+        //if(encodeKey !== null) signableMessage.encodeWithKey(encodeKey);
 
-        console.log("write ", signableMessage);
+        //console.log("write ", signableMessage);
         
-        var result = await client.write(signableMessage);
+        var result = await manager.sendMessage(textMsg, conversation);
+        //var result = await client.write(signableMessage);
         if(result.isSuccess()) {
             messageText.value = "";
             if(contentMsg.value !== null) contentMsg.value = null;

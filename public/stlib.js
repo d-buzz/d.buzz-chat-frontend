@@ -246,7 +246,7 @@ class Community {
 exports.Community = Community;
 Community.MAX_TEXT_STREAMS = 64;
 
-},{"./data-path":14,"./data-stream":15,"./utils":21}],3:[function(require,module,exports){
+},{"./data-path":15,"./data-stream":16,"./utils":22}],3:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -258,7 +258,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.GroupInvite = exports.Encoded = exports.JSONContent = exports.decodeTextWithKeychain = exports.encodeTextWithKeychain = exports.decodedMessage = exports.encodedMessage = exports.preferences = exports.groupInvite = exports.emote = exports.quote = exports.thread = exports.text = exports.fromJSON = exports.type = void 0;
+exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.GroupInvite = exports.Encoded = exports.Edit = exports.JSONContent = exports.decodeTextWithKeychain = exports.encodeTextWithKeychain = exports.decodedMessage = exports.encodedMessage = exports.preferences = exports.groupInvite = exports.emote = exports.edit = exports.quote = exports.thread = exports.text = exports.fromJSON = exports.type = void 0;
 const imports_1 = require("./imports");
 Object.defineProperty(exports, "JSONContent", { enumerable: true, get: function () { return imports_1.JSONContent; } });
 Object.defineProperty(exports, "Encoded", { enumerable: true, get: function () { return imports_1.Encoded; } });
@@ -267,6 +267,7 @@ Object.defineProperty(exports, "Text", { enumerable: true, get: function () { re
 Object.defineProperty(exports, "WithReference", { enumerable: true, get: function () { return imports_1.WithReference; } });
 Object.defineProperty(exports, "Thread", { enumerable: true, get: function () { return imports_1.Thread; } });
 Object.defineProperty(exports, "Quote", { enumerable: true, get: function () { return imports_1.Quote; } });
+Object.defineProperty(exports, "Edit", { enumerable: true, get: function () { return imports_1.Edit; } });
 Object.defineProperty(exports, "Emote", { enumerable: true, get: function () { return imports_1.Emote; } });
 Object.defineProperty(exports, "Preferences", { enumerable: true, get: function () { return imports_1.Preferences; } });
 Object.defineProperty(exports, "PrivatePreferences", { enumerable: true, get: function () { return imports_1.PrivatePreferences; } });
@@ -284,6 +285,7 @@ function fromJSON(json) {
         case imports_1.Text.TYPE: return new imports_1.Text(json);
         case imports_1.Thread.TYPE: return new imports_1.Thread(json);
         case imports_1.Quote.TYPE: return new imports_1.Quote(json);
+        case imports_1.Edit.TYPE: return new imports_1.Edit(json);
         case imports_1.Emote.TYPE: return new imports_1.Emote(json);
         case imports_1.GroupInvite.TYPE: return new imports_1.GroupInvite(json);
         case imports_1.Preferences.TYPE: return new imports_1.Preferences(json);
@@ -309,6 +311,12 @@ function quote(message, parentMessage, quoteFrom = 0, quoteTo = -1) {
     ]);
 }
 exports.quote = quote;
+function edit(editedContent, parentMessage) {
+    return new imports_1.Edit([imports_1.Edit.TYPE, editedContent.toJSON(),
+        parentMessage.getReference()
+    ]);
+}
+exports.edit = edit;
 function emote(emote, parentMessage) {
     return new imports_1.Emote([imports_1.Emote.TYPE, emote,
         parentMessage.getReference()
@@ -373,7 +381,20 @@ function decodeTextWithKeychain(user, message, keychainKeyType = 'Posting') {
 }
 exports.decodeTextWithKeychain = decodeTextWithKeychain;
 
-},{"./imports":7}],4:[function(require,module,exports){
+},{"./imports":8}],4:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Edit = void 0;
+const imports_1 = require("./imports");
+class Edit extends imports_1.WithReference {
+    constructor(json) { super(json); }
+    getEdit() { return this.json[1]; }
+    setEdit(json) { this.json[1] = json; }
+}
+exports.Edit = Edit;
+Edit.TYPE = "d";
+
+},{"./imports":8}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Emote = void 0;
@@ -384,7 +405,7 @@ class Emote extends imports_1.WithReference {
 exports.Emote = Emote;
 Emote.TYPE = "e";
 
-},{"./imports":7}],5:[function(require,module,exports){
+},{"./imports":8}],6:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -448,7 +469,7 @@ class Encoded extends imports_1.JSONContent {
 exports.Encoded = Encoded;
 Encoded.TYPE = "x";
 
-},{"./imports":7}],6:[function(require,module,exports){
+},{"./imports":8}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GroupInvite = void 0;
@@ -463,10 +484,10 @@ class GroupInvite extends imports_1.Text {
 exports.GroupInvite = GroupInvite;
 GroupInvite.TYPE = "g";
 
-},{"./imports":7}],7:[function(require,module,exports){
+},{"./imports":8}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.GroupInvite = exports.Encoded = exports.JSONContent = exports.Content = exports.SignableMessage = void 0;
+exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.Edit = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.GroupInvite = exports.Encoded = exports.JSONContent = exports.Content = exports.SignableMessage = void 0;
 const signable_message_1 = require("../signable-message");
 Object.defineProperty(exports, "SignableMessage", { enumerable: true, get: function () { return signable_message_1.SignableMessage; } });
 const Content = require("./content");
@@ -485,13 +506,15 @@ const thread_1 = require("./thread");
 Object.defineProperty(exports, "Thread", { enumerable: true, get: function () { return thread_1.Thread; } });
 const quote_1 = require("./quote");
 Object.defineProperty(exports, "Quote", { enumerable: true, get: function () { return quote_1.Quote; } });
+const edit_1 = require("./edit");
+Object.defineProperty(exports, "Edit", { enumerable: true, get: function () { return edit_1.Edit; } });
 const emote_1 = require("./emote");
 Object.defineProperty(exports, "Emote", { enumerable: true, get: function () { return emote_1.Emote; } });
 const preferences_1 = require("./preferences");
 Object.defineProperty(exports, "Preferences", { enumerable: true, get: function () { return preferences_1.Preferences; } });
 Object.defineProperty(exports, "PrivatePreferences", { enumerable: true, get: function () { return preferences_1.PrivatePreferences; } });
 
-},{"../signable-message":19,"./content":3,"./emote":4,"./encoded":5,"./group-invite":6,"./jsoncontent":8,"./preferences":9,"./quote":10,"./text":11,"./thread":12,"./with-reference":13}],8:[function(require,module,exports){
+},{"../signable-message":20,"./content":3,"./edit":4,"./emote":5,"./encoded":6,"./group-invite":7,"./jsoncontent":9,"./preferences":10,"./quote":11,"./text":12,"./thread":13,"./with-reference":14}],9:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -511,6 +534,7 @@ class JSONContent {
     }
     getType() { return this.json[0]; }
     toJSON() { return this.json; }
+    copy() { return new this.constructor(JSON.parse(JSON.stringify(this.json))); }
     encodeWithKey(user, groupUsers, keytype, privateK, publicK) {
         groupUsers.sort();
         var string = JSON.stringify(this.json);
@@ -558,7 +582,7 @@ class JSONContent {
 }
 exports.JSONContent = JSONContent;
 
-},{"./imports":7}],9:[function(require,module,exports){
+},{"./imports":8}],10:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -691,7 +715,7 @@ exports.Preferences = Preferences;
 Preferences.TYPE = "p";
 Preferences.MAX_USER_GROUPS = 64;
 
-},{"./imports":7}],10:[function(require,module,exports){
+},{"./imports":8}],11:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Quote = void 0;
@@ -708,7 +732,7 @@ class Quote extends imports_1.WithReference {
 exports.Quote = Quote;
 Quote.TYPE = "q";
 
-},{"./imports":7}],11:[function(require,module,exports){
+},{"./imports":8}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Text = void 0;
@@ -721,7 +745,7 @@ class Text extends imports_1.JSONContent {
 exports.Text = Text;
 Text.TYPE = "t";
 
-},{"./imports":7}],12:[function(require,module,exports){
+},{"./imports":8}],13:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Thread = void 0;
@@ -732,7 +756,7 @@ class Thread extends imports_1.WithReference {
 exports.Thread = Thread;
 Thread.TYPE = "h";
 
-},{"./imports":7}],13:[function(require,module,exports){
+},{"./imports":8}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WithReference = void 0;
@@ -746,7 +770,7 @@ class WithReference extends imports_1.JSONContent {
 }
 exports.WithReference = WithReference;
 
-},{"./imports":7}],14:[function(require,module,exports){
+},{"./imports":8}],15:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DataPath = void 0;
@@ -811,7 +835,7 @@ exports.DataPath = DataPath;
 DataPath.TYPE_INFO = "i";
 DataPath.TYPE_TEXT = "t";
 
-},{"./utils":21}],15:[function(require,module,exports){
+},{"./utils":22}],16:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DataStream = void 0;
@@ -858,7 +882,7 @@ class DataStream {
 }
 exports.DataStream = DataStream;
 
-},{"./data-path":14,"./permission-set":18}],16:[function(require,module,exports){
+},{"./data-path":15,"./permission-set":19}],17:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DisplayableMessage = void 0;
@@ -885,7 +909,7 @@ class DisplayableMessage {
 }
 exports.DisplayableMessage = DisplayableMessage;
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1214,7 +1238,7 @@ class MessageManager {
 }
 exports.MessageManager = MessageManager;
 
-},{"./client":1,"./content/imports":7,"./displayable-message":16,"./signable-message":19,"./utils":21}],18:[function(require,module,exports){
+},{"./client":1,"./content/imports":8,"./displayable-message":17,"./signable-message":20,"./utils":22}],19:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PermissionSet = void 0;
@@ -1265,7 +1289,7 @@ class PermissionSet {
 }
 exports.PermissionSet = PermissionSet;
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 (function (Buffer){(function (){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -1479,7 +1503,7 @@ class SignableMessage {
 exports.SignableMessage = SignableMessage;
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"./content/imports":7,"./utils":21,"buffer":23}],20:[function(require,module,exports){
+},{"./content/imports":8,"./utils":22,"buffer":24}],21:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("./client");
@@ -1501,7 +1525,7 @@ if (window !== undefined) {
     };
 }
 
-},{"./client":1,"./community":2,"./content/imports":7,"./data-path":14,"./data-stream":15,"./displayable-message":16,"./message-manager":17,"./permission-set":18,"./signable-message":19,"./utils":21}],21:[function(require,module,exports){
+},{"./client":1,"./community":2,"./content/imports":8,"./data-path":15,"./data-stream":16,"./displayable-message":17,"./message-manager":18,"./permission-set":19,"./signable-message":20,"./utils":22}],22:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1679,7 +1703,7 @@ const preferencesDataCache = new AccountDataCache();
 const accountDataCache = new AccountDataCache();
 const communityDataCache = new AccountDataCache();
 
-},{"./signable-message":19}],22:[function(require,module,exports){
+},{"./signable-message":20}],23:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -1831,7 +1855,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 (function (Buffer){(function (){
 /*!
  * The buffer module from node.js, for the browser.
@@ -3612,7 +3636,7 @@ function numberIsNaN (obj) {
 }
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"base64-js":22,"buffer":23,"ieee754":24}],24:[function(require,module,exports){
+},{"base64-js":23,"buffer":24,"ieee754":25}],25:[function(require,module,exports){
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
@@ -3699,4 +3723,4 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}]},{},[20]);
+},{}]},{},[21]);
