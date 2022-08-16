@@ -2,6 +2,7 @@
     <TransitionRoot :show="newUserMessageModalOpen">
         <NewUserMessageModal :selectedTab="2" :data="joinData" @close="toggleNewUserMessageModalOpen(false)"></NewUserMessageModal>
     </TransitionRoot>
+    edits <div v-if="message.edits">{{message.edits.length}}</div>
     <div v-if="hasQuotedText(message)" class="flex mb-1">
         <img
             @click.right.prevent.stop="clickOnIcon($event)"

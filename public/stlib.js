@@ -889,6 +889,9 @@ exports.DisplayableMessage = void 0;
 class DisplayableMessage {
     constructor(message) {
         this.reference = null;
+        this.edits = null;
+        this.editContent = null;
+        this.isEdit = false;
         this.message = message;
         this.content = undefined;
         this.verified = null;
@@ -896,14 +899,28 @@ class DisplayableMessage {
     init() {
         this.usernames = this.message.getGroupUsernames();
     }
+    edit(msg) {
+        if (this.edits === null)
+            this.edits = [msg];
+        else {
+            this.edits.push(msg);
+            this.edits.sort((a, b) => a.getTimestamp() - b.getTimestamp());
+        }
+    }
     hasUser(user) { return this.usernames.indexOf(user) !== -1; }
     getUser() { return this.message.user; }
     getConversation() { return this.message.conversation; }
     getTimestamp() { return this.message.timestamp; }
     getContent() {
+        var edits = this.edits;
+        if (edits !== null && edits.length > 0)
+            return edits[0].editContent;
         return this.content;
     }
     isVerified() {
+        var edits = this.edits;
+        if (edits !== null && edits.length > 0)
+            return edits[0].verified;
         return this.verified;
     }
 }
@@ -1180,17 +1197,21 @@ class MessageManager {
     }
     resolveReference(messages, msg) {
         try {
-            var content = msg.getContent();
+            var content = msg.content;
             if (content instanceof imports_1.WithReference) {
                 var ref = content.getReference().split('|');
                 var user = ref[0];
                 var time = Number(ref[1]);
                 for (var m of messages) {
                     if (m.getUser() == user && m.getTimestamp() == time) {
-                        msg.reference = m;
+                        if (content instanceof imports_1.Edit)
+                            m.edit(msg);
+                        else
+                            msg.reference = m;
                         return;
                     }
                 }
+                console.log("did not find reference ", content.getReference());
             }
         }
         catch (e) {
@@ -1229,6 +1250,11 @@ class MessageManager {
                 content = decoded;
             }
             var displayableMessage = new displayable_message_1.DisplayableMessage(msg);
+            if (content instanceof imports_1.Edit) {
+                var editContent = content.getEdit();
+                displayableMessage.editContent = (editContent == null) ? null : imports_1.Content.fromJSON(editContent);
+                displayableMessage.isEdit = true;
+            }
             displayableMessage.content = content;
             displayableMessage.verified = verified;
             displayableMessage.init();

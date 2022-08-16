@@ -30,8 +30,10 @@
         </div>
         <div ref="messages" :key="messageKey" class="flex flex-col overflow-y-scroll pr-3">
             <div v-for="message in displayableMessages" >
-                <hr style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
-                <Message :message="message" @action="setContentMessage" />
+                <div v-if="!message.isEdit && message.getContent() != null">
+                    <hr style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
+                    <Message :message="message" @action="setContentMessage" />
+                </div>
            </div>
         </div>
         <div v-if="contentMsg" class="text-sm border-t-1 pr-3">
@@ -88,39 +90,30 @@ async function initChat() {
     const manager = getManager();
     manager.setUser(user);
 
-    var conversation = null;
-    if(route.name === 'CommunityPath') {
-        conversation = user2+'/'+route.params.path;
-        var community0 = await stlib.Community.load(user2);
-        var stream = (community0)?community0.findTextStreamById(''+route.params.path):null;
-        streamName.value = stream?stream.getName():conversation;
-        community.value = community0;
-        var usersCategories = {};
-        for(var team of community0.communityData.team) {
-            if(usersCategories[team[1]] === undefined) usersCategories[team[1]] = [];
-            usersCategories[team[1]].push(team);
-        }
-        communityUsers.value = usersCategories;
-    }
-    else if(route.name === 'Group') {
-        var pref = await stlib.Utils.getAccountPreferences(user2);
-        var groups = pref.getGroups();
-        var group = groups[route.params.path];
-        conversation = '#'+user2+'/'+route.params.path;
-        streamName.value = (group !== null && group.name != null)?`${group.name} ${conversation}`:conversation;
-    }
-    else if(route.name.startsWith('PrivateChat')) {
-        var users = [user, user2];
-        if(route.params.user2) {
-            users.push(route.params.user2);
-            if(route.params.user3) users.push(route.params.user3);
-        }
-        users.sort();
-        conversation = users.join('|');
-        streamName.value = conversation;
-    }
-    
+    var conversation = getConversation(); 
     if(conversation != null) {
+        if(route.name === 'CommunityPath') {
+            var community0 = await stlib.Community.load(user2);
+            var stream = (community0)?community0.findTextStreamById(''+route.params.path):null;
+            streamName.value = stream?stream.getName():conversation;
+            community.value = community0;
+            var usersCategories = {};
+            for(var team of community0.communityData.team) {
+                if(usersCategories[team[1]] === undefined) usersCategories[team[1]] = [];
+                usersCategories[team[1]].push(team);
+            }
+            communityUsers.value = usersCategories;
+        }
+        else if(route.name === 'Group') {
+            var pref = await stlib.Utils.getAccountPreferences(user2);
+            var groups = pref.getGroups();
+            var group = groups[route.params.path];
+            streamName.value = (group !== null && group.name != null)?`${group.name} ${conversation}`:conversation;
+        }
+        else if(route.name.startsWith('PrivateChat')) {
+            streamName.value = conversation;
+        }
+
         manager.setConversation(conversation);
        
         var updateMessages = async () => {
@@ -166,19 +159,39 @@ function setContentMessage(obj) {
         messageText.value = obj.msg.getContent().getText();
     }
 }
+function getConversation() {
+    var user = accountStore.account.name;
+    var user2 = route.params.user;
+
+    if(user == null) return null; //TODO ask to login
+    if(user2 == null || user2 == "") return null;
+    var conversation = null;
+    if(route.name === 'CommunityPath') {
+        conversation = user2+'/'+route.params.path;
+    }
+    else if(route.name === 'Group') {
+        conversation = '#'+user2+'/'+route.params.path;
+    }
+    else if(route.name.startsWith('PrivateChat')) {
+        conversation = [user, user2];
+        if(route.params.user2) {
+            conversation.push(route.params.user2);
+            if(route.params.user3) conversation.push(route.params.user3);
+        }
+        conversation.sort();
+        conversation = conversation.join('|');
+    }
+    return conversation;
+}
 var sendingMessage = false;
 const enterMessage = async (message) => {
     if(sendingMessage) return;
     try {
         sendingMessage = true;
-        var user = accountStore.account.name;
-        var user2 = route.params.user;
-
-        if(user == null) return; //TODO ask to login
-        if(user2 == null || user2 == "") return;
+        var conversation = getConversation();
+        if(conversation == null) return;
 
         const manager = getManager();
-        //var client = manager.client;
         var textMsg = null;
         var contentMessage = contentMsg.value;
         if(contentMessage !== null) {
@@ -196,37 +209,8 @@ const enterMessage = async (message) => {
         if(textMsg === null) textMsg = stlib.Content.text(message);
 
         console.log(textMsg);
-
-        //var encodeKey = null;
-        var conversation = null;
-        if(route.name === 'CommunityPath') {
-            conversation = user2+'/'+route.params.path;
-        }
-        else if(route.name === 'Group') {
-            conversation = '#'+user2+'/'+route.params.path;
-            //encodeKey = await manager.getKeyFor(conversation);
-            //if(encodeKey === null) {
-             //   console.log("unknown key"); //TODO ask to enter key
-            //    return;
-           // }
-        }
-        else {
-            conversation = [user, user2];
-            if(route.params.user2) {
-                conversation.push(route.params.user2);
-                if(route.params.user3) conversation.push(route.params.user3);
-            }
-           // textMsg = await textMsg.encodeWithKeychain(user, conversation, "Posting"); 
-        }
-
-        //var signableMessage = textMsg.forUser(user, conversation);
-        //await signableMessage.signWithKeychain('Posting');
-        //if(encodeKey !== null) signableMessage.encodeWithKey(encodeKey);
-
-        //console.log("write ", signableMessage);
         
         var result = await manager.sendMessage(textMsg, conversation);
-        //var result = await client.write(signableMessage);
         if(result.isSuccess()) {
             messageText.value = "";
             if(contentMsg.value !== null) contentMsg.value = null;
