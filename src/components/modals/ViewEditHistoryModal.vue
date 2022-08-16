@@ -1,8 +1,8 @@
 <template>
   <DefaultModal title="Edit History">
         <div class="mt-1 mb-1 overflow-y-auto">
-            <Message :message="msg" :displayOnly="true" :displayEdits="true"/>
             <Message v-for="m in msg.edits" :message="m" :displayOnly="true" :displayEdits="true"/>
+            <Message :message="msg" :displayOnly="true" :displayEdits="true"/>
         </div>
         <div><small>{{errorMessage}}</small></div>
 
