@@ -904,7 +904,7 @@ class DisplayableMessage {
             this.edits = [msg];
         else {
             this.edits.push(msg);
-            this.edits.sort((a, b) => a.getTimestamp() - b.getTimestamp());
+            this.edits.sort((a, b) => b.getTimestamp() - a.getTimestamp());
         }
     }
     hasUser(user) { return this.usernames.indexOf(user) !== -1; }

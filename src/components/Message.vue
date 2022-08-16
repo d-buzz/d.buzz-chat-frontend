@@ -2,7 +2,9 @@
     <TransitionRoot :show="newUserMessageModalOpen">
         <NewUserMessageModal :selectedTab="2" :data="joinData" @close="toggleNewUserMessageModalOpen(false)"></NewUserMessageModal>
     </TransitionRoot>
-    edits <div v-if="message.edits">{{message.edits.length}}</div>
+    <TransitionRoot :show="newViewEditHistoryModalOpen">
+        <ViewEditHistoryModal :msg="message" @close="toggleViewEditHistoryModal"></ViewEditHistoryModal>
+    </TransitionRoot>
     <div v-if="hasQuotedText(message)" class="flex mb-1">
         <img
             @click.right.prevent.stop="clickOnIcon($event)"
@@ -39,8 +41,9 @@
         <div class="grow relative" style="margin-top:-7px;" @click.right.prevent.stop="clickOnMsg($event)"> 
             <div>
                 <small><b>{{message.getUser()}}</b></small>
-                <span class="pr-2 float-right">
-                    <small class="text-gray-700" :title="toAbsoluteTimeString(message.getTimestamp())">{{toRelativeTimeString(message.getTimestamp())}}</small>
+                <span class="pr-2 float-right text-gray-700">
+                    <small v-if="!displayEdits && message.edits && message.edits.length > 0" class="cursor-pointer" :title="toAbsoluteTimeString(message.edits[0].getTimestamp())" @click="toggleViewEditHistoryModal()">(edited {{toRelativeTimeString(message.edits[0].getTimestamp())}}) </small>
+                    <small :title="toAbsoluteTimeString(message.getTimestamp())">{{toRelativeTimeString(message.getTimestamp())}}</small>
                     <span v-if="!message.isVerified()" class="pl-1">&#10008;</span>
                 </span>
             </div>
@@ -52,17 +55,17 @@
                     <span class="btn0 bg4" @click="deleteAction" title="Delete message."><span class="oi oi-trash"></span></span>
                 </div>
             </div>
-            <div v-if="message.getContent()">
-                <div v-if="message.getContent().getType() == 'x'">
+            <div v-if="content">
+                <div v-if="content.getType() == 'x'">
                     <button class="bg-primary text-white font-bold py-1 px-2 rounded-full" v-on:click="decrypt(message)">Click to decrypt</button>
                 </div>
-                <div v-if="message.getContent().getType() == 'g'" class="border border-solid border-green-700 rounded p-1">
-                    <small>{{message.getContent().getGroup()}}</small>
-                    <div ref="messageText">{{message.getContent().getText()}}</div>
+                <div v-if="content.getType() == 'g'" class="border border-solid border-green-700 rounded p-1">
+                    <small>{{content.getGroup()}}</small>
+                    <div ref="messageText">{{content.getText()}}</div>
                     <button class="btn" v-on:click="join(message)">Join</button>
                 </div>
-                <div v-else-if="message.getContent().getText">
-                    <div ref="messageText">{{message.getContent().getText()}}</div>
+                <div v-else-if="content.getText">
+                    <div ref="messageText">{{content.getText()}}</div>
                 </div>
                 <div v-else>
                     Unsupported message type.
@@ -77,13 +80,20 @@ import VueSimpleContextMenu from 'vue-simple-context-menu';
 const emit = defineEmits(["quote", "action"]);
 const props = defineProps({
   message: Object,
-  displayOnly: Boolean
+  displayOnly: Boolean,
+  displayEdits: Boolean
 });
+const content = props.message?((props.displayEdits && props.message.editContent)?props.message.editContent:(props.displayEdits?props.message.content:props.message.getContent())):null;
 const joinData = ref(null);
 const newUserMessageModalOpen = ref(false);
+const newViewEditHistoryModalOpen = ref(false);
 const toggleNewUserMessageModalOpen = () => {
   newUserMessageModalOpen.value = !newUserMessageModalOpen.value;
+};    
+const toggleViewEditHistoryModal = () => {
+  newViewEditHistoryModalOpen.value = !newViewEditHistoryModalOpen.value;
 };
+
 function hasQuotedText(message) {
     return message && message.getContent() && message.getContent().getType() == 'q' && message.reference && message.reference.getContent() && message.reference.getContent().getText();
 }

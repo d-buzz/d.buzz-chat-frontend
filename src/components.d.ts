@@ -16,6 +16,7 @@ declare module '@vue/runtime-core' {
     Conversation: typeof import('./components/Conversation.vue')['default']
     DefaultModal: typeof import('./components/modals/DefaultModal.vue')['default']
     DeleteMessageModal: typeof import('./components/modals/DeleteMessageModal.vue')['default']
+    'DeleteMessageModal (copy)': typeof import('./components/modals/DeleteMessageModal (copy).vue')['default']
     Dialog: typeof import('@headlessui/vue')['Dialog']
     DialogPanel: typeof import('@headlessui/vue')['DialogPanel']
     IconCommunity: typeof import('./components/icons/IconCommunity.vue')['default']
@@ -39,6 +40,7 @@ declare module '@vue/runtime-core' {
     StreamBar: typeof import('./components/StreamBar.vue')['default']
     TransitionChild: typeof import('@headlessui/vue')['TransitionChild']
     TransitionRoot: typeof import('@headlessui/vue')['TransitionRoot']
+    ViewEditHistoryModal: typeof import('./components/modals/ViewEditHistoryModal.vue')['default']
   }
 }
 
