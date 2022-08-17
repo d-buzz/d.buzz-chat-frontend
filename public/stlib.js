@@ -312,7 +312,7 @@ function quote(message, parentMessage, quoteFrom = 0, quoteTo = -1) {
 }
 exports.quote = quote;
 function edit(editedContent, parentMessage) {
-    return new imports_1.Edit([imports_1.Edit.TYPE, editedContent.toJSON(),
+    return new imports_1.Edit([imports_1.Edit.TYPE, editedContent == null ? null : editedContent.toJSON(),
         parentMessage.getReference()
     ]);
 }
@@ -1204,8 +1204,10 @@ class MessageManager {
                 var time = Number(ref[1]);
                 for (var m of messages) {
                     if (m.getUser() == user && m.getTimestamp() == time) {
-                        if (content instanceof imports_1.Edit)
-                            m.edit(msg);
+                        if (content instanceof imports_1.Edit) {
+                            if (msg.getUser() == user)
+                                m.edit(msg);
+                        }
                         else
                             msg.reference = m;
                         return;

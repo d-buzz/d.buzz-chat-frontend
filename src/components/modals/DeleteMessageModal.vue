@@ -45,6 +45,7 @@ const action = async () => {
   try {
     isLoading.value = true;
     console.log("delete message");
+    const manager = getManager();
     var msg = stlib.Content.edit(null, props.msg.message);
     var result = await manager.sendMessage(msg, props.msg.getConversation());
     if(!result.isSuccess()) {

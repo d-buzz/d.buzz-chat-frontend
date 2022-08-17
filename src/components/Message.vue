@@ -138,6 +138,12 @@ function clickOnMsgOption(item) {
         case "quote":
             quoteAction();
             break;
+        case "edit":
+            editAction();
+            break;
+        case "delete":
+            deleteAction();
+            break;
     }
 }
 const messageText = ref();
