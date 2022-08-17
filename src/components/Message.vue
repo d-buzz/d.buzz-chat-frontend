@@ -16,12 +16,15 @@
     </div>
     <div class="message flex" :data-verified="message.isVerified()">
         <div class="flex-shrink-0 mr-5px">
-            <img
-            @click.right.prevent.stop="clickOnIcon($event)"
-            class="rounded-full avMessage"
-            :src="`https://images.hive.blog/u/${message.getUser()}/avatar/small`"
-            alt="@"
-            />
+
+            <UserPopover :message="message">
+                <img
+                @click.right.prevent.stop="clickOnIcon($event)"
+                class="rounded-full avMessage"
+                :src="`https://images.hive.blog/u/${message.getUser()}/avatar/small`"
+                alt="@"
+                />
+            </UserPopover>
 
             <vue-simple-context-menu
                 v-if="!displayOnly"

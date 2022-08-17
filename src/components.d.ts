@@ -31,6 +31,9 @@ declare module '@vue/runtime-core' {
     MessageSent: typeof import('./components/MessageSent.vue')['default']
     NewUserMessageModal: typeof import('./components/modals/NewUserMessageModal.vue')['default']
     PermissionSet: typeof import('./components/PermissionSet.vue')['default']
+    Popover: typeof import('@headlessui/vue')['Popover']
+    PopoverButton: typeof import('@headlessui/vue')['PopoverButton']
+    PopoverPanel: typeof import('@headlessui/vue')['PopoverPanel']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SideBar: typeof import('./components/SideBar.vue')['default']
@@ -40,6 +43,7 @@ declare module '@vue/runtime-core' {
     StreamBar: typeof import('./components/StreamBar.vue')['default']
     TransitionChild: typeof import('@headlessui/vue')['TransitionChild']
     TransitionRoot: typeof import('@headlessui/vue')['TransitionRoot']
+    UserPopover: typeof import('./components/modals/UserPopover.vue')['default']
     ViewEditHistoryModal: typeof import('./components/modals/ViewEditHistoryModal.vue')['default']
   }
 }
