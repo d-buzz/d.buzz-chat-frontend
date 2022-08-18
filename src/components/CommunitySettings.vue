@@ -1,11 +1,16 @@
 <template>
-  
+  <TransitionRoot :show="showAddChatModal">
+    <AddChatModal @oninput="addText" @close="toggleAddChatModal"></AddChatModal>
+  </TransitionRoot>
+  <TransitionRoot :show="showCategoryModal">
+    <AddCategoryModal @oninput="addCategory" @close="toggleAddCategoryModal"></AddCategoryModal>
+  </TransitionRoot>
   <div class="w-full h-full flex flex-col">
     <div class="flex border-b-1 font-bold">{{pageTitle}}</div>
 
     <div>
-        <button class="btn" @click="addText()"><span class="oi oi-plus"></span> text</button>
-        <button class="btn" @click="addCategory()"><span class="oi oi-plus"></span> category</button>
+        <button class="btn" @click="toggleAddChatModal()"><span class="oi oi-chat"></span> chat</button>
+        <button class="btn" @click="toggleAddCategoryModal()"><span class="oi oi-plus"></span> category</button>
         <button class="btn" @click="addInfo()"><span class="oi oi-plus"></span> info</button>
         <button class="btn" @click="moveUp()"><span class="oi oi-chevron-top"></span></button>
         <button class="btn" @click="moveDown()"><span class="oi oi-chevron-bottom"></span></button>
@@ -100,6 +105,11 @@ const displayableMessages = ref([]);
 const messageKey = ref("");
 const selectKey = ref("");
 
+const showAddChatModal = ref(false);
+const showCategoryModal = ref(false);
+function toggleAddChatModal() { showAddChatModal.value = !showAddChatModal.value; }
+function toggleAddCategoryModal() { showCategoryModal.value = !showCategoryModal.value; }
+
 var community = null;
 const pageTitle = ref("");
 const streams = ref([]);
@@ -155,14 +165,14 @@ function getSelected() {
     for(var stream of streams.value) if(stream.selected) return stream;
     return null;
 }
-function addText() {
+function addText(displayName="Text") {
     community.setStreams(streams.value);
-    select(community.newTextStream("Text"));
+    select(community.newTextStream(displayName));
     update();
 }
-function addCategory() {
+function addCategory(displayName="Category") {
     community.setStreams(streams.value);
-    select(community.newCategory("Category"));
+    select(community.newCategory(displayName));
     update();
 }
 function addInfo() {

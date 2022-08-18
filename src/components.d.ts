@@ -5,8 +5,12 @@ import '@vue/runtime-core'
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    AddCategoryModal: typeof import('./components/modals/AddCategoryModal.vue')['default']
+    AddChatModal: typeof import('./components/modals/AddChatModal.vue')['default']
+    'AddChatModal (copy)': typeof import('./components/modals/AddChatModal (copy).vue')['default']
     AddGroupUserModal: typeof import('./components/modals/AddGroupUserModal.vue')['default']
     AddTitleModal: typeof import('./components/modals/AddTitleModal.vue')['default']
+    'AddTitleModal (copy)': typeof import('./components/modals/AddTitleModal (copy).vue')['default']
     CloseGroupModal: typeof import('./components/modals/CloseGroupModal.vue')['default']
     'CloseGroupModal (copy)': typeof import('./components/modals/CloseGroupModal (copy).vue')['default']
     Community: typeof import('./components/Community.vue')['default']
@@ -43,8 +47,10 @@ declare module '@vue/runtime-core' {
     StreamBar: typeof import('./components/StreamBar.vue')['default']
     TransitionChild: typeof import('@headlessui/vue')['TransitionChild']
     TransitionRoot: typeof import('@headlessui/vue')['TransitionRoot']
+    UserModal: typeof import('./components/modals/UserModal.vue')['default']
     UserPopover: typeof import('./components/modals/UserPopover.vue')['default']
     ViewEditHistoryModal: typeof import('./components/modals/ViewEditHistoryModal.vue')['default']
+    'ViewEditHistoryModal (copy)': typeof import('./components/modals/ViewEditHistoryModal (copy).vue')['default']
   }
 }
 

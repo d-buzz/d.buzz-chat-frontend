@@ -5,6 +5,9 @@
     <TransitionRoot :show="newViewEditHistoryModalOpen">
         <ViewEditHistoryModal :msg="message" @close="toggleViewEditHistoryModal"></ViewEditHistoryModal>
     </TransitionRoot>
+    <TransitionRoot :show="showUserModal">
+        <UserModal @close="toggleUserModal(null)" :user="userRef"></UserModal>
+    </TransitionRoot>
     <div v-if="hasQuotedText(message)" class="flex mb-1">
         <img
             @click.right.prevent.stop="clickOnIcon($event)"
@@ -17,14 +20,15 @@
     <div class="message flex" :data-verified="message.isVerified()">
         <div class="flex-shrink-0 mr-5px">
 
-            <UserPopover :message="message">
-                <img
-                @click.right.prevent.stop="clickOnIcon($event)"
-                class="rounded-full avMessage"
-                :src="`https://images.hive.blog/u/${message.getUser()}/avatar/small`"
-                alt="@"
-                />
-            </UserPopover>
+            
+            <img
+            @click="toggleUserModal(message.getUser())"
+            @click.right.prevent.stop="clickOnIcon($event)"
+            class="rounded-full avMessage"
+            :src="`https://images.hive.blog/u/${message.getUser()}/avatar/small`"
+            alt="@"
+            />
+            
 
             <vue-simple-context-menu
                 v-if="!displayOnly"
@@ -90,13 +94,21 @@ const content = props.message?((props.displayEdits && props.message.editContent)
 const joinData = ref(null);
 const newUserMessageModalOpen = ref(false);
 const newViewEditHistoryModalOpen = ref(false);
+const showUserModal = ref(false);
+const userRef = ref();
 const toggleNewUserMessageModalOpen = () => {
   newUserMessageModalOpen.value = !newUserMessageModalOpen.value;
 };    
 const toggleViewEditHistoryModal = () => {
   newViewEditHistoryModalOpen.value = !newViewEditHistoryModalOpen.value;
 };
-
+function toggleUserModal(user) {
+    if(user == null) showUserModal.value = false;
+    else {
+        userRef.value = user;
+        showUserModal.value = true;
+    }
+}
 function hasQuotedText(message) {
     return message && message.getContent() && message.getContent().getType() == 'q' && message.reference && message.reference.getContent() && message.reference.getContent().getText();
 }
@@ -123,7 +135,7 @@ function getQuotedText(message) {
 }
 /*icon menu*/
 const iconMenuOptions = [
-    {name:"test1"},{name:"test2"},{name:"test2"},{name:"test2"}
+    {name:"message"},{name:"blog"}
 ];
 const iconMenu = ref(null);
 function clickOnIcon(event) { iconMenu.value.showMenu(event, "item"); }

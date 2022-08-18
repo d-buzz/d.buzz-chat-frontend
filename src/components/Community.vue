@@ -81,6 +81,7 @@ function toggleCloseGroup() {
 function toggleDeleteMessage() {
     showDeleteMessageModal.value = !showDeleteMessageModal.value;
 }
+
 async function initChat() {
     var user = accountStore.account.name;
     if(user == null) return; //TODO ask to login
