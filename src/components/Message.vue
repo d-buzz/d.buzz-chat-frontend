@@ -37,9 +37,10 @@
               ref="iconMenu"
               @option-clicked="clickOnIconOption"
             />
+
             <vue-simple-context-menu
-                v-if="!displayOnly"
               element-id="msgMenuId"
+              v-if="!displayOnly"
               :options="msgMenuOptions"
               ref="msgMenu"
               @option-clicked="clickOnMsgOption"
@@ -58,8 +59,8 @@
                 <div class="flex">
                     <span class="btn0 bg1"><span class="oi oi-heart"></span></span>
                     <span class="btn0 bg2" @click="quoteAction" title="Quote, select text to quote part of message."><span class="oi oi-share"></span></span>
-                    <span class="btn0 bg3" @click="editAction" title="Edit message."><span class="oi oi-pencil"></span></span>
-                    <span class="btn0 bg4" @click="deleteAction" title="Delete message."><span class="oi oi-trash"></span></span>
+                    <span v-if="account===message.getUser()" class="btn0 bg3" @click="editAction" title="Edit message."><span class="oi oi-pencil"></span></span>
+                    <span v-if="account===message.getUser()" class="btn0 bg4" @click="deleteAction" title="Delete message."><span class="oi oi-trash"></span></span>
                 </div>
             </div>
             <div v-if="content">
@@ -82,8 +83,11 @@
     </div>
 </template>
 <script setup type="ts">
+import { useAccountStore } from "../stores/account";
 import { ref, nextTick } from 'vue'
 import VueSimpleContextMenu from 'vue-simple-context-menu';
+const accountStore = useAccountStore();
+const account = accountStore.account.name;
 const emit = defineEmits(["quote", "action"]);
 const props = defineProps({
   message: Object,
@@ -143,9 +147,8 @@ function clickOnIconOption(item) {
     console.log("clickOnIconOption ", item);
 }
 /*message menu*/
-const msgMenuOptions = [
-    {name:"emote"},{name:"quote"},{name:"edit"},{name:"delete"}
-];
+const msgMenuOptions = ref([{name:"emote"},{name:"quote"},{name:"edit"},{name:"delete"}]);
+const msgMenuOptions2 = ref([{name:"emote"},{name:"quote"}]);
 const msgMenu = ref(null);
 function clickOnMsg(event) { msgMenu.value.showMenu(event, "item"); }
 function clickOnMsgOption(item) {
