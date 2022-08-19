@@ -350,8 +350,8 @@ function decodedMessage(msg, privateK) {
 exports.decodedMessage = decodedMessage;
 function encodeTextWithKeychain(user, message, keychainKeyType = 'Posting') {
     return __awaiter(this, void 0, void 0, function* () {
-        var p = new Promise((resolve, error) => {
-            hive_keychain.requestEncodeMessage(user, user, '#' + message, keychainKeyType, (result) => {
+        var p = imports_1.Utils.queueKeychain((keychain, resolve, error) => {
+            keychain.requestEncodeMessage(user, user, '#' + message, keychainKeyType, (result) => {
                 if (result.success)
                     resolve(result.result);
                 else
@@ -364,8 +364,8 @@ function encodeTextWithKeychain(user, message, keychainKeyType = 'Posting') {
 exports.encodeTextWithKeychain = encodeTextWithKeychain;
 function decodeTextWithKeychain(user, message, keychainKeyType = 'Posting') {
     return __awaiter(this, void 0, void 0, function* () {
-        var p = new Promise((resolve, error) => {
-            hive_keychain.requestVerifyKey(user, message, keychainKeyType, (result) => {
+        var p = imports_1.Utils.queueKeychain((keychain, resolve, error) => {
+            keychain.requestVerifyKey(user, message, keychainKeyType, (result) => {
                 if (result.success) {
                     var string = result.result;
                     if (string.startsWith("#"))
@@ -449,8 +449,8 @@ class Encoded extends imports_1.JSONContent {
             var text = this.json[messageIndex + 2];
             if (text === null)
                 text = this.json[messageIndex === 0 ? 3 : 2];
-            var p = new Promise((resolve, error) => {
-                hive_keychain.requestVerifyKey(user, text, keychainKeyType, (result) => {
+            var p = imports_1.Utils.queueKeychain((keychain, resolve, error) => {
+                keychain.requestVerifyKey(user, text, keychainKeyType, (result) => {
                     if (result.success) {
                         var string = result.result;
                         if (string.startsWith("#"))
@@ -487,9 +487,11 @@ GroupInvite.TYPE = "g";
 },{"./imports":8}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.Edit = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.GroupInvite = exports.Encoded = exports.JSONContent = exports.Content = exports.SignableMessage = void 0;
+exports.Utils = exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.Edit = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.GroupInvite = exports.Encoded = exports.JSONContent = exports.Content = exports.SignableMessage = void 0;
 const signable_message_1 = require("../signable-message");
 Object.defineProperty(exports, "SignableMessage", { enumerable: true, get: function () { return signable_message_1.SignableMessage; } });
+const utils_1 = require("../utils");
+Object.defineProperty(exports, "Utils", { enumerable: true, get: function () { return utils_1.Utils; } });
 const Content = require("./content");
 exports.Content = Content;
 const jsoncontent_1 = require("./jsoncontent");
@@ -514,7 +516,7 @@ const preferences_1 = require("./preferences");
 Object.defineProperty(exports, "Preferences", { enumerable: true, get: function () { return preferences_1.Preferences; } });
 Object.defineProperty(exports, "PrivatePreferences", { enumerable: true, get: function () { return preferences_1.PrivatePreferences; } });
 
-},{"../signable-message":20,"./content":3,"./edit":4,"./emote":5,"./encoded":6,"./group-invite":7,"./jsoncontent":9,"./preferences":10,"./quote":11,"./text":12,"./thread":13,"./with-reference":14}],9:[function(require,module,exports){
+},{"../signable-message":20,"../utils":22,"./content":3,"./edit":4,"./emote":5,"./encoded":6,"./group-invite":7,"./jsoncontent":9,"./preferences":10,"./quote":11,"./text":12,"./thread":13,"./with-reference":14}],9:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -560,8 +562,8 @@ class JSONContent {
                     encoded.push(null);
                     continue;
                 }
-                var p = new Promise((resolve, error) => {
-                    hive_keychain.requestEncodeMessage(user, groupUser, "#" + string, keychainKeyType, (result) => {
+                var p = imports_1.Utils.queueKeychain((keychain, resolve, error) => {
+                    keychain.requestEncodeMessage(user, groupUser, "#" + string, keychainKeyType, (result) => {
                         if (result.success) {
                             resolve(result.result);
                         }
@@ -688,8 +690,8 @@ class Preferences extends imports_1.JSONContent {
             var pref = this.privatePreferences;
             if (pref == null || (onlyIfUpdated && !pref.updated))
                 return;
-            var p = new Promise((resolve, error) => {
-                hive_keychain.requestEncodeMessage(user, user, '#' + JSON.stringify(pref.json), keychainKeyType, (result) => {
+            var p = imports_1.Utils.queueKeychain((keychain, resolve, error) => {
+                keychain.requestEncodeMessage(user, user, '#' + JSON.stringify(pref.json), keychainKeyType, (result) => {
                     if (result.success)
                         resolve(result.result);
                     else
@@ -1465,8 +1467,8 @@ class SignableMessage {
         var _this = this;
         this.timestamp = utils_1.Utils.utcTime();
         this.validateDataLength();
-        var p = new Promise((resolve, error) => {
-            hive_keychain.requestSignBuffer(this.getUser(), this.toSignableTextFormat(), keyChainKeyType, (result) => {
+        return utils_1.Utils.queueKeychain((keychain, resolve, error) => {
+            keychain.requestSignBuffer(this.getUser(), this.toSignableTextFormat(), keyChainKeyType, (result) => {
                 if (result.success) {
                     _this.keytype = keyChainKeyType.toLowerCase().charAt(0);
                     _this.signature = Buffer.from(result.result, 'hex');
@@ -1476,7 +1478,6 @@ class SignableMessage {
                     error(result);
             });
         });
-        return p;
     }
     verify() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -1567,6 +1568,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AccountDataCache = exports.Utils = void 0;
 const signable_message_1 = require("./signable-message");
+var keyChainRequest = null;
 var client = null;
 var dhiveclient = null;
 var isNode = false;
@@ -1584,6 +1586,41 @@ class Utils {
         if (dhiveclient === null)
             dhiveclient = new dhive.Client(["https://api.hive.blog", "https://api.hivekings.com", "https://anyx.io", "https://api.openhive.network"]);
         return dhiveclient;
+    }
+    /* Queue keychain requests. */
+    static queueKeychain(fn) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var keychain = window.hive_keychain;
+            if (keychain == null)
+                throw 'keychain not found';
+            var length = Object.keys(keychain.requests).length;
+            if (keyChainRequest !== null) {
+                if (length > 0) {
+                    console.log("warning: keychain already opened");
+                }
+                yield keyChainRequest;
+                if (keyChainRequest !== null) {
+                    console.log("error queueKeychain");
+                }
+            }
+            var p = new Promise((resolve, error) => {
+                try {
+                    fn(keychain, resolve, error);
+                }
+                catch (e) {
+                    console.log(e);
+                    error(e);
+                }
+            });
+            try {
+                keyChainRequest = p;
+                var result = yield p;
+            }
+            finally {
+                keyChainRequest = null;
+            }
+            return result;
+        });
     }
     static setDhiveClient(dhiveClient) {
         dhiveclient = dhiveClient;
