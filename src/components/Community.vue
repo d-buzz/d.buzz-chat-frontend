@@ -201,7 +201,7 @@ const enterMessage = async (message) => {
                     textMsg = stlib.Content.quote(message, contentMessage.msg.message, contentMessage.from, contentMessage.to);
                 break;
                 case stlib.Content.Edit.TYPE:
-                    var editContent = contentMessage.msg.message.getContent().copy();
+                    var editContent = contentMessage.msg.getContent().copy();
                     editContent.setText(message);
                     textMsg = stlib.Content.edit(editContent, contentMessage.msg.message);
                 break;
