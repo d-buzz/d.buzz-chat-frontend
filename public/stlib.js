@@ -1177,8 +1177,10 @@ class MessageManager {
                 return null;
             var client = this.getClient();
             var encodeKey = null;
-            if (Array.isArray(conversation) || conversation.indexOf('|') !== -1)
+            if (Array.isArray(conversation))
                 msg = yield msg.encodeWithKeychain(user, conversation, keychainKeyType);
+            else if (conversation.indexOf('|') !== -1)
+                msg = yield msg.encodeWithKeychain(user, conversation.split('|'), keychainKeyType);
             else if (conversation.startsWith('#')) { //Group Message
                 encodeKey = yield this.getKeyFor(conversation);
                 if (encodeKey === null) {
