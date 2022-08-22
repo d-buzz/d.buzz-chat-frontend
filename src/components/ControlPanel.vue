@@ -24,7 +24,7 @@ const router = useRouter();
 
 function logout() {
   accountStore.signOut();
-  router.push("/landing");
+  router.push("/join");
 }
 //will be used when click on user's own profile to logout, change settings, etc
 </script>

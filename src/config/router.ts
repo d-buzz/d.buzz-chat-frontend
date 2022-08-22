@@ -24,11 +24,11 @@ export const install: ViteSetupModule = ({ app }) => {
         history: createWebHistory(),
         routes,
     });
-    /*router.beforeEach((to, from, next) => {
+    router.beforeEach((to, from, next) => {
         console.log("route " + to);
         console.log(to);
         next();
-    });*/
+    });
     app.router = router;
     app.use(router);
 };

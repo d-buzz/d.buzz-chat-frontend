@@ -1,8 +1,8 @@
 <template>
-    <h1>landing page</h1>
+    <h1>join page</h1>
     
     <a class="btn" href="/controlpanel">Open</a>
 </template>
 <script setup>
-console.log("landing page");
+console.log("join page");
 </script>
