@@ -9,7 +9,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("./Landing.vue"),
   },
   {
-    path: "/join",
+    path: "/join/:user",
     name: "Join",
     component: () => import("./Join.vue"),
   },
