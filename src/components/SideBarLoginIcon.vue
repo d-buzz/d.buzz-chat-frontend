@@ -4,7 +4,7 @@
   <div class="flex items-center justify-start">
     <div class="flex-shrink-0 avCommunity">
       <div v-if="accountStore.account.authenticated">
-        <router-link to="/controlpanel">
+        <router-link to="/home">
           <img class="rounded-full" :src="`https://images.hive.blog/u/${accountStore.account.name}/avatar/small`" :alt="`@${accountStore.account.name}`" />
         </router-link>
       </div>

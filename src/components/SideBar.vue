@@ -5,19 +5,22 @@
         <SideBarLoginIcon/>
     </div>
     
-      <SideBarIcon v-for="community in messageStore.communities" :img="community[0]" :name="community[1]" />
+      <SideBarIcon v-for="community in communities" :img="community[0]" :name="community[1]" :key="updateKey" />
     
   </div>
 </template>
 <script setup>
 import { useAccountStore } from "../stores/account";
-import { useMessageStore } from "../stores/messages";
 const accountStore = useAccountStore();
-const messageStore = useMessageStore();
-function initCommunities() {
+const communities = ref([]);
+const updateKey = ref("");
+async function initCommunities() {
     var user = accountStore.account.name;
     if(user == null) return;
-    messageStore.loadCommunities(user);
+    var manager = getManager();
+    manager.setUser(user);
+    communities.value = await manager.getCommunities();
+    updateKey.value = user+'#'+stlib.Utils.utcTime();
 }
 initCommunities();
 </script>

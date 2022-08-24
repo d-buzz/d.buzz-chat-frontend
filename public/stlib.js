@@ -959,6 +959,7 @@ class MessageManager {
         this.cachedUserMessages = null;
         this.selectedConversation = null;
         this.conversations = new utils_1.AccountDataCache();
+        this.communities = new utils_1.AccountDataCache();
         this.keys = {};
         this.keychainPromise = null;
         this.defaultReadHistoryMS = 30 * 24 * 60 * 60000;
@@ -1103,6 +1104,18 @@ class MessageManager {
     setConversation(username) {
         this.selectedConversation = username;
         this.join(username);
+    }
+    getCommunities(user = null) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (user === null)
+                user = this.user;
+            if (user == null)
+                return null;
+            var _this = this;
+            return yield this.communities.cacheLogic(user, (user) => {
+                return hive.api.callAsync("bridge.list_all_subscriptions", { "account": user });
+            });
+        });
     }
     getSelectedConversations() {
         return __awaiter(this, void 0, void 0, function* () {

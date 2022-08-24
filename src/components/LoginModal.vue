@@ -150,7 +150,7 @@ const authenticate = async (account: string) => {
     emit("close");
   } finally {
     isLoading.value = false;
-    router.push("/controlpanel");
+    router.push("/home");
   }
 };
 </script>

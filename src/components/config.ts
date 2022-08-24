@@ -18,9 +18,9 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../AppLayout.vue"),
     children: [
       {
-        path: "/controlpanel",
+        path: "/home",
         name: "Control Panel",
-        component: () => import("./ControlPanel.vue"),
+        component: () => import("./Home.vue"),
       },
       {
         path: "/s/:user",
