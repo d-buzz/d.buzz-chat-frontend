@@ -40,16 +40,13 @@
             <button class="float-right" @click="setContentMessage(null)"><span class="oi oi-circle-x align-top"></span></button>
             <div class="overflow-x-hidden" style="text-overflow: ellipsis;"><span class="font-bold">{{contentMsg.msg.getUser()}}:</span> {{contentMsg.text}}</div>
         </div>
-        <div class="flex mt-4 mb-2">
-          <input
+        <div class="flex mt-4 mb-2 mr-3">
+          <MessageBox
             ref="messageBox"
-            class="shadow appearance-none border border-gray-700 rounded-full w-[calc(100%-4rem)] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline grow"
-            v-model="messageText"
-            @keyup.enter="enterMessage(messageText)"
-            type="text"
-            placeholder="Message"
+            class="grow"
+            @entermessage="enterMessage"
             v-focus
-          />
+          ></MessageBox>
     </div>
    </div>
  </div>
@@ -66,8 +63,7 @@ const messageKey = ref("");
 const streamName = ref("");
 const community = ref(null);
 const communityUsers = ref({});
-const messageBox = ref(null);
-const messageText = ref();
+const messageBox = ref();
 const messages = ref();
 
 const showGroupUserModal = ref(false);
@@ -153,7 +149,7 @@ function setContentMessage(obj) {
     console.log("contentMessage", obj);
     if(obj == null) {
         var val = contentMsg.value; //clear message field if closing edit action
-        if(val && val.type === stlib.Content.Edit.TYPE) messageText.value = "";
+        if(val && val.type === stlib.Content.Edit.TYPE) messageBox.value.setText("");
         contentMsg.value = null;
         focusMessageBox();
         return;
@@ -166,7 +162,7 @@ function setContentMessage(obj) {
     }
     contentMsg.value = obj;
     if(obj.type === stlib.Content.Edit.TYPE) {
-        messageText.value = obj.msg.getContent().getText();
+        messageBox.value.setText(obj.msg.getContent().getText());
     }
     focusMessageBox();
 }
@@ -223,7 +219,7 @@ const enterMessage = async (message) => {
         
         var result = await manager.sendMessage(textMsg, conversation);
         if(result.isSuccess()) {
-            messageText.value = "";
+            messageBox.value.setText("");
             if(contentMsg.value !== null) contentMsg.value = null;
         }
         else { 
