@@ -42,11 +42,13 @@
         </div>
         <div class="flex mt-4 mb-2">
           <input
+            ref="messageBox"
             class="shadow appearance-none border border-gray-700 rounded-full w-[calc(100%-4rem)] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline grow"
             v-model="messageText"
             @keyup.enter="enterMessage(messageText)"
             type="text"
             placeholder="Message"
+            v-focus
           />
     </div>
    </div>
@@ -64,6 +66,7 @@ const messageKey = ref("");
 const streamName = ref("");
 const community = ref(null);
 const communityUsers = ref({});
+const messageBox = ref(null);
 const messageText = ref();
 const messages = ref();
 
@@ -140,6 +143,10 @@ async function initChat() {
         manager.onmessage = updateMessages;
     }
 }
+function focusMessageBox() {
+    if(messageBox.value != null) 
+        messageBox.value.focus();
+}
 initChat();
 const contentMsg = ref(null);
 function setContentMessage(obj) {
@@ -148,17 +155,20 @@ function setContentMessage(obj) {
         var val = contentMsg.value; //clear message field if closing edit action
         if(val && val.type === stlib.Content.Edit.TYPE) messageText.value = "";
         contentMsg.value = null;
+        focusMessageBox();
         return;
     }
     if(obj.type === 'delete') {
         deleteMessageRef.value = obj.msg;
         toggleDeleteMessage();
+        focusMessageBox();
         return;
     }
     contentMsg.value = obj;
     if(obj.type === stlib.Content.Edit.TYPE) {
         messageText.value = obj.msg.getContent().getText();
     }
+    focusMessageBox();
 }
 function getConversation() {
     var user = accountStore.account.name;

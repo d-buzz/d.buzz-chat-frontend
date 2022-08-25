@@ -20,6 +20,11 @@ window.getManager = function () {
 };
 
 const app = createApp(App);
+app.directive('focus', {
+  mounted(el) {
+    el.focus()
+  }
+});
 window.app = app;
 // init/config libraries
 Object.values(import.meta.globEager("./config/*.ts"))
