@@ -1,12 +1,13 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import { ViteSetupModule } from "../config/types/ViteSetupModule";
 import { useModulesStore } from "../stores/modules";
+import { useAccountStore } from "../stores/account";
 
 export const priority = 98;
 
 export const install: ViteSetupModule = ({ app }) => {
   const modulesStore = useModulesStore();
-
+  const accountStore = useAccountStore();
   const routes: Array<RouteRecordRaw> = modulesStore.enabledModules.flatMap((module: any) =>
     module.config.routes.map((route: RouteRecordRaw) => {
       const enriched = { ...route };
@@ -25,8 +26,11 @@ export const install: ViteSetupModule = ({ app }) => {
         routes,
     });
     router.beforeEach((to, from, next) => {
-        console.log("route " + to);
-        console.log(to);
+        //redirect if not logged and login is required
+        if(to.name && !to.name.startsWith('@') && !accountStore.account.authenticated) {
+            next('/join');
+            return;
+        }
         next();
     });
     app.router = router;

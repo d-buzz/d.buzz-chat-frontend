@@ -1,8 +1,8 @@
 <template>
 
-    <div class="min-h-full flex flex-col justify-center" style="align-items:center;" v-if='community'>
+    <div class="min-h-full flex flex-col justify-center" style="align-items:center;">
         <div class="max-w-md w-md border border-gray-300 rounded-md p-3 bg-white">
-            <div class="flex">
+            <div class="flex" v-if='community'>
                 <div class="flex-shrink-0 mr-5px">
                     <img
                     class="rounded-full"
@@ -18,6 +18,9 @@
                     <h1 class="text-xl font-bold">{{community.getTitle()}}</h1>
                     <p>{{community.getAbout()}}</p>
                 </div>
+            </div>
+            <div>
+                Login
             </div>
             <div class="mt-1 mb-1">
               <div class="text-orange-700"><small>{{errorMessage}}</small></div>
@@ -114,7 +117,8 @@ async function loginGuest(username) {
         return;
     }    
     console.log("login guest", username);
-    router.push(`/i/${community.value.getName()}/about`);
+    await accountStore.loginGuest(username);
+    router.push((community.value == null)?'/home':`/i/${community.value.getName()}/about`);
 }
 async function loginKeychain(username) {
     if(username == null || !((username=username.trim()).length > 0)) { 
@@ -124,7 +128,7 @@ async function loginKeychain(username) {
     try {
         isLoading.value = true;
         await accountStore.authenticate(username);
-        router.push(`/i/${community.value.getName()}/about`);
+        router.push((community.value == null)?'/home':`/i/${community.value.getName()}/about`);
     }
     catch(e) {
         errorMessage.value = "login failed";

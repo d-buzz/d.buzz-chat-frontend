@@ -34,12 +34,17 @@ export const useAccountStore = defineStore("account", () => {
         );
 
     });
+    const loginGuest = (user: string) => {        //todo
+        account.value.name = user;
+        account.value.authenticated = false;
+        updateStore();
+    };
   const signOut = () => {
     account.value.authenticated = false;
     updateStore();
   };
   return {
-    authenticate,
+    authenticate, loginGuest, 
     signOut,
     account,
   };

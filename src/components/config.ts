@@ -2,15 +2,24 @@ import { RouteRecordRaw } from "vue-router";
 
 const name = "sting";
 
+/*
+Paths with names not beginning with @ will
+redirect to login page if user is not logged in.
+*/
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "Landing",
+    name: "@Landing",
     component: () => import("./Landing.vue"),
   },
   {
+    path: "/join",
+    name: "@Join0",
+    component: () => import("./Join.vue"),
+  },
+  {
     path: "/join/:user",
-    name: "Join",
+    name: "@Join",
     component: () => import("./Join.vue"),
   },
   {
