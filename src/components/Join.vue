@@ -20,7 +20,7 @@
                 </div>
             </div>
             <div>
-                Login
+                <b>Login</b>
             </div>
             <div class="mt-1 mb-1">
               <div class="text-orange-700"><small>{{errorMessage}}</small></div>

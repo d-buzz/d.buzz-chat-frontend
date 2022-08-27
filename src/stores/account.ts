@@ -15,8 +15,12 @@ export const useAccountStore = defineStore("account", () => {
         localStorage.setItem("_user", JSON.stringify(account.value));
     };
 
-  const authenticate = (user: string) =>
-    new Promise(function (resolve, reject) {
+  const authenticate = async (user: string) => {
+    const manager = getManager();
+    manager.setUser(user);
+    var pref = await manager.getPreferences();
+    var pref0 = await stlib.Utils.getAccountPreferences(user);
+    if(pref0 == null) return await new Promise(function (resolve, reject) {
         window.hive_keychain.requestSignBuffer(
             user,
             `{login:"${user}"}`,
@@ -32,8 +36,19 @@ export const useAccountStore = defineStore("account", () => {
                 return reject("error");
             }
         );
-
-    });
+        });
+        try {
+            var priv = await manager.getPrivatePreferences();
+            account.value.name = user;
+            account.value.authenticated = true;
+            updateStore();
+            return account.value;
+        }
+        catch(e) { 
+            account.value.authenticated = false;
+            console.log(e);
+        }
+    };
     const loginGuest = (user: string) => {        //todo
         account.value.name = user;
         account.value.authenticated = false;
