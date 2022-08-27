@@ -1113,7 +1113,18 @@ class MessageManager {
                 return null;
             var _this = this;
             return yield this.communities.cacheLogic(user, (user) => {
-                return hive.api.callAsync("bridge.list_all_subscriptions", { "account": user });
+                return hive.api.callAsync("bridge.list_all_subscriptions", { "account": user }).
+                    then((array) => __awaiter(this, void 0, void 0, function* () {
+                    var communityNames = [];
+                    for (var community of array)
+                        communityNames.push(community[0]);
+                    if (communityNames.length > 0) {
+                        yield utils_1.Utils.preloadAccountData(communityNames);
+                        for (var community of array)
+                            community.account = yield utils_1.Utils.getAccountData(community[0]);
+                    }
+                    return array;
+                }));
             });
         });
     }
@@ -1682,6 +1693,32 @@ class Utils {
             }
         });
     }
+    static preloadAccountData(users, reload = false) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var store = accountDataCache;
+            var usersToLoad = users;
+            if (!reload) {
+                usersToLoad = [];
+                for (var user of users) {
+                    if (store.lookup(user) === undefined)
+                        usersToLoad.push(user);
+                }
+            }
+            if (usersToLoad.length === 0)
+                return;
+            var p = Utils.getDhiveClient().database.getAccounts(usersToLoad);
+            for (var user of usersToLoad)
+                store.storeLater(user, p);
+            var array = yield p;
+            for (var result of array)
+                store.store(result.name, {
+                    name: result.name,
+                    posting: result.posting,
+                    memo_key: result.memo_key,
+                    posting_json_metadata: result.posting_json_metadata
+                });
+        });
+    }
     static getAccountData(user) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield accountDataCache.cacheLogic(user, (user) => {
@@ -1720,6 +1757,8 @@ class Utils {
     static newCache() {
         return new AccountDataCache();
     }
+    static getAccountDataCache() { return accountDataCache; }
+    static getCommunityDataCache() { return communityDataCache; }
 }
 exports.Utils = Utils;
 /*

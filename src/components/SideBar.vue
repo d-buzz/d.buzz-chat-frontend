@@ -5,7 +5,7 @@
         <SideBarLoginIcon/>
     </div>
     
-      <SideBarIcon v-for="community in communities" :img="community[0]" :name="community[1]" :key="updateKey" />
+      <SideBarIcon v-for="community in communities" :img="community[0]" :name="community[1]" :community="community" :key="updateKey" />
     
   </div>
 </template>

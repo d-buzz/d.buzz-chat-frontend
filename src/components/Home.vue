@@ -24,8 +24,8 @@
                 </TabList>
             <TabPanels>
                 <TabPanel>
-                    <div class="flex flex-row mt-1">
-                     <SideBarIcon v-for="community in communities" :img="community[0]" :name="community[1]" :key="updateKey" />
+                    <div class="flex flex-row flex-wrap mt-1">
+                     <SideBarIcon v-for="community in communities" :img="community[0]" :name="community[1]" :community="community" :key="updateKey" />
                     </div>
                 </TabPanel>
                 <TabPanel>todo preferencs
