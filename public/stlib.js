@@ -581,6 +581,16 @@ class JSONContent {
     forUser(user, conversation) {
         return imports_1.SignableMessage.create(user, conversation, this.json);
     }
+    isEqual(content) {
+        var js0 = this.json;
+        var js1 = content.json;
+        if (js0.length !== js1.length)
+            return false;
+        for (var i = 0; i < js0.length; i++)
+            if (js0[i] !== js1[i])
+                return false;
+        return true;
+    }
 }
 exports.JSONContent = JSONContent;
 
@@ -888,6 +898,7 @@ exports.DataStream = DataStream;
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DisplayableMessage = void 0;
+const imports_1 = require("./content/imports");
 class DisplayableMessage {
     constructor(message) {
         this.reference = null;
@@ -913,6 +924,9 @@ class DisplayableMessage {
     getUser() { return this.message.user; }
     getConversation() { return this.message.conversation; }
     getTimestamp() { return this.message.timestamp; }
+    isEncoded() {
+        return this.content instanceof imports_1.Encoded;
+    }
     getContent() {
         var edits = this.edits;
         if (edits !== null && edits.length > 0)
@@ -928,7 +942,7 @@ class DisplayableMessage {
 }
 exports.DisplayableMessage = DisplayableMessage;
 
-},{}],18:[function(require,module,exports){
+},{"./content/imports":8}],18:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -957,6 +971,7 @@ class MessageManager {
         this.userPreferences = null;
         this.joined = {};
         this.cachedUserMessages = null;
+        this.recentlySentEncodedContent = [];
         this.selectedConversation = null;
         this.conversations = new utils_1.AccountDataCache();
         this.communities = new utils_1.AccountDataCache();
@@ -1003,8 +1018,13 @@ class MessageManager {
                     var displayableMessage = yield _this.jsonToDisplayable(json);
                     var data = _this.conversations.lookupValue(displayableMessage.getConversation());
                     if (data != null) {
-                        data.messages.push(displayableMessage);
-                        _this.resolveReference(data.messages, displayableMessage);
+                        if (data.encoded != null && displayableMessage.isEncoded()) {
+                            data.encoded.push(displayableMessage);
+                        }
+                        else {
+                            data.messages.push(displayableMessage);
+                            _this.resolveReference(data.messages, displayableMessage);
+                        }
                     }
                     if (onmessage != null)
                         onmessage(displayableMessage);
@@ -1149,8 +1169,10 @@ class MessageManager {
                     else
                         promise = Promise.resolve(this.cachedUserMessages);
                     promise = promise.then((allMessages) => {
-                        var messages = allMessages.filter((m) => m.getConversation() === conversation);
-                        return { messages };
+                        var messages0 = allMessages.filter((m) => m.getConversation() === conversation);
+                        var messages = messages0.filter((m) => !m.isEncoded());
+                        var encoded = messages0.filter((m) => m.isEncoded());
+                        return { messages, encoded };
                     });
                 }
                 else {
@@ -1201,10 +1223,13 @@ class MessageManager {
                 return null;
             var client = this.getClient();
             var encodeKey = null;
-            if (Array.isArray(conversation))
-                msg = yield msg.encodeWithKeychain(user, conversation, keychainKeyType);
-            else if (conversation.indexOf('|') !== -1)
-                msg = yield msg.encodeWithKeychain(user, conversation.split('|'), keychainKeyType);
+            if (typeof conversation === 'string' && conversation.indexOf('|') !== -1)
+                conversation = conversation.split('|');
+            if (Array.isArray(conversation)) { //Private message
+                var encoded = yield msg.encodeWithKeychain(user, conversation, keychainKeyType);
+                this.recentlySentEncodedContent.push([encoded, msg]);
+                msg = encoded;
+            }
             else if (conversation.startsWith('#')) { //Group Message
                 encodeKey = yield this.getKeyFor(conversation);
                 if (encodeKey === null) {
@@ -1264,6 +1289,17 @@ class MessageManager {
             return list;
         });
     }
+    popRecentlySentEncodedContent(encoded) {
+        var arr = this.recentlySentEncodedContent;
+        for (var i = arr.length - 1; i >= 0; i--) {
+            if (encoded.isEqual(arr[i][0])) {
+                var decoded = arr[i][1];
+                arr.splice(i, 1);
+                return decoded;
+            }
+        }
+        return null;
+    }
     jsonToDisplayable(msgJSON) {
         return __awaiter(this, void 0, void 0, function* () {
             var msg = signable_message_1.SignableMessage.fromJSON(msgJSON);
@@ -1276,8 +1312,11 @@ class MessageManager {
             var verified = yield msg.verify();
             var content = msg.getContent();
             if (content instanceof imports_1.Encoded) {
-                var decoded = yield content.decodeWithKeychain(this.user, msg.getGroupUsernames());
-                content = decoded;
+                var decoded = this.popRecentlySentEncodedContent(content);
+                if (decoded !== null)
+                    content = decoded;
+                /*var decoded = await content.decodeWithKeychain(this.user, msg.getGroupUsernames());
+                content = decoded;*/
             }
             var displayableMessage = new displayable_message_1.DisplayableMessage(msg);
             if (content instanceof imports_1.Edit) {
@@ -1287,6 +1326,54 @@ class MessageManager {
             }
             displayableMessage.content = content;
             displayableMessage.verified = verified;
+            displayableMessage.init();
+            return displayableMessage;
+        });
+    }
+    decodeSelectedConversations() {
+        return __awaiter(this, void 0, void 0, function* () {
+            var data = yield this.getSelectedConversations();
+            if (data && data.encoded && data.encoded.length > 0) {
+                var onmessage = this.onmessage;
+                var encodedArray = data.encoded;
+                var toAdd = [];
+                try {
+                    while (encodedArray.length > 0) {
+                        var encodedMessage = encodedArray.shift();
+                        try {
+                            var decodedMessage = yield this.decode(encodedMessage);
+                            data.messages.push(decodedMessage);
+                            this.resolveReference(data.messages, decodedMessage);
+                            if (onmessage != null)
+                                onmessage(decodedMessage);
+                        }
+                        catch (e) {
+                            toAdd.push(encodedMessage);
+                            console.log(e);
+                            if (e.success !== undefined && e.success === false) {
+                                if (e.error === "user_cancel")
+                                    return;
+                            }
+                        }
+                    }
+                }
+                finally {
+                    encodedArray.push.apply(encodedArray, toAdd);
+                    if (onmessage != null)
+                        onmessage(decodedMessage);
+                }
+            }
+        });
+    }
+    decode(displayableMessage) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var msg = displayableMessage.message;
+            var content = displayableMessage.content;
+            if (content instanceof imports_1.Encoded) {
+                var decoded = yield content.decodeWithKeychain(this.user, msg.getGroupUsernames());
+                content = decoded;
+            }
+            displayableMessage.content = content;
             displayableMessage.init();
             return displayableMessage;
         });

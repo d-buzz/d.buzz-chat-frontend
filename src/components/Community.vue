@@ -36,6 +36,11 @@
                 </div>
            </div>
         </div>
+        <div v-if="decodeNMessages>0">
+            <hr>
+            <div><small>Click to decode {{decodeNMessages}} message/s.</small></div>            
+            <button class="btn" @click="decode()">Decode</button>
+        </div>
         <div v-if="contentMsg" class="text-sm border-t-1 pr-3">
             <button class="float-right" @click="setContentMessage(null)"><span class="oi oi-circle-x align-top"></span></button>
             <div class="overflow-x-hidden" style="text-overflow: ellipsis;"><span class="font-bold">{{contentMsg.msg.getUser()}}:</span> {{contentMsg.text}}</div>
@@ -59,6 +64,7 @@ import { ref, nextTick } from 'vue';
 const route = useRoute();
 const accountStore = useAccountStore();
 const displayableMessages = ref([]);
+const decodeNMessages = ref(0);
 const messageKey = ref("");
 const streamName = ref("");
 const community = ref(null);
@@ -127,6 +133,9 @@ async function initChat() {
             var data = await manager.getSelectedConversations();
             data.messages.sort((a,b)=>a.getTimestamp()-b.getTimestamp());
             displayableMessages.value = data.messages;
+            if(data.encoded && data.encoded.length > 0)
+                decodeNMessages.value = data.encoded.length;
+            else decodeNMessages.value = 0;
             messageKey.value = conversation+"#"+data.messages.length;
             nextTick(() => {
                 var container = messages.value;
@@ -190,6 +199,7 @@ function getConversation() {
     }
     return conversation;
 }
+const decode = async ()=>{ await getManager().decodeSelectedConversations(); };
 var sendingMessage = false;
 const enterMessage = async (message) => {
     if(sendingMessage) return;
