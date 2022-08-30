@@ -639,6 +639,13 @@ class Preferences extends imports_1.JSONContent {
     }
     getPreferencesJSON() { return this.json[1]; }
     /*setPreferencesJSON(json: any): void { this.json[1] = json; }*/
+    setValue(nameColonType, value = null) {
+        var values = this.getValues();
+        if (value == null)
+            delete values[nameColonType];
+        else
+            values[nameColonType] = value;
+    }
     newGroup(publicKey) {
         var groupId = this.findFreeGroupId();
         if (groupId === -1)
@@ -665,12 +672,14 @@ class Preferences extends imports_1.JSONContent {
         var group = groups[groupId];
         return group == null ? null : group;
     }
-    getGroups() {
+    getValues() { return this.getValueSet('values'); }
+    getGroups() { return this.getValueSet('groups'); }
+    getValueSet(name) {
         var json = this.getPreferencesJSON();
-        var groups = json.groups;
-        if (groups === undefined)
-            json.groups = groups = {};
-        return groups;
+        var set = json[name];
+        if (set === undefined)
+            json[name] = set = {};
+        return set;
     }
     findFreeGroupId() {
         var groups = this.getGroups();

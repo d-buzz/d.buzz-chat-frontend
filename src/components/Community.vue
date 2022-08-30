@@ -27,7 +27,7 @@
                     <span class="oi oi-x align-top"></span>
                 </button>
             </span>
-            <div class="flex flex-row flex-wrap mt-1" v-if="sharedCommunities">
+            <div class="flex flex-row flex-wrap" v-if="sharedCommunities">
                 <SideBarIcon v-for="community in sharedCommunities" :img="community[0]" :name="community[1]" :community="community" />
             </div>
         </div>
@@ -43,6 +43,7 @@
             <hr>
             <div><small>Click to decode {{decodeNMessages}} message/s.</small></div>            
             <button class="btn" @click="decode()">Decode</button>
+            <button class="btn" @click="autoDecode()">Auto decode</button>
         </div>
         <div v-if="contentMsg" class="text-sm border-t-1 pr-3">
             <button class="float-right" @click="setContentMessage(null)"><span class="oi oi-circle-x align-top"></span></button>
@@ -234,6 +235,11 @@ function getConversation() {
     }
     return conversation;
 }
+const autoDecode = async ()=>{
+    //TODO user prefs
+    
+    await decode();
+};
 const decode = async ()=>{ await getManager().decodeSelectedConversations(); };
 var sendingMessage = false;
 const enterMessage = async (message) => {
