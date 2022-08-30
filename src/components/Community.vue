@@ -17,7 +17,7 @@
         </div>
       </div>
     <div class="h-full flex flex-col justify-end">
-        <div class="border-b-1 font-bold">
+        <div class="font-bold">
             {{streamName}}
             <span v-if="messageKey.startsWith('#')" class="float-right mr-2">
                 <button class="text-sm mr-2" @click="toggleShareGroup" title="share group">
@@ -27,6 +27,9 @@
                     <span class="oi oi-x align-top"></span>
                 </button>
             </span>
+            <div class="flex flex-row flex-wrap mt-1" v-if="sharedCommunities">
+                <SideBarIcon v-for="community in sharedCommunities" :img="community[0]" :name="community[1]" :community="community" />
+            </div>
         </div>
         <div ref="messages" :key="messageKey" class="flex flex-col overflow-y-scroll pr-3">
             <div v-for="message in displayableMessages" >
@@ -69,6 +72,7 @@ const messageKey = ref("");
 const streamName = ref("");
 const community = ref(null);
 const communityUsers = ref({});
+const sharedCommunities = ref(null);
 const messageBox = ref();
 const messages = ref();
 
@@ -118,6 +122,7 @@ async function initChat() {
         }
         else if(route.name.startsWith('PrivateChat')) {
             streamName.value = conversation;
+            sharedCommunities.value = await findSharedCommunities(conversation);
         }
 
         manager.setConversation(conversation);
@@ -147,6 +152,36 @@ async function initChat() {
        
         manager.onmessage = updateMessages;
     }
+}
+async function findSharedCommunities(conversation) {
+    const manager = getManager();
+    var user = accountStore.account.name;
+    var users = conversation.split("|");
+    var userCommunities = null
+    var list = [];
+    for(var name of users) {
+        var communities = await manager.getCommunities(name);
+        if(name === user) userCommunities = communities;
+        else list.push(communities);
+    }
+    console.log("user ", userCommunities);
+    console.log("list ", list);
+    var shared = [];
+    if(userCommunities != null) {
+        skip:
+        for(var community of userCommunities) {
+            loop:
+            for(var userCommunities2 of list) {
+                for(var community2 of userCommunities2) 
+                    if(community[0] == community2[0]) 
+                        continue loop;
+                continue skip;
+            }
+            shared.push(community);
+        }            
+    }
+    console.log("shared ", shared);
+    return shared;
 }
 function focusMessageBox() {
     if(messageBox.value != null) 
