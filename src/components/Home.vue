@@ -30,17 +30,18 @@
                 </TabPanel>
                 <TabPanel>
                     <div class="mt-2"></div>
-                    <div class="flex flex-row" v-for="item in preferences">
+                    <div class="flex flex-row" v-for="item in preferences" :key="updateKey">
                         <div>
                             <div><b>{{item.display}}</b></div>
                             <div><small>{{item.desc}}</small></div>
                         </div>
                         <div>
-                            <input type="checkbox">
+                            <input type="checkbox" v-model="item.newvalue">
                         </div>
                     </div>
-
+                    <div><small>{{updateMessage}}</small></div>
                     <button class="btn" @click="updatePreferences">Update</button>
+                    <button class="btn2" @click="resetChanges">Reset changes</button>
                      <!--<div class="mt-1">
                       <label for="username" class="block text-sm font-medium text-gray-700"> Account name/s (add 1-3 users): </label>
                       <div class="mt-1">
@@ -72,9 +73,10 @@ const router = useRouter();
 const communities = ref([]);
 const preferences = ref([]);
 const updateKey = ref("");
+const updateMessage = ref("");
 
 const defaultPreferences = [
-    {name: "autoDecode:b", display: "Auto Decode", desc: "Automatically decode private messages.", value: false}
+    {name: "autoDecode:b", display: "Auto Decode", desc: "Automatically decode private messages.", value: false, newvalue:false}
 ];
 
 async function initCommunities() {
@@ -89,7 +91,7 @@ async function initCommunities() {
         try {
             var name = pref.name;
             var value = values[name];
-            if(value != null) array.push({name, display:pref.display, desc:pref.desc, value});
+            if(value != null) array.push({name, display:pref.display, desc:pref.desc, value, newvalue:value});
             else array.push(pref);
         }
         catch(e) {
@@ -97,20 +99,28 @@ async function initCommunities() {
         }
     }
     preferences.value = array;
-    updateKey.value = user+'#'+stlib.Utils.utcTime(); 
+    updateKey.value = '#'+stlib.Utils.utcTime(); 
 }
 initCommunities();
-function updatePreferences() {
-    /*var user = accountStore.account.name;
+async function updatePreferences() {
+    var user = accountStore.account.name;
     if(user == null) return;
-    community.setStreams(streams.value);
-    var json = community.updateStreamsCustomJSON();
-    updateMessage.value = "";
-    window.hive_keychain.requestCustomJson(user, "community", "Posting",
-         JSON.stringify(json), "Update Community Data", (result)=>{
-        if(result.success) updateMessage.value="Succesfully updated settings."
-        else updateMessage.value="Error: " + result.error;
-    });*/
+    var manager = getManager();
+    var prefs = await manager.getPreferences();
+    for(var item of preferences.value) {
+        item.value = item.newvalue;
+        prefs.setValue(item.name, item.value);
+    }
+    var result = await manager.updatePreferences(prefs);
+    if(result.isSuccess()) updateMessage.value = "Succesfully updated settings.";
+    else updateMessage.value = "Failed to update preferences. " + result.getError();
+}
+function resetChanges() {
+    var user = accountStore.account.name;
+    if(user == null) return;
+    for(var item of preferences.value)
+        item.newvalue = item.value;
+    updateKey.value = user+'#'+stlib.Utils.utcTime(); 
 }
 function logout() {
   accountStore.signOut();

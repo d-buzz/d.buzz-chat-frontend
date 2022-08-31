@@ -43,7 +43,7 @@
             <hr>
             <div><small>Click to decode {{decodeNMessages}} message/s.</small></div>            
             <button class="btn" @click="decode()">Decode</button>
-            <button class="btn" @click="autoDecode()">Auto decode</button>
+            <button class="btn" @click="autoDecode()">{{valueAutoDecode?'Manual decode':'Auto decode'}}</button>
         </div>
         <div v-if="contentMsg" class="text-sm border-t-1 pr-3">
             <button class="float-right" @click="setContentMessage(null)"><span class="oi oi-circle-x align-top"></span></button>
@@ -76,6 +76,7 @@ const communityUsers = ref({});
 const sharedCommunities = ref(null);
 const messageBox = ref();
 const messages = ref();
+const valueAutoDecode = ref(false);
 
 const showGroupUserModal = ref(false);
 const showCloseGroupModal = ref(false);
@@ -91,7 +92,6 @@ function toggleCloseGroup() {
 function toggleDeleteMessage() {
     showDeleteMessageModal.value = !showDeleteMessageModal.value;
 }
-
 async function initChat() {
     var user = accountStore.account.name;
     if(user == null) return; //TODO ask to login
@@ -143,15 +143,21 @@ async function initChat() {
                 decodeNMessages.value = data.encoded.length;
             else decodeNMessages.value = 0;
             messageKey.value = conversation+"#"+data.messages.length;
-            nextTick(() => {
+            nextTick(async () => {
                 var container = messages.value;
                 if(container) container.scrollTop = scrollToBottom?
                               container.scrollHeight:scrollTop;
             });
         };
+        var prefs = await manager.getPreferences();
+        var isAutoDecode = prefs.getValueBoolean("autoDecode", false);
+        valueAutoDecode.value = isAutoDecode;
         await updateMessages();
-       
+
         manager.onmessage = updateMessages;
+
+        if(isAutoDecode === true)
+            await decode();        
     }
 }
 async function findSharedCommunities(conversation) {
@@ -236,9 +242,14 @@ function getConversation() {
     return conversation;
 }
 const autoDecode = async ()=>{
-    //TODO user prefs
-    
-    await decode();
+    var manager = getManager();
+    var prefs = await manager.getPreferences();
+    var value = !prefs.getValueBoolean("autoDecode", false);
+    prefs.setValue("autoDecode:b", value);
+    var result = await manager.updatePreferences(prefs);
+    if(result.isSuccess()) 
+        valueAutoDecode.value = value;
+    if(value) await decode();
 };
 const decode = async ()=>{ await getManager().decodeSelectedConversations(); };
 var sendingMessage = false;

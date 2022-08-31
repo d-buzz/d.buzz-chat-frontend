@@ -639,6 +639,10 @@ class Preferences extends imports_1.JSONContent {
     }
     getPreferencesJSON() { return this.json[1]; }
     /*setPreferencesJSON(json: any): void { this.json[1] = json; }*/
+    getValueBoolean(name, def = false) {
+        var value = this.getValues()[name + ":b"];
+        return (value === undefined) ? def : value;
+    }
     setValue(nameColonType, value = null) {
         var values = this.getValues();
         if (value == null)
@@ -986,6 +990,7 @@ class MessageManager {
         this.communities = new utils_1.AccountDataCache();
         this.keys = {};
         this.keychainPromise = null;
+        this.pauseAutoDecode = false;
         this.defaultReadHistoryMS = 30 * 24 * 60 * 60000;
     }
     setNodes(nodes) {
@@ -1028,7 +1033,24 @@ class MessageManager {
                     var data = _this.conversations.lookupValue(displayableMessage.getConversation());
                     if (data != null) {
                         if (data.encoded != null && displayableMessage.isEncoded()) {
-                            data.encoded.push(displayableMessage);
+                            var prefs = yield _this.getPreferences();
+                            if (!_this.pauseAutoDecode && prefs.getValueBoolean("autoDecode", false) === true) {
+                                try {
+                                    var decodedMessage = yield _this.decode(displayableMessage);
+                                    data.messages.push(decodedMessage);
+                                    _this.resolveReference(data.messages, decodedMessage);
+                                }
+                                catch (e) {
+                                    data.encoded.push(displayableMessage);
+                                    console.log(e);
+                                    if (e.success !== undefined && e.success === false) {
+                                        if (e.error === "user_cancel")
+                                            return;
+                                    }
+                                }
+                            }
+                            else
+                                data.encoded.push(displayableMessage);
                         }
                         else {
                             data.messages.push(displayableMessage);

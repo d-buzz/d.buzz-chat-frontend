@@ -18,6 +18,19 @@ window.getManager = function () {
   }
   return currentManager;
 };
+document.addEventListener('visibilitychange', async function (event) {
+    var manager = getManager();
+    if (document.hidden) {
+        manager.pauseAutoDecode = true;
+    } else {
+        manager.pauseAutoDecode = false;
+        var prefs = await manager.getPreferences();
+        if(prefs !== null) {
+            var isAutoDecode = prefs.getValueBoolean("autoDecode", false);
+            await manager.decodeSelectedConversations();
+        }
+    }
+});
 
 const app = createApp(App);
 app.directive('focus', {
