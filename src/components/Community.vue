@@ -19,6 +19,9 @@
     <div class="h-full flex flex-col justify-end">
         <div class="font-bold">
             {{streamName}}
+            <span class="inline-block" v-if="sharedCommunities">
+                <SideBarIcon v-for="community in sharedCommunities" :img="community[0]" :name="community[1]" :community="community" :imgCss="`avMini`" />
+            </span>
             <span v-if="messageKey.startsWith('#')" class="float-right mr-2">
                 <button class="text-sm mr-2" @click="toggleShareGroup" title="share group">
                     <span class="oi oi-people"></span>
@@ -27,9 +30,6 @@
                     <span class="oi oi-x align-top"></span>
                 </button>
             </span>
-            <div class="flex flex-row flex-wrap" v-if="sharedCommunities">
-                <SideBarIcon v-for="community in sharedCommunities" :img="community[0]" :name="community[1]" :community="community" />
-            </div>
         </div>
         <div ref="messages" :key="messageKey" class="flex flex-col overflow-y-scroll pr-3">
             <div v-for="message in displayableMessages" >

@@ -1,11 +1,11 @@
 <template>
-  <div class="flex nameParent relative items-center justify-start" v-if="hasImg">
+  <div class="flex nameParent relative items-center justify-start" v-if="hasImg || getImgCss() == 'avMini'">
     <small class="name"><b>{{name}}</b></small>
-    <div class="flex-shrink-0 p-1" :class="{selected: $route.params.user == img}" 
+    <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" 
             :title="`${name} (${img})`">
         <router-link :to="`/i/${img}/about`">
             <img
-            class="rounded-full avCommunity border border-solid borderColor"
+            :class="`rounded-full ${getImgCss()} border border-solid borderColor`"
             :src="`https://images.hive.blog/u/${img}/avatar/small`"
             alt="@"
             />
@@ -13,13 +13,12 @@
     </div>
   </div>
   <div class="flex relative items-center justify-start" v-else>
-   
-    <div class="flex-shrink-0 p-1" :class="{selected: $route.params.user == img}" 
+    <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" 
             :title="`${name} (${img})`">
          <small class="name2"><b>{{name}}</b></small>
         <router-link :to="`/i/${img}/about`">
             <img
-            class="rounded-full avCommunity border border-solid borderColor"
+            :class="`rounded-full ${getImgCss()} border border-solid borderColor`"
             :src="`https://images.hive.blog/u/${img}/avatar/small`"
             alt="@"
             />
@@ -31,7 +30,8 @@
 const props = defineProps({
     img: String,
     name: String,
-    community: Object
+    community: Object,
+    imgCss: String
 });
 const hasImg = ref(hasProfileImage(props.community));
 function hasProfileImage(community) {
@@ -47,11 +47,15 @@ function hasProfileImage(community) {
     }
     catch(e) { console.log(e); return true; }
 }
+function getImgCss() {
+    return props.imgCss === undefined?"avCommunity":props.imgCss;
+}
 </script> 
 <style scoped>
 .name {
     display: none;
     pointer-events: none;
+    min-width: 54px;
 }
 .nameParent:hover .name{
     display: block;
