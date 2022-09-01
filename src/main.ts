@@ -27,7 +27,7 @@ document.addEventListener('visibilitychange', async function (event) {
         var prefs = await manager.getPreferences();
         if(prefs !== null) {
             var isAutoDecode = prefs.getValueBoolean("autoDecode", false);
-            await manager.decodeSelectedConversations();
+            if(isAutoDecode) await manager.decodeSelectedConversations();
         }
     }
 });
