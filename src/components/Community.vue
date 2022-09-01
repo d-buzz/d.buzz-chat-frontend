@@ -33,7 +33,7 @@
         </div>
         <div ref="messages" :key="messageKey" class="flex flex-col overflow-y-scroll pr-3">
             <div v-for="message in displayableMessages" >
-                <div v-if="!message.isEdit && message.getContent() != null">
+                <div v-if="!message.isEdit && !message.isEmote() && message.getContent() != null">
                     <hr style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
                     <Message :message="message" @action="setContentMessage" />
                 </div>
@@ -196,8 +196,12 @@ function focusMessageBox() {
 }
 initChat();
 const contentMsg = ref(null);
-function setContentMessage(obj) {
+async function setContentMessage(obj) {
     console.log("contentMessage", obj);
+    if(obj.type === stlib.Content.Emote.TYPE) {
+        await enterMessage(obj.text, obj, false);
+        return;
+    }
     if(obj == null) {
         var val = contentMsg.value; //clear message field if closing edit action
         if(val && val.type === stlib.Content.Edit.TYPE) messageBox.value.setText("");
@@ -253,18 +257,22 @@ const autoDecode = async ()=>{
 };
 const decode = async ()=>{ await getManager().decodeSelectedConversations(); };
 var sendingMessage = false;
-const enterMessage = async (message) => {
-    if(sendingMessage) return;
+const enterMessage = async (message, contentMessage=null, block=true) => {
+    console.log("message ", message);
+    if(block && sendingMessage) return;
     try {
-        sendingMessage = true;
+        if(block) sendingMessage = true;
         var conversation = getConversation();
         if(conversation == null) return;
 
         const manager = getManager();
         var textMsg = null;
-        var contentMessage = contentMsg.value;
+        if(contentMessage === null) contentMessage = contentMsg.value;
         if(contentMessage !== null) {
             switch(contentMessage.type) {
+                case stlib.Content.Emote.TYPE:
+                     textMsg = stlib.Content.emote(message, contentMessage.msg.message);
+                break;
                 case stlib.Content.Quote.TYPE:
                     textMsg = stlib.Content.quote(message, contentMessage.msg.message, contentMessage.from, contentMessage.to);
                 break;
@@ -288,7 +296,7 @@ const enterMessage = async (message) => {
             console.log(result);
         }
     }
-    finally { sendingMessage = false; }
+    finally { if(block) sendingMessage = false; }
 };
 function isAtScrollBottom(e) {
     return e.scrollTop + e.clientHeight >= e.scrollHeight;

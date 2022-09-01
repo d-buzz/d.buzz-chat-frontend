@@ -57,7 +57,7 @@
             </div>
             <div v-if="!displayOnly" class="visibleOnHover absolute float-right" style="right: 8px;">
                 <div class="flex">
-                    <span class="btn0 bg1"><span class="oi oi-heart"></span></span>
+                    <span class="btn0 bg1" @click="emoteAction" ><span class="oi oi-heart"></span></span>
                     <span class="btn0 bg2" @click="quoteAction" title="Quote, select text to quote part of message."><span class="oi oi-share"></span></span>
                     <span v-if="account===message.getUser()" class="btn0 bg3" @click="editAction" title="Edit message."><span class="oi oi-pencil"></span></span>
                     <span v-if="account===message.getUser()" class="btn0 bg4" @click="deleteAction" title="Delete message."><span class="oi oi-trash"></span></span>
@@ -77,6 +77,11 @@
                 </div>
                 <div v-else>
                     Unsupported message type.
+                </div>
+                <div v-if="message.emotes">
+                    <span class="border rounded-md bg-gray-300 pl-1 pr-1">
+                        <small class="font-bold align-text-bottom">{{message.emotes.length}}</small> &#129505;
+                    </span>
                 </div>
             </div>
         </div>
@@ -163,6 +168,12 @@ function clickOnMsgOption(item) {
             deleteAction();
             break;
     }
+}
+function emoteAction() {
+    emit("action", {
+        msg: props.message,
+        type: stlib.Content.Emote.TYPE,
+        text: '&#128150;'});
 }
 const messageText = ref();
 function quoteAction() {

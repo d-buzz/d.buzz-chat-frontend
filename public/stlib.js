@@ -916,6 +916,7 @@ class DisplayableMessage {
     constructor(message) {
         this.reference = null;
         this.edits = null;
+        this.emotes = null;
         this.editContent = null;
         this.isEdit = false;
         this.message = message;
@@ -924,6 +925,17 @@ class DisplayableMessage {
     }
     init() {
         this.usernames = this.message.getGroupUsernames();
+    }
+    emote(msg) {
+        if (this.emotes === null)
+            this.emotes = [msg];
+        else {
+            this.emotes.push(msg);
+            this.emotes.sort((a, b) => b.getTimestamp() - a.getTimestamp());
+        }
+    }
+    isEmote() {
+        return this.content instanceof imports_1.Emote;
     }
     edit(msg) {
         if (this.edits === null)
@@ -1291,6 +1303,9 @@ class MessageManager {
                         if (content instanceof imports_1.Edit) {
                             if (msg.getUser() == user)
                                 m.edit(msg);
+                        }
+                        else if (content instanceof imports_1.Emote) {
+                            m.emote(msg);
                         }
                         else
                             msg.reference = m;
