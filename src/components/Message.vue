@@ -5,9 +5,6 @@
     <TransitionRoot :show="newViewEditHistoryModalOpen">
         <ViewEditHistoryModal :msg="message" @close="toggleViewEditHistoryModal"></ViewEditHistoryModal>
     </TransitionRoot>
-    <TransitionRoot :show="showUserModal">
-        <UserModal @close="toggleUserModal(null)" :user="userRef"></UserModal>
-    </TransitionRoot>
     <div v-if="hasQuotedText(message)" class="flex mb-1">
         <img
             @click.right.prevent.stop="clickOnIcon($event)"
@@ -21,22 +18,7 @@
         <div class="flex-shrink-0 mr-5px">
 
             
-            <img
-            @click="toggleUserModal(message.getUser())"
-            @click.right.prevent.stop="clickOnIcon($event)"
-            class="rounded-full avMessage"
-            :src="`https://images.hive.blog/u/${message.getUser()}/avatar/small`"
-            alt="@"
-            />
-            
-
-            <vue-simple-context-menu
-                v-if="!displayOnly"
-              element-id="iconMenuId"
-              :options="iconMenuOptions"
-              ref="iconMenu"
-              @option-clicked="clickOnIconOption"
-            />
+            <UserIcon :name="message.getUser()" :community="message.getCommunity()"></UserIcon>
 
             <vue-simple-context-menu
               element-id="msgMenuId"
@@ -141,15 +123,6 @@ function getQuotedText(message) {
         console.log(e);
     }
     return null;
-}
-/*icon menu*/
-const iconMenuOptions = [
-    {name:"message"},{name:"blog"}
-];
-const iconMenu = ref(null);
-function clickOnIcon(event) { iconMenu.value.showMenu(event, "item"); }
-function clickOnIconOption(item) {
-    console.log("clickOnIconOption ", item);
 }
 /*message menu*/
 const msgMenuOptions = ref([{name:"emote"},{name:"quote"},{name:"edit"},{name:"delete"}]);

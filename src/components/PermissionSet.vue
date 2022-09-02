@@ -6,13 +6,13 @@
     <div>
         <select class="inputSelect1" v-model="set.role">
             <option value="">Any</option>
-            <option value="Onboard">Onboard</option>
-            <option value="Joined">Joined</option>
-            <option value="Guest">Guest</option>
-            <option value="Member">Member</option>
-            <option value="Mod">Mod</option>
-            <option value="Admin">Admin</option>
-            <option value="Owner">Owner</option>
+            <option value="onboard">Onboard</option>
+            <option value="joined">Joined</option>
+            <option value="guest">Guest</option>
+            <option value="member">Member</option>
+            <option value="mod">Mod</option>
+            <option value="admin">Admin</option>
+            <option value="owner">Owner</option>
         </select>
         <span class="ml-2">
         <button class="btn" @click="addTitle()"><span class="oi oi-plus"></span> title</button> </span>

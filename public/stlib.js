@@ -132,6 +132,25 @@ class Community {
     getStreams() { return this.streams; }
     setStreams(streams) { this.streams = streams; }
     addStream(stream) { this.streams.push(stream); }
+    getRole(username) {
+        var role = this.getRoleEntry(username);
+        return role == null ? null : role[1];
+    }
+    getTitles(username) {
+        var role = this.getRoleEntry(username);
+        return role == null ? null : role[2];
+    }
+    hasTitle(username, title) {
+        var titles = this.getTitles(username);
+        return titles === null ? false : titles.indexOf(title) !== -1;
+    }
+    getRoleEntry(username) {
+        var roles = this.communityData.roles;
+        if (roles == null)
+            return null;
+        var role = roles[username];
+        return role == null ? null : role;
+    }
     newCategory(name) {
         var category = data_stream_1.DataStream.fromJSON(this.getName(), [name]);
         this.addStream(category);
@@ -949,6 +968,14 @@ class DisplayableMessage {
     getUser() { return this.message.user; }
     getConversation() { return this.message.conversation; }
     getTimestamp() { return this.message.timestamp; }
+    getCommunity() {
+        var conversation = this.getConversation();
+        if (conversation && conversation.startsWith("hive-")) {
+            var i = conversation.indexOf('/');
+            return i === -1 ? conversation : conversation.substring(0, i);
+        }
+        return null;
+    }
     isEncoded() {
         return this.content instanceof imports_1.Encoded;
     }
@@ -1452,7 +1479,7 @@ class PermissionSet {
         return i !== -1;
     }
     getHiveRole() {
-        if (this.role == "" || this.role == "Onboard" || this.role == "Joined")
+        if (this.role == "" || this.role == "onboard" || this.role == "joined")
             return "";
         return this.role;
     }
@@ -1873,7 +1900,16 @@ class Utils {
     static getCommunityData(user) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield communityDataCache.cacheLogic(user, (user) => {
-                return Utils.getDhiveClient().call("bridge", "get_community", [user]);
+                return Utils.getDhiveClient().call("bridge", "get_community", [user]).then((result) => __awaiter(this, void 0, void 0, function* () {
+                    var array = yield Utils.getDhiveClient().call("bridge", "list_community_roles", [user]);
+                    result.roles = {};
+                    if (Array.isArray(array))
+                        for (var role of array) {
+                            role[2] = role[2] === "" ? [] : role[2].split(",");
+                            result.roles[role[0]] = role;
+                        }
+                    return result;
+                }));
             });
         });
     }
