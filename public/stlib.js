@@ -1024,6 +1024,7 @@ class MessageManager {
         this.joined = {};
         this.cachedUserMessages = null;
         this.recentlySentEncodedContent = [];
+        this.selectedCommunityPage = {};
         this.selectedConversation = null;
         this.conversations = new utils_1.AccountDataCache();
         this.communities = new utils_1.AccountDataCache();
@@ -1191,6 +1192,13 @@ class MessageManager {
         client.join(room);
     }
     setUseKeychain() { this.loginmethod = new LoginWithKeychain(); }
+    getSelectedCommunityPage(community, defaultPage = null) {
+        var page = this.selectedCommunityPage[community];
+        return page == null ? defaultPage : page;
+    }
+    setSelectedCommunityPage(community, page) {
+        this.selectedCommunityPage[community] = page;
+    }
     setConversation(username) {
         this.selectedConversation = username;
         this.join(username);

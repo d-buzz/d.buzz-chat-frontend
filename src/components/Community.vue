@@ -100,6 +100,7 @@ async function initChat() {
 
     const manager = getManager();
     manager.setUser(user);
+    manager.setSelectedCommunityPage(user2, route.path);
 
     var conversation = getConversation(); 
     if(conversation != null) {

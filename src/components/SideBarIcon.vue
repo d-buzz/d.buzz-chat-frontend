@@ -3,13 +3,13 @@
     <small class="name"><b>{{name}}</b></small>
     <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" 
             :title="`${name} (${img})`">
-        <router-link :to="`/i/${img}/about`">
+        <span class="cursor-pointer" @click="onClick(img)">
             <img
             :class="`rounded-full ${getImgCss()} border border-solid borderColor`"
             :src="`https://images.hive.blog/u/${img}/avatar/small`"
             alt="@"
             />
-        </router-link>
+        </span>
     </div>
   </div>
   <div class="flex relative items-center justify-start" v-else>
@@ -27,6 +27,7 @@
   </div>
 </template>
 <script setup>
+const router = useRouter();
 const props = defineProps({
     img: String,
     name: String,
@@ -34,6 +35,10 @@ const props = defineProps({
     imgCss: String
 });
 const hasImg = ref(hasProfileImage(props.community));
+function onClick(community) {
+    const manager = getManager();
+    router.push(manager.getSelectedCommunityPage(community, `/i/${community}/about`));
+}
 function hasProfileImage(community) {
     if(!community) return true;
     try {
