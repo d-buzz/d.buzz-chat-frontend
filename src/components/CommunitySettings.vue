@@ -5,13 +5,16 @@
   <TransitionRoot :show="showCategoryModal">
     <AddCategoryModal @oninput="addCategory" @close="toggleAddCategoryModal"></AddCategoryModal>
   </TransitionRoot>
+  <TransitionRoot :show="showInfoModal">
+    <AddInfoModal @oninput="addInfo" @close="toggleAddInfoModal"></AddInfoModal>
+  </TransitionRoot>
   <div class="w-full h-full flex flex-col">
     <div class="flex border-b-1 font-bold">{{pageTitle}}</div>
 
     <div>
         <button class="btn" @click="toggleAddChatModal()"><span class="oi oi-chat"></span> chat</button>
         <button class="btn" @click="toggleAddCategoryModal()"><span class="oi oi-plus"></span> category</button>
-        <button class="btn" @click="addInfo()"><span class="oi oi-plus"></span> info</button>
+        <button class="btn" @click="toggleAddInfoModal()"><span class="oi oi-plus"></span> info</button>
         <button class="btn" @click="moveUp()"><span class="oi oi-chevron-top"></span></button>
         <button class="btn" @click="moveDown()"><span class="oi oi-chevron-bottom"></span></button>
         <button class="btn" @click="remove()"><span class="oi oi-x"></span></button>
@@ -98,7 +101,7 @@ import Draggable from "vue3-draggable";
 import { useAccountStore } from "../stores/account";
 import { useRoute } from "vue-router";
 import { ref, nextTick } from 'vue';
-
+const router = useRouter();
 const route = useRoute();
 const accountStore = useAccountStore();
 const displayableMessages = ref([]);
@@ -107,8 +110,10 @@ const selectKey = ref("");
 
 const showAddChatModal = ref(false);
 const showCategoryModal = ref(false);
+const showInfoModal = ref(false);
 function toggleAddChatModal() { showAddChatModal.value = !showAddChatModal.value; }
 function toggleAddCategoryModal() { showCategoryModal.value = !showCategoryModal.value; }
+function toggleAddInfoModal() { showInfoModal.value = !showInfoModal.value; }
 
 var community = null;
 const pageTitle = ref("");
@@ -129,7 +134,7 @@ function updateSettings() {
     });
 }
 function resetSettings() {
-    
+    initChat();
 }
 function update() {
     messageKey.value = community.getName()+'#'+stlib.Utils.utcTime();
@@ -175,9 +180,9 @@ function addCategory(displayName="Category") {
     select(community.newCategory(displayName));
     update();
 }
-function addInfo() {
+function addInfo(displayName="About", dataPath='/about') {
     community.setStreams(streams.value);
-    select(community.newCategory("About", '/about'));
+    select(community.newInfo(displayName, dataPath));
     update();
 }
 function moveUp() {

@@ -6,8 +6,10 @@ import '@vue/runtime-core'
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AddCategoryModal: typeof import('./components/modals/AddCategoryModal.vue')['default']
+    'AddCategoryModal (copy)': typeof import('./components/modals/AddCategoryModal (copy).vue')['default']
     AddChatModal: typeof import('./components/modals/AddChatModal.vue')['default']
     AddGroupUserModal: typeof import('./components/modals/AddGroupUserModal.vue')['default']
+    AddInfoModal: typeof import('./components/modals/AddInfoModal.vue')['default']
     AddTitleModal: typeof import('./components/modals/AddTitleModal.vue')['default']
     CloseGroupModal: typeof import('./components/modals/CloseGroupModal.vue')['default']
     Community: typeof import('./components/Community.vue')['default']

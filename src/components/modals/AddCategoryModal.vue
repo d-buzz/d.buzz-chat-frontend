@@ -1,9 +1,9 @@
 <template>
-   <DefaultModal title="Add Chat">
+   <DefaultModal title="Add Category">
     <div class="mt-5 sm:mx-auto sm:w-full sm:max-w-md">
       <div class="space-y-6">
         <div>
-          <label for="username" class="block text-sm font-medium text-gray-700"> Category: </label>
+          <label for="username" class="block text-sm font-medium text-gray-700"> Category name: </label>
           <div class="mt-1">
             <input
               id="username"
