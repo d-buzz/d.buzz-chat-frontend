@@ -61,6 +61,7 @@ function getImgCss() {
     display: none;
     pointer-events: none;
     min-width: 54px;
+    color: white;
 }
 .nameParent:hover .name{
     display: block;
