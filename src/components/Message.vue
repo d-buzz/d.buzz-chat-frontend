@@ -61,8 +61,8 @@
                     Unsupported message type.
                 </div>
                 <div v-if="message.emotes">
-                    <span class="border rounded-md bg-gray-300 pl-1 pr-1">
-                        <small class="font-bold align-text-bottom">{{message.emotes.length}}</small> &#129505;
+                    <span v-for="emote in message.emotes" class="border rounded-md bg-gray-300 pl-1 pr-1">
+                        <small class="font-bold align-text-bottom">{{emote.users.length}}</small> &#129505;
                     </span>
                 </div>
             </div>

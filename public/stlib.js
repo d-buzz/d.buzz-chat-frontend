@@ -929,7 +929,7 @@ exports.DataStream = DataStream;
 },{"./data-path":15,"./permission-set":19}],17:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DisplayableMessage = void 0;
+exports.DisplayableEmote = exports.DisplayableMessage = void 0;
 const imports_1 = require("./content/imports");
 class DisplayableMessage {
     constructor(message) {
@@ -945,13 +945,32 @@ class DisplayableMessage {
     init() {
         this.usernames = this.message.getGroupUsernames();
     }
-    emote(msg) {
+    getEmoteIndex(emote) {
         if (this.emotes === null)
-            this.emotes = [msg];
-        else {
-            this.emotes.push(msg);
-            this.emotes.sort((a, b) => b.getTimestamp() - a.getTimestamp());
+            return -1;
+        for (var i = 0; i < this.emotes.length; i++)
+            if (this.emotes[i].emote === emote)
+                return i;
+        return -1;
+    }
+    emote(msg) {
+        var content = msg.content;
+        if (!(content instanceof imports_1.Emote))
+            return;
+        if (this.emotes === null)
+            this.emotes = [];
+        var timestamp = msg.getTimestamp();
+        var emote = content.getText();
+        var emoteIndex = this.getEmoteIndex(emote);
+        var obj;
+        if (emoteIndex === -1) {
+            obj = new DisplayableEmote(emote, timestamp);
+            this.emotes.push(obj);
         }
+        else
+            obj = this.emotes[emoteIndex];
+        obj.add(msg);
+        this.emotes.sort((a, b) => b.timestamp - a.timestamp);
     }
     isEmote() {
         return this.content instanceof imports_1.Emote;
@@ -993,6 +1012,22 @@ class DisplayableMessage {
     }
 }
 exports.DisplayableMessage = DisplayableMessage;
+class DisplayableEmote {
+    constructor(emote, timestamp) {
+        this.users = [];
+        this.messages = [];
+        this.emote = emote;
+        this.timestamp = timestamp;
+    }
+    add(msg) {
+        var user = msg.getUser();
+        if (this.users.indexOf(user) === -1)
+            this.users.push(user);
+        this.messages.push(msg);
+        this.timestamp = Math.min(this.timestamp, msg.getTimestamp());
+    }
+}
+exports.DisplayableEmote = DisplayableEmote;
 
 },{"./content/imports":8}],18:[function(require,module,exports){
 "use strict";
@@ -1741,7 +1776,7 @@ const data_stream_1 = require("./data-stream");
 const data_path_1 = require("./data-path");
 if (window !== undefined) {
     window.stlib = {
-        Client: client_1.Client, Community: community_1.Community, Content: imports_1.Content, DataStream: data_stream_1.DataStream, DataPath: data_path_1.DataPath, DisplayableMessage: displayable_message_1.DisplayableMessage,
+        Client: client_1.Client, Community: community_1.Community, Content: imports_1.Content, DataStream: data_stream_1.DataStream, DataPath: data_path_1.DataPath, DisplayableEmote: displayable_message_1.DisplayableEmote, DisplayableMessage: displayable_message_1.DisplayableMessage,
         PermissionSet: permission_set_1.PermissionSet, MessageManager: message_manager_1.MessageManager, Utils: utils_1.Utils, SignableMessage: signable_message_1.SignableMessage,
         newSignableMessage: signable_message_1.SignableMessage.create,
         utcTime: utils_1.Utils.utcTime
