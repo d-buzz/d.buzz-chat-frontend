@@ -1,6 +1,7 @@
 <template>
   <div class="flex nameParent relative items-center justify-start" v-if="hasImg || getImgCss() == 'avMini'">
     <small class="name"><b>{{name}}</b></small>
+    <small v-if="number && number != '0'" class="number"><b>{{number}}</b></small>
     <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" 
             :title="`${name} (${img})`">
         <span class="cursor-pointer" @click="onClick(img)">
@@ -32,7 +33,8 @@ const props = defineProps({
     img: String,
     name: String,
     community: Object,
-    imgCss: String
+    imgCss: String,
+    number: String
 });
 const hasImg = ref(hasProfileImage(props.community));
 function onClick(community) {
@@ -63,15 +65,30 @@ function getImgCss() {
     min-width: 54px;
     color: white;
 }
+.number {
+    display: block;
+    position: absolute;
+    pointer-events: none;
+    color: white;
+    z-index: 5;
+    background: rgb(0, 113, 12);
+    top: 0;
+    right: 0;
+    margin-right: 3px;
+    border-radius: 10px;
+    padding: 2px 4px;
+    line-height: 1;
+}
 .nameParent:hover .name{
     display: block;
     position: absolute;
     z-index: 7;
     /*background: rgba(0,0,0,0.25);*/
-    background: rgba(227, 19, 55, 0.5);
-    padding: 0;
+    background: rgba(227, 19, 55, 0.65);
+    padding: 1px;
     margin: 0;
     align-self: flex-start;
+    border-radius: 3px;
 }
 .selected { 
     @apply rounded;
