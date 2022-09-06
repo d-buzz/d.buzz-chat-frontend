@@ -20,7 +20,9 @@
         <div class="font-bold">
             {{streamName}}
             <span class="inline-block" v-if="sharedCommunities">
-                <SideBarIcon v-for="community in sharedCommunities" :img="community[0]" :name="community[1]" :community="community" :imgCss="`avMini`" />
+                <span class="flex">
+                    <SideBarIcon v-for="community in sharedCommunities" :img="community[0]" :name="community[1]" :community="community" :imgCss="`avMini`" />
+                </span>
             </span>
             <span v-if="messageKey.startsWith('#')" class="float-right mr-2">
                 <button class="text-sm mr-2" @click="toggleShareGroup" title="share group">
