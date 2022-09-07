@@ -21,7 +21,7 @@
                 <span class="oi oi-plus"></span>
             </button>
         </div>
-        <Conversation v-for="group in groups" :conversation="group.conversation" :id="group.id" :username="group.username"/>
+        <Conversation v-for="group in groups" :conversation="group.conversation" :id="group.id" :username="group.username" :number="group.number"/>
         <Conversation v-for="conversation in messageStore.conversations" :conversation="conversation" :username="username"/>
     </div>
   </div>
@@ -87,6 +87,10 @@ async function initConversations(route) {
             if(groupSetDuplicateCheck[conversation]) continue;
             groupSetDuplicateCheck[conversation] = true;
             groupsArray.push({"conversation":conversation,"id":groupId,"username":username});
+        }
+        for(var conversation of groupsArray) {
+            var lastRead = manager.getLastRead(conversation);
+            conversation.number = lastRead == null?'0':'1';
         }
         groups.value = groupsArray;
     }

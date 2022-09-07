@@ -1059,6 +1059,7 @@ class MessageManager {
         this.joined = {};
         this.cachedUserMessages = null;
         this.recentlySentEncodedContent = [];
+        this.conversationsLastReadData = {};
         this.selectedCommunityPage = {};
         this.selectedConversation = null;
         this.conversations = new utils_1.AccountDataCache();
@@ -1105,6 +1106,16 @@ class MessageManager {
                 return __awaiter(this, void 0, void 0, function* () {
                     var onmessage = _this.onmessage;
                     var displayableMessage = yield _this.jsonToDisplayable(json);
+                    var conversation = displayableMessage.getConversation();
+                    var lastRead = _this.conversationsLastReadData[conversation];
+                    if (lastRead == null) {
+                        lastRead = { number: 0, timestamp: 0 };
+                        _this.conversationsLastReadData[conversation] = lastRead;
+                    }
+                    if (_this.selectedConversation === conversation)
+                        _this.setLastRead(conversation, displayableMessage.getTimestamp());
+                    else if (displayableMessage.getTimestamp() > lastRead.timestamp)
+                        lastRead.number++;
                     var data = _this.conversations.lookupValue(displayableMessage.getConversation());
                     if (data != null) {
                         if (data.encoded != null && displayableMessage.isEncoded()) {
@@ -1117,7 +1128,6 @@ class MessageManager {
                                 }
                                 catch (e) {
                                     data.encoded.push(displayableMessage);
-                                    console.log(e);
                                     if (e.success !== undefined && e.success === false) {
                                         if (e.error === "user_cancel")
                                             return;
@@ -1260,6 +1270,17 @@ class MessageManager {
                 }));
             });
         });
+    }
+    getLastRead(conversation) {
+        var lastRead = this.conversationsLastReadData[conversation];
+        return lastRead == null ? null : lastRead;
+    }
+    setLastRead(conversation, timestamp) {
+        var lastRead = this.conversationsLastReadData[conversation];
+        if (lastRead != null) {
+            lastRead.number = 0;
+            lastRead.timestamp = timestamp;
+        }
     }
     getSelectedConversations() {
         return __awaiter(this, void 0, void 0, function* () {

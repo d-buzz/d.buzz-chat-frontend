@@ -8,8 +8,11 @@
                 alt="@"
                 />
             </div>
-            <div> 
+            <div class="grow"> 
                 <div>{{users}}</div>
+            </div>
+            <div v-if="number && number != '0'"> 
+                <small class="number"><b>{{number}}</b></small>
             </div>    
         </div>
     </router-link>
@@ -21,6 +24,7 @@ const props = defineProps({
     id: Number,
     username: String,
     conversation: String,
+    number: String
 });
 const link = ref("");
 const iconUsername = ref("");
@@ -70,5 +74,15 @@ initConversation();
     background: rgba(255,255,255,0.37);
     border: 1px solid rgba(0,0,0,0.1);
     border-top-color: rgba(255,255,255,0.1);
+}
+.number {
+    display: block;
+    pointer-events: none;
+    color: white;
+    background: rgb(0, 113, 12);
+    border-radius: 10px;
+    margin-top: 5px;
+    padding: 2px 4px;
+    line-height: 1;
 }
 </style>
