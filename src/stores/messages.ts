@@ -1,7 +1,7 @@
 import { acceptHMRUpdate, defineStore } from "pinia";
 import { Ref } from "vue";
 
-export const useMessageStore = defineStore("messageStore", {
+/*export const useMessageStore = defineStore("messageStore", {
     state: () => {
         return {
               fetching: false,
@@ -42,7 +42,7 @@ export const useMessageStore = defineStore("messageStore", {
             console.log(this.messages);
         }
     }
-});
+});*/
 
 if (import.meta.hot)
   import.meta.hot.accept(acceptHMRUpdate(useMessageStore, import.meta.hot));

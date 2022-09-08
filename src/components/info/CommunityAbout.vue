@@ -32,6 +32,7 @@ async function initInfo() {
     community.value = await stlib.Community.load(user2);
 
     const manager = getManager();
+    manager.setConversation(null);
     manager.setSelectedCommunityPage(user2, route.path);
 }
 initInfo();

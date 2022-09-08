@@ -11,9 +11,6 @@ var currentManager = null;
 window.getManager = function () {
   if (currentManager == null) {
     currentManager = new stlib.MessageManager();
-    currentManager.onmessage = function (json) {
-      console.log(json);
-    };
     currentManager.setNodes(STING_NODES);
   }
   return currentManager;

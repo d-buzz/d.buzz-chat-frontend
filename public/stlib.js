@@ -1055,9 +1055,11 @@ class LoginWithKeychain extends LoginMethod {
 exports.LoginWithKeychain = LoginWithKeychain;
 class MessageManager {
     constructor() {
+        this.onmessage = {};
         this.userPreferences = null;
         this.joined = {};
         this.cachedUserMessages = null;
+        this.cachedUserConversations = null;
         this.recentlySentEncodedContent = [];
         this.conversationsLastReadData = {};
         this.selectedCommunityPage = {};
@@ -1076,6 +1078,23 @@ class MessageManager {
         this.connectionStart = true;
         this.nodeIndex = 0;
         this.connect();
+    }
+    setCallback(name, callback) {
+        if (callback == null)
+            delete this.onmessage[name];
+        else
+            this.onmessage[name] = callback;
+    }
+    postCallbackEvent(displayableMessage) {
+        var onmessage = this.onmessage;
+        for (var callbackName in onmessage) {
+            try {
+                onmessage[callbackName](displayableMessage);
+            }
+            catch (e) {
+                console.log(callbackName, e);
+            }
+        }
     }
     connect() {
         var _this = this;
@@ -1104,7 +1123,6 @@ class MessageManager {
             this.client = new client_1.Client(socket);
             this.client.onmessage = function (json) {
                 return __awaiter(this, void 0, void 0, function* () {
-                    var onmessage = _this.onmessage;
                     var displayableMessage = yield _this.jsonToDisplayable(json);
                     var conversation = displayableMessage.getConversation();
                     var lastRead = _this.conversationsLastReadData[conversation];
@@ -1142,8 +1160,7 @@ class MessageManager {
                             _this.resolveReference(data.messages, displayableMessage);
                         }
                     }
-                    if (onmessage != null)
-                        onmessage(displayableMessage);
+                    _this.postCallbackEvent(displayableMessage);
                 });
             };
             utils_1.Utils.setClient(this.client);
@@ -1162,6 +1179,7 @@ class MessageManager {
             return;
         if (this.user != null) {
             this.userPreferences = null;
+            this.cachedUserConversations = null;
         }
         this.user = user;
         this.join(user);
@@ -1244,9 +1262,10 @@ class MessageManager {
     setSelectedCommunityPage(community, page) {
         this.selectedCommunityPage[community] = page;
     }
-    setConversation(username) {
-        this.selectedConversation = username;
-        this.join(username);
+    setConversation(conversation) {
+        this.selectedConversation = conversation;
+        if (conversation != null)
+            this.join(conversation);
     }
     getCommunities(user = null) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -1271,6 +1290,10 @@ class MessageManager {
             });
         });
     }
+    getLastReadNumber(conversation) {
+        var lastRead = this.conversationsLastReadData[conversation];
+        return lastRead == null ? 0 : lastRead.number;
+    }
     getLastRead(conversation) {
         var lastRead = this.conversationsLastReadData[conversation];
         return lastRead == null ? null : lastRead;
@@ -1281,6 +1304,18 @@ class MessageManager {
             lastRead.number = 0;
             lastRead.timestamp = timestamp;
         }
+    }
+    getLastReadOfUserConversations() {
+        return __awaiter(this, void 0, void 0, function* () {
+            var conversations = yield this.readUserConversations();
+            var number = 0;
+            for (var conversation of conversations) {
+                var lastRead = this.getLastRead(conversation);
+                if (lastRead != null)
+                    number += lastRead.number;
+            }
+            return number;
+        });
     }
     getSelectedConversations() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -1328,11 +1363,16 @@ class MessageManager {
             var user = this.user;
             if (user === null)
                 return [];
+            var conversations = this.cachedUserConversations;
+            if (conversations != null)
+                return conversations;
             var client = this.getClient();
             var result = yield client.readUserConversations(user);
             if (!result.isSuccess())
                 throw result.getError();
-            return result.getResult();
+            conversations = result.getResult();
+            this.cachedUserConversations = conversations;
+            return conversations;
         });
     }
     readUserMessages() {
@@ -1481,8 +1521,7 @@ class MessageManager {
                             var decodedMessage = yield this.decode(encodedMessage);
                             data.messages.push(decodedMessage);
                             this.resolveReference(data.messages, decodedMessage);
-                            if (onmessage != null)
-                                onmessage(decodedMessage);
+                            this.postCallbackEvent(decodedMessage);
                         }
                         catch (e) {
                             toAdd.push(encodedMessage);
@@ -1496,8 +1535,7 @@ class MessageManager {
                 }
                 finally {
                     encodedArray.push.apply(encodedArray, toAdd);
-                    if (onmessage != null)
-                        onmessage(decodedMessage);
+                    this.postCallbackEvent(decodedMessage);
                 }
             }
         });

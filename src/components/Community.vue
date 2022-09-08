@@ -157,7 +157,7 @@ async function initChat() {
         valueAutoDecode.value = isAutoDecode;
         await updateMessages();
 
-        manager.onmessage = updateMessages;
+        manager.setCallback("Community.vue", updateMessages);
 
         if(isAutoDecode === true)
             await decode();        

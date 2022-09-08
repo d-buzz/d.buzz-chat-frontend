@@ -22,20 +22,20 @@
             </button>
         </div>
         <Conversation v-for="group in groups" :conversation="group.conversation" :id="group.id" :username="group.username" :number="group.number"/>
-        <Conversation v-for="conversation in messageStore.conversations" :conversation="conversation" :username="username"/>
+        <Conversation v-for="conversation in  conversations" :conversation="conversation.conversation"
+             :username="username" :number="conversation.number" />
     </div>
   </div>
 </template>
 <script setup>
 import { useAccountStore } from "../stores/account";
-import { useMessageStore } from "../stores/messages";
 import { useRoute } from "vue-router";
 import { ref } from 'vue'
 const route = useRoute();
 const accountStore = useAccountStore();
-const messageStore = useMessageStore();
 const username = accountStore.account.name;
 const streams = ref([]);
+const conversations = ref([]);
 const groups = ref({});
 const title = ref("Direct Messages");
 const isCommunity = ref(false);
@@ -50,6 +50,7 @@ async function initConversations(route) {
     console.log("load community " + route.name);
     if(username == null || route.name == null) return;
     isCommunity.value = route.name.startsWith('Community');
+
     if(isCommunity.value) {
         var user2 = route.params.user;
         if(user2 == null || user2 == "") return;
@@ -65,9 +66,19 @@ async function initConversations(route) {
         //var streams = temp0.getStreams;
     }
     else {
-        messageStore.loadConversations(username);
-
         const manager = getManager();
+        var update = async() => {
+            console.log("Callback message update StreamBar.vue");
+            var conversationArray = await manager.readUserConversations();
+            var conversationObjects = [];
+            for(var conversation of conversationArray) 
+                conversationObjects.push({conversation,number:manager.getLastReadNumber(conversation)});
+            conversations.value = conversationObjects;
+            //updateKey.value = username+'#'+stlib.Utils.utcTime();
+        };
+        await update();
+        manager.setCallback("StreamBar.vue", update);
+
         var pref = await manager.getPreferences();
         var groupSetDuplicateCheck = {};
         var groupsArray = [];
