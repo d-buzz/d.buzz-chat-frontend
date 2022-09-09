@@ -140,14 +140,15 @@ async function initChat() {
                 scrollTop = container.scrollTop;
             }
             var data = await manager.getSelectedConversations();
+            if(data == null || manager.selectedConversation != conversation) return;
             data.messages.sort((a,b)=>a.getTimestamp()-b.getTimestamp());
             displayableMessages.value = data.messages;
             if(data.encoded && data.encoded.length > 0)
                 decodeNMessages.value = data.encoded.length;
             else decodeNMessages.value = 0;
-            messageKey.value = conversation+"#"+data.messages.length;
+            messageKey.value = ""+stlib.Utils.nextId();
             if(data.messages.length > 0) {
-                manager.setLastRead(manager.selectedConversation,
+                manager.setLastRead(conversation,
                      data.messages[data.messages.length-1].getTimestamp());
             }
             nextTick(async () => {

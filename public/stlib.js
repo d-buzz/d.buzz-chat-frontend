@@ -1184,6 +1184,13 @@ class MessageManager {
         this.user = user;
         this.join(user);
     }
+    joinGroups() {
+        return __awaiter(this, void 0, void 0, function* () {
+            var groups = yield this.getJoinedAndCreatedGroups();
+            for (var conversation in groups)
+                this.join(conversation);
+        });
+    }
     getPreferences() {
         return __awaiter(this, void 0, void 0, function* () {
             var p = this.userPreferences;
@@ -1290,6 +1297,35 @@ class MessageManager {
             });
         });
     }
+    getJoinedAndCreatedGroups() {
+        return __awaiter(this, void 0, void 0, function* () {
+            var pref = yield this.getPreferences();
+            var privatePref = yield this.getPrivatePreferences();
+            var groups = {};
+            var joinedGroup = privatePref.keys();
+            for (var conversation in joinedGroup) {
+                if (groups[conversation] !== undefined)
+                    continue;
+                var slash = conversation.indexOf('/');
+                if (!conversation.startsWith('#') || slash === -1)
+                    continue;
+                var username = conversation.substring(1, slash);
+                var id = conversation.substring(slash + 1);
+                groups[conversation] = {
+                    conversation, username, id, lastReadNumber: this.getLastReadNumber(conversation)
+                };
+            }
+            for (var groupId in pref.getGroups()) {
+                var conversation = '#' + this.user + '/' + groupId;
+                if (groups[conversation] !== undefined)
+                    continue;
+                groups[conversation] = {
+                    conversation, username, id, lastReadNumber: this.getLastReadNumber(conversation)
+                };
+            }
+            return groups;
+        });
+    }
     getLastReadNumber(conversation) {
         var lastRead = this.conversationsLastReadData[conversation];
         return lastRead == null ? 0 : lastRead.number;
@@ -1304,6 +1340,22 @@ class MessageManager {
             lastRead.number = 0;
             lastRead.timestamp = timestamp;
         }
+    }
+    getLastReadTotal() {
+        return __awaiter(this, void 0, void 0, function* () {
+            var numberOfPrivateMessages = yield this.getLastReadOfUserConversations();
+            var numberOfGroupMessages = yield this.getLastReadOfGroupConversations();
+            return numberOfPrivateMessages + numberOfGroupMessages;
+        });
+    }
+    getLastReadOfGroupConversations() {
+        return __awaiter(this, void 0, void 0, function* () {
+            var groups = yield this.getJoinedAndCreatedGroups();
+            var number = 0;
+            for (var conversation in groups)
+                number += groups[conversation].lastReadNumber;
+            return number;
+        });
     }
     getLastReadOfUserConversations() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -1862,6 +1914,7 @@ var dhiveclient = null;
 var isNode = false;
 var readPreferencesFn = null;
 var lastRandomPublicKey = "";
+var uniqueId = 0;
 class Utils {
     static getVersion() { return 100; }
     static getClient() {
@@ -1875,6 +1928,7 @@ class Utils {
             dhiveclient = new dhive.Client(["https://api.hive.blog", "https://api.hivekings.com", "https://anyx.io", "https://api.openhive.network"]);
         return dhiveclient;
     }
+    static nextId() { return uniqueId++; }
     /* Queue keychain requests. */
     static queueKeychain(fn) {
         return __awaiter(this, void 0, void 0, function* () {

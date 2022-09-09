@@ -21,8 +21,9 @@
                 <span class="oi oi-plus"></span>
             </button>
         </div>
-        <Conversation v-for="group in groups" :conversation="group.conversation" :id="group.id" :username="group.username" :number="group.number"/>
-        <Conversation v-for="conversation in  conversations" :conversation="conversation.conversation"
+        
+        <Conversation v-for="group in groups" :conversation="group.conversation" :id="group.id" :username="group.username" :number="''+group.lastReadNumber"/>
+        <Conversation v-for="conversation in conversations" :conversation="conversation.conversation"
              :username="username" :number="conversation.number" />
     </div>
   </div>
@@ -36,7 +37,7 @@ const accountStore = useAccountStore();
 const username = accountStore.account.name;
 const streams = ref([]);
 const conversations = ref([]);
-const groups = ref({});
+const groups = ref([]);
 const title = ref("Direct Messages");
 const isCommunity = ref(false);
 
@@ -74,36 +75,20 @@ async function initConversations(route) {
             for(var conversation of conversationArray) 
                 conversationObjects.push({conversation,number:manager.getLastReadNumber(conversation)});
             conversations.value = conversationObjects;
+            for(var group of groups.value)
+                group.lastReadNumber = manager.getLastReadNumber(group.conversation);
             //updateKey.value = username+'#'+stlib.Utils.utcTime();
         };
         await update();
         manager.setCallback("StreamBar.vue", update);
-
-        var pref = await manager.getPreferences();
-        var groupSetDuplicateCheck = {};
-        var groupsArray = [];
-        var privatePref = await manager.getPrivatePreferences();
-        var joinedGroup = privatePref.keys();
-        for(var conversation in joinedGroup) {
-            if(groupSetDuplicateCheck[conversation]) continue;
-            var slash = conversation.indexOf('/');
-            if(!conversation.startsWith('#') || slash === -1) continue;
-            var uname = conversation.substring(1, slash);
-            var id = conversation.substring(slash+1);
-            groupSetDuplicateCheck[conversation] = true;
-            groupsArray.push({"conversation":conversation, "id":id,"username":uname});
+        
+        var groupObjs = await manager.getJoinedAndCreatedGroups();
+        var groupArray = [];
+        for(var conversation in groupObjs) {
+            var groupObj = groupObjs[conversation];
+            groupArray.push(groupObj);
         }
-        for(var groupId in pref.getGroups()) {
-            var conversation = '#'+username+'/'+groupId;
-            if(groupSetDuplicateCheck[conversation]) continue;
-            groupSetDuplicateCheck[conversation] = true;
-            groupsArray.push({"conversation":conversation,"id":groupId,"username":username});
-        }
-        for(var conversation of groupsArray) {
-            var lastRead = manager.getLastRead(conversation);
-            conversation.number = lastRead == null?'0':'1';
-        }
-        groups.value = groupsArray;
+        groups.value = groupArray;
     }
 }
 initConversations(route);

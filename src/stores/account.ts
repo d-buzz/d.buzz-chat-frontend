@@ -9,15 +9,30 @@ type AccountData = {
 export const useAccountStore = defineStore("account", () => {
     var userData = localStorage.getItem("_user");
     if(userData == null) userData = { name: null, authenticated: false }; 
-    else userData = JSON.parse(userData);
+    else {
+        try {
+            userData = JSON.parse(userData);
+            if(userData.authenticated) {
+                const manager = getManager();
+                manager.setUser(userData.name);
+                manager.joinGroups();
+            }
+        }
+        catch(e) {
+            userData = { name: null, authenticated: false }; 
+            console.log(e);
+        }
+    }
     const account: Ref<AccountData> = ref(userData);
     const updateStore = ()=>{
         localStorage.setItem("_user", JSON.stringify(account.value));
     };
+    
 
   const authenticate = async (user: string) => {
     const manager = getManager();
     manager.setUser(user);
+    await manager.joinGroups();
     var pref = await manager.getPreferences();
     var pref0 = await stlib.Utils.getAccountPreferences(user);
     if(pref0 == null) return await new Promise(function (resolve, reject) {

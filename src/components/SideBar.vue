@@ -21,9 +21,9 @@ async function initCommunities() {
     var manager = getManager();
     manager.setUser(user);
     communities.value = await manager.getCommunities();
-    updateKey.value = user+'#'+stlib.Utils.utcTime();
+    updateKey.value = ''+stlib.Utils.nextId();
     var update = async() => {
-        number.value = await manager.getLastReadOfUserConversations();
+        number.value = ''+await manager.getLastReadTotal();
     };
     await update();
     manager.setCallback("SideBar.vue", update);
