@@ -146,6 +146,10 @@ async function initChat() {
                 decodeNMessages.value = data.encoded.length;
             else decodeNMessages.value = 0;
             messageKey.value = conversation+"#"+data.messages.length;
+            if(data.messages.length > 0) {
+                manager.setLastRead(manager.selectedConversation,
+                     data.messages[data.messages.length-1].getTimestamp());
+            }
             nextTick(async () => {
                 var container = messages.value;
                 if(container) container.scrollTop = scrollToBottom?
