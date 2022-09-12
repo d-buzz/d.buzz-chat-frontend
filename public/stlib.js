@@ -1369,6 +1369,21 @@ class MessageManager {
             return number;
         });
     }
+    getLastReadCommunity(community) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var communityStreams = community + '/';
+            var data = this.conversationsLastReadData;
+            var number = 0;
+            for (var conversation in data) {
+                if (conversation === community || conversation.startsWith(communityStreams)) {
+                    var lastRead = data[conversation];
+                    if (lastRead != null)
+                        number += lastRead.number;
+                }
+            }
+            return number;
+        });
+    }
     getSelectedConversations() {
         return __awaiter(this, void 0, void 0, function* () {
             var conversation = this.selectedConversation;

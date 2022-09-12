@@ -5,7 +5,7 @@
         <SideBarLoginIcon :number="number" />
     </div>
     
-      <SideBarIcon v-for="community in communities" :img="community[0]" :name="community[1]" :community="community" :key="updateKey" />
+      <SideBarIcon v-for="community in communities" :img="community[0]" :name="community[1]" :community="community" :number="community.lastReadNumber" :key="updateKey" />
     
   </div>
 </template>
@@ -22,8 +22,11 @@ async function initCommunities() {
     manager.setUser(user);
     communities.value = await manager.getCommunities();
     updateKey.value = ''+stlib.Utils.nextId();
-    var update = async() => {
+    var update = async () => {
         number.value = ''+await manager.getLastReadTotal();
+        for(var community of communities.value) 
+            community.lastReadNumber = ''+ await manager.getLastReadCommunity(community[0]);
+        updateKey.value = ''+stlib.Utils.nextId();
     };
     await update();
     manager.setCallback("SideBar.vue", update);
