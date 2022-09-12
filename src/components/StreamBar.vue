@@ -12,7 +12,7 @@
                <span class="oi oi-cog"></span>
             </router-link>
         </div>
-        <Stream v-for="stream in streams" :stream="stream"/>
+        <Stream v-for="stream in streams" :stream="stream" :number="''+stream.lastReadNumber"/>
     </div>
     <div v-else>
         <div class="flex justify-between">
@@ -51,6 +51,7 @@ async function initConversations(route) {
     console.log("load community " + route.name);
     if(username == null || route.name == null) return;
     isCommunity.value = route.name.startsWith('Community');
+    const manager = getManager();
 
     if(isCommunity.value) {
         var user2 = route.params.user;
@@ -63,11 +64,19 @@ async function initConversations(route) {
 
         title.value = community.getTitle();
         streams.value = community.getStreams();
-        
+
+        var update = async() => {
+            for(var stream of streams.value) {
+                var path = stream.getPath();
+                stream.lastReadNumber = (path != null && path.getType() === 't')?
+                    manager.getLastReadNumber(path.getUser()+'/'+path.getPath()):'0';
+            }
+        };
+        await update();
+        manager.setCallback("StreamBar.vue", update);
         //var streams = temp0.getStreams;
     }
     else {
-        const manager = getManager();
         var update = async() => {
             console.log("Callback message update StreamBar.vue");
             var conversationArray = await manager.readUserConversations();

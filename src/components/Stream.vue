@@ -3,10 +3,13 @@
         <div v-if="stream.getPathType() === null">
             <b class="text-sm">{{stream.getName()}}</b>
         </div>
-        <div v-else-if="stream.getPathType() === 't'">
+        <div class="grow" v-else-if="stream.getPathType() === 't'">
             <router-link :to="`${path}`">
-                <div>
-                    <div class="pl-2 font-bold"><span class="oi oi-chat"></span> {{stream.getName()}}</div>
+                <div class="flex">
+                    <div class="pl-2 font-bold grow"><span class="oi oi-chat"></span> {{stream.getName()}}</div>
+                    <div v-if="number && number != '0'"> 
+                        <small class="number"><b>{{number}}</b></small>
+                    </div>   
                 </div>
             </router-link>
         </div>
@@ -31,7 +34,8 @@
 </template>
 <script setup type="ts">
 const props = defineProps({
-    stream: Object
+    stream: Object,
+    number: String
 });
 function getPath() {
     var path = props.stream.getPath();
@@ -61,5 +65,15 @@ console.log(props.stream);
     background: rgba(255,255,255,0.37);
     border: 1px solid rgba(0,0,0,0.1);
     border-top-color: rgba(255,255,255,0.1);
+}
+.number {
+    display: block;
+    pointer-events: none;
+    color: white;
+    background: rgb(0, 113, 12);
+    border-radius: 10px;
+    margin-top: 5px;
+    padding: 2px 4px;
+    line-height: 1;
 }
 </style>
