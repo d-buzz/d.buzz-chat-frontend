@@ -24,7 +24,7 @@
         
         <Conversation v-for="group in groups" :conversation="group.conversation" :id="group.id" :username="group.username" :number="''+group.lastReadNumber"/>
         <Conversation v-for="conversation in conversations" :conversation="conversation.conversation"
-             :username="username" :number="conversation.number" />
+             :username="username" :number="''+conversation.number" />
     </div>
   </div>
 </template>

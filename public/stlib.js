@@ -1132,8 +1132,10 @@ class MessageManager {
                     }
                     if (_this.selectedConversation === conversation)
                         _this.setLastRead(conversation, displayableMessage.getTimestamp());
-                    else if (displayableMessage.getTimestamp() > lastRead.timestamp)
+                    else if (displayableMessage.getTimestamp() > lastRead.timestamp) {
                         lastRead.number++;
+                        window.localStorage.setItem(_this.user + "#lastReadData", JSON.stringify(_this.conversationsLastReadData));
+                    }
                     var data = _this.conversations.lookupValue(displayableMessage.getConversation());
                     if (data != null) {
                         if (data.encoded != null && displayableMessage.isEncoded()) {
@@ -1182,6 +1184,14 @@ class MessageManager {
             this.cachedUserConversations = null;
         }
         this.user = user;
+        try {
+            var lastReadData = window.localStorage.getItem(user + "#lastReadData");
+            if (lastReadData != null)
+                this.conversationsLastReadData = JSON.parse(lastReadData);
+        }
+        catch (e) {
+            console.log(e);
+        }
         this.join(user);
     }
     joinGroups() {
@@ -1339,6 +1349,7 @@ class MessageManager {
         if (lastRead != null) {
             lastRead.number = 0;
             lastRead.timestamp = timestamp;
+            window.localStorage.setItem(this.user + "#lastReadData", JSON.stringify(this.conversationsLastReadData));
         }
     }
     getLastReadTotal() {

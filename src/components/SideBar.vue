@@ -14,7 +14,7 @@ import { useAccountStore } from "../stores/account";
 const accountStore = useAccountStore();
 const communities = ref([]);
 const updateKey = ref("");
-const number = ref(0);
+const number = ref('0');
 async function initCommunities() {
     var user = accountStore.account.name;
     if(user == null) return;
