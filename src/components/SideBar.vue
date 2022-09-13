@@ -20,6 +20,7 @@ async function initCommunities() {
     if(user == null) return;
     var manager = getManager();
     manager.setUser(user);
+    manager.joinGroups();
     communities.value = await manager.getCommunities();
     updateKey.value = ''+stlib.Utils.nextId();
     var update = async () => {

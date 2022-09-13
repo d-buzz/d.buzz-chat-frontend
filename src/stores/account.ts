@@ -15,7 +15,6 @@ export const useAccountStore = defineStore("account", () => {
             if(userData.authenticated) {
                 const manager = getManager();
                 manager.setUser(userData.name);
-                manager.joinGroups();
             }
         }
         catch(e) {

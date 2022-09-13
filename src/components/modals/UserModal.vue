@@ -11,17 +11,25 @@
         </div>
         <div class="grow" style="margin-top:-7px;">
             <b class="text-lg">{{user}}</b>
+            <hr/>
             <div v-if="communityData">
-                <div><b>{{role}}</b>
-                <button class="btn" @click="setRole('member')">setRole</button>
-                <button class="btn" @click="setTitle('title1')">setTitle</button>
+                <div v-if="editable" class="mt-1">
+                    <PermissionSet :set="roleSet" :rolesOnly="true" :titleButtonText="' '"/>
+                    <hr/>
+                    <div>
+                    <button class="btn" @click="saveChanges">Update</button>
+                    <button class="btn2" @click="discardChanges">Reset</button>
+                    </div>
                 </div>
-                <div><span v-for="title in titles">{{title}} </span></div>   
+                <div v-else>
+                    <div><i>{{role}}</i><span class="cursor-pointer text-sm float-right" @click="toggleEditable"><span class="oi oi-pencil"></span></span></div>
+                    <div><span v-for="title in titles" class="rounded-lg bg-green-700 pr-1 pl-1 text-white font-bold text-sm">{{title}}</span></div> 
+                </div>
             </div>
         </div>
     </div>
     <div class="mt-2">
-        <a class="btn" :href="`/p/${user}`"><span class="oi oi-chat text-sm"></span> Message</a> 
+        <router-link :to="`/p/${user}`"><span class="btn" ><span class="oi oi-chat text-sm"></span> Message</span></router-link> 
         <a class="btn" :href="`https://peakd.com/@${user}`" target="_blank" rel="noreferrer noopener"><span class="oi oi-external-link text-sm"></span> Blog</a>
     </div>
     <div class="mt-1"><small>{{updateMessage}}</small></div>
@@ -37,6 +45,23 @@ var communityData = ref(null);
 var role = ref(null);
 var titles = ref(null);
 var updateMessage = ref("");
+var editable = ref(false);
+var roleSet = ref(new stlib.PermissionSet());
+async function saveChanges() {
+    if(roleSet.value.role != role.value) await setRole(roleSet.value.role);
+    var titleToSet = roleSet.value.titles.join(",");
+    var titles2 = titles.value==null?'':titles.value.join(",");
+    if(titleToSet != titles2) await setTitle(titleToSet);
+    editable.value = false;
+}
+function discardChanges() {
+    editable.value = false;
+}
+function toggleEditable() {
+    roleSet.value.setRole(role.value);
+    roleSet.value.titles = stlib.Utils.copy(titles.value);
+    editable.value = true;
+}
 async function setRole(role) {
     var user = getManager().user;
     var community = props.community;
