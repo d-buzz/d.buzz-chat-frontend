@@ -9,23 +9,41 @@
                 />
             </div>
             <div class="grow" style="margin-top:-7px;">
-                <b class="text-lg">{{accountStore.account.name}}</b>
+                <div><b class="text-lg">{{accountStore.account.name}}</b></div>
             </div>
             <div style="margin-top:-7px;">
                 <button class="btn" @click="logout()">logout</button>
             </div>
         </div>
-        <div class="mt-2">
+        <div class="mt-2 mr-3">
             <TabGroup>
                 <TabList class="tab">
                   <Tab>Communities</Tab>
                   <Tab>Preferences</Tab>
                   <Tab>...</Tab>
                 </TabList>
-            <TabPanels>
+            <TabPanels class="mt-1">
                 <TabPanel>
-                    <div class="flex flex-row flex-wrap mt-1">
+                    <div class="text-sm font-bold text-center text-gray-400 mt-1">joined</div>
+                    <div class="flex flex-row flex-wrap">
                      <SideBarIcon v-for="community in communities" :img="community[0]" :name="community[1]" :community="community" :key="updateKey" />
+                    </div>
+
+                    <div class="display-block flex mt-3 mr-auto ml-auto" style="max-width:350px;">
+                        <input class="inputText1 mr-1" type="text" v-model="searchBar"
+                            placeholder="find communties"
+                            @keyup.enter="findCommunities(searchBar)"/>
+                        <button title="find communities" class="btn1 mr-1" @click="findCommunities(searchBar)">
+                            <span class="oi oi-magnifying-glass"></span>
+                        </button>
+                        <button v-if="searchBar" title="reset" class="btn1 mr-1" @click="findReset()">
+                            <span class="oi oi-x"></span>
+                        </button>
+                    </div>
+
+                    <div v-if="communitiesFound.length > 0" class="w-100 text-sm font-bold text-center text-gray-400 mt-1">found</div>
+                    <div v-if="communitiesFound.length > 0" class="flex flex-row flex-wrap">
+                     <SideBarIcon v-for="community in communitiesFound" :img="community.name" :name="community.title" :key="updateKey" />
                     </div>
                 </TabPanel>
                 <TabPanel>
@@ -71,7 +89,9 @@ import { useAccountStore } from "../stores/account";
 const accountStore = useAccountStore();
 const router = useRouter();
 const communities = ref([]);
+const communitiesFound = ref([]);
 const preferences = ref([]);
+const searchBar = ref("");
 const updateKey = ref("");
 const updateMessage = ref("");
 
@@ -99,7 +119,7 @@ async function initCommunities() {
         }
     }
     preferences.value = array;
-    updateKey.value = '#'+stlib.Utils.utcTime(); 
+    updateKey.value = '#'+stlib.Utils.nextId(); 
 }
 initCommunities();
 async function updatePreferences() {
@@ -120,7 +140,17 @@ function resetChanges() {
     if(user == null) return;
     for(var item of preferences.value)
         item.newvalue = item.value;
-    updateKey.value = user+'#'+stlib.Utils.utcTime(); 
+    updateKey.value = '#'+stlib.Utils.nextId(); 
+}
+async function findCommunities(text) {
+    var result = await stlib.Utils.getDhiveClient()
+        .call("bridge", "list_communities", {"query":text,"limit":100,"sort":"subs"});
+    console.log(result);
+    communitiesFound.value = result;
+}
+function findReset() {
+     communitiesFound.value = [];
+    searchBar.value = "";
 }
 function logout() {
   accountStore.signOut();
