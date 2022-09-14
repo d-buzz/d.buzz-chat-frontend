@@ -40,10 +40,14 @@
                             <span class="oi oi-x"></span>
                         </button>
                     </div>
-
-                    <div v-if="communitiesFound.length > 0" class="w-100 text-sm font-bold text-center text-gray-400 mt-1">found</div>
-                    <div v-if="communitiesFound.length > 0" class="flex flex-row flex-wrap">
-                     <SideBarIcon v-for="community in communitiesFound" :img="community.name" :name="community.title" :key="updateKey" />
+                    <div v-if="communitiesFound.length > 0">
+                        <div class="w-100 text-sm font-bold text-center text-gray-400 mt-1">found</div>
+                        <div v-if="communitiesFound.length > 0" class="flex flex-row flex-wrap">
+                         <SideBarIcon v-for="community in communitiesFound" :img="community.name" :name="community.title" :number="''+community.subscribers" :key="updateKey" />
+                            <div v-if="hasNextPage" class="btn" @click="findCommunities(searchBar, true)">
+                               next<br>page
+                            </div>
+                        </div>
                     </div>
                 </TabPanel>
                 <TabPanel>
@@ -90,15 +94,18 @@ const accountStore = useAccountStore();
 const router = useRouter();
 const communities = ref([]);
 const communitiesFound = ref([]);
+const hasNextPage = ref(false);
 const preferences = ref([]);
 const searchBar = ref("");
 const updateKey = ref("");
 const updateMessage = ref("");
 
+
 const defaultPreferences = [
     {name: "autoDecode:b", display: "Auto Decode", desc: "Automatically decode private messages.", value: false, newvalue:false}
 ];
 
+var defaultCommunities = [];
 async function initCommunities() {
     var user = accountStore.account.name;
     if(user == null) return;
@@ -119,6 +126,8 @@ async function initCommunities() {
         }
     }
     preferences.value = array;
+    await findCommunities();
+    defaultCommunities = communitiesFound.value;
     updateKey.value = '#'+stlib.Utils.nextId(); 
 }
 initCommunities();
@@ -142,15 +151,21 @@ function resetChanges() {
         item.newvalue = item.value;
     updateKey.value = '#'+stlib.Utils.nextId(); 
 }
-async function findCommunities(text) {
+async function findCommunities(text, nextPage=false) {
+    var query = {"limit":100,"sort":"subs"};
+    if(text) query["query"] = text;
+    if(nextPage && communitiesFound.value.length > 0)
+        query.last = communitiesFound.value[communitiesFound.value.length-1].name;
     var result = await stlib.Utils.getDhiveClient()
-        .call("bridge", "list_communities", {"query":text,"limit":100,"sort":"subs"});
-    console.log(result);
-    communitiesFound.value = result;
+        .call("bridge", "list_communities", query);
+    hasNextPage.value = result.length >= query.limit;
+    if(nextPage) communitiesFound.value.push.apply(communitiesFound.value, result);
+    else communitiesFound.value = result;
 }
 function findReset() {
-     communitiesFound.value = [];
+    communitiesFound.value = defaultCommunities;
     searchBar.value = "";
+    hasNextPage.value = true;
 }
 function logout() {
   accountStore.signOut();
