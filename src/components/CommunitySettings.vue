@@ -170,9 +170,9 @@ function getSelected() {
     for(var stream of streams.value) if(stream.selected) return stream;
     return null;
 }
-function addText(displayName="Text") {
+function addText(displayName="Text", path=null) {
     community.setStreams(streams.value);
-    select(community.newTextStream(displayName));
+    select(community.newTextStream(displayName, path));
     update();
 }
 function addCategory(displayName="Category") {

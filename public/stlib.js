@@ -156,11 +156,15 @@ class Community {
         this.addStream(category);
         return category;
     }
-    newTextStream(name) {
-        var groupId = this.findFreeTextStreamId();
-        if (groupId === -1)
-            throw "maximum limit of " + Community.MAX_TEXT_STREAMS + " text streams reached";
-        var stream = data_stream_1.DataStream.fromJSON(this.getName(), [name, '' + groupId]);
+    newTextStream(name, path = null) {
+        if (path === null) {
+            var groupId = this.findFreeTextStreamId();
+            if (groupId === -1)
+                throw "maximum limit of " +
+                    Community.MAX_TEXT_STREAMS + " text streams reached";
+            path = '' + groupId;
+        }
+        var stream = data_stream_1.DataStream.fromJSON(this.getName(), [name, path]);
         this.addStream(stream);
         return stream;
     }
@@ -853,11 +857,11 @@ class DataPath {
         }
         var slash = text.indexOf('/');
         if (slash === 0)
-            return new DataPath(DataPath.TYPE_INFO, community, text.substring(1));
-        if (text.startsWith("hive-") && slash !== -1) {
+            return new DataPath((type === null) ? DataPath.TYPE_INFO : type, community, text.substring(1));
+        if ( /*text.startsWith("hive-") &&*/slash !== -1) {
             community = text.substring(0, slash);
             text = text.substring(slash + 1);
-            if (utils_1.Utils.isWholeNumber(text))
+            if (type === null && utils_1.Utils.isWholeNumber(text))
                 type = DataPath.TYPE_TEXT;
         }
         return new DataPath((type === null) ? DataPath.TYPE_INFO : type, community, text);
@@ -878,6 +882,7 @@ class DataPath {
 exports.DataPath = DataPath;
 DataPath.TYPE_INFO = "i";
 DataPath.TYPE_TEXT = "t";
+DataPath.TYPE_GROUP = "g";
 
 },{"./utils":22}],16:[function(require,module,exports){
 "use strict";
@@ -2003,6 +2008,26 @@ class Utils {
         return JSON.parse(JSON.stringify(object));
     }
     static utcTime() { return new Date().getTime(); }
+    static getConversationUsername(conversation) {
+        var i = conversation.indexOf('/');
+        return conversation.substring(conversation.startsWith('#') ? 1 : 0, i === -1 ? conversation.length : i);
+    }
+    static getConversationPath(conversation) {
+        var i = conversation.indexOf('/');
+        return i === -1 ? '' : conversation.substring(i + 1);
+    }
+    static getGroupName(conversation) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!conversation.startsWith('#'))
+                return conversation;
+            var username = Utils.getConversationUsername(conversation);
+            var path = Utils.getConversationPath(conversation);
+            var pref = yield Utils.getAccountPreferences(username);
+            var groups = pref.getGroups();
+            var group = groups[path];
+            return (group !== null && group.name != null) ? group.name : conversation;
+        });
+    }
     static getAccountPreferences(user) {
         return __awaiter(this, void 0, void 0, function* () {
             if (isNode) {

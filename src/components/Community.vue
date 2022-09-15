@@ -206,15 +206,15 @@ initChat();
 const contentMsg = ref(null);
 async function setContentMessage(obj) {
     console.log("contentMessage", obj);
-    if(obj.type === stlib.Content.Emote.TYPE) {
-        await enterMessage(obj.text, obj, false);
-        return;
-    }
     if(obj == null) {
         var val = contentMsg.value; //clear message field if closing edit action
         if(val && val.type === stlib.Content.Edit.TYPE) messageBox.value.setText("");
         contentMsg.value = null;
         focusMessageBox();
+        return;
+    }
+    if(obj.type === stlib.Content.Emote.TYPE) {
+        await enterMessage(obj.text, obj, false);
         return;
     }
     if(obj.type === 'delete') {
