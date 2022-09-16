@@ -38,6 +38,10 @@
                 class="pl-2"><span class="oi oi-chat"></span> {{item.getName()}} 
                 <span class="float-right text-sm">(text)</span>
             </span>
+            <span v-else-if="item.getPathType() == 'g'" 
+                class="pl-2"><span class="oi oi-lock-locked"></span> {{item.getName()}} 
+                <span class="float-right text-sm">(private text)</span>
+            </span>
             <span v-else-if="item.getPathType() == 'i'"><span class="oi oi-info text-center" style="width:14px;"></span> {{item.getName()}} 
                 <span class="float-right text-sm">(info)</span>
             </span>              

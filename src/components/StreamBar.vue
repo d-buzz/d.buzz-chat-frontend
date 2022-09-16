@@ -12,7 +12,8 @@
                <span class="oi oi-cog"></span>
             </router-link>
         </div>
-        <Stream v-for="stream in streams" :stream="stream" :number="''+stream.lastReadNumber"/>
+        <Stream v-for="stream in streams" :community="communityName"
+             :stream="stream" :number="''+stream.lastReadNumber"/>
     </div>
     <div v-else>
         <div class="flex justify-between">
@@ -39,9 +40,10 @@ const streams = ref([]);
 const conversations = ref([]);
 const groups = ref([]);
 const title = ref("Direct Messages");
+const communityName = ref("");
 const isCommunity = ref(false);
 
-let newUserMessageModalOpen = ref(false);
+const newUserMessageModalOpen = ref(false);
 const toggleNewUserMessageModalOpen = () => {
   newUserMessageModalOpen.value = !newUserMessageModalOpen.value;
 };
@@ -54,9 +56,9 @@ async function initConversations(route) {
     const manager = getManager();
 
     if(isCommunity.value) {
-        var user2 = route.params.user;
+        var user2 = route.params.community || route.params.user;
         if(user2 == null || user2 == "") return;
-
+        communityName.value = user2;
         var community = await stlib.Community.load(user2);
 
         console.log("community data ");

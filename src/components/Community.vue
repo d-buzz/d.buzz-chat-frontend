@@ -118,6 +118,12 @@ async function initChat() {
             }
             communityUsers.value = usersCategories;
         }
+        else if(route.name === 'CommunityGroup') {
+            var pref = await stlib.Utils.getAccountPreferences(user2);
+            var groups = pref.getGroups();
+            var group = groups[route.params.path];
+            streamName.value = (group !== null && group.name != null)?`${group.name} ${conversation}`:conversation;
+        }
         else if(route.name === 'Group') {
             var pref = await stlib.Utils.getAccountPreferences(user2);
             var groups = pref.getGroups();
@@ -240,6 +246,9 @@ function getConversation() {
         conversation = user2+'/'+route.params.path;
     }
     else if(route.name === 'Group') {
+        conversation = '#'+user2+'/'+route.params.path;
+    }
+    else if(route.name === 'CommunityGroup') {
         conversation = '#'+user2+'/'+route.params.path;
     }
     else if(route.name.startsWith('PrivateChat')) {

@@ -1,4 +1,7 @@
 <template>
+    <TransitionRoot :show="newUserMessageModalOpen">
+        <NewUserMessageModal :selectedTab="1" @close="toggleNewUserMessageModalOpen(false)"></NewUserMessageModal>
+    </TransitionRoot>
    <DefaultModal>
     <TabGroup :selectedIndex="selectedTab">
     <TabList class="tab">
@@ -57,7 +60,7 @@
               <option value="">Select group</option>
               <option v-for="group in groups" :value="group">{{group.name}} ({{group.conversation}})</option>
             </select>
-            <button class="btn" title="create new" @click=""><span class="oi oi-plus"></span> create new</button> </div>
+            <button class="btn" title="create new" @click="toggleNewUserMessageModalOpen(true)"><span class="oi oi-plus"></span> create new</button> </div>
         <div>
           <label class="block text-sm font-medium text-gray-700"> Display Name: </label>
           <div class="mt-1">
@@ -124,6 +127,12 @@ const isLoading = ref(false);
 const accountName = ref("General");
 const dataPath = ref("");
 const groups = ref([]);
+const newUserMessageModalOpen = ref(false);
+const toggleNewUserMessageModalOpen = async (open=null) => {
+    if(open === false) 
+        await init();
+    newUserMessageModalOpen.value = open===null?!newUserMessageModalOpen.value:open;
+};
 
 async function init() {
     var manager = getManager();

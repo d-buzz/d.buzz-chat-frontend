@@ -13,6 +13,16 @@
                 </div>
             </router-link>
         </div>
+        <div class="grow" v-else-if="stream.getPathType() === 'g'">
+            <router-link :to="`${path}`">
+                <div class="flex">
+                    <div class="pl-2 font-bold grow"><span class="oi oi-lock-locked"></span> {{stream.getName()}}</div>
+                    <div v-if="number && number != '0'"> 
+                        <small class="number"><b>{{number}}</b></small>
+                    </div>   
+                </div>
+            </router-link>
+        </div>
         <div v-else-if="stream.getPathType() === 'i'">
             <a v-if="path.startsWith('https://')" :href="path" target="_blank" rel="noreferrer noopener">
                 <div>
@@ -35,6 +45,7 @@
 <script setup type="ts">
 const props = defineProps({
     stream: Object,
+    community: String,
     number: String
 });
 function getPath() {
@@ -42,6 +53,8 @@ function getPath() {
     if(path==null) return '';
     if(path.getType() === 't')
         return '/t/'+path.getUser()+'/'+path.getPath();
+    if(path.getType() === 'g')
+        return '/g/'+props.community+'/'+path.getUser()+'/'+path.getPath();
     if(path.getType() === 'i') {
         if(path.getPath() === 'created')
             return 'https://peakd.com/c/'+path.getUser()+'/created';
