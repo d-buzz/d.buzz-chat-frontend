@@ -39,6 +39,6 @@
 <script setup lang="ts">
 const emit = defineEmits(["close"]);
 const props = defineProps<{
-    title: String
+    title: {type: String, default: ''}
 }>();
 </script>

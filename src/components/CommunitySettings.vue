@@ -141,7 +141,7 @@ function resetSettings() {
     initChat();
 }
 function update() {
-    messageKey.value = community.getName()+'#'+stlib.Utils.utcTime();
+    messageKey.value = community.getName()+'#'+stlib.Utils.nextId();
 }
 function setStreamName(event) {
     var item = getSelected();

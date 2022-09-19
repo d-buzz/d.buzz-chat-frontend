@@ -1,6 +1,6 @@
 <template>
   <DefaultModal>        
-<TabGroup :selectedIndex="selectedTab">
+<TabGroup :selectedIndex="_selectedTab">
     <TabList class="tab">
       <Tab>Direct Message</Tab>
       <Tab>Group Message</Tab>
@@ -158,7 +158,7 @@ const props = defineProps<{
     selectedTab: Number,
     data: Object
 }>();
-const selectedTab = props.selectedTab || 0;
+const _selectedTab = props.selectedTab || 0;
 const isLoading = ref(false);
 const accountName = ref("");
 const errorMessage = ref("");
@@ -181,7 +181,7 @@ const authenticate = async (account: string) => {
 };
 if(props.data != null) {
     console.log("defaultData: ", props.data);
-    if(selectedTab == 2) {
+    if(_selectedTab == 2) {
         var data = props.data;
         nextTick(() => {
             var content = data.getContent();

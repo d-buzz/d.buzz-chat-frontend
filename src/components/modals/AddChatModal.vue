@@ -1,8 +1,8 @@
 <template>
     <TransitionRoot :show="newUserMessageModalOpen">
-        <NewUserMessageModal :selectedTab="1" @close="toggleNewUserMessageModalOpen(false)"></NewUserMessageModal>
+       <NewUserMessageModal :selectedTab="1" @close="toggleNewUserMessageModalOpen(false)"></NewUserMessageModal>
     </TransitionRoot>
-   <DefaultModal>
+   <DefaultModal @close="emit('close')">
     <TabGroup :selectedIndex="selectedTab">
     <TabList class="tab">
       <Tab>Add Chat</Tab>
@@ -122,7 +122,7 @@
 <script setup lang="ts">
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 const router = useRouter();
-const emit = defineEmits(["oninput"]);
+const emit = defineEmits(["oninput", "close"]);
 const isLoading = ref(false);
 const accountName = ref("General");
 const dataPath = ref("");
