@@ -43,7 +43,7 @@
                     <div v-if="communitiesFound.length > 0">
                         <div class="w-100 text-sm font-bold text-center text-gray-400 mt-1">found</div>
                         <div v-if="communitiesFound.length > 0" class="flex flex-row flex-wrap">
-                         <SideBarIcon v-for="community in communitiesFound" :img="community.name" :name="community.title" :number="''+community.subscribers" :key="updateKey" />
+                         <CommunityIcon v-for="community in communitiesFound" :img="community.name" :name="community.title" :number="''+community.subscribers" :key="updateKey" />
                             <div v-if="hasNextPage" class="btn" @click="findCommunities(searchBar, true)">
                                next<br>page
                             </div>
@@ -99,7 +99,6 @@ const preferences = ref([]);
 const searchBar = ref("");
 const updateKey = ref("");
 const updateMessage = ref("");
-
 
 const defaultPreferences = [
     {name: "autoDecode:b", display: "Auto Decode", desc: "Automatically decode private messages.", value: false, newvalue:false}
