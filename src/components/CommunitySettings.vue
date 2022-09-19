@@ -168,7 +168,7 @@ function select(item) {
     //readpermissions.value = item.getReadPermissions().toJSON();
     //writepermissions.value = item.getWritePermissions().toJSON();
     selected.value = item;
-    selectKey.value = community.getName()+'#'+stlib.Utils.utcTime();
+    selectKey.value = community.getName()+'#'+stlib.Utils.nextId();
 }
 function getSelected() {
     for(var stream of streams.value) if(stream.selected) return stream;

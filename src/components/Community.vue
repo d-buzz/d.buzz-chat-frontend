@@ -9,11 +9,19 @@
         <DeleteMessageModal @close="toggleDeleteMessage" :msg="deleteMessageRef"></DeleteMessageModal>
     </TransitionRoot>
   <div class="w-full h-full break-all" v-if='messageKey'>
-     <div class="h-full border-l-1 float-right pr-1 pl-1 w-200 overflow-y-scroll hidden md:block" v-if="$route.name === 'CommunityPath'">
+     <div class="h-full border-l-1 float-right pr-1 pl-1 w-200 overflow-y-scroll hidden md:block" v-if="$route.name === 'CommunityPath' && community">
 
         <div v-for="(users,role) in communityUsers">
             <small><b>{{role}}</b></small>
-            <Conversation v-for="team in users" :username="team[0]"/> 
+            <div class="p-1 flex" v-for="team in users" >
+                <div class="flex-shrink-0 mr-5px">
+                    <UserIcon :name="team[0]" :community="community.getName()" :imgCss="`avConversation`"></UserIcon>
+                </div>
+                <div class="grow relative" style="margin-top:-7px;">
+                    <small><b>{{team[0]}}</b></small>
+                    <div class="flex" v-if="team[2]"><small v-for="title in team[2].split(',')" class="rounded-lg bg-green-700 pr-1 pl-1 text-white font-bold">{{title}}</small></div>
+                </div>
+            </div>
         </div>
       </div>
     <div class="h-full flex flex-col justify-end">

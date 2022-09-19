@@ -5,7 +5,7 @@
     <img
         @click="toggleUserModal(name)"
         @click.right.prevent.stop="clickOnIcon($event)"
-        class="cursor-pointer rounded-full avMessage"
+        class="cursor-pointer rounded-full" :class="`${imgCss}`"
         :src="`https://images.hive.blog/u/${name}/avatar/small`"
         alt="@"
         />
@@ -36,7 +36,7 @@
          <small class="name2"><b>{{name}}</b></small>
         <router-link :to="`/i/${img}/about`">
             <img
-            :class="`rounded-full ${getImgCss()} border border-solid borderColor`"
+            :class="`rounded-full ${imgCss} border border-solid borderColor`"
             :src="`https://images.hive.blog/u/${img}/avatar/small`"
             alt="@"
             />
@@ -48,7 +48,8 @@
 const props = defineProps({
     name: String,
     community: Object,
-    displayOnly: Boolean
+    displayOnly: Boolean,
+    imgCss: {type: String, default: 'avMessage'} 
 });
 const showUserModal = ref(false);
 const userRef = ref();
