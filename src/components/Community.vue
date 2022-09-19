@@ -32,7 +32,7 @@
                     <SideBarIcon v-for="community in sharedCommunities" :img="community[0]" :name="community[1]" :community="community" :imgCss="`avMini`" />
                 </span>
             </span>
-            <span v-if="messageKey.startsWith('#')" class="float-right mr-2">
+            <span v-if="route.name === 'Group' || route.name === 'CommunityGroup'" class="float-right mr-2">
                 <button class="text-sm mr-2" @click="toggleShareGroup" title="share group">
                     <span class="oi oi-people"></span>
                 </button>
