@@ -281,11 +281,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.GroupInvite = exports.Encoded = exports.Edit = exports.JSONContent = exports.decodeTextWithKeychain = exports.encodeTextWithKeychain = exports.decodedMessage = exports.encodedMessage = exports.preferences = exports.groupInvite = exports.emote = exports.edit = exports.quote = exports.thread = exports.images = exports.text = exports.fromJSON = exports.type = exports.addType = void 0;
+exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.Images = exports.GroupInvite = exports.Encoded = exports.Edit = exports.JSONContent = exports.decodeTextWithKeychain = exports.encodeTextWithKeychain = exports.decodedMessage = exports.encodedMessage = exports.preferences = exports.groupInvite = exports.emote = exports.edit = exports.quote = exports.thread = exports.images = exports.text = exports.fromJSON = exports.type = exports.addType = void 0;
 const imports_1 = require("./imports");
 Object.defineProperty(exports, "JSONContent", { enumerable: true, get: function () { return imports_1.JSONContent; } });
 Object.defineProperty(exports, "Encoded", { enumerable: true, get: function () { return imports_1.Encoded; } });
 Object.defineProperty(exports, "GroupInvite", { enumerable: true, get: function () { return imports_1.GroupInvite; } });
+Object.defineProperty(exports, "Images", { enumerable: true, get: function () { return imports_1.Images; } });
 Object.defineProperty(exports, "Text", { enumerable: true, get: function () { return imports_1.Text; } });
 Object.defineProperty(exports, "WithReference", { enumerable: true, get: function () { return imports_1.WithReference; } });
 Object.defineProperty(exports, "Thread", { enumerable: true, get: function () { return imports_1.Thread; } });
@@ -520,6 +521,17 @@ exports.Images = void 0;
 const imports_1 = require("./imports");
 class Images extends imports_1.JSONContent {
     constructor(json) { super(json); }
+    getText() {
+        var json = this.json;
+        var text = json[1];
+        for (var i = 2; i < json.length; i++)
+            text += " " + json[i];
+        return text;
+    }
+    setText(text) {
+        var arr = text.trim().split(/\s+/);
+        this.json = [this.json[0], ...arr];
+    }
     addImage(image) { this.json.push(image); }
     getImage(index) { return this.json[index + 1]; }
     setImage(index, image) { this.json[index + 1] = image; }

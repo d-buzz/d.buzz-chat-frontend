@@ -1,21 +1,24 @@
 <template>
     <div>
+        <TransitionRoot :show="showAddImageModal">
+            <AddImageModal @oninput="addImage" @close="toggleAddImageModal"></AddImageModal>
+        </TransitionRoot>
         <div v-if="images.length > 0" class="p-1 flex gap-x-1">
-            <span v-for="image in images" >
-                <span>      
-                    <img :src="image" class="imgBorder">
-                </span>
+            <span v-for="(image,i) in images" class="imgPreview">
+                <span class="oi oi-x closeButton" @click="delImage(i)"></span>
+                <img :src="image" class="imgBorder">
             </span>
         </div>
         <div class="flex">
-            <div 
+            <div tex
               class="shadow appearance-none border border-gray-700 rounded-xl w-[calc(100%-1rem)] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-1"
               ref="box"
               @keydown.enter.exact.prevent="enterMessage"
               role="textbox"
               contenteditable>
             </div>
-            <span class="cursor-pointer oi oi-image" style="font-size: 1.125rem;" title="add image"></span>
+            <span class="cursor-pointer oi oi-image" style="font-size: 1.125rem;"
+                @click="toggleAddImageModal()" title="add image"></span>
         </div>
     </div>
 </template>
@@ -23,6 +26,17 @@
 const box = ref(null);
 const images = ref([]);
 const emit = defineEmits(["entermessage"]);
+const showAddImageModal = ref(false);
+function toggleAddImageModal() {
+    showAddImageModal.value = !showAddImageModal.value;
+}
+function addImage(link) {
+    images.value.push(link);
+}
+function delImage(i) {
+    if(i >= 0 && i < images.value.length)
+        images.value.splice(i, 1);
+}
 function focus() {
     box.value.focus();
 }
@@ -31,7 +45,19 @@ function setText(text) {
     setCaretAtEnd(box.value);
 }
 function enterMessage(e) {
-    emit("entermessage", e.target.innerText);
+    if(images.value.length > 0) {
+        var msg = { type: stlib.Content.Images.TYPE, images: images.value};
+        emit("entermessage", null, msg, true, false, ()=>{
+            images.value = [];
+            enterMessage(e);
+        });
+    }
+    else {
+        var text = e.target.innerText;
+        if(text && text.length > 0) {
+            emit("entermessage", text);
+        }
+    }
 }
 function setCaretAtEnd(element) {
     var range,selection;
@@ -56,10 +82,26 @@ defineExpose({
 });
 </script>
 <style scoped>
+.imgPreview {
+    @apply relative;
+}
+.imgPreview:hover .closeButton {
+    display: inline-block;
+}
+.closeButton {
+    display: none;
+    @apply absolute;
+    font-size:10px;
+    top: 0;
+    right: 0;
+    padding: 1px;
+    cursor: pointer;
+}
 .imgBorder {
     display: inline-block;
     border: 1px solid #aaa;
     background-color: #e0e0e0;
     padding: 3px;
+    max-height: 200px;
 }
 </style>

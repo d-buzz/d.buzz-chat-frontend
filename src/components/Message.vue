@@ -49,7 +49,12 @@
                 <div v-if="content.getType() == 'x'">
                     <button class="bg-primary text-white font-bold py-1 px-2 rounded-full" v-on:click="decrypt(message)">Click to decrypt</button>
                 </div>
-                <div v-if="content.getType() == 'g'" class="border border-solid border-green-700 rounded p-1">
+                <div v-if="content.getType() == 'i'" class="flex gap-x-1">
+                    <span v-for="i in content.length()">
+                        <img :src="`https://images.hive.blog/768x0/${content.getImage(i-1)}`" class="imgBorder"> 
+                    </span>
+                </div>
+                <div v-else-if="content.getType() == 'g'" class="border border-solid border-green-700 rounded p-1">
                     <small>{{content.getGroup()}}</small>
                     <div ref="messageText" class="whitespace-pre-wrap">{{content.getText()}}</div>
                     <button class="btn" v-on:click="join(message)">Join</button>

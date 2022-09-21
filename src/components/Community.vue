@@ -282,9 +282,10 @@ const autoDecode = async ()=>{
 };
 const decode = async ()=>{ await getManager().decodeSelectedConversations(); };
 var sendingMessage = false;
-const enterMessage = async (message, contentMessage=null, block=true) => {
+const enterMessage = async (message, contentMessage=null, block=true, clearBox=true, onsuccess=null) => {
     console.log("message ", message);
     if(block && sendingMessage) return;
+    var result = null;
     try {
         if(block) sendingMessage = true;
         var conversation = getConversation();
@@ -306,22 +307,29 @@ const enterMessage = async (message, contentMessage=null, block=true) => {
                     editContent.setText(message);
                     textMsg = stlib.Content.edit(editContent, contentMessage.msg.message);
                 break;
+                case stlib.Content.Images.TYPE:
+                    textMsg = stlib.Content.images(...contentMessage.images);
+                break;
             }
         }
         if(textMsg === null) textMsg = stlib.Content.text(message);
 
         console.log(textMsg);
         
-        var result = await manager.sendMessage(textMsg, conversation);
+        result = await manager.sendMessage(textMsg, conversation);
         if(result.isSuccess()) {
-            messageBox.value.setText("");
+            if(clearBox) messageBox.value.setText("");
             if(contentMsg.value !== null) contentMsg.value = null;
+            
         }
         else { 
             console.log(result);
         }
     }
-    finally { if(block) sendingMessage = false; }
+    finally { 
+        if(block) sendingMessage = false;
+        if(onsuccess !== null && result !== null && result.isSuccess()) onsuccess();
+    }
 };
 function isAtScrollBottom(e) {
     return e.scrollTop + e.clientHeight >= e.scrollHeight;
