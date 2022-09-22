@@ -5,6 +5,9 @@
     <TransitionRoot :show="newViewEditHistoryModalOpen">
         <ViewEditHistoryModal :msg="message" @close="toggleViewEditHistoryModal"></ViewEditHistoryModal>
     </TransitionRoot>
+    <TransitionRoot :show="showImageViewModal">
+        <ImageViewModal :src="imageViewSrc" @close="toggleImageViewModal"></ImageViewModal>
+    </TransitionRoot>
     <div v-if="hasQuotedText(message)" class="flex mb-1">
         <img
             @click.right.prevent.stop="clickOnIcon($event)"
@@ -51,7 +54,7 @@
                 </div>
                 <div v-if="content.getType() == 'i'" class="flex gap-x-1">
                     <span v-for="i in content.length()">
-                        <img :src="`https://images.hive.blog/768x0/${content.getImage(i-1)}`" class="imgBorder"> 
+                        <img :src="`https://images.hive.blog/768x0/${content.getImage(i-1)}`" class="imgBorder cursor-pointer" @click="toggleImageViewModal(content.getImage(i-1))"> 
                     </span>
                 </div>
                 <div v-else-if="content.getType() == 'g'" class="border border-solid border-green-700 rounded p-1">
@@ -90,6 +93,8 @@ const content = props.message?((props.displayEdits && props.message.editContent)
 const joinData = ref(null);
 const newUserMessageModalOpen = ref(false);
 const newViewEditHistoryModalOpen = ref(false);
+const showImageViewModal = ref(false);
+const imageViewSrc = ref("");
 const showUserModal = ref(false);
 const userRef = ref();
 const toggleNewUserMessageModalOpen = () => {
@@ -98,6 +103,10 @@ const toggleNewUserMessageModalOpen = () => {
 const toggleViewEditHistoryModal = () => {
   newViewEditHistoryModalOpen.value = !newViewEditHistoryModalOpen.value;
 };
+const toggleImageViewModal = (src) => {
+    showImageViewModal.value = !showImageViewModal.value;
+    if(src) imageViewSrc.value = src;
+};    
 function toggleUserModal(user) {
     if(user == null) showUserModal.value = false;
     else {

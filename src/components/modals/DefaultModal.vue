@@ -24,7 +24,7 @@
             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
             <DialogPanel
-              class="relative bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md sm:w-full sm:p-6"
+              class="relative bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md sm:w-full sm:p-6" :style="`${dialogPanelCss}`"
             >
               <div class="min-h-full flex flex-col justify-center"> 
                  <b v-if="title!=null">{{title}}</b>
@@ -39,6 +39,7 @@
 <script setup lang="ts">
 const emit = defineEmits(["close"]);
 const props = defineProps<{
-    title: {type: String, default: ''}
+    title: {type: String, default: ''},
+    dialogPanelCss: {type: String, default: ''}
 }>();
 </script>
