@@ -8,7 +8,7 @@
         </div>
         <img class="m-auto" style="max-width: fit-content;" :src="`https://images.hive.blog/768x0/${src}`" :title="src"> 
 
-     <div class="text-right">
+     <div class="text-right" style="margin-bottom:-16px;margin-top:3px;">
         <a class="btn" :href="src" target="_blank" rel="nofollow noopener" :title="`open ${src}`"><span class="oi oi-external-link"></span> open original</a>
         <button class="btn" @click="$emit('close')" title="close">close</button>
      </div>

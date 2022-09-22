@@ -18,102 +18,67 @@
         </div>
     </div>
     <div class="mt-2">
-        <!--<router-link :to="`/p/${user}`"><span class="btn" ><span class="oi oi-chat text-sm"></span> Message</span></router-link>--> 
-        <button class="btn"><span class="oi oi-people text-sm"></span> Join</button>
+        <button class="btn" @click="visitCommunity(community)"><span class="oi oi-globe text-sm"></span> Visit</button>
+        <button class="btn" @click="join(!joinedCommunity)"><span class="oi oi-people text-sm"></span> {{joinedCommunity?'Leave':'Join'}}</button>
     </div>
     <div class="mt-1"><small>{{updateMessage}}</small></div>
   </DefaultModal>
 </template>
 
 <script setup lang="ts">
+const router = useRouter();
 const props = defineProps<{
     community: String
 }>();
 var communityData = ref(null);
+var joinedCommunity = ref(false);
 var updateMessage = ref("");
-//var role = ref(null);
-//var titles = ref(null);
 
-//var editable = ref(false);
-/*var roleSet = ref(new stlib.PermissionSet());
-async function saveChanges() {
-    if(roleSet.value.role != role.value) await setRole(roleSet.value.role);
-    var titleToSet = roleSet.value.titles.join(",");
-    var titles2 = titles.value==null?'':titles.value.join(",");
-    if(titleToSet != titles2) await setTitle(titleToSet);
-    editable.value = false;
-}
-function discardChanges() {
-    editable.value = false;
-}
-function toggleEditable() {
-    roleSet.value.setRole(role.value);
-    roleSet.value.titles = stlib.Utils.copy(titles.value);
-    editable.value = true;
-}
-async function setRole(role) {
+async function join(joinOrLeave=true) {
     var user = getManager().user;
     var community = props.community;
-    console.log("settitle ", community, role);
     if(!community || !user) return;
-    var json = ["setRole", {
-		    "community": community,
-		    "account": props.user, "role": role  
-        }];
+    var json = [joinOrLeave?"subscribe":"unsubscribe", { community }];
     updateMessage.value = "";
     
     var p = stlib.Utils.queueKeychain((keychain, resolve, error)=>{
         keychain.requestCustomJson(user, "community", "Posting",
-         JSON.stringify(json), "Set Title", (result)=>{
+         JSON.stringify(json), json[0] + " " + community, (result)=>{
             if(result.success) resolve(result.result);
             else error(result);
         });
     });
     try {
         await p;
-        updateMessage.value="Succesfully updated.";
+        updateMessage.value="Succesfully " + (joinOrLeave?"joined.":"left.");
     } catch(e) {
         updateMessage.value="Error: " + e.error;
         console.log(e);
     }
 }
-async function setTitle(titles) {
-    var user = getManager().user;
-    var community = props.community;
-    console.log("settitle ", community, titles);
-    if(!community || !user) return;
-    if(Array.isArray()) titles = titles.join(",");
-    var json =  ["setUserTitle", {
-		    "community": community,
-		    "account": props.user, "title": titles
-        }];
-    updateMessage.value = "";
-    
-    var p = stlib.Utils.queueKeychain((keychain, resolve, error)=>{
-        keychain.requestCustomJson(user, "community", "Posting",
-         JSON.stringify(json), "Set Title", (result)=>{
-            if(result.success) resolve(result.result);
-            else error(result);
-        });
-    });
-    try {
-        await p;
-        updateMessage.value="Succesfully updated.";
-    } catch(e) {
-        updateMessage.value="Error: " + e.error;
-        console.log(e);
-    }
-}*/
+function visitCommunity(community) {
+    const manager = getManager();
+    router.push(manager.getSelectedCommunityPage(community, `/i/${community}/about`));
+}
+function hasJoinedCommunity(communities, community) {
+    for(var item of communities)
+        if(item[0] === community) return true;
+    return false;
+}
 async function init() {
     //bridge.list_community_roles
     var community = props.community;
     console.log("loading modal ", community);
     if(!community) return;
+    var manager = getManager();
     var user = props.user;
     var data = await stlib.Community.load(community);
     console.log("loaded ", data);
     if(data) {
         communityData.value = data;
+        var communities = await manager.getCommunities(user);
+        console.log("communities ", communities, hasJoinedCommunity(communities, community));
+        joinedCommunity.value = hasJoinedCommunity(communities, community);
     }
     /*if(user && data) {
         role.value = data.getRole(user);

@@ -26,7 +26,7 @@
                 <TabPanel>
                     <div class="text-sm font-bold text-center text-gray-400 mt-1">joined</div>
                     <div class="flex flex-row flex-wrap">
-                     <SideBarIcon v-for="community in communities" :img="community[0]" :name="community[1]" :community="community" :key="updateKey" />
+                       <CommunityIcon v-for="community in communities" :img="community[0]" :name="community[1]" :number="''" :key="updateKey" />
                     </div>
 
                     <div class="display-block flex mt-3 mr-auto ml-auto" style="max-width:350px;">
