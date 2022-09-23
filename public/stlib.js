@@ -1445,6 +1445,51 @@ class MessageManager {
             return number;
         });
     }
+    getPreviousConversations() {
+        return __awaiter(this, void 0, void 0, function* () {
+            var conversation = this.selectedConversation;
+            if (conversation == null)
+                return null;
+            var data = yield this.getSelectedConversations();
+            if (data && data.maxTime > 0) {
+                var client = this.getClient();
+                var isPrivate = conversation.indexOf('|') !== -1;
+                var promise = null;
+                var timeNow = utils_1.Utils.utcTime();
+                var maxTime = timeNow + 600000;
+                for (var msg0 of data.messages)
+                    maxTime = Math.min(maxTime, msg0.getTimestamp());
+                if (isPrivate) {
+                    console.log("todo");
+                    return data;
+                }
+                else {
+                    var result = yield client.read(conversation, 0, maxTime);
+                    if (!result.isSuccess())
+                        throw result.getError();
+                    var messages = yield this.toDisplayable(result);
+                    console.log("loading previous ", messages);
+                    var added = 0;
+                    for (var msg of messages)
+                        if (!this.hasMessage(data.messages, msg)) {
+                            data.messages.push(msg);
+                            added++;
+                        }
+                    if (added > 0) {
+                        yield this.resolveReferences(data.messages);
+                        data.messages.sort((a, b) => a.getTimestamp() - b.getTimestamp());
+                        data.maxTime = maxTime;
+                        this.postCallbackEvent(null);
+                    }
+                    else {
+                        data.maxTime = 0;
+                    }
+                }
+                return data;
+            }
+            return data == null ? null : data;
+        });
+    }
     getSelectedConversations() {
         return __awaiter(this, void 0, void 0, function* () {
             var conversation = this.selectedConversation;
@@ -1455,6 +1500,7 @@ class MessageManager {
             return yield this.conversations.cacheLogic(conversation, (conversation) => {
                 var client = _this.getClient();
                 var timeNow = utils_1.Utils.utcTime();
+                var maxTime = timeNow + 600000;
                 var promise = null;
                 if (isPrivate) {
                     if (this.cachedUserMessages == null) {
@@ -1473,13 +1519,13 @@ class MessageManager {
                     });
                 }
                 else {
-                    promise = client.read(conversation, timeNow - _this.defaultReadHistoryMS, timeNow + 600000).then((result) => {
+                    promise = client.read(conversation, 0, /*timeNow-_this.defaultReadHistoryMS; */ maxTime).then((result) => {
                         if (!result.isSuccess())
                             throw result.getError();
                         return _this.toDisplayable(result);
                     }).then((messages) => {
                         _this.resolveReferences(messages);
-                        return { messages };
+                        return { messages, maxTime };
                     });
                 }
                 return promise;
@@ -1510,7 +1556,7 @@ class MessageManager {
                 return [];
             var client = this.getClient();
             var timeNow = utils_1.Utils.utcTime();
-            var result = yield client.readUserMessages(user, timeNow - this.defaultReadHistoryMS, timeNow + 600000);
+            var result = yield client.readUserMessages(user, 0, /*timeNow-this.defaultReadHistoryMS,*/ timeNow + 600000);
             if (!result.isSuccess())
                 throw result.getError();
             var messages = yield this.toDisplayable(result);
@@ -1604,6 +1650,14 @@ class MessageManager {
             }
         }
         return null;
+    }
+    hasMessage(messages, message) {
+        for (var msg of messages)
+            if (msg.getTimestamp() === message.getTimestamp() &&
+                msg.getUser() === message.getUser() &&
+                msg.message.getSignature().equals(message.message.getSignature()))
+                return true;
+        return false;
     }
     jsonToDisplayable(msgJSON) {
         return __awaiter(this, void 0, void 0, function* () {

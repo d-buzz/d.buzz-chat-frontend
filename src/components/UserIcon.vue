@@ -45,6 +45,7 @@
   </div>-->
 </template>
 <script setup>
+import VueSimpleContextMenu from 'vue-simple-context-menu';
 const props = defineProps({
     name: String,
     community: Object,
@@ -64,7 +65,10 @@ const iconMenuOptions = [
     {name:"message"},{name:"blog"}
 ];
 const iconMenu = ref(null);
-function clickOnIcon(event) { iconMenu.value.showMenu(event, "item"); }
+function clickOnIcon(event) { 
+    console.log("iconMenu ", iconMenu.value);
+    iconMenu.value.showMenu(event, "item");
+}
 </script> 
 <style scoped>
 

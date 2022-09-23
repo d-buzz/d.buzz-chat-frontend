@@ -42,6 +42,7 @@
             </span>
         </div>
         <div ref="messages" :key="messageKey" class="flex flex-col overflow-y-scroll pr-3">
+            <button v-if="canLoadPreviousMessages" class="btn" @click="loadPrevious()">{{loadingPreviousMessages?'loading':'load previous messages'}}</button>
             <div v-for="message in displayableMessages" >
                 <div v-if="!message.isEdit && !message.isEmote() && message.getContent() != null">
                     <hr style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
@@ -87,6 +88,8 @@ const sharedCommunities = ref(null);
 const messageBox = ref();
 const messages = ref();
 const valueAutoDecode = ref(false);
+const canLoadPreviousMessages = ref(true);
+const loadingPreviousMessages = ref(false);
 
 const showGroupUserModal = ref(false);
 const showCloseGroupModal = ref(false);
@@ -333,6 +336,18 @@ const enterMessage = async (message, contentMessage=null, block=true, clearBox=t
 };
 function isAtScrollBottom(e) {
     return e.scrollTop + e.clientHeight >= e.scrollHeight;
+}
+async function loadPrevious() {
+    if(loadingPreviousMessages.value === true) return;
+    try {
+        loadingPreviousMessages.value = true;
+        const manager = getManager();
+        var data = await manager.getPreviousConversations();
+        if(data) canLoadPreviousMessages.value = data.maxTime > 0;
+    }
+    finally {
+        loadingPreviousMessages.value = false;
+    }
 }
 /*app.router.beforeEach(async (to, from, next) => {
     await initChat();

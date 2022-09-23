@@ -139,8 +139,8 @@ function getQuotedText(message) {
     return null;
 }
 /*message menu*/
-const msgMenuOptions = ref([{name:"emote"},{name:"quote"},{name:"edit"},{name:"delete"}]);
-const msgMenuOptions2 = ref([{name:"emote"},{name:"quote"}]);
+const msgMenuOptions = ref([/*{name:"emote"},*/{name:"quote"},{name:"edit"},{name:"delete"}]);
+const msgMenuOptions2 = ref([/*{name:"emote"},*/{name:"quote"}]);
 const msgMenu = ref(null);
 function clickOnMsg(event) { msgMenu.value.showMenu(event, "item"); }
 function clickOnMsgOption(item) {
