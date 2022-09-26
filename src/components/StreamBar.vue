@@ -12,8 +12,10 @@
                <span class="oi oi-cog"></span>
             </router-link>
         </div>
-        <Stream v-for="stream in streams" :community="communityName"
-             :stream="stream" :number="''+stream.lastReadNumber"/>
+        <div v-for="stream in streams" >
+            <Stream v-if="stream.visible" :community="communityName"
+                 :stream="stream" :number="''+stream.lastReadNumber"/>
+        </div>
     </div>
     <div v-else>
         <div class="flex justify-between">
@@ -61,11 +63,14 @@ async function initConversations(route) {
         communityName.value = user2;
         var community = await stlib.Community.load(user2);
 
-        console.log("community data ");
-        console.log(community.getStreams());
+        var role = community.getRole(username);
+        var titles = community.getTitles(username);
 
         title.value = community.getTitle();
         streams.value = community.getStreams();
+
+        for(var stream of streams.value) 
+            stream.visible = stream.readSet.validate(role, titles);
 
         var update = async() => {
             for(var stream of streams.value) {

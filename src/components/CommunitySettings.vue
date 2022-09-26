@@ -73,7 +73,7 @@
                 <PermissionSet :set="selected.readSet" :key="selectKey"/>
             </div>
         
-            <div v-if="selected && selected.dataPath != null && selected.dataPath.getType() != 'i'">
+            <div v-if="selected && selected.dataPath != null && selected.dataPath.getType() != 'i' && selected.dataPath.getType() != 'g'">
                 <label class="block text-sm font-medium text gray-700">Write Permissions:</label>
                 <PermissionSet :set="selected.writeSet" :key="selectKey"/>
             </div>

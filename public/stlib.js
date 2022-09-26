@@ -1461,7 +1461,6 @@ class MessageManager {
                 for (var msg0 of data.messages)
                     maxTime = Math.min(maxTime, msg0.getTimestamp());
                 if (isPrivate) {
-                    console.log("todo");
                     for (var msg0 of data.encoded)
                         maxTime = Math.min(maxTime, msg0.getTimestamp());
                     var result = yield client.readUserMessages(this.user, 0, maxTime);
@@ -1776,6 +1775,25 @@ class PermissionSet {
         this.role = "";
         this.titles = [];
     }
+    validateRole(role) { return this.roleToIndex(this.role) <= this.roleToIndex(role); }
+    validateTitles(titles) {
+        var arr = this.titles;
+        var matches = true;
+        for (var i = 0; i < arr.length; i++) {
+            var item = arr[i];
+            if (item === '|') {
+                if (matches)
+                    return true;
+                matches = true;
+            }
+            else if (matches && titles.indexOf(item) === -1)
+                matches = false;
+        }
+        return matches;
+    }
+    validate(role, titles) {
+        return this.validateRole(role) && this.validateTitles(titles);
+    }
     hasTitle(title) {
         return this.titles.indexOf(title) != -1;
     }
@@ -1798,6 +1816,18 @@ class PermissionSet {
     }
     getStreamRole() {
         return this.role || "";
+    }
+    roleToIndex(role) {
+        switch (role) {
+            case "owner": return 7;
+            case "admin": return 6;
+            case "mod": return 5;
+            case "memeber": return 4;
+            case "guest": return 3;
+            case "joined": return 2;
+            case "onboard": return 1;
+        }
+        return 0;
     }
     toJSON() {
         var role = this.getStreamRole();
