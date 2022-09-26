@@ -157,7 +157,7 @@ async function initChat() {
                 scrollTop = container.scrollTop;
             }
             var data = await manager.getSelectedConversations();
-            if(data == null || manager.selectedConversation != conversation) return;
+            if(data == null || manager.selectedConversation != conversation) return null;
             data.messages.sort((a,b)=>a.getTimestamp()-b.getTimestamp());
             displayableMessages.value = data.messages;
             if(data.encoded && data.encoded.length > 0)
@@ -173,11 +173,13 @@ async function initChat() {
                 if(container) container.scrollTop = scrollToBottom?
                               container.scrollHeight:scrollTop;
             });
+            return data;
         };
         var prefs = await manager.getPreferences();
         var isAutoDecode = prefs.getValueBoolean("autoDecode", false);
         valueAutoDecode.value = isAutoDecode;
-        await updateMessages();
+        var data = await updateMessages();
+        if(data) canLoadPreviousMessages.value = data.maxTime > 0;
 
         manager.setCallback("Community.vue", updateMessages);
 
