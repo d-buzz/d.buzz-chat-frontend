@@ -328,9 +328,10 @@ function images(...images) {
     return new imports_1.Images([imports_1.Images.TYPE, ...images]);
 }
 exports.images = images;
-function thread(message, threadName) {
-    return new imports_1.Thread([imports_1.Thread.TYPE,
-        message, threadName]);
+function thread(threadName, content) {
+    if (content instanceof imports_1.JSONContent)
+        content = content.toJSON();
+    return new imports_1.Thread([imports_1.Thread.TYPE, threadName, content]);
 }
 exports.thread = thread;
 function quote(message, parentMessage, quoteFrom = 0, quoteTo = -1) {
@@ -843,8 +844,12 @@ Text.TYPE = "t";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Thread = void 0;
 const imports_1 = require("./imports");
-class Thread extends imports_1.WithReference {
+class Thread extends imports_1.Text {
     constructor(json) { super(json); }
+    getName() { return this.json[1]; }
+    setName(text) { this.json[1] = text; }
+    setContent() { return this.json[2]; }
+    getContent(json) { this.json[2] = json; }
 }
 exports.Thread = Thread;
 Thread.TYPE = "h";

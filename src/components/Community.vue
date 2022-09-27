@@ -8,6 +8,9 @@
     <TransitionRoot :show="showDeleteMessageModal">
         <DeleteMessageModal @close="toggleDeleteMessage" :msg="deleteMessageRef"></DeleteMessageModal>
     </TransitionRoot>
+    <TransitionRoot :show="showThreadsModal">
+        <ThreadModal @oninput="setThread" @close="toggleThreads"></ThreadModal>
+    </TransitionRoot>
   <div class="w-full h-full break-all" v-if='messageKey'>
      <div class="h-full border-l-1 float-right pr-1 pl-1 w-200 overflow-y-scroll hidden md:block" v-if="$route.name === 'CommunityPath' && community">
 
@@ -26,19 +29,24 @@
       </div>
     <div class="h-full flex flex-col justify-end">
         <div class="font-bold">
-            {{streamName}}
+            <span class="">{{streamName}}</span> <span v-if="threadName !== null" class="font-normal"><span class="oi oi-chevron-right" style="font-size:10px;vertical-align:top;margin-top:6px;"></span> {{threadName}}</span>
             <span class="inline-block" v-if="sharedCommunities">
                 <span class="flex">
                     <SideBarIcon v-for="community in sharedCommunities" :img="community[0]" :name="community[1]" :community="community" :imgCss="`avMini`" />
                 </span>
             </span>
-            <span v-if="route.name === 'Group' || route.name === 'CommunityGroup'" class="float-right mr-2">
-                <button class="text-sm mr-2" @click="toggleShareGroup" title="share group">
-                    <span class="oi oi-people"></span>
+            <span class="float-right mr-2">
+                <button class="text-sm mr-2" @click="toggleThreads" title="threads">
+                    <span class="oi oi-fork"></span>
                 </button>
-                <button class="text-sm" @click="toggleCloseGroup" title="close group">
-                    <span class="oi oi-x align-top"></span>
-                </button>
+                <span v-if="route.name === 'Group' || route.name === 'CommunityGroup'">
+                    <button class="text-sm mr-2" @click="toggleShareGroup" title="share group">
+                        <span class="oi oi-people"></span>
+                    </button>
+                    <button class="text-sm" @click="toggleCloseGroup" title="close group">
+                        <span class="oi oi-x align-top"></span>
+                    </button>
+                </span>
             </span>
         </div>
         <div ref="messages" :key="messageKey" class="flex flex-col overflow-y-scroll pr-3">
@@ -82,6 +90,7 @@ const displayableMessages = ref([]);
 const decodeNMessages = ref(0);
 const messageKey = ref("");
 const streamName = ref("");
+const threadName = ref(null);
 const community = ref(null);
 const communityUsers = ref({});
 const sharedCommunities = ref(null);
@@ -94,6 +103,7 @@ const loadingPreviousMessages = ref(false);
 const showGroupUserModal = ref(false);
 const showCloseGroupModal = ref(false);
 const showDeleteMessageModal = ref(false);
+const showThreadsModal = ref(false);
 const deleteMessageRef = ref();
 
 function toggleShareGroup() {
@@ -104,6 +114,9 @@ function toggleCloseGroup() {
 }
 function toggleDeleteMessage() {
     showDeleteMessageModal.value = !showDeleteMessageModal.value;
+}
+function toggleThreads() {
+    showThreadsModal.value = !showThreadsModal.value;
 }
 async function initChat() {
     var user = accountStore.account.name;
@@ -222,6 +235,9 @@ function focusMessageBox() {
         messageBox.value.focus();
 }
 initChat();
+function setThread(name) {
+    threadName.value = name;
+}
 const contentMsg = ref(null);
 async function setContentMessage(obj) {
     console.log("contentMessage", obj);
@@ -295,6 +311,7 @@ const enterMessage = async (message, contentMessage=null, block=true, clearBox=t
         if(block) sendingMessage = true;
         var conversation = getConversation();
         if(conversation == null) return;
+        var thread = threadName.value;
 
         const manager = getManager();
         var textMsg = null;
@@ -318,6 +335,7 @@ const enterMessage = async (message, contentMessage=null, block=true, clearBox=t
             }
         }
         if(textMsg === null) textMsg = stlib.Content.text(message);
+        if(thread !== null) textMsg = stlib.Content.thread(thread, textMsg);
 
         console.log(textMsg);
         
