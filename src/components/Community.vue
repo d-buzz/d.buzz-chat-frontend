@@ -29,7 +29,7 @@
       </div>
     <div class="h-full flex flex-col justify-end">
         <div class="font-bold">
-            <span class="">{{streamName}}</span> <span v-if="threadName !== null" class="font-normal"><span class="oi oi-chevron-right" style="font-size:10px;vertical-align:top;margin-top:6px;"></span> {{threadName}}</span>
+            <span class="cursor-pointer" @click="setThread(null)">{{streamName}}</span> <span v-if="threadName !== null" class="font-normal"><span class="oi oi-chevron-right cursor-pointer" style="font-size:10px;vertical-align:top;margin-top:6px;" @click="setThread(null)"></span> {{threadName}}</span>
             <span class="inline-block" v-if="sharedCommunities">
                 <span class="flex">
                     <SideBarIcon v-for="community in sharedCommunities" :img="community[0]" :name="community[1]" :community="community" :imgCss="`avMini`" />
@@ -51,12 +51,48 @@
         </div>
         <div ref="messages" :key="messageKey" class="flex flex-col overflow-y-scroll pr-3">
             <button v-if="canLoadPreviousMessages" class="btn" @click="loadPrevious()">{{loadingPreviousMessages?'loading':'load previous messages'}}</button>
-            <div v-for="message in displayableMessages" >
-                <div v-if="!message.isEdit && !message.isEmote() && message.getContent() != null">
-                    <hr style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
-                    <Message :message="message" @action="setContentMessage" />
+            <div v-if="threadName !== null">
+                <div v-for="messageArray in displayableMessages" >
+                    <div v-if="messageArray.type === 'h'">
+                        <div v-for="message in messageArray">
+                            <div v-if="message.getContent().getName() === threadName">
+                                <hr style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
+                                <Message :message="message" @action="setContentMessage" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
-           </div>
+            </div>
+            <div v-else>
+                <div v-for="messageArray in displayableMessages" >
+                    <div v-if="messageArray.type === 'h'">
+                        <small class="flex text-gray-700 cursor-pointer" style="margin-top: 0.5rem;" @click="toggleFold(messageArray)">
+                            <div class="threadLine grow"></div>
+                            <div @click="setThread(messageArray[0].getContent().getName())">{{messageArray[0].getContent().getName()}}</div>
+                            <div class="flex grow">
+                                <div class="threadLine grow"></div>
+                                <div>{{messageArray.length}} thread message</div>
+                            </div>
+                        </small>
+                        <div v-if="showFold(messageArray)" class="fold">
+                            <div v-for="(message, i) in messageArray">
+                                <div v-if="i !== 0" class="flex text-gray-700" style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
+                                    <span class="hr grow"></span>
+                                    <small class="cursor-pointer" @click="setThread(message.getContent().getName())">{{message.getContent().getName()}}</small>
+                                    <span class="hr grow"></span>
+                                </div>
+                                <Message :message="message" @action="setContentMessage" />
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <div v-for="(message, i) in messageArray" >
+                            <hr v-if="i !== 0" style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
+                            <Message :message="message" @action="setContentMessage" />
+                        </div>
+                    </div>
+               </div>
+            </div>
         </div>
         <div v-if="decodeNMessages>0">
             <hr>
@@ -86,6 +122,7 @@ import { ref, nextTick } from 'vue';
 
 const route = useRoute();
 const accountStore = useAccountStore();
+const displayableMessagesFold = ref({});
 const displayableMessages = ref([]);
 const decodeNMessages = ref(0);
 const messageKey = ref("");
@@ -117,6 +154,31 @@ function toggleDeleteMessage() {
 }
 function toggleThreads() {
     showThreadsModal.value = !showThreadsModal.value;
+}
+function toggleFold(messages, value=null) {
+    if(value === null) value = !showFold(messages);
+    var key = messages[0].message.getReference();
+    if(value) displayableMessagesFold.value[key] = true;
+    else delete displayableMessagesFold.value[key];
+}
+function showFold(messages) {
+    var key = messages[0].message.getReference();
+    return displayableMessagesFold.value[key] === true;
+}
+function setMessages(messages) {
+    var result = [];
+    var array = null;
+    for(var msg of messages) {
+        if(!msg || msg.isEdit || msg.isEmote() || msg.getContent() == null) continue;
+        var type = (msg.getContent() instanceof stlib.Content.Thread)?'h':'t';
+        if(array === null || array.type !== type) {
+            array = [];
+            array.type = type;
+            result.push(array);
+        }  
+        array.push(msg);
+    }
+    displayableMessages.value = result;
 }
 async function initChat() {
     var user = accountStore.account.name;
@@ -172,7 +234,7 @@ async function initChat() {
             var data = await manager.getSelectedConversations();
             if(data == null || manager.selectedConversation != conversation) return null;
             data.messages.sort((a,b)=>a.getTimestamp()-b.getTimestamp());
-            displayableMessages.value = data.messages;
+            setMessages(data.messages);
             if(data.encoded && data.encoded.length > 0)
                 decodeNMessages.value = data.encoded.length;
             else decodeNMessages.value = 0;
@@ -237,6 +299,10 @@ function focusMessageBox() {
 initChat();
 function setThread(name) {
     threadName.value = name;
+    nextTick(async () => {
+        var container = messages.value;
+        if(container) container.scrollTop = container.scrollHeight;
+    });
 }
 const contentMsg = ref(null);
 async function setContentMessage(obj) {
@@ -374,3 +440,24 @@ async function loadPrevious() {
     next();
 });*/
 </script>
+<style scoped>
+.fold {
+  padding-left: 10px;
+  padding-bottom: 10px;
+  border-left: 3px dotted #bababa;    
+  border-bottom: 3px dotted #bababa;    
+  margin-bottom: 0.5rem; 
+}
+.hr {
+  height: 1px;
+  align-self: center;
+  border-top: 1px solid #bababa;
+  margin-top: 1px;
+}
+.threadLine {
+  height: 1px;
+  align-self: center;
+  border-top: 3px dotted #bababa;
+  margin-top: 1px;
+}
+</style>
