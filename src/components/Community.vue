@@ -55,7 +55,7 @@
                 <div v-for="messageArray in displayableMessages" >
                     <div v-if="messageArray.type === 'h'">
                         <div v-for="message in messageArray">
-                            <div v-if="message.getContent().getName() === threadName">
+                            <div v-if="message.getThreadName() === threadName">
                                 <hr style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
                                 <Message :message="message" @action="setContentMessage" />
                             </div>
@@ -68,7 +68,7 @@
                     <div v-if="messageArray.type === 'h'">
                         <small class="flex text-gray-700 cursor-pointer" style="margin-top: 0.5rem;" @click="toggleFold(messageArray)">
                             <div class="threadLine grow"></div>
-                            <div @click="setThread(messageArray[0].getContent().getName())">{{messageArray[0].getContent().getName()}}</div>
+                            <div @click="setThread(messageArray[0].getThreadName())">{{messageArray[0].getThreadName()}}</div>
                             <div class="flex grow">
                                 <div class="threadLine grow"></div>
                                 <div>{{messageArray.length}} thread message</div>
@@ -78,7 +78,7 @@
                             <div v-for="(message, i) in messageArray">
                                 <div v-if="i !== 0" class="flex text-gray-700" style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
                                     <span class="hr grow"></span>
-                                    <small class="cursor-pointer" @click="setThread(message.getContent().getName())">{{message.getContent().getName()}}</small>
+                                    <small class="cursor-pointer" @click="setThread(message.getThreadName())">{{message.getThreadName()}}</small>
                                     <span class="hr grow"></span>
                                 </div>
                                 <Message :message="message" @action="setContentMessage" />
@@ -170,7 +170,7 @@ function setMessages(messages) {
     var array = null;
     for(var msg of messages) {
         if(!msg || msg.isEdit || msg.isEmote() || msg.getContent() == null) continue;
-        var type = (msg.getContent() instanceof stlib.Content.Thread)?'h':'t';
+        var type = msg.isThread()?'h':'t';
         if(array === null || array.type !== type) {
             array = [];
             array.type = type;

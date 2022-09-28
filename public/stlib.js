@@ -845,11 +845,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Thread = void 0;
 const imports_1 = require("./imports");
 class Thread extends imports_1.Text {
-    constructor(json) { super(json); }
+    constructor(json) {
+        super(json);
+        this.cachedContent = null;
+    }
     getName() { return this.json[1]; }
     setName(text) { this.json[1] = text; }
-    setContent() { return this.json[2]; }
-    getContent(json) { this.json[2] = json; }
+    getContent() {
+        var content = this.cachedContent;
+        if (content !== null)
+            return content;
+        content = imports_1.Content.fromJSON(this.json[2]);
+        this.cachedContent = content;
+        return content;
+    }
+    setContent(json) { this.cachedContent = null; this.json[2] = json; }
 }
 exports.Thread = Thread;
 Thread.TYPE = "h";
@@ -1027,6 +1037,13 @@ class DisplayableMessage {
         obj.add(msg);
         this.emotes.sort((a, b) => b.timestamp - a.timestamp);
     }
+    isThread() {
+        return this.getEditedContent() instanceof imports_1.Thread;
+    }
+    getThreadName() {
+        var content = this.getEditedContent();
+        return (content instanceof imports_1.Thread) ? content.getName() : null;
+    }
     isEmote() {
         return this.content instanceof imports_1.Emote;
     }
@@ -1053,11 +1070,17 @@ class DisplayableMessage {
     isEncoded() {
         return this.content instanceof imports_1.Encoded;
     }
-    getContent() {
+    getEditedContent() {
         var edits = this.edits;
         if (edits !== null && edits.length > 0)
             return edits[0].editContent;
         return this.content;
+    }
+    getContent() {
+        var content = this.getEditedContent();
+        if (content instanceof imports_1.Thread)
+            return content.getContent();
+        return content;
     }
     isVerified() {
         var edits = this.edits;
