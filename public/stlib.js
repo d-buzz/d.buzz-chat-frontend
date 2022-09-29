@@ -1672,6 +1672,8 @@ class MessageManager {
     resolveReference(messages, msg) {
         try {
             var content = msg.content;
+            if (content instanceof imports_1.Thread)
+                content = content.getContent();
             if (content instanceof imports_1.WithReference) {
                 var ref = content.getReference().split('|');
                 var user = ref[0];
@@ -1751,7 +1753,15 @@ class MessageManager {
                 content = decoded;*/
             }
             var displayableMessage = new displayable_message_1.DisplayableMessage(msg);
-            if (content instanceof imports_1.Edit) {
+            if (content instanceof imports_1.Thread) {
+                var threadContent = content.getContent();
+                if (threadContent instanceof imports_1.Edit) {
+                    var editContent = threadContent.getEdit();
+                    displayableMessage.editContent = imports_1.Content.thread(content.getName(), (editContent == null) ? null : imports_1.Content.fromJSON(editContent));
+                    displayableMessage.isEdit = true;
+                }
+            }
+            else if (content instanceof imports_1.Edit) {
                 var editContent = content.getEdit();
                 displayableMessage.editContent = (editContent == null) ? null : imports_1.Content.fromJSON(editContent);
                 displayableMessage.isEdit = true;

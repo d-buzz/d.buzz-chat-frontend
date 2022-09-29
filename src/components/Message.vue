@@ -89,7 +89,22 @@ const props = defineProps({
   displayOnly: Boolean,
   displayEdits: Boolean
 });
-const content = props.message?((props.displayEdits && props.message.editContent)?props.message.editContent:(props.displayEdits?props.message.content:props.message.getContent())):null;
+function initContent() {
+    var content = null; 
+    if(props.message) {
+        if(props.displayEdits && props.message.editContent)
+            content = props.message.editContent;
+        else {
+            if(props.displayEdits) 
+                content = props.message.content;
+            else content = props.message.getContent();
+        }
+        if(content instanceof stlib.Content.Thread)
+            content = content.getContent();
+    }
+    return content;
+}
+const content = ref(initContent());
 const joinData = ref(null);
 const newUserMessageModalOpen = ref(false);
 const newViewEditHistoryModalOpen = ref(false);

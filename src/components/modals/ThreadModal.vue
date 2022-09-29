@@ -27,10 +27,10 @@
 
         <div><small>{{errorMessage}}</small></div>
 
-        <div>
+        <div class="flex mt-1">
           <button
             @click="action(accountName)"
-            class="w-full btn"
+            class="btn grow"
             :disabled="isLoading"
           >
             <span v-if="isLoading" class="inline-flex items-center transition ease-in-out duration-150 cursor-not-allowed"
@@ -46,6 +46,11 @@
             >
             <span v-else>Use thread</span>
           </button>
+           <button
+            @click="showAll()"
+            class="btn grow"
+            :disabled="isLoading"
+          >Show All Messages</button>
         </div>
 
     
@@ -86,4 +91,8 @@ const action = async (threadName: string) => {
     isLoading.value = false;
   }
 };
+function showAll() {
+    emit("oninput", null);
+    emit("close");
+}
 </script>
