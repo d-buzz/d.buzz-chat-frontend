@@ -1588,6 +1588,23 @@ class MessageManager {
             });
         });
     }
+    getThreads() {
+        return __awaiter(this, void 0, void 0, function* () {
+            var map = {};
+            var data = yield this.getSelectedConversations();
+            if (!data || !data['messages'])
+                return map;
+            for (var msg of data['messages'])
+                if (msg.isThread()) {
+                    var threadName = msg.getThreadName();
+                    if (map[threadName] === undefined)
+                        map[threadName] = [msg];
+                    else
+                        map[threadName].push(msg);
+                }
+            return map;
+        });
+    }
     readUserConversations() {
         return __awaiter(this, void 0, void 0, function* () {
             var user = this.user;

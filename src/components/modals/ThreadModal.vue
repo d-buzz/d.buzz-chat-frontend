@@ -1,20 +1,28 @@
 <template>
   <DefaultModal title="Threads">
-        <div class="mt-1">
-          <label for="username" class="block text-sm font-medium text-gray-700"> Thread name/s: </label>
-          <div class="mt-1">
-            <input
-              id="username"
-              name="username"
-              v-model="accountName"
-              @keyup.enter="authenticate(accountName)"
-              type="text"
-              class="inputText1"
-              placeholder="Thread name"
-              :read-only="isLoading"
-              :disabled="isLoading"
-            />
-          </div>
+        <div class="flex gap-x-3">
+            <div class="mt-1">
+              <label for="username" class="block text-sm font-medium text-gray-700">Enter thread name: </label>
+              <div class="mt-1">
+                <input
+                  id="username"
+                  name="username"
+                  v-model="accountName"
+                  @keyup.enter="action(accountName)"
+                  type="text"
+                  class="inputText1"
+                  placeholder="Thread name"
+                  :read-only="isLoading"
+                  :disabled="isLoading"
+                />
+              </div>
+            </div>
+            <div class="mt-1">
+                <label for="username" class="block text-sm font-medium text-gray-700">Or select thread: </label>
+                <div v-for="threadName in threadNames">
+                    <button class="btn" @click="action(threadName)">{{threadName}}</button>
+                </div>
+            </div>
         </div>
 
         <div><small>{{errorMessage}}</small></div>
@@ -49,11 +57,19 @@ import { useAccountStore } from "../../stores/account";
 const accountStore = useAccountStore();
 const router = useRouter();
 const emit = defineEmits(["oninput"]);
+const threadNames = ref([]);
 //const props = defineProps<{
 //}>();
 const isLoading = ref(false);
 const accountName = ref("");
 const errorMessage = ref("");
+
+async function init() {
+    const manager = getManager();
+    var threads = await manager.getThreads();
+    threadNames.value = Object.keys(threads);
+}
+init();
 
 const action = async (threadName: string) => {
   if (isLoading.value) return;
