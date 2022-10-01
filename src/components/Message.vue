@@ -8,6 +8,9 @@
     <TransitionRoot :show="showImageViewModal">
         <ImageViewModal :src="imageViewSrc" @close="toggleImageViewModal"></ImageViewModal>
     </TransitionRoot>
+    <TransitionRoot :show="showAddEmoteModal">
+        <AddEmoteModal @close="toggleAddEmoteModal"></AddEmoteModal>
+    </TransitionRoot>
     <div v-if="hasQuotedText(message)" class="flex mb-1">
         <img
             @click.right.prevent.stop="clickOnIcon($event)"
@@ -42,7 +45,7 @@
             </div>
             <div v-if="!displayOnly" class="visibleOnHover absolute float-right" style="right: 8px;">
                 <div class="flex">
-                    <span class="btn0 bg1" @click="emoteAction" ><span class="oi oi-heart"></span></span>
+                    <span class="btn0 bg1" @click="toggleAddEmoteModal" ><span class="oi oi-heart"></span></span>
                     <span class="btn0 bg2" @click="quoteAction" title="Quote, select text to quote part of message."><span class="oi oi-share"></span></span>
                     <span v-if="account===message.getUser()" class="btn0 bg3" @click="editAction" title="Edit message."><span class="oi oi-pencil"></span></span>
                     <span v-if="account===message.getUser()" class="btn0 bg4" @click="deleteAction" title="Delete message."><span class="oi oi-trash"></span></span>
@@ -109,6 +112,7 @@ const joinData = ref(null);
 const newUserMessageModalOpen = ref(false);
 const newViewEditHistoryModalOpen = ref(false);
 const showImageViewModal = ref(false);
+const showAddEmoteModal = ref(false);
 const imageViewSrc = ref("");
 const showUserModal = ref(false);
 const userRef = ref();
@@ -117,6 +121,9 @@ const toggleNewUserMessageModalOpen = () => {
 };    
 const toggleViewEditHistoryModal = () => {
   newViewEditHistoryModalOpen.value = !newViewEditHistoryModalOpen.value;
+};
+const toggleAddEmoteModal = () => {
+  showAddEmoteModal.value = !showAddEmoteModal.value;
 };
 const toggleImageViewModal = (src) => {
     showImageViewModal.value = !showImageViewModal.value;

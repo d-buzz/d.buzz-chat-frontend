@@ -2,6 +2,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 
 import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
+import './assets/styles/vue3-emoji-picker.css'
 import './assets/styles/open-iconic.css';
 import "./assets/styles/index.css";
 
