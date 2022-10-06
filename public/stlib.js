@@ -132,13 +132,38 @@ class Community {
     getStreams() { return this.streams; }
     setStreams(streams) { this.streams = streams; }
     addStream(stream) { this.streams.push(stream); }
+    canSetRole(username, role) {
+        var roleToSetIndex = Community.roleToIndex(role);
+        if (roleToSetIndex === -1)
+            return false;
+        var userRole = this.getRole(username);
+        if (!userRole)
+            return false;
+        var roleIndex = Community.roleToIndex(userRole);
+        return roleIndex >= 5 && roleIndex >= roleToSetIndex;
+    }
+    canSetTitles(username) {
+        var userRole = this.getRole(username);
+        if (!userRole)
+            return false;
+        var roleIndex = Community.roleToIndex(userRole);
+        return roleIndex >= 5;
+    }
     getRole(username) {
         var role = this.getRoleEntry(username);
         return role == null ? null : role[1];
     }
+    setRole(username, role) {
+        var roleEntry = this.getOrCreateRoleEntry(username);
+        roleEntry[1] = role;
+    }
     getTitles(username) {
         var role = this.getRoleEntry(username);
         return role == null ? null : role[2];
+    }
+    setTitles(username, titles) {
+        var roleEntry = this.getOrCreateRoleEntry(username);
+        roleEntry[2] = titles;
     }
     hasTitle(username, title) {
         var titles = this.getTitles(username);
@@ -150,6 +175,15 @@ class Community {
             return null;
         var role = roles[username];
         return role == null ? null : role;
+    }
+    getOrCreateRoleEntry(username) {
+        var roles = this.communityData.roles;
+        if (roles == null)
+            this.communityData.roles = roles = {};
+        var role = roles[username];
+        if (role == null)
+            roles[username] = role = [username, null, null];
+        return role;
     }
     newCategory(name) {
         var category = data_stream_1.DataStream.fromJSON(this.getName(), [name]);
@@ -242,6 +276,16 @@ class Community {
             copy.streams.push(data_stream_1.DataStream.fromJSON(stream.community, stream.toJSON()));
         return copy;
     }
+    reload() {
+        return __awaiter(this, void 0, void 0, function* () {
+            var name = this.getName();
+            utils_1.Utils.getCommunityDataCache().reload(name);
+            var data = yield utils_1.Utils.getCommunityData(name);
+            this.initialize(data);
+            data.community = this;
+            return this;
+        });
+    }
     static defaultStreams(community) {
         return [
             data_stream_1.DataStream.fromJSON(community, ["About", "/about"]),
@@ -265,11 +309,24 @@ class Community {
             return community;
         });
     }
+    static roleToIndex(role) {
+        switch (role) {
+            case "owner": return 7;
+            case "admin": return 6;
+            case "mod": return 5;
+            case "memeber": return 4;
+            case "guest": return 3;
+            //case "joined": return 2;
+            //case "onboard": return 1;
+            case "": return 0;
+        }
+        return -1;
+    }
 }
 exports.Community = Community;
 Community.MAX_TEXT_STREAMS = 64;
 
-},{"./data-path":16,"./data-stream":17,"./utils":23}],3:[function(require,module,exports){
+},{"./data-path":16,"./data-stream":17,"./utils":25}],3:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -585,7 +642,7 @@ Content.addType(group_invite_1.GroupInvite);
 Content.addType(preferences_1.Preferences);
 Content.addType(encoded_1.Encoded);
 
-},{"../signable-message":21,"../utils":23,"./content":3,"./edit":4,"./emote":5,"./encoded":6,"./group-invite":7,"./images":8,"./jsoncontent":10,"./preferences":11,"./quote":12,"./text":13,"./thread":14,"./with-reference":15}],10:[function(require,module,exports){
+},{"../signable-message":22,"../utils":25,"./content":3,"./edit":4,"./emote":5,"./encoded":6,"./group-invite":7,"./images":8,"./jsoncontent":10,"./preferences":11,"./quote":12,"./text":13,"./thread":14,"./with-reference":15}],10:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -944,7 +1001,7 @@ DataPath.TYPE_INFO = "i";
 DataPath.TYPE_TEXT = "t";
 DataPath.TYPE_GROUP = "g";
 
-},{"./utils":23}],17:[function(require,module,exports){
+},{"./utils":25}],17:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DataStream = void 0;
@@ -991,7 +1048,165 @@ class DataStream {
 }
 exports.DataStream = DataStream;
 
-},{"./data-path":16,"./permission-set":20}],18:[function(require,module,exports){
+},{"./data-path":16,"./permission-set":21}],18:[function(require,module,exports){
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DefaultStreamDataCache = void 0;
+const community_1 = require("./community");
+const stream_data_cache_1 = require("./stream-data-cache");
+const utils_1 = require("./utils");
+/*
+Class used for retrieving up-to-date roles, titles of users in communities.
+Data is loaded on request and real-time updates are handled by block streaming.
+*/
+class DefaultStreamDataCache extends stream_data_cache_1.StreamDataCache {
+    constructor() {
+        super(utils_1.Utils.getDhiveClient());
+        var _this = this;
+        this.forCustomJSON("community", (user, json, posting) => __awaiter(this, void 0, void 0, function* () {
+            console.log("community", user, json, posting);
+            var type = json[0];
+            switch (type) {
+                case "setRole":
+                    _this.onSetRole(user, json[1]);
+                    break;
+                case "setUserTitle":
+                    _this.onSetTitle(user, json[1]);
+                    break;
+                case "updateProps":
+                    _this.onUpdateProps(user, json[1]);
+                    break;
+            }
+        }));
+    }
+    sheduleCommunityUpdate(community) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!community || !community.startsWith("hive-"))
+                return;
+            setTimeout(() => __awaiter(this, void 0, void 0, function* () {
+                console.log("community update", community);
+                var data = yield community_1.Community.load(community);
+                //var copy = data.copy();
+                //TODO add consistency check to see if reloaded data
+                //is equal to current updated data from stream
+                data.reload();
+            }), 60000);
+        });
+    }
+    onSetRole(user, json) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var community = json.community;
+            var account = json.account;
+            var role = json.role;
+            if (!community || !community.startsWith("hive-"))
+                return;
+            //validate role, check if can set
+            var roleToSetIndex = community_1.Community.roleToIndex(role);
+            if (roleToSetIndex === -1 && roleToSetIndex < 7)
+                return;
+            var data = yield community_1.Community.load(community);
+            if (!data)
+                return;
+            this.sheduleCommunityUpdate(community);
+            if (data.canSetRole(user, role)) {
+                console.log("update role ", community, account, role);
+                data.setRole(account, role);
+            }
+            else
+                console.log("update role no permission", community, account, role);
+        });
+    }
+    onSetTitle(user, json) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var community = json.community;
+            var account = json.account;
+            var title = json.title;
+            if (!community || !community.startsWith("hive-"))
+                return;
+            //check if can set
+            var data = yield community_1.Community.load(community);
+            if (!data)
+                return;
+            this.sheduleCommunityUpdate(community);
+            if (data.canSetTitles(user)) {
+                console.log("update title ", community, account, title);
+                data.setTitles(account, title.split(","));
+            }
+            else
+                console.log("update title no permission", community, account, title);
+        });
+    }
+    onUpdateProps(user, json) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var community = json.community;
+            var props = json.props;
+            if (!community || !community.startsWith("hive-"))
+                return;
+            this.sheduleCommunityUpdate(community);
+            if (props) {
+                var data = yield community_1.Community.load(community);
+                if (!data)
+                    return null;
+                var settings = props.settings;
+                var communitySettings = data.communityData.settings;
+                if (settings) {
+                    var streams = settings.streams;
+                    if (streams) {
+                        console.log("update settings", user);
+                        communitySettings.streams = streams;
+                        data.initialize(data.communityData);
+                    }
+                }
+            }
+        });
+    }
+    getRole(community, user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var data = yield community_1.Community.load(community);
+            if (!data)
+                return null;
+            return data.getRole(user);
+        });
+    }
+    getTitles(community, user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var data = yield community_1.Community.load(community);
+            if (!data)
+                return null;
+            return data.getTitles(user);
+        });
+    }
+    getUser(community, user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var result = yield community_1.Community.load(community);
+            if (!result)
+                return null;
+            return result.getRoleEntry(user);
+        });
+    }
+    lookup(community, user = null) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var result = yield community_1.Community.load(community);
+            if (!result)
+                return null;
+            if (user !== null)
+                result = result.getOrCreateRoleEntry(user);
+            return result;
+        });
+    }
+}
+exports.DefaultStreamDataCache = DefaultStreamDataCache;
+
+},{"./community":2,"./stream-data-cache":24,"./utils":25}],19:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DisplayableEmote = exports.DisplayableMessage = void 0;
@@ -1107,7 +1322,7 @@ class DisplayableEmote {
 }
 exports.DisplayableEmote = DisplayableEmote;
 
-},{"./content/imports":9}],19:[function(require,module,exports){
+},{"./content/imports":9}],20:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1821,7 +2036,7 @@ class MessageManager {
 }
 exports.MessageManager = MessageManager;
 
-},{"./client":1,"./content/imports":9,"./displayable-message":18,"./signable-message":21,"./utils":23}],20:[function(require,module,exports){
+},{"./client":1,"./content/imports":9,"./displayable-message":19,"./signable-message":22,"./utils":25}],21:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PermissionSet = void 0;
@@ -1830,7 +2045,7 @@ class PermissionSet {
         this.role = "";
         this.titles = [];
     }
-    validateRole(role) { return this.roleToIndex(this.role) <= this.roleToIndex(role); }
+    validateRole(role) { return PermissionSet.roleToIndex(this.role) <= PermissionSet.roleToIndex(role); }
     validateTitles(titles) {
         var arr = this.titles;
         var matches = true;
@@ -1848,6 +2063,9 @@ class PermissionSet {
     }
     validate(role, titles) {
         return this.validateRole(role) && this.validateTitles(titles);
+    }
+    isEmpty() {
+        return this.role === "" && this.titles.length === 0;
     }
     hasTitle(title) {
         return this.titles.indexOf(title) != -1;
@@ -1872,7 +2090,7 @@ class PermissionSet {
     getStreamRole() {
         return this.role || "";
     }
-    roleToIndex(role) {
+    static roleToIndex(role) {
         switch (role) {
             case "owner": return 7;
             case "admin": return 6;
@@ -1903,7 +2121,7 @@ class PermissionSet {
 }
 exports.PermissionSet = PermissionSet;
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 (function (Buffer){(function (){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -1950,10 +2168,15 @@ class SignableMessage {
     getMessageType() { return this.type; }
     getUser() { return this.user; }
     getConversation() { return this.conversation; }
+    getConversationUsername() {
+        var i = this.conversation.indexOf('/');
+        return (i === -1) ? this.conversation : this.conversation.substring(0, i);
+    }
     getJSONString() { return this.json; }
     getContent() { return imports_1.Content.fromJSON(JSON.parse(this.json)); }
     getTimestamp() { return this.timestamp; }
     getGroupUsernames() { return this.conversation.split('|'); }
+    isCommunityConversation() { return this.conversation.startsWith('hive-') && this.conversation.indexOf('/') !== -1; }
     isGroupConversation() { return this.conversation.indexOf('|') !== -1; }
     isEncrypted() { return this.conversation.startsWith("#"); }
     isPreference() { return this.conversation === "@"; }
@@ -2116,7 +2339,7 @@ class SignableMessage {
 exports.SignableMessage = SignableMessage;
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"./content/imports":9,"./utils":23,"buffer":25}],22:[function(require,module,exports){
+},{"./content/imports":9,"./utils":25,"buffer":27}],23:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("./client");
@@ -2138,7 +2361,116 @@ if (window !== undefined) {
     };
 }
 
-},{"./client":1,"./community":2,"./content/imports":9,"./data-path":16,"./data-stream":17,"./displayable-message":18,"./message-manager":19,"./permission-set":20,"./signable-message":21,"./utils":23}],23:[function(require,module,exports){
+},{"./client":1,"./community":2,"./content/imports":9,"./data-path":16,"./data-stream":17,"./displayable-message":19,"./message-manager":20,"./permission-set":21,"./signable-message":22,"./utils":25}],24:[function(require,module,exports){
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __asyncValues = (this && this.__asyncValues) || function (o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+};
+var __await = (this && this.__await) || function (v) { return this instanceof __await ? (this.v = v, this) : new __await(v); }
+var __asyncGenerator = (this && this.__asyncGenerator) || function (thisArg, _arguments, generator) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var g = generator.apply(thisArg, _arguments || []), i, q = [];
+    return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i;
+    function verb(n) { if (g[n]) i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; }
+    function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
+    function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r); }
+    function fulfill(value) { resume("next", value); }
+    function reject(value) { resume("throw", value); }
+    function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.StreamDataCache = void 0;
+class StreamDataCache {
+    constructor(dhiveClient) {
+        this.client = null;
+        this.isRunning = false;
+        this.customJSONCallbacks = {};
+        this.client = dhiveClient;
+    }
+    forCustomJSON(id, fn) {
+        this.customJSONCallbacks[id] = fn;
+    }
+    begin() {
+        var e_1, _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                this.isRunning = true;
+                try {
+                    for (var _b = __asyncValues(this.getOps()), _c; _c = yield _b.next(), !_c.done;) {
+                        const tx = _c.value;
+                        if (!this.isRunning)
+                            return;
+                        var op = tx.op;
+                        var opName = op[0];
+                        if (opName === "custom_json") {
+                            var customJSON = op[1];
+                            var id = customJSON.id;
+                            var fnJSON = this.customJSONCallbacks[id];
+                            if (fnJSON) {
+                                var json = JSON.parse(customJSON.json);
+                                var auths = customJSON.required_auths;
+                                var postingAuths = customJSON.required_posting_auths;
+                                for (var user of auths)
+                                    fnJSON(user, json, false);
+                                for (var user of postingAuths)
+                                    fnJSON(user, json, true);
+                            }
+                        }
+                    }
+                }
+                catch (e_1_1) { e_1 = { error: e_1_1 }; }
+                finally {
+                    try {
+                        if (_c && !_c.done && (_a = _b.return)) yield _a.call(_b);
+                    }
+                    finally { if (e_1) throw e_1.error; }
+                }
+            }
+            finally {
+                this.isRunning = false;
+            }
+        });
+    }
+    getOps() {
+        return __asyncGenerator(this, arguments, function* getOps_1() {
+            var e_2, _a;
+            try {
+                for (var _b = __asyncValues(this.client.blockchain.getOperations({ mode: dhive.BlockchainMode.Irreversible })), _c; _c = yield __await(_b.next()), !_c.done;) {
+                    const op = _c.value;
+                    try {
+                        yield yield __await(op);
+                    }
+                    catch (e) {
+                        console.log(e);
+                    }
+                }
+            }
+            catch (e_2_1) { e_2 = { error: e_2_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) yield __await(_a.call(_b));
+                }
+                finally { if (e_2) throw e_2.error; }
+            }
+        });
+    }
+}
+exports.StreamDataCache = StreamDataCache;
+
+},{}],25:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -2152,6 +2484,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AccountDataCache = exports.Utils = void 0;
 const signable_message_1 = require("./signable-message");
+const default_stream_data_cache_1 = require("./default-stream-data-cache");
 var keyChainRequest = null;
 var client = null;
 var dhiveclient = null;
@@ -2160,7 +2493,7 @@ var readPreferencesFn = null;
 var lastRandomPublicKey = "";
 var uniqueId = 0;
 class Utils {
-    static getVersion() { return 100; }
+    static getVersion() { return 1; }
     static getClient() {
         return client;
     }
@@ -2348,6 +2681,11 @@ class Utils {
     }
     static getAccountDataCache() { return accountDataCache; }
     static getCommunityDataCache() { return communityDataCache; }
+    static getStreamDataCache() {
+        if (streamDataCache === null)
+            streamDataCache = new default_stream_data_cache_1.DefaultStreamDataCache();
+        return streamDataCache;
+    }
 }
 exports.Utils = Utils;
 /*
@@ -2371,6 +2709,13 @@ class AccountDataCache {
         if (item === undefined)
             return undefined;
         return item.value;
+    }
+    reload(user) {
+        var cachedData = this.lookup(user);
+        if (cachedData !== undefined) {
+            if (cachedData.value !== undefined)
+                delete this.data[user];
+        }
     }
     storeLater(user, promise) {
         this.data[user] = { promise };
@@ -2410,8 +2755,9 @@ exports.AccountDataCache = AccountDataCache;
 const preferencesDataCache = new AccountDataCache();
 const accountDataCache = new AccountDataCache();
 const communityDataCache = new AccountDataCache();
+var streamDataCache = null;
 
-},{"./signable-message":21}],24:[function(require,module,exports){
+},{"./default-stream-data-cache":18,"./signable-message":22}],26:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -2563,7 +2909,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 (function (Buffer){(function (){
 /*!
  * The buffer module from node.js, for the browser.
@@ -4344,7 +4690,7 @@ function numberIsNaN (obj) {
 }
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"base64-js":24,"buffer":25,"ieee754":26}],26:[function(require,module,exports){
+},{"base64-js":26,"buffer":27,"ieee754":28}],28:[function(require,module,exports){
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
@@ -4431,4 +4777,4 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}]},{},[22]);
+},{}]},{},[23]);

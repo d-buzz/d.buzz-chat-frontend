@@ -16,6 +16,12 @@ window.getManager = function () {
   }
   return currentManager;
 };
+var idFn = stlib.Utils.nextId;
+stlib.Utils.nextId = ()=>{
+    var id = idFn();
+    console.log("id", id);
+    return id;
+};
 document.addEventListener('visibilitychange', async function (event) {
     var manager = getManager();
     if (document.hidden) {
