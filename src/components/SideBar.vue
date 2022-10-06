@@ -4,9 +4,9 @@
     <div class="pt-1 pr-1 pl-1 pb-1 border-b-1">
         <SideBarLoginIcon :number="number" />
     </div>
-    
-      <SideBarIcon v-for="community in communities" :img="community[0]" :name="community[1]" :community="community" :number="community.lastReadNumber" :key="updateKey" />
-    
+    <div :key="updateKey">
+      <SideBarIcon v-for="community in communities" :img="community[0]" :name="community[1]" :community="community" :number="community.lastReadNumber"  />
+    </div>
   </div>
 </template>
 <script setup>

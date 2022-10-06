@@ -25,8 +25,8 @@
             <TabPanels class="mt-1">
                 <TabPanel>
                     <div class="text-sm font-bold text-center text-gray-400 mt-1">joined</div>
-                    <div class="flex flex-row flex-wrap">
-                       <CommunityIcon v-for="community in communities" :img="community[0]" :name="community[1]" :number="''" :key="updateKey" />
+                    <div class="flex flex-row flex-wrap" :key="updateKey">
+                       <CommunityIcon v-for="community in communities" :img="community[0]" :name="community[1]" :number="''" />
                     </div>
 
                     <div class="display-block flex mt-3 mr-auto ml-auto" style="max-width:350px;">
@@ -42,8 +42,8 @@
                     </div>
                     <div v-if="communitiesFound.length > 0">
                         <div class="w-100 text-sm font-bold text-center text-gray-400 mt-1">found</div>
-                        <div v-if="communitiesFound.length > 0" class="flex flex-row flex-wrap">
-                         <CommunityIcon v-for="community in communitiesFound" :img="community.name" :name="community.title" :number="''+community.subscribers" :key="updateKey" />
+                        <div v-if="communitiesFound.length > 0" class="flex flex-row flex-wrap" :key="updateKey+'#2'">
+                         <CommunityIcon v-for="community in communitiesFound" :img="community.name" :name="community.title" :number="''+community.subscribers"  />
                             <div v-if="hasNextPage" class="btn" @click="findCommunities(searchBar, true)">
                                next<br>page
                             </div>
@@ -52,7 +52,7 @@
                 </TabPanel>
                 <TabPanel>
                     <div class="mt-2"></div>
-                    <div class="flex flex-row" v-for="item in preferences" :key="updateKey">
+                    <div class="flex flex-row" v-for="item in preferences" :key="updateKey+'#3'">
                         <div>
                             <div><b>{{item.display}}</b></div>
                             <div><small>{{item.desc}}</small></div>

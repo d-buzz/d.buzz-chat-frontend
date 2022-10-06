@@ -314,7 +314,7 @@ class Community {
             case "owner": return 7;
             case "admin": return 6;
             case "mod": return 5;
-            case "memeber": return 4;
+            case "member": return 4;
             case "guest": return 3;
             //case "joined": return 2;
             //case "onboard": return 1;
@@ -2056,7 +2056,7 @@ class PermissionSet {
                     return true;
                 matches = true;
             }
-            else if (matches && titles.indexOf(item) === -1)
+            else if (matches && (!titles || titles.indexOf(item) === -1))
                 matches = false;
         }
         return matches;
@@ -2095,7 +2095,7 @@ class PermissionSet {
             case "owner": return 7;
             case "admin": return 6;
             case "mod": return 5;
-            case "memeber": return 4;
+            case "member": return 4;
             case "guest": return 3;
             case "joined": return 2;
             case "onboard": return 1;
@@ -2502,7 +2502,7 @@ class Utils {
     }
     static getDhiveClient() {
         if (dhiveclient === null)
-            dhiveclient = new dhive.Client(["https://api.hive.blog", "https://api.hivekings.com", "https://anyx.io", "https://api.openhive.network"]);
+            dhiveclient = new dhive.Client(["https://api.hive.blog", "https://anyx.io", "https://api.openhive.network", "https://rpc.ecency.com"]);
         return dhiveclient;
     }
     static nextId() { return uniqueId++; }

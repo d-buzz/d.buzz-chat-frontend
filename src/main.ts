@@ -20,6 +20,7 @@ var idFn = stlib.Utils.nextId;
 stlib.Utils.nextId = ()=>{
     var id = idFn();
     console.log("id", id);
+    //console.trace();
     return id;
 };
 document.addEventListener('visibilitychange', async function (event) {
