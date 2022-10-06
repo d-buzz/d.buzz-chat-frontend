@@ -28,6 +28,10 @@ class Client {
             if (this.onmessage !== null)
                 this.onmessage(JSON.parse(text));
         });
+        socket.on("u", (data) => {
+            if (this.onupdate !== null)
+                this.onupdate(data);
+        });
     }
     readNodeVersion() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -132,7 +136,8 @@ class Community {
     getStreams() { return this.streams; }
     setStreams(streams) { this.streams = streams; }
     addStream(stream) { this.streams.push(stream); }
-    canSetRole(username, role) {
+    canSetRole(username, account, role) {
+        var userRoleIndex = Community.roleToIndex(this.getRole(account));
         var roleToSetIndex = Community.roleToIndex(role);
         if (roleToSetIndex === -1)
             return false;
@@ -140,7 +145,7 @@ class Community {
         if (!userRole)
             return false;
         var roleIndex = Community.roleToIndex(userRole);
-        return roleIndex >= 5 && roleIndex >= roleToSetIndex;
+        return roleIndex >= 5 && roleIndex >= userRoleIndex && roleIndex > roleToSetIndex;
     }
     canSetTitles(username) {
         var userRole = this.getRole(username);
@@ -148,6 +153,13 @@ class Community {
             return false;
         var roleIndex = Community.roleToIndex(userRole);
         return roleIndex >= 5;
+    }
+    canUpdateSettings(user) {
+        var userRole = this.getRole(user);
+        if (!userRole)
+            return false;
+        var roleIndex = Community.roleToIndex(userRole);
+        return roleIndex > 5;
     }
     getRole(username) {
         var role = this.getRoleEntry(username);
@@ -240,9 +252,6 @@ class Community {
         }
         return null;
     }
-    /*canUpdateSettings(user: string): boolean {
-        return true;
-    }*/
     updateRoleCustomJSON(user, role) {
         return ["setRole", {
                 "community": this.getName(),
@@ -310,16 +319,17 @@ class Community {
         });
     }
     static roleToIndex(role) {
-        switch (role) {
-            case "owner": return 7;
-            case "admin": return 6;
-            case "mod": return 5;
-            case "member": return 4;
-            case "guest": return 3;
-            //case "joined": return 2;
-            //case "onboard": return 1;
-            case "": return 0;
-        }
+        if (role)
+            switch (role) {
+                case "owner": return 7;
+                case "admin": return 6;
+                case "mod": return 5;
+                case "member": return 4;
+                case "guest": return 3;
+                //case "joined": return 2;
+                //case "onboard": return 1;
+                case "": return 0;
+            }
         return -1;
     }
 }
@@ -1071,6 +1081,8 @@ Data is loaded on request and real-time updates are handled by block streaming.
 class DefaultStreamDataCache extends stream_data_cache_1.StreamDataCache {
     constructor() {
         super(utils_1.Utils.getDhiveClient());
+        this.onUpdateUser = null;
+        this.onUpdateCommunity = null;
         var _this = this;
         this.forCustomJSON("community", (user, json, posting) => __awaiter(this, void 0, void 0, function* () {
             console.log("community", user, json, posting);
@@ -1081,6 +1093,10 @@ class DefaultStreamDataCache extends stream_data_cache_1.StreamDataCache {
                     break;
                 case "setUserTitle":
                     _this.onSetTitle(user, json[1]);
+                    break;
+                case "subscribe":
+                    break;
+                case "unsubscribe":
                     break;
                 case "updateProps":
                     _this.onUpdateProps(user, json[1]);
@@ -1117,9 +1133,17 @@ class DefaultStreamDataCache extends stream_data_cache_1.StreamDataCache {
             if (!data)
                 return;
             this.sheduleCommunityUpdate(community);
-            if (data.canSetRole(user, role)) {
+            if (data.canSetRole(user, account, role)) {
                 console.log("update role ", community, account, role);
                 data.setRole(account, role);
+                if (this.onUpdateUser) {
+                    try {
+                        this.onUpdateUser(community, account, role, data.getTitles(user));
+                    }
+                    catch (e) {
+                        console.log(e);
+                    }
+                }
             }
             else
                 console.log("update role no permission", community, account, role);
@@ -1139,7 +1163,16 @@ class DefaultStreamDataCache extends stream_data_cache_1.StreamDataCache {
             this.sheduleCommunityUpdate(community);
             if (data.canSetTitles(user)) {
                 console.log("update title ", community, account, title);
-                data.setTitles(account, title.split(","));
+                var titles = title.split(",");
+                data.setTitles(account, titles);
+                if (this.onUpdateUser) {
+                    try {
+                        this.onUpdateUser(community, account, data.getRole(user), titles);
+                    }
+                    catch (e) {
+                        console.log(e);
+                    }
+                }
             }
             else
                 console.log("update title no permission", community, account, title);
@@ -1151,10 +1184,18 @@ class DefaultStreamDataCache extends stream_data_cache_1.StreamDataCache {
             var props = json.props;
             if (!community || !community.startsWith("hive-"))
                 return;
+            if (this.onUpdateCommunity) {
+                try {
+                    this.onUpdateCommunity(community);
+                }
+                catch (e) {
+                    console.log(e);
+                }
+            }
             this.sheduleCommunityUpdate(community);
             if (props) {
                 var data = yield community_1.Community.load(community);
-                if (!data)
+                if (!data || !data.canUpdateSettings(user))
                     return null;
                 var settings = props.settings;
                 var communitySettings = data.communityData.settings;
@@ -1415,6 +1456,9 @@ class MessageManager {
                 console.log("disconnected ");
             });
             this.client = new client_1.Client(socket);
+            this.client.onupdate = function (data) {
+                console.log("update", data);
+            };
             this.client.onmessage = function (json) {
                 return __awaiter(this, void 0, void 0, function* () {
                     var displayableMessage = yield _this.jsonToDisplayable(json);
