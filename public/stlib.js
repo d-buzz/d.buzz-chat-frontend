@@ -33,6 +33,11 @@ class Client {
                 this.onupdate(data);
         });
     }
+    readStats() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.emit('s', "");
+        });
+    }
     readNodeVersion() {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.emit('v', "");
@@ -1081,6 +1086,7 @@ Data is loaded on request and real-time updates are handled by block streaming.
 class DefaultStreamDataCache extends stream_data_cache_1.StreamDataCache {
     constructor() {
         super(utils_1.Utils.getDhiveClient());
+        this.onUserJoin = null;
         this.onUpdateUser = null;
         this.onUpdateCommunity = null;
         var _this = this;
@@ -1095,8 +1101,12 @@ class DefaultStreamDataCache extends stream_data_cache_1.StreamDataCache {
                     _this.onSetTitle(user, json[1]);
                     break;
                 case "subscribe":
+                    if (_this.onUserJoin)
+                        _this.onUserJoin(json.community, user, true);
                     break;
                 case "unsubscribe":
+                    if (_this.onUserJoin)
+                        _this.onUserJoin(json.community, user, false);
                     break;
                 case "updateProps":
                     _this.onUpdateProps(user, json[1]);
