@@ -107,6 +107,7 @@ async function initConversations(route) {
         };
         await update();
         manager.setCallback("StreamBar.vue", update);
+        manager.onpreferences.set("StreamBar.vue", update);
     }
 }
 initConversations(route);

@@ -44,6 +44,8 @@ const action = async () => {
   if (isLoading.value) return;
   try {
     isLoading.value = true;
+    const manager = getManager();
+    await manager.closeGroup(manager.selectedConversation);
     console.log("close group");
     emit("close");
   } finally {

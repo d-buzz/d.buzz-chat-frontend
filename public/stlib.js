@@ -761,15 +761,28 @@ class PrivatePreferences {
             json.keys = keys = {};
         return keys;
     }
-    setKeyFor(group, key) {
+    setKeyFor(group, key = null) {
         var keys = this.keys();
-        keys[group] = key;
-        this.updated = true;
+        if (key == null) {
+            if (keys[group] === undefined)
+                return;
+            delete keys[group];
+            this.updated = true;
+        }
+        else if (keys[group] !== key) {
+            keys[group] = key;
+            this.updated = true;
+        }
     }
     getKeyFor(group) {
         var keys = this.keys();
         var key = keys[group];
         return key == null ? null : key;
+    }
+    copy() {
+        var result = new PrivatePreferences(imports_1.Utils.copy(this.json));
+        result.updated = this.updated;
+        return result;
     }
 }
 exports.PrivatePreferences = PrivatePreferences;
@@ -875,6 +888,13 @@ class Preferences extends imports_1.JSONContent {
         if (pref != null && pref.updated)
             throw "private preference changes have not been encoded";
         return imports_1.SignableMessage.create(user, conversation, this.json);
+    }
+    copy() {
+        var result = super.copy();
+        var privatePreferences = this.privatePreferences;
+        if (privatePreferences != null)
+            result.privatePreferences = privatePreferences.copy();
+        return result;
     }
 }
 exports.Preferences = Preferences;
@@ -1385,7 +1405,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MessageManager = exports.LoginWithKeychain = exports.LoginMethod = void 0;
+exports.MessageManager = exports.EventQueue = exports.LoginWithKeychain = exports.LoginMethod = void 0;
 const client_1 = require("./client");
 const utils_1 = require("./utils");
 const signable_message_1 = require("./signable-message");
@@ -1397,10 +1417,34 @@ exports.LoginMethod = LoginMethod;
 class LoginWithKeychain extends LoginMethod {
 }
 exports.LoginWithKeychain = LoginWithKeychain;
+class EventQueue {
+    constructor() {
+        this.callbacks = {};
+    }
+    set(name, callback = null) {
+        if (callback == null)
+            delete this.callbacks[name];
+        else
+            this.callbacks[name] = callback;
+    }
+    post(message) {
+        var callbacks = this.callbacks;
+        for (var callbackName in callbacks) {
+            try {
+                callbacks[callbackName](message);
+            }
+            catch (e) {
+                console.log(callbackName, e);
+            }
+        }
+    }
+}
+exports.EventQueue = EventQueue;
 class MessageManager {
     constructor() {
-        this.onmessage = {};
         this.userPreferences = null;
+        this.onmessage = new EventQueue();
+        this.onpreferences = new EventQueue();
         this.joined = {};
         this.cachedUserMessages = null;
         this.cachedUserMessagesLoadedAll = false;
@@ -1425,21 +1469,10 @@ class MessageManager {
         this.connect();
     }
     setCallback(name, callback) {
-        if (callback == null)
-            delete this.onmessage[name];
-        else
-            this.onmessage[name] = callback;
+        this.onmessage.set(name, callback);
     }
     postCallbackEvent(displayableMessage) {
-        var onmessage = this.onmessage;
-        for (var callbackName in onmessage) {
-            try {
-                onmessage[callbackName](displayableMessage);
-            }
-            catch (e) {
-                console.log(callbackName, e);
-            }
-        }
+        this.onmessage.post(displayableMessage);
     }
     connect() {
         var _this = this;
@@ -1606,6 +1639,29 @@ class MessageManager {
             return key;
         });
     }
+    closeGroup(group) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var pref = yield this.getPreferences();
+            yield pref.getPrivatePreferencesWithKeychain(this.user);
+            pref = pref.copy();
+            var privatePref = pref.privatePreferences;
+            privatePref.setKeyFor(group, null);
+            var updateRequired = privatePref.updated;
+            var groupConversation = utils_1.Utils.parseGroupConversation(group);
+            if (groupConversation != null) {
+                var username = groupConversation[1];
+                var id = groupConversation[2];
+                if (username === this.user) {
+                    if (pref.getGroup(id) != null) {
+                        pref.setGroup(id, null);
+                        updateRequired = true;
+                    }
+                }
+            }
+            if (updateRequired)
+                yield this.updatePreferences(pref);
+        });
+    }
     updatePreferences(preferences) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.user == null)
@@ -1614,7 +1670,12 @@ class MessageManager {
             var signableMessage = preferences.forUser(this.user);
             yield signableMessage.signWithKeychain('Posting');
             var client = this.getClient();
-            return yield client.write(signableMessage);
+            var result = yield client.write(signableMessage);
+            if (result.isSuccess()) {
+                this.userPreferences = preferences;
+                this.onpreferences.post(preferences);
+            }
+            return result;
         });
     }
     join(room) {
@@ -1673,11 +1734,11 @@ class MessageManager {
             for (var conversation in joinedGroup) {
                 if (groups[conversation] !== undefined)
                     continue;
-                var slash = conversation.indexOf('/');
-                if (!conversation.startsWith('#') || slash === -1)
+                var groupConversation = utils_1.Utils.parseGroupConversation(conversation);
+                if (groupConversation == null)
                     continue;
-                var username = conversation.substring(1, slash);
-                var id = conversation.substring(slash + 1);
+                var username = groupConversation[1];
+                var id = groupConversation[2];
                 groups[conversation] = {
                     conversation, username, id, lastReadNumber: this.getLastReadNumber(conversation)
                 };
@@ -2051,7 +2112,6 @@ class MessageManager {
         return __awaiter(this, void 0, void 0, function* () {
             var data = yield this.getSelectedConversations();
             if (data && data.encoded && data.encoded.length > 0) {
-                var onmessage = this.onmessage;
                 var encodedArray = data.encoded;
                 var toAdd = [];
                 try {
@@ -2725,6 +2785,28 @@ class Utils {
                 }));
             });
         });
+    }
+    static parseGroupConversation(conversation) {
+        var array = Utils.parseConversation(conversation);
+        if (array.length !== 3 || array[0] !== '#' || !Utils.isWholeNumber(array[2]))
+            return null;
+        array[2] = Number.parseInt(array[2]);
+        return array;
+    }
+    static parseConversation(conversation) {
+        var result = [];
+        if (conversation.startsWith('#')) {
+            result.push('#');
+            conversation = conversation.substring(1);
+        }
+        var slash = conversation.indexOf('/');
+        if (slash === -1)
+            result.push(conversation);
+        else {
+            result.push(conversation.substring(0, slash));
+            result.push(conversation.substring(slash + 1));
+        }
+        return result;
     }
     static isWholeNumber(text) {
         return /^\d+$/.test(text);
