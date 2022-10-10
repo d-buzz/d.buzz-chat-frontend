@@ -1748,7 +1748,7 @@ class MessageManager {
                 if (groups[conversation] !== undefined)
                     continue;
                 groups[conversation] = {
-                    conversation, username, "id": groupId, lastReadNumber: this.getLastReadNumber(conversation)
+                    conversation, "username": this.user, "id": groupId, lastReadNumber: this.getLastReadNumber(conversation)
                 };
             }
             return groups;
