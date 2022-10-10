@@ -3,7 +3,7 @@
         <NewUserMessageModal @close="toggleNewUserMessageModalOpen(false)"></NewUserMessageModal>
     </TransitionRoot>
 
-  <div class="h-screen m-0 flex flex-col bg-primary text-secondary shadow-lg overflow-y-scroll border-r-1 pr-1 pl-1 w-200">
+  <div class="h-screen m-0 flex flex-col bg-primary text-secondary shadow-lg overflow-y-scroll border-r-1 pr-1 pl-1 w-200" :key="updateKey">
     
     <div v-if="isCommunity">
         <div class="flex justify-between">
@@ -44,6 +44,7 @@ const groups = ref([]);
 const title = ref("Direct Messages");
 const communityName = ref("");
 const isCommunity = ref(false);
+const updateKey = ref("");
 
 const newUserMessageModalOpen = ref(false);
 const toggleNewUserMessageModalOpen = () => {
@@ -86,6 +87,15 @@ async function initConversations(route) {
     else {
         var update = async() => {
             console.log("Callback message update StreamBar.vue");
+
+            var groupObjs = await manager.getJoinedAndCreatedGroups();
+            var groupArray = [];
+            for(var conversation in groupObjs) {
+                var groupObj = groupObjs[conversation];
+                groupArray.push(groupObj);
+            }
+            groups.value = groupArray;
+
             var conversationArray = await manager.readUserConversations();
             var conversationObjects = [];
             for(var conversation of conversationArray) 
@@ -93,18 +103,10 @@ async function initConversations(route) {
             conversations.value = conversationObjects;
             for(var group of groups.value)
                 group.lastReadNumber = manager.getLastReadNumber(group.conversation);
-            //updateKey.value = username+'#'+stlib.Utils.utcTime();
+            updateKey.value = '#'+stlib.Utils.nextId();
         };
         await update();
         manager.setCallback("StreamBar.vue", update);
-        
-        var groupObjs = await manager.getJoinedAndCreatedGroups();
-        var groupArray = [];
-        for(var conversation in groupObjs) {
-            var groupObj = groupObjs[conversation];
-            groupArray.push(groupObj);
-        }
-        groups.value = groupArray;
     }
 }
 initConversations(route);

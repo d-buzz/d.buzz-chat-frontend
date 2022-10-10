@@ -44,6 +44,8 @@ async function initConversation() {
         var groups = pref.getGroups();
         var group = groups[id];
 
+        console.log("conversation ", id, group, conversation);
+
         iconUsername.value = props.username;
         users.value = (group !== null && group.name != null)?`${group.name} (${id})`:conversation;
         link.value = '/g/'+conversation.substring(1);

@@ -1485,6 +1485,15 @@ class MessageManager {
                         window.localStorage.setItem(_this.user + "#lastReadData", JSON.stringify(_this.conversationsLastReadData));
                     }
                     var data = _this.conversations.lookupValue(displayableMessage.getConversation());
+                    if (data == null && conversation.indexOf('|') !== -1) {
+                        data = yield _this.getSelectedConversations(conversation);
+                        if (_this.cachedUserConversations != null &&
+                            _this.cachedUserConversations.indexOf(conversation) === -1)
+                            _this.cachedUserConversations.unshift(conversation);
+                        if (data != null && (_this.hasMessage(data.encoded, displayableMessage) ||
+                            _this.hasMessage(data.messages, displayableMessage)))
+                            data = null;
+                    }
                     if (data != null) {
                         if (data.encoded != null && displayableMessage.isEncoded()) {
                             var prefs = yield _this.getPreferences();
@@ -1678,7 +1687,7 @@ class MessageManager {
                 if (groups[conversation] !== undefined)
                     continue;
                 groups[conversation] = {
-                    conversation, username, id, lastReadNumber: this.getLastReadNumber(conversation)
+                    conversation, username, "id": groupId, lastReadNumber: this.getLastReadNumber(conversation)
                 };
             }
             return groups;
@@ -1743,12 +1752,11 @@ class MessageManager {
             return number;
         });
     }
-    getPreviousConversations() {
+    getPreviousConversations(conversation = this.selectedConversation) {
         return __awaiter(this, void 0, void 0, function* () {
-            var conversation = this.selectedConversation;
             if (conversation == null)
                 return null;
-            var data = yield this.getSelectedConversations();
+            var data = yield this.getSelectedConversations(conversation);
             if (data && data.maxTime > 0) {
                 var client = this.getClient();
                 var isPrivate = conversation.indexOf('|') !== -1;
@@ -1764,7 +1772,6 @@ class MessageManager {
                     if (!result.isSuccess())
                         throw result.getError();
                     var messages = yield this.toDisplayable(result);
-                    console.log("loading previous0 ", messages);
                     var added = 0;
                     for (var msg of messages)
                         if (!this.hasMessage(this.cachedUserMessages, msg)) {
@@ -1788,7 +1795,6 @@ class MessageManager {
                     if (!result.isSuccess())
                         throw result.getError();
                     var messages = yield this.toDisplayable(result);
-                    console.log("loading previous ", messages);
                     var added = 0;
                     for (var msg of messages)
                         if (!this.hasMessage(data.messages, msg)) {
@@ -1810,9 +1816,8 @@ class MessageManager {
             return data == null ? null : data;
         });
     }
-    getSelectedConversations() {
+    getSelectedConversations(conversation = this.selectedConversation) {
         return __awaiter(this, void 0, void 0, function* () {
-            var conversation = this.selectedConversation;
             if (conversation == null)
                 return null;
             var isPrivate = conversation.indexOf('|') !== -1;
@@ -1996,11 +2001,12 @@ class MessageManager {
         return null;
     }
     hasMessage(messages, message) {
-        for (var msg of messages)
-            if (msg.getTimestamp() === message.getTimestamp() &&
-                msg.getUser() === message.getUser() &&
-                msg.message.getSignature().equals(message.message.getSignature()))
-                return true;
+        if (messages != null && message != null)
+            for (var msg of messages)
+                if (msg.getTimestamp() === message.getTimestamp() &&
+                    msg.getUser() === message.getUser() &&
+                    msg.message.getSignature().equals(message.message.getSignature()))
+                    return true;
         return false;
     }
     jsonToDisplayable(msgJSON) {
@@ -2547,7 +2553,7 @@ var readPreferencesFn = null;
 var lastRandomPublicKey = "";
 var uniqueId = 0;
 class Utils {
-    static getVersion() { return 1; }
+    static getVersion() { return 3; }
     static getClient() {
         return client;
     }
