@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-full break-all overflow-scroll" v-if="accountStore.account.name">
+    <div class="appbg2 w-full h-full break-all overflow-scroll" v-if="accountStore.account.name">
         <div class="flex mt-3 mr-3">
             <div class="flex-shrink-0 mr-5px">
                 <img
@@ -20,7 +20,7 @@
                 <TabList class="tab">
                   <Tab>Communities</Tab>
                   <Tab>Preferences</Tab>
-                  <Tab>...</Tab>
+                  <Tab>Themes</Tab>
                 </TabList>
             <TabPanels class="mt-1">
                 <TabPanel>
@@ -82,7 +82,23 @@
                       </div>
                     </div>-->
                 </TabPanel>
-                <TabPanel>...</TabPanel>
+                <TabPanel>
+                    <div class="mt-2"></div>
+                    <table>
+                        <tr v-for="item in defaultColors" :key="updateKey+'#4'">
+                            <td>
+                                <div><b>{{item[0]}}</b></div>
+                                <div><small>{{item[1]}}</small></div>
+                            </td>
+                            <td>
+                                <div><input class="inputText" type="text" v-model="colors[item[0]]" size="7"></div>
+                                <div><input class="w-full" type="color" v-model="colors[item[0]]"></div>
+                            </td>
+                        </tr>
+                    </table>
+                    <button class="btn" @click="setColors()">Update</button>
+                    <button class="btn2" @click="loadColors()">Reset</button>
+                </TabPanel>
             </TabPanels>
             </TabGroup>
         </div>  
@@ -103,6 +119,37 @@ const updateMessage = ref("");
 const defaultPreferences = [
     {name: "autoDecode:b", display: "Auto Decode", desc: "Automatically decode private messages.", value: false, newvalue:false}
 ];
+
+const defaultColors = [
+    ["bg0", "Sidebar Background"],
+    ["bg1", "Left Bar Background"],
+    ["bg2", "Main Background"],
+    ["bg3", "Right Bar Background"]
+];
+
+const colors = ref({
+    "bg0":"#555555",
+    "bg1":"#555555",
+    "bg2":"#ffffff",
+    "bg3":"#555555"
+});
+
+function setColors() {
+    var root = document.querySelector(':root');
+    var colorsValue = colors.value;
+    for(var prop in colorsValue) {
+        var color = colorsValue[prop];
+        root.style.setProperty('--app'+prop, color);
+    }
+}
+function loadColors() {
+    var root = document.querySelector(':root');
+    var style = getComputedStyle(root);
+    var colorsValue = colors.value;
+    for(var prop in colorsValue) {
+        colorsValue[prop] = style.getPropertyValue('--app'+prop);
+    }
+}
 
 var defaultCommunities = [];
 async function initCommunities() {

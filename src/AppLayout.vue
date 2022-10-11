@@ -1,9 +1,9 @@
 <template>
-  <div class="flex min-h-full h-screen">
-    <div class="h-screen flex flex-col bg-primary text-secondary shadow-lg">
+  <div class="flex min-h-full h-screen appbg2">
+    <div class="h-screen flex flex-col appbg0 text-secondary shadow-lg">
         <SideBar></SideBar>
     </div>
-    <div class="h-screen flex flex-col bg-primary text-secondary shadow-lg mr-3">
+    <div class="h-screen flex flex-col appbg1 text-secondary shadow-lg mr-3">
         <StreamBar :key="getKey(route.path)"></StreamBar>
     </div>
     <div class="grow">

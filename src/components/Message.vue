@@ -251,7 +251,7 @@ function toRelativeTimeString(ti) {
 <style scoped>
 .message { background-color: lightsalmon; }
 .message[data-verified="true"] {
-    background-color: white;
+    background-color: unset;
 }
 .visibleOnHover > div {
     visibility: hidden;
