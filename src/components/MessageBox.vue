@@ -11,7 +11,7 @@
         </div>
         <div class="flex">
             <div tex
-              class="shadow appearance-none border border-gray-700 rounded-xl w-[calc(100%-1rem)] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-1"
+              class="fg70 shadow appearance-none border border-gray-700 rounded-xl w-[calc(100%-1rem)] py-2 px-3 leading-tight focus:outline-none focus:shadow-outline mr-1"
               ref="box"
               @keydown.enter.exact.prevent="enterMessage"
               role="textbox"

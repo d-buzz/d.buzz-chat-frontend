@@ -281,8 +281,8 @@ function isAtScrollBottom(e) {
 </script>
 <style>
 .item[data-selected="true"] {
-    color: white;
-    background-color: teal;
+    color: var(--appfgbtn1);
+    background-color: var(--appbgbtn1);
 }
 
 </style>

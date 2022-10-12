@@ -75,7 +75,8 @@ console.log(props.stream);
 .selected { 
     @apply rounded;
     /*background: linear-gradient(rgba(255,255,255,0.25), rgba(0,0,0,0.1));*/
-    background: rgba(255,255,255,0.37);
+    /*background: rgba(255,255,255,0.37);*/
+    background: var(--appsg1);
     border: 1px solid rgba(0,0,0,0.1);
     border-top-color: rgba(255,255,255,0.1);
 }

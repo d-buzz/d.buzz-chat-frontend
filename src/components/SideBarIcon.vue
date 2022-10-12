@@ -84,7 +84,8 @@ function getImgCss() {
     position: absolute;
     z-index: 7;
     /*background: rgba(0,0,0,0.25);*/
-    background: rgba(227, 19, 55, 0.65);
+    /*background: rgba(227, 19, 55, 0.65);*/
+    background: rgba(0, 0, 0, 0.37);
     padding: 1px;
     margin: 0;
     align-self: flex-start;

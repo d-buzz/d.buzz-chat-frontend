@@ -11,8 +11,8 @@
     <TransitionRoot :show="showThreadsModal">
         <ThreadModal @oninput="setThread" @close="toggleThreads"></ThreadModal>
     </TransitionRoot>
-  <div class="appbg2 w-full h-full break-all" v-if='messageKey'>
-     <div class="appbg3 h-full border-l-1 float-right pr-1 pl-1 w-200 overflow-y-scroll hidden md:block" v-if="$route.name === 'CommunityPath' && community">
+  <div class="appbg2 appfg2 w-full h-full break-all" v-if='messageKey'>
+     <div class="appbg3 appfg3 h-full border-l-1 float-right pr-1 pl-1 w-200 overflow-y-scroll hidden md:block" v-if="$route.name === 'CommunityPath' && community">
 
         <div v-for="(users,role) in communityUsers">
             <small><b>{{role}}</b></small>

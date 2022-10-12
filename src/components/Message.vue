@@ -37,7 +37,7 @@
         <div class="grow relative" style="margin-top:-7px;" @click.right.prevent.stop="clickOnMsg($event)"> 
             <div>
                 <small><b>{{message.getUser()}}</b></small>
-                <span class="pr-2 float-right text-gray-700">
+                <span class="pr-2 float-right fg70">
                     <small v-if="!displayEdits && message.edits && message.edits.length > 0" class="cursor-pointer" :title="toAbsoluteTimeString(message.edits[0].getTimestamp())" @click="toggleViewEditHistoryModal()">(edited {{toRelativeTimeString(message.edits[0].getTimestamp())}}) </small>
                     <small :title="toAbsoluteTimeString(message.getTimestamp())">{{toRelativeTimeString(message.getTimestamp())}}</small>
                     <span v-if="!message.isVerified()" class="pl-1">&#10008;</span>

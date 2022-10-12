@@ -1,11 +1,11 @@
 <template>
-  <div class="flex min-h-full h-screen appbg2">
-    <div class="h-screen flex flex-col appbg0 text-secondary shadow-lg">
+  <div class="flex min-h-full h-screen appbg2 appfg2">
+    <div class="h-screen flex flex-col appbg0 appfg0 shadow-lg">
         <button class="w-full avCommunity md:hidden border-r-1" style="padding-left: 1px;"
              @click="toggleStreambar()"><span class="oi oi-menu" style="font-size:30px;"></span></button>
         <SideBar></SideBar>
     </div>
-    <div class="streambar h-screen flex flex-col appbg1 text-secondary shadow-lg" ref="streamBar">
+    <div class="streambar h-screen flex flex-col appbg1 appfg1 shadow-lg" ref="streamBar">
         <StreamBar :key="getKey(route.path)"></StreamBar>
     </div>
     <div class="ml-3 grow">
