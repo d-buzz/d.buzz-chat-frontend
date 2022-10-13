@@ -84,7 +84,11 @@
                 </TabPanel>
                 <TabPanel>
                     <div class="mt-2"></div>
-                    <table>
+                    <div v-for="(style, name) in themeObjet.defaultThemes">
+                        <ThemeView :name="name" :style="style"></ThemeView>
+                    </div>
+                    
+                    <table class="mt-1">
                         <tr v-for="item in defaultColors" :key="updateKey+'#4'">
                             <td>
                                 <div><b>{{item[1]}}</b></div>
@@ -115,6 +119,7 @@ const preferences = ref([]);
 const searchBar = ref("");
 const updateKey = ref("");
 const updateMessage = ref("");
+const themeObjet = ref(defaultTheme);
 
 const defaultPreferences = [
     {name: "autoDecode:b", display: "Auto Decode", desc: "Automatically decode private messages.", value: false, newvalue:false}

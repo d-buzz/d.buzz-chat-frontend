@@ -1,5 +1,6 @@
 import { createApp } from "vue";
 import App from "./App.vue";
+import { Theme, defaultTheme } from "./Theme.ts";
 
 import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
 import './assets/styles/vue3-emoji-picker.css'
@@ -23,6 +24,8 @@ stlib.Utils.nextId = ()=>{
     //console.trace();
     return id;
 };
+window.defaultTheme = defaultTheme;
+console.log("Theme", Theme);
 document.addEventListener('visibilitychange', async function (event) {
     var manager = getManager();
     if (document.hidden) {
