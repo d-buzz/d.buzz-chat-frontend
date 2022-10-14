@@ -93,6 +93,16 @@ export class Theme {
         }
         return theme;
     }
+    toJSON() {
+        var obj = {};
+        for(var group in this.colorGroup) {
+            var colors = [];
+            for(var color of this.colorGroup[group])
+                if(color.color && !color.color.computed)
+                    obj[color.type+color.name] = color.color;
+        }
+        return obj;
+    }
 }
 export class ThemeColor {
     type: string
@@ -128,12 +138,43 @@ export class ThemeColor {
         return new ThemeColor(this.name, this.type, this.color, this.defaultFn);
     }
 }
-
+function loadThemes() {
+    try {
+        var themes = window.localStorage.getItem("themes");
+        if(themes != null) {
+            return JSON.parse(themes);
+        }
+    }
+    catch(e) { console.log(e); }
+    return {};
+}
+export const userThemes = loadThemes();
+export function saveUserThemes() {
+    try {
+        window.localStorage.setItem("themes", JSON.stringify(userThemes));
+    }
+    catch(e) { console.log(e); }
+}
+export function colorHexString(color: any) {
+    var rgb = parseRGB(color);
+    var result = '#';
+    for(var component of rgb) {
+        if(component < 16) result += '0';
+        result += component.toString(16);
+    }
+    return result;
+}
 export function initializeTheme() {
     var theme = new Theme();
     theme.defaultColors = defaultColors;
     theme.colorTypes = colorTypes;
     theme.defaultThemes = defaultThemes;
+    theme.userThemes = userThemes;
+    theme.saveUserThemes = saveUserThemes;
+    theme.loadTheme = loadTheme;
+    theme.setTheme = setTheme;
+    theme.findThemeByName = findThemeByName;
+    theme.colorHexString = colorHexString;
     for(var array in defaultColors) {
         var name = defaultColors[array][0];      
         var themeColors = [];
@@ -146,54 +187,34 @@ export function initializeTheme() {
     }
     return theme;
 }
-
+export function findThemeByName(name: string) {
+    var theme = defaultThemes[name];
+    if(!theme) theme = userThemes[name];
+    return (theme)?theme:null;
+}
 export const defaultTheme = initializeTheme();
 
-
-function loadThemes() {
-    var root = document.querySelector(':root');
+export function loadTheme() {
     try {
-        var themes = window.localStorage.getItem("themes");
-        if(themes != null)
-            themes = JSON.parse(themes);
+        var obj = window.localStorage.getItem("theme");
+        if(obj !== null && obj.length > 0) {
+            if(obj.startsWith('{')) {
+                obj = JSON.parse(obj);
+            }
+            else {
+                var theme = findThemeByName(obj);
+                if(theme) {
+                    defaultTheme.set(theme);
+                    defaultTheme.applyTheme();
+                }
+            }
+        }
     }
-    catch(e) { console.log(e); }
-    //window.localStorage.setItem("themes", JSON.stringify(themes));
+    catch(e) { console.log("failed to load theme", e); }
 }
-
-
-
-const colors = ref({
-    "bg0":"#555555",
-    "bg1":"#555555",
-    "bg2":"#ffffff",
-    "bg3":"#555555",
-    "bgbtn1":"#555555",
-    "bgbtn2":"#aaaaaa"
-});
-
-function setColors() {
-    var hasSelectionColor = {"bg0":true, "bg1":true};
-    var root = document.querySelector(':root');
-    var colorsValue = colors.value;
-    for(var prop in colorsValue) {
-        var color = colorsValue[prop];
-        var rgb = parseRGB(color);
-        var fg = rgb?calcFg(rgb):'black';
-        root.style.setProperty('--app'+prop, color);
-        root.style.setProperty('--appf'+prop.substring(1), fg);
-        if(hasSelectionColor[prop]) 
-            root.style.setProperty('--apps'+prop.substring(1), 
-                fg==='white'?"rgba(255, 255, 255, 0.37)":"rgba(0, 0, 0, 0.37)");
-    }
-}
-function loadColors() {
-    var root = document.querySelector(':root');
-    var style = getComputedStyle(root);
-    var colorsValue = colors.value;
-    for(var prop in colorsValue) {
-        colorsValue[prop] = style.getPropertyValue('--app'+prop);
-    }
+export function setTheme(obj: any) {
+    if(typeof obj !== 'string') obj = JSON.stringify(obj);
+    window.localStorage.setItem("theme", obj);
 }
 function parseRGB(color): number[] {
     if(color == null) return null;

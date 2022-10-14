@@ -25,6 +25,7 @@ stlib.Utils.nextId = ()=>{
     return id;
 };
 window.defaultTheme = defaultTheme;
+defaultTheme.loadTheme();
 console.log("Theme", Theme);
 document.addEventListener('visibilitychange', async function (event) {
     var manager = getManager();

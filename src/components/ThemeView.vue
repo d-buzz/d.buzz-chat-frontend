@@ -1,4 +1,10 @@
 <template>
+    <TransitionRoot :show="showThemeEditorModal">
+        <ThemeEditorModal :name="name" @close="toggleThemeEditorModal"></ThemeEditorModal>
+    </TransitionRoot>
+    <TransitionRoot :show="showDeleteModal">
+        <DeleteThemeModal :name="name" @close="toggleDeleteModal"></DeleteThemeModal>
+    </TransitionRoot>
     <div><b>{{name}}</b></div>
     <div ref="root"  class="flex row border rounded border-gray-400" style="height:50px;">
         <div class="appbg0 appfg0 border-r-1" style="width:63px;" 
@@ -16,7 +22,9 @@
             </div>
         </div>
         <div class="appbg2 appfg2 border-r-1 grow pr-3 pl-3" style="width:200px;">
-            <b>Main </b> <button class="btn ml-1" @click="pick()">Pick</button> <button class="btn2">Edit</button>
+            <b>Action </b> <button class="btn ml-1" @click="pick()">Pick</button> 
+            <button class="btn2" @click="action()">{{edit?'Edit':'Clone'}}</button>
+            <button v-if="edit" class="cursor-pointer" @click=toggleDeleteModal() title="Delete"><span class="oi oi-x"></span></button>
         </div>
         <div class="appbg3 appfg3 pr-1 pl-1" style="width:100px;">
             <b>Users</b>
@@ -24,18 +32,49 @@
     </div>
 </template>
 <script setup>
+const emit = defineEmits(["update"]);
 const props = defineProps({
     name: String,
     style: Object,
+    edit: Boolean
 });
 const root = ref();
 const theme = defaultTheme.newTheme();
+const showThemeEditorModal = ref(false);
+const showDeleteModal = ref(false);
+function toggleThemeEditorModal() {
+    showThemeEditorModal.value = !showThemeEditorModal.value;
+    if(!showThemeEditorModal.value) emit("update");
+}
+function toggleDeleteModal() {
+    showDeleteModal.value = !showDeleteModal.value;
+    if(!showDeleteModal.value) emit("update");
+}
 theme.set(props.style);
 onMounted(() => { 
     if(!root.value) return;
     theme.applyTheme(root.value);
 });
+function generateNewThemeName() {
+    var name = props.name + " (Clone)";
+    for(var i = 2; i < 100; i++) {
+        if(!defaultTheme.findThemeByName(name)) return name;
+        name = props.name + " (Clone " + i + ")";
+    }
+    return null;
+}
+function action() {console.log("action", props.edit);
+    if(props.edit) {
+        toggleThemeEditorModal();
+    }
+    else {
+        defaultTheme.userThemes[generateNewThemeName()] = theme.toJSON();
+        defaultTheme.saveUserThemes();
+        emit("update");
+    }
+}
 function pick() {
+    defaultTheme.setTheme(props.name);
     theme.applyTheme();
 }
 </script> 

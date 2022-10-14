@@ -82,26 +82,15 @@
                       </div>
                     </div>-->
                 </TabPanel>
-                <TabPanel>
+                <TabPanel :key="updateThemesKey">
+                    <small class="float-right text-gray-700">Pick a theme or edit cloned one.</small>
                     <div class="mt-2"></div>
-                    <div v-for="(style, name) in themeObjet.defaultThemes">
-                        <ThemeView :name="name" :style="style"></ThemeView>
+                    <div v-for="(style, name) in themeObject.defaultThemes">
+                        <ThemeView :name="name" :style="style" :edit="false" @update="updateThemes"></ThemeView>
                     </div>
-                    
-                    <table class="mt-1">
-                        <tr v-for="item in defaultColors" :key="updateKey+'#4'">
-                            <td>
-                                <div><b>{{item[1]}}</b></div>
-                                <div><small>{{item[2]}}</small></div>
-                            </td>
-                            <td>
-                                <div><input class="inputText" type="text" v-model="colors[item[0]]" size="7"></div>
-                                <div><input class="w-full" type="color" v-model="colors[item[0]]"></div>
-                            </td>
-                        </tr>
-                    </table>
-                    <button class="btn" @click="setColors()">Update</button>
-                    <button class="btn2" @click="loadColors()">Reset</button>
+                    <div v-for="(style, name) in themeObject.userThemes">
+                        <ThemeView :name="name" :style="style" :edit="true" @update="updateThemes"></ThemeView>
+                    </div>
                 </TabPanel>
             </TabPanels>
             </TabGroup>
@@ -117,9 +106,10 @@ const communitiesFound = ref([]);
 const hasNextPage = ref(false);
 const preferences = ref([]);
 const searchBar = ref("");
-const updateKey = ref("");
+const updateKey = ref('#'+stlib.Utils.nextId());
+const updateThemesKey = ref('#'+stlib.Utils.nextId());
 const updateMessage = ref("");
-const themeObjet = ref(defaultTheme);
+const themeObject = ref(defaultTheme);
 
 const defaultPreferences = [
     {name: "autoDecode:b", display: "Auto Decode", desc: "Automatically decode private messages.", value: false, newvalue:false}
@@ -142,6 +132,8 @@ const colors = ref({
     "bgbtn1":"#555555",
     "bgbtn2":"#aaaaaa"
 });
+
+function updateThemes() { updateThemesKey.value = '#'+stlib.Utils.nextId(); } 
 
 function setColors() {
     var hasSelectionColor = {"bg0":true, "bg1":true};
