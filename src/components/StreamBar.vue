@@ -8,7 +8,7 @@
     <div v-if="isCommunity">
         <div class="flex justify-between">
             <b class="border-b-1">C/{{title}}</b>
-            <router-link :to="`/s/${route.params.user}`">
+            <router-link v-if="isAdmin" :to="`/s/${route.params.user}`">
                <span class="oi oi-cog"></span>
             </router-link>
         </div>
@@ -42,6 +42,7 @@ const streams = ref([]);
 const conversations = ref([]);
 const groups = ref([]);
 const title = ref("Direct Messages");
+const isAdmin = ref(false);
 const communityName = ref("");
 const isCommunity = ref(false);
 const updateKey = ref("");
@@ -71,6 +72,7 @@ async function initConversations(route) {
 
         title.value = community.getTitle();
         streams.value = community.getStreams();
+        isAdmin.value = community.canUpdateSettings(username);
 
         for(var stream of streams.value) 
             stream.visible = stream.readSet.validate(role, titles);
