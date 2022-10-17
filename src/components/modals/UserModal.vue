@@ -22,8 +22,8 @@
                     </div>
                 </div>
                 <div v-else>
-                    <div><i>{{role}}</i><span class="cursor-pointer text-sm float-right" @click="toggleEditable"><span class="oi oi-pencil"></span></span></div>
-                    <div><span v-for="title in titles" class="rounded-lg bg-green-700 pr-1 pl-1 text-white font-bold text-sm">{{title}}</span></div> 
+                    <div><i>{{role}}</i><span class="cursor-pointer text-sm float-right" @click="toggleEditable" title="edit role, titles"><span class="oi oi-pencil"></span></span></div>
+                    <div><span v-for="title in titles" class="rounded-lg bg-green-700 pr-1 pl-1 mr-1 text-white font-bold text-sm">{{title}}</span></div> 
                 </div>
             </div>
         </div>
