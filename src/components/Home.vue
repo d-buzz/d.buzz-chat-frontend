@@ -28,7 +28,7 @@
                     <div class="flex flex-row flex-wrap" :key="updateKey">
                        <CommunityIcon v-for="community in communities" :img="community[0]" :name="community[1]" :number="''" />
                     </div>
-
+                    
                     <div class="display-block flex mt-3 mr-auto ml-auto" style="max-width:350px;">
                         <input class="inputText1 mr-1" type="text" v-model="searchBar"
                             placeholder="find communties"
@@ -40,15 +40,33 @@
                             <span class="oi oi-x"></span>
                         </button>
                     </div>
-                    <div v-if="communitiesFound.length > 0">
-                        <div class="w-100 text-sm font-bold text-center text-gray-400 mt-1">found</div>
-                        <div v-if="communitiesFound.length > 0" class="flex flex-row flex-wrap" :key="updateKey+'#2'">
-                         <CommunityIcon v-for="community in communitiesFound" :img="community.name" :name="community.title" :number="''+community.subscribers"  />
-                            <div v-if="hasNextPage" class="btn" @click="findCommunities(searchBar, true)">
-                               next<br>page
-                            </div>
-                        </div>
-                    </div>
+                    <TabGroup>
+                        <TabList class="tab">
+                            <Tab>All</Tab>
+                            <Tab>Active</Tab>
+                        </TabList>
+                        <TabPanels class="mt-1">
+                            <TabPanel>
+                                <div v-if="communitiesFound.length > 0">
+                                    <div class="w-100 text-sm font-bold text-center text-gray-400 mt-1">found</div>
+                                    <div class="flex flex-row flex-wrap" :key="updateKey+'#2'">
+                                     <CommunityIcon v-for="community in communitiesFound" :img="community.name" :name="community.title" :number="''+community.subscribers"  />
+                                        <div v-if="hasNextPage" class="btn" @click="findCommunities(searchBar, true)">
+                                           next<br>page
+                                        </div>
+                                    </div>
+                                </div>
+                            </TabPanel>
+                            <TabPanel>
+                                <div v-if="communitiesActive.length > 0">
+                                    <div class="w-100 text-sm font-bold text-center text-gray-400 mt-1">activity measured by messages in last 7 days</div>
+                                    <div class="flex flex-row flex-wrap" :key="updateKey+'#2'">
+                                     <CommunityIcon v-for="community in communitiesActive" :img="community.name" :name="community.name" :number="''+community.number"  />
+                                    </div>
+                                </div>
+                            </TabPanel>
+                        </TabPanels>
+                    </TabGroup>
                 </TabPanel>
                 <TabPanel>
                     <div class="mt-2"></div>
@@ -103,6 +121,7 @@ const accountStore = useAccountStore();
 const router = useRouter();
 const communities = ref([]);
 const communitiesFound = ref([]);
+const communitiesActive = ref([]);
 const hasNextPage = ref(false);
 const preferences = ref([]);
 const searchBar = ref("");
@@ -206,6 +225,29 @@ async function initCommunities() {
     updateKey.value = '#'+stlib.Utils.nextId(); 
 }
 initCommunities();
+var defaultActiveCommunities = [];
+async function initActiveCommunities() {
+    var result = await getManager().getClient().readStats();
+    if(result.isSuccess()) {
+        var obj = {};
+        var dailyStatsArrays = result.getResult();
+        for(var day of dailyStatsArrays) {
+            for(var community in day) {
+                var messageCount = day[community];
+                if(obj[community] === undefined) obj[community] = messageCount;
+                else obj[community] += messageCount;
+            }
+        }
+        var sorted = [];
+        for(var community in obj) sorted.push({name:community,number:obj[community]});
+        sorted.sort((a,b)=>b.number-a.number);
+        defaultActiveCommunities = sorted;
+        communitiesActive.value = defaultActiveCommunities;
+        updateKey.value = '#'+stlib.Utils.nextId(); 
+    }
+}
+initActiveCommunities();
+
 async function updatePreferences() {
     var user = accountStore.account.name;
     if(user == null) return;
@@ -238,6 +280,7 @@ async function findCommunities(text, nextPage=false) {
     else communitiesFound.value = result;
 }
 function findReset() {
+    communitiesActive.value = defaultActiveCommunities;
     communitiesFound.value = defaultCommunities;
     searchBar.value = "";
     hasNextPage.value = true;
