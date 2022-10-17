@@ -23,11 +23,10 @@
     <div class="message flex" :data-verified="message.isVerified()">
         <div class="flex-shrink-0 mr-5px">
 
-            
             <UserIcon :name="message.getUser()" :community="message.getCommunity()"></UserIcon>
 
             <vue-simple-context-menu
-              element-id="msgMenuId"
+              :element-id="msgMenuId"
               v-if="!displayOnly"
               :options="msgMenuOptions"
               ref="msgMenu"
@@ -87,6 +86,7 @@ import VueSimpleContextMenu from 'vue-simple-context-menu';
 const accountStore = useAccountStore();
 const account = accountStore.account.name;
 const emit = defineEmits(["quote", "action"]);
+const msgMenuId = 'msgMenuId'+stlib.Utils.nextId();
 const props = defineProps({
   message: Object,
   displayOnly: Boolean,

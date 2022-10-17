@@ -59,6 +59,8 @@ async function initConversations(route) {
     const manager = getManager();
 
     if(isCommunity.value) {
+        title.value = "";
+
         var user2 = route.params.community || route.params.user;
         if(user2 == null || user2 == "") return;
         communityName.value = user2;
