@@ -21,7 +21,7 @@
                     <button class="btn2" @click="discardChanges">Reset</button>
                     </div>
                 </div>
-                <div v-else>
+                <div v-else-if="isMod">
                     <div><i>{{role}}</i><span class="cursor-pointer text-sm float-right" @click="toggleEditable" title="edit role, titles"><span class="oi oi-pencil"></span></span></div>
                     <div><span v-for="title in titles" class="rounded-lg bg-green-700 pr-1 pl-1 mr-1 text-white font-bold text-sm">{{title}}</span></div> 
                 </div>
@@ -46,6 +46,7 @@ var role = ref(null);
 var titles = ref(null);
 var updateMessage = ref("");
 var editable = ref(false);
+var isMod = ref(false);
 var roleSet = ref(new stlib.PermissionSet());
 async function saveChanges() {
     if(roleSet.value.role != role.value) await setRole(roleSet.value.role);
@@ -124,6 +125,7 @@ async function init() {
     if(user && data) {
         role.value = data.getRole(user);
         titles.value = data.getTitles(user);
+        isMod.value = data.canSetTitles(getManager().user);
         communityData.value = data;
     }
 }
