@@ -4,7 +4,8 @@
   <div class="relative flex items-center justify-start">
     <small v-if="number && number != '0'" class="number"><b>{{number}}</b></small>
     <div class="flex-shrink-0 avCommunity">
-      <div v-if="accountStore.account.authenticated">
+      <div v-if="accountStore.account.authenticated" class="nameParent" :title="accountStore.account.name">
+        <small class="name"><b>{{accountStore.account.name}}</b></small>
         <router-link to="/home">
           <img class="rounded-full" :src="`https://images.hive.blog/u/${accountStore.account.name}/avatar/small`" :alt="`@${accountStore.account.name}`" />
         </router-link>
@@ -31,6 +32,26 @@ const toggleLoginModal = () => {
 };
 </script>
 <style scoped>
+.name {
+    display: none;
+    pointer-events: none;
+    min-width: 54px;
+    color: white;
+    text-align: center;
+}
+.nameParent:hover .name{
+    display: block;
+    position: absolute;
+    z-index: 7;
+    /*background: rgba(0,0,0,0.25);*/
+    /*background: rgba(227, 19, 55, 0.65);*/
+    background: rgba(0, 0, 0, 0.42);
+    padding: 1px;
+    margin: 0;
+    align-self: flex-start;
+    border-radius: 3px;
+    bottom: 5px;
+}
 .number {
     display: block;
     position: absolute;
