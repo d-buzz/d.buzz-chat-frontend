@@ -21,7 +21,7 @@
               contenteditable>
             </div>
             <div class="flex gap-x-1" style="max-height: 38px;">
-                <span @click="toggleAddEmoteModal()" style="font-size: 22px;" title="add emote">&#x263a;</span>
+                <span @click="toggleAddEmoteModal()" class="cursor-pointer" style="font-size: 22px;" title="add emote">&#x263a;</span>
                 <span class="cursor-pointer oi oi-image" style="padding-top:5px;font-size: 1.125rem;"
                     @click="toggleAddImageModal()" title="add image"></span>
             </div>

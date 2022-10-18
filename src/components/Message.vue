@@ -9,7 +9,7 @@
         <ImageViewModal :src="imageViewSrc" @close="toggleImageViewModal"></ImageViewModal>
     </TransitionRoot>
     <TransitionRoot :show="showAddEmoteModal">
-        <AddEmoteModal @close="toggleAddEmoteModal"></AddEmoteModal>
+        <AddEmoteModal @oninput="emoteAction" @close="toggleAddEmoteModal"></AddEmoteModal>
     </TransitionRoot>
     <div v-if="hasQuotedText(message)" class="flex mb-1">
         <img
@@ -72,7 +72,7 @@
                 </div>
                 <div v-if="message.emotes">
                     <span v-for="emote in message.emotes" class="border rounded-md bg-gray-300 pl-1 pr-1">
-                        <small class="font-bold align-text-bottom">{{emote.users.length}}</small> &#129505;
+                        <small class="font-bold align-text-bottom">{{emote.users.length}}</small> {{emote.emote}}
                     </span>
                 </div>
             </div>
@@ -178,11 +178,11 @@ function clickOnMsgOption(item) {
             break;
     }
 }
-function emoteAction() {
+function emoteAction(emote) {
     emit("action", {
         msg: props.message,
         type: stlib.Content.Emote.TYPE,
-        text: '&#128150;'});
+        text: emote});
 }
 const messageText = ref();
 function quoteAction() {

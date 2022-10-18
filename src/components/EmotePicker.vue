@@ -1,23 +1,28 @@
 <template>
-    emote picker
-    <div>
-        emote data &#x1F31F;	
-    </div>
-
-    <div v-for="category in emoteData">
-        <div>{{category[0]}}</div>
-        <div class="flex">
-            <div v-for="emote in category[1]" class="cursor-pointer" :title="emote[1]" @click="action(emote[0])">
-                {{emote[0]}}
-            </div>        
+    <div class="flex gap-x-2">
+        <div v-for="category in categories" class="cursor-pointer" 
+            v-on:click.prevent="scrollIntoView($refs[category[0]])" :title="category[0]">
+            {{category[1]}}
         </div>
     </div>
-    <div v-for="community in communityList">
-        {{community.name}} {{community.title}}
+    <div style="overflow: auto; max-height:350px;">
+        <div v-for="category in categories">
+            <small :ref="category[0]" class="text-gray-700"><b>{{category[0]}}</b></small>
+            <div v-for="(subgroup, name2) in emotes[category[0]]">
+                <div class="flex flex-wrap gap-x-2">
+                    <div v-for="emote in subgroup" class="cursor-pointer" :title="emote[1]" @click="action(emote[0])">
+                        {{emote[0]}}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    <!--<div v-for="community in communityList">
+        {{community.name}} {{community.title}}
+    </div>-->
 </template>
 <script setup>
-const emit = defineEmits(["action"]);
+const emit = defineEmits(["oninput"]);
 const communityList = ref([]);
 async function init() {
     const manager = getManager();
@@ -33,69 +38,11 @@ async function init() {
 }
 init();
 function action(emote) {
-    emit("action", emote);
+    emit("oninput", emote);
 }
-const emoteData = [
-    ["emotes", [
-        ["263a", "smiling"],
-        ["2639", "sad"],
-        ["1F642", "little smiling"]
-    ]]
-];
-function initEmoteData() {
-    for(var categoryName in emoteData) {
-        var category = emoteData[categoryName];
-        console.log("category", category);
-        for(var index in category[1]) {
-            var emote = category[1][index];
-            emote[0] = String.fromCodePoint(parseInt(emote[0], 16)); 
-        }
-    }
+function scrollIntoView(ref) {
+    if(ref && ref.length > 0) ref[0].scrollIntoView();
 }
-initEmoteData();
-/*const emit = defineEmits(["update"]);
-const props = defineProps({
-    name: String,
-    style: Object,
-    edit: Boolean
-});
-const root = ref();
-const theme = defaultTheme.newTheme();
-const showThemeEditorModal = ref(false);
-const showDeleteModal = ref(false);
-function toggleThemeEditorModal() {
-    showThemeEditorModal.value = !showThemeEditorModal.value;
-    if(!showThemeEditorModal.value) emit("update");
-}
-function toggleDeleteModal() {
-    showDeleteModal.value = !showDeleteModal.value;
-    if(!showDeleteModal.value) emit("update");
-}
-theme.set(props.style);
-onMounted(() => { 
-    if(!root.value) return;
-    theme.applyTheme(root.value);
-});
-function generateNewThemeName() {
-    var name = props.name + " (Clone)";
-    for(var i = 2; i < 100; i++) {
-        if(!defaultTheme.findThemeByName(name)) return name;
-        name = props.name + " (Clone " + i + ")";
-    }
-    return null;
-}
-function action() {console.log("action", props.edit);
-    if(props.edit) {
-        toggleThemeEditorModal();
-    }
-    else {
-        defaultTheme.userThemes[generateNewThemeName()] = theme.toJSON();
-        defaultTheme.saveUserThemes();
-        emit("update");
-    }
-}
-function pick() {
-    defaultTheme.setTheme(props.name);
-    theme.applyTheme();
-}*/
+const categories = ref(defaultEmotes.categories);
+const emotes = ref(defaultEmotes.all);
 </script> 

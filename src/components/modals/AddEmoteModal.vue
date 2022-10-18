@@ -1,7 +1,7 @@
 <template>
    <DefaultModal title="Add Emote">
     <div class="mt-5 sm:mx-auto sm:w-full sm:max-w-md">
-      <EmotePicker @action="action"/>
+      <EmotePicker @oninput="oninput"/>
    </div>
    </DefaultModal>          
 </template>
@@ -12,7 +12,7 @@ const emit = defineEmits(["oninput"]);
 const isLoading = ref(false);
 const accountName = ref("");
 
-const action = async (emote: any) => {
+const oninput = async (emote: any) => {
   if (isLoading.value) return;
   try {
     isLoading.value = true;
