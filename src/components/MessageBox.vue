@@ -3,6 +3,9 @@
         <TransitionRoot :show="showAddImageModal">
             <AddImageModal @oninput="addImage" @close="toggleAddImageModal"></AddImageModal>
         </TransitionRoot>
+        <TransitionRoot :show="showAddEmoteModal">
+            <AddEmoteModal @oninput="addEmote" @close="toggleAddEmoteModal"></AddEmoteModal>
+        </TransitionRoot>
         <div v-if="images.length > 0" class="p-1 flex gap-x-1">
             <span v-for="(image,i) in images" class="imgPreview">
                 <span class="oi oi-x closeButton" @click="delImage(i)"></span>
@@ -17,8 +20,11 @@
               role="textbox"
               contenteditable>
             </div>
-            <span class="cursor-pointer oi oi-image" style="font-size: 1.125rem;"
-                @click="toggleAddImageModal()" title="add image"></span>
+            <div class="flex gap-x-1" style="max-height: 38px;">
+                <span @click="toggleAddEmoteModal()" style="font-size: 22px;" title="add emote">&#x263a;</span>
+                <span class="cursor-pointer oi oi-image" style="padding-top:5px;font-size: 1.125rem;"
+                    @click="toggleAddImageModal()" title="add image"></span>
+            </div>
         </div>
     </div>
 </template>
@@ -27,11 +33,26 @@ const box = ref(null);
 const images = ref([]);
 const emit = defineEmits(["entermessage"]);
 const showAddImageModal = ref(false);
+const showAddEmoteModal = ref(false);
 function toggleAddImageModal() {
     showAddImageModal.value = !showAddImageModal.value;
 }
+const toggleAddEmoteModal = () => {
+    var value = !showAddEmoteModal.value;
+    if(value) {
+
+    }
+    showAddEmoteModal.value = value;
+};
 function addImage(link) {
     images.value.push(link);
+}
+function addEmote(emote) {
+    focus();
+    //if(!document.execCommand("insertText", false, emote))
+    console.log("innerText", box.value.textContent, "'"+box.value.textContent+"'");
+    box.value.innerText = box.value.textContent + emote.trim();
+    setCaretAtEnd(box.value);
 }
 function delImage(i) {
     if(i >= 0 && i < images.value.length)
