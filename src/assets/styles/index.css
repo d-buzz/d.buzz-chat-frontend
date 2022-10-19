@@ -5,6 +5,10 @@
     --appbg3: #ffffff;        --appfg3: black;
     --appbgbtn1: #059669;     --appfgbtn1: white;
     --appbgbtn2: #eab308;     --appfgbtn2: white;
+
+    --appbgowner: #007b00;
+    --appbgadmin: #2368D5;
+    --appbgmod: #2e8336;
 }
 .appbg0 { background: var(--appbg0); }
 .appbg1 { background: var(--appbg1); }
@@ -25,6 +29,10 @@
 .appfgbtn2 { color: var(--appfgbtn2); }
 
 .appfg2 .fg70, .appfg2 .text-gray-700 { color: var(--appfg2); opacity: 0.7; }
+
+.colorowner { color:var(--appbgowner); } 
+.coloradmin { color:var(--appbgadmin); } 
+.colormod { color:var(--appbgmod); } 
 
 .btn {
     @apply appbgbtn1 appfgbtn1 relative mr-1 my-1 py-1 px-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white disabled:opacity-75 font-bold;  
@@ -110,6 +118,7 @@
 .w-200 { width: 200px; }
 .mr-5px { margin-right: 5px;}
 .oi-x { top: 0px;}
+.oiMini:before { font-size: 11px; padding-right: 1px; }
 
 @tailwind base;
 @tailwind components;

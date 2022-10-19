@@ -18,7 +18,7 @@
             :src="`https://images.hive.blog/u/${message.reference.getUser()}/avatar/small`"
             alt="@"
             />
-        <small class="pl-1"><b>{{message.reference.getUser()}}</b> {{getQuotedText(message)}}</small>
+        <small class="pl-1"><b :class="roleReferenceColor?roleReferenceColor:''">{{message.reference.getUser()}}</b> {{getQuotedText(message)}}</small>
     </div>
     <div class="message flex" :data-verified="message.isVerified()">
         <div class="flex-shrink-0 mr-5px">
@@ -35,7 +35,7 @@
         </div>
         <div class="grow relative" style="margin-top:-7px;" @click.right.prevent.stop="clickOnMsg($event)"> 
             <div>
-                <small><b>{{message.getUser()}}</b></small>
+                <small :class="roleColor?roleColor:''"><b>{{message.getUser()}}</b></small>
                 <span class="pr-2 float-right fg70">
                     <small v-if="!displayEdits && message.edits && message.edits.length > 0" class="cursor-pointer" :title="toAbsoluteTimeString(message.edits[0].getTimestamp())" @click="toggleViewEditHistoryModal()">(edited {{toRelativeTimeString(message.edits[0].getTimestamp())}}) </small>
                     <small :title="toAbsoluteTimeString(message.getTimestamp())">{{toRelativeTimeString(message.getTimestamp())}}</small>
@@ -71,8 +71,13 @@
                     Unsupported message type.
                 </div>
                 <div v-if="message.emotes">
-                    <span v-for="emote in message.emotes" class="border rounded-md bg-gray-300 pl-1 pr-1">
-                        <small class="font-bold align-text-bottom">{{emote.users.length}}</small> {{emote.emote}}
+                    <span v-for="emote in message.emotes" class="border rounded-md border-gray-400 pl-1 pr-1 mr-1">
+                        <span v-if="emote.users.indexOf(account) === -1">                        
+                            <small class="font-bold align-text-bottom cursor-pointer" @click="emoteAction(emote.emote)">{{emote.users.length}}</small> {{emote.emote}}
+                        </span>         
+                        <span v-else>
+                            <small class="font-bold align-text-bottom">{{emote.users.length}}</small> {{emote.emote}}
+                        </span>           
                     </span>
                 </div>
             </div>
@@ -92,6 +97,8 @@ const props = defineProps({
   displayOnly: Boolean,
   displayEdits: Boolean
 });
+const roleColor = ref(null);
+const roleReferenceColor = ref(null);
 function initContent() {
     var content = null; 
     if(props.message) {
@@ -247,6 +254,25 @@ function toRelativeTimeString(ti) {
 	else str = `${m}m`;
 	return str;
 }
+async function init() {
+    var message = props.message;
+    console.log("message ", message);
+    if(!message) return;
+    var community = message.getCommunity();
+    console.log("community ", community);
+    if(!community) return;
+    var data = await stlib.Community.load(community);
+    var role = data.getRole(message.getUser());
+    var icon = {"owner":"oi-globe", "admin":"oi-cog", "mod":"oi-flag"};
+    if(role === "owner" || role === "admin" || role === "mod") 
+        roleColor.value = `oiMini oi ${icon[role]} color${role}`;
+    if(hasQuotedText(message)) {
+        role = data.getRole(message.reference.getUser()); 
+        if(role === "owner" || role === "admin" || role === "mod")
+            roleReferenceColor.value = `oiMini oi ${icon[role]} color${role}`;
+    }   
+}
+init();
 </script>
 <style scoped>
 .message { background-color: lightsalmon; }
@@ -281,8 +307,6 @@ function toRelativeTimeString(ti) {
 .btn0 .oi-share { top: -2px; } 
 .btn0 .oi-heart { top: 0px; }
 .btn0 .oi-pencil { top: 0px; }
-.btn0 .oi-trash { left: 1px; } 
+.btn0 .oi-trash { left: 1px; }
 </style>
-
-
 

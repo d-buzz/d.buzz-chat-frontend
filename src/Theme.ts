@@ -7,6 +7,9 @@ export const defaultColors = [
     ["3", "Background 3", "Right Bar Background"],
     ["btn1", "Button 1", "Default button"],
     ["btn2", "Button 2", "Secondary button"],
+    ["owner", "Owner Role", "Color of owner role"],
+    ["admin", "Admin Role", "Color of admin role"],
+    ["mod", "Mod Role", "Color of mod role"]
 ];
 
 export const colorTypes = [
@@ -16,12 +19,15 @@ export const colorTypes = [
 
 export const defaultThemes = {
     "Light": {
-        "bg0": "#ffffff", 
-        "bg1": "#ffffff", 
+        "bg0": "#babdb6", 
+        "bg1": "#d3d7cf", 
         "bg2": "#ffffff", 
-        "bg3": "#ffffff",
+        "bg3": "#eeeeec",
         "bgbtn1": "#059669", 
-        "bgbtn2": "#eab308"
+        "bgbtn2": "#eab308",
+        "bgowner": "#007b00",
+        "bgadmin": "#2368D5",
+        "bgmod": "#2e8336"
     },
     "Ignite": {
         "bg0": "#e31337", 
@@ -29,15 +35,21 @@ export const defaultThemes = {
         "bg2": "#ffffff", 
         "bg3": "#ffffff",
         "bgbtn1": "#059669", 
-        "bgbtn2": "#eab308"
+        "bgbtn2": "#eab308",
+        "bgowner": "#007b00",
+        "bgadmin": "#2368D5",
+        "bgmod": "#2e8336"
     },
     "Dark": {
-        "bg0": "#555555", 
-        "bg1": "#555555", 
-        "bg2": "#555555", 
-        "bg3": "#555555",
+        "bg0": "#353535", 
+        "bg1": "#424242", 
+        "bg2": "#555753", 
+        "bg3": "#424242",
         "bgbtn1": "#059669", 
-        "bgbtn2": "#eab308"
+        "bgbtn2": "#eab308",
+        "bgowner": "#5aff5a",
+        "bgadmin": "#BBCEEC",
+        "bgmod": "#7ee688"
     }
 };
 

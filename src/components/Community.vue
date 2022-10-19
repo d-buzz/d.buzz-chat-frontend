@@ -15,13 +15,13 @@
      <div class="appbg3 appfg3 h-full border-l-1 float-right pr-1 pl-1 w-200 overflow-y-scroll hidden md:block" v-if="$route.name === 'CommunityPath' && community">
 
         <div v-for="(users,role) in communityUsers">
-            <small><b>{{role}}</b></small>
+            <small :class="roleCss(role)"><b>{{role}}</b></small>
             <div class="p-1 flex" v-for="team in users" >
                 <div class="flex-shrink-0 mr-5px">
                     <UserIcon :name="team[0]" :community="community.getName()" :imgCss="`avConversation`"></UserIcon>
                 </div>
                 <div class="grow relative" style="margin-top:-7px;">
-                    <small><b>{{team[0]}}</b></small>
+                    <small :class="roleCss(role)"><b>{{team[0]}}</b></small>
                     <div class="flex" v-if="team[2]"><small v-for="title in team[2].split(',')" class="rounded-lg bg-green-700 pr-1 pl-1 text-white font-bold">{{title}}</small></div>
                 </div>
             </div>
@@ -422,6 +422,12 @@ const enterMessage = async (message, contentMessage=null, block=true, clearBox=t
 };
 function isAtScrollBottom(e) {
     return e.scrollTop + e.clientHeight >= e.scrollHeight;
+}
+function roleCss(role) {
+    var icon = {"owner":"oi-home", "admin":"oi-cog", "mod":"oi-flag"};
+    if(role === "owner" || role === "admin" || role === "mod")
+        return `oiMini oi ${icon[role]} color${role}`;
+    return '';
 }
 async function loadPrevious() {
     if(loadingPreviousMessages.value === true) return;

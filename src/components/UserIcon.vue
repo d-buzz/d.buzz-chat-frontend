@@ -70,6 +70,3 @@ function clickOnIcon(event) {
     iconMenu.value.showMenu(event, "item");
 }
 </script> 
-<style scoped>
-
-</style>
