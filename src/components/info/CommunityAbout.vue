@@ -11,9 +11,14 @@
     <hr>
     <div class="flex font-bold">Team and Moderators</div>
     <div class="flex flex-wrap justify-between">
-        <div v-for="team in community.communityData.team">
-            <small class="ml-10"><b>{{team[1]}} {{team[2]}}</b></small>
-            <Conversation :username="team[0]"/> 
+        <div v-for="team in community.communityData.team" class="p-1 flex">
+            <div class="flex-shrink-0 mr-5px">
+                <UserCommunityIcon :name="team[0]" :community="community.getName()" :imgCss="`avConversation`"/>
+            </div>
+            <div class="grow relative" style="margin-top:-7px;">
+                <small :class="roleCss(role)"><b>{{team[0]}}</b></small>
+                <div class="flex" v-if="team[2]"><small v-for="title in team[2].split(',')" class="rounded-lg bg-green-700 pr-1 pl-1 text-white font-bold">{{title}}</small></div>
+            </div>
         </div>
     </div>
  </div>
@@ -36,4 +41,10 @@ async function initInfo() {
     manager.setSelectedCommunityPage(user2, route.path);
 }
 initInfo();
+function roleCss(role) {
+    var icon = {"owner":"oi-home", "admin":"oi-cog", "mod":"oi-flag"};
+    if(role === "owner" || role === "admin" || role === "mod")
+        return `oiMini oi ${icon[role]} color${role}`;
+    return '';
+}
 </script>

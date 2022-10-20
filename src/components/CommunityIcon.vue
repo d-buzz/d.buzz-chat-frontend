@@ -8,11 +8,12 @@
     <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" 
             :title="`${name} (${img})`">
         <span class="cursor-pointer" @click="onClick(img)">
-            <img
+            <!--<img
             :class="`rounded-full ${getImgCss()} border border-solid borderColor`"
             :src="`https://images.hive.blog/u/${img}/avatar/small`"
             alt="@"
-            />
+            />-->
+            <UserIcon :name="img" :imgCss="getImgCss()" :name2="name" />
         </span>
     </div>
   </div>
@@ -93,7 +94,7 @@ function getImgCss() {
     z-index: 7;
     /*background: rgba(0,0,0,0.25);*/
     /*background: rgba(227, 19, 55, 0.65);*/
-    background: rgba(0, 0, 0, 0.37);
+    background: rgba(0, 0, 0, 0.42);
     padding: 1px;
     margin: 0;
     align-self: flex-start;

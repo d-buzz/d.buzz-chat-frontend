@@ -2,12 +2,13 @@
   <DefaultModal>
     <div class="flex">
         <div class="flex-shrink-0 mr-5px">
-            <img
+            <!--<img
             class="rounded-full"
             style="width:128px;height:128px;"
             :src="`https://images.hive.blog/u/${user}/avatar/medium`"
             alt="@"
-            />
+            />-->
+            <UserIcon :name="user" imgCss="av128" size="medium"/>
         </div>
         <div class="grow" style="margin-top:-7px;">
             <b class="text-lg">{{user}}</b>

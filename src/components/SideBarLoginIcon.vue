@@ -7,7 +7,7 @@
       <div v-if="accountStore.account.authenticated" class="nameParent" :title="accountStore.account.name">
         <small class="name"><b>{{accountStore.account.name}}</b></small>
         <router-link to="/home">
-          <img class="rounded-full" :src="`https://images.hive.blog/u/${accountStore.account.name}/avatar/small`" :alt="`@${accountStore.account.name}`" />
+            <UserIcon :name="accountStore.account.name" imgCss="avCommunity"/>
         </router-link>
       </div>
       <div v-else>

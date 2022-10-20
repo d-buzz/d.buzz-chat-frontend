@@ -12,18 +12,21 @@
         <AddEmoteModal @oninput="emoteAction" @close="toggleAddEmoteModal"></AddEmoteModal>
     </TransitionRoot>
     <div v-if="hasQuotedText(message)" class="flex mb-1">
-        <img
+        <!--<img
             @click.right.prevent.stop="clickOnIcon($event)"
             class="rounded-full avMini"
             :src="`https://images.hive.blog/u/${message.reference.getUser()}/avatar/small`"
             alt="@"
-            />
+            />-->
+
+        <UserCommunityIcon :name="message.reference.getUser()" :community="message.getCommunity()" 
+                  :imgCss="`avMini`"/>
         <small class="pl-1"><b :class="roleReferenceColor?roleReferenceColor:''">{{message.reference.getUser()}}</b> {{getQuotedText(message)}}</small>
     </div>
     <div class="message flex" :data-verified="message.isVerified()">
         <div class="flex-shrink-0 mr-5px">
 
-            <UserIcon :name="message.getUser()" :community="message.getCommunity()"></UserIcon>
+            <UserCommunityIcon :name="message.getUser()" :community="message.getCommunity()"/>
 
             <vue-simple-context-menu
               :element-id="msgMenuId"

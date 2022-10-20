@@ -16,13 +16,14 @@
   <div class="flex relative items-center justify-start" v-else>
     <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" 
             :title="`${name} (${img})`">
-         <small class="name2"><b>{{name}}</b></small>
+         <!--<small class="name2"><b>{{name}}</b></small>-->
         <router-link :to="`/i/${img}/about`">
-            <img
+            <!--<img
             :class="`rounded-full ${getImgCss()} border border-solid borderColor`"
             :src="`https://images.hive.blog/u/${img}/avatar/small`"
             alt="@"
-            />
+            />-->
+            <UserIcon :name="img" :imgCss="getImgCss()" :letterIcon="getLetterIcon()"/>
         </router-link>
     </div>
   </div>
@@ -56,6 +57,17 @@ function hasProfileImage(community) {
 }
 function getImgCss() {
     return props.imgCss === undefined?"avCommunity":props.imgCss;
+}
+function getLetterIcon() {
+    var letterIcon = '';    
+    if(props.community) {
+        var text = props.community[1];
+        if(text) {
+            if(text.length > 1) letterIcon += text[0].toUpperCase();
+            if(text.length > 2) letterIcon += text[1].toLowerCase();
+        }
+    }
+    return hasImg.value?undefined:letterIcon;
 }
 </script> 
 <style scoped>

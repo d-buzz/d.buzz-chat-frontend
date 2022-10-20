@@ -1,72 +1,65 @@
 <template>
-    <TransitionRoot :show="showUserModal">
-        <UserModal @close="toggleUserModal(null)" :user="userRef" :community="community"></UserModal>
-    </TransitionRoot>
-    <img
-        @click="toggleUserModal(name)"
-        @click.right.prevent.stop="clickOnIcon($event)"
-        class="cursor-pointer rounded-full" :class="`${imgCss}`"
-        :src="`https://images.hive.blog/u/${name}/avatar/small`"
-        alt="@"
-        />
-    <vue-simple-context-menu
-                v-if="!displayOnly"
-              element-id="iconMenuId"
-              :options="iconMenuOptions"
-              ref="iconMenu"
-              @option-clicked="clickOnIconOption"
-            />
-
-    <!--<div class="flex nameParent relative items-center justify-start" v-if="hasImg || getImgCss() == 'avMini'">
-    <small class="name"><b>{{name}}</b></small>
-    <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" 
-            :title="`${name} (${img})`">
-        <router-link :to="`/i/${img}/about`">
-            <img
-            :class="`rounded-full ${getImgCss()} border border-solid borderColor`"
-            :src="`https://images.hive.blog/u/${img}/avatar/small`"
-            alt="@"
-            />
-        </router-link>
+    <div v-if="profileLetter" class="textIcon" :class="`${imgCss}`"
+        :style="`${randomColor(name)}`">
+        <span>{{profileLetter}}</span>
     </div>
-  </div>
-  <div class="flex relative items-center justify-start" v-else>
-    <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" 
-            :title="`${name} (${img})`">
-         <small class="name2"><b>{{name}}</b></small>
-        <router-link :to="`/i/${img}/about`">
-            <img
-            :class="`rounded-full ${imgCss} border border-solid borderColor`"
-            :src="`https://images.hive.blog/u/${img}/avatar/small`"
-            alt="@"
-            />
-        </router-link>
+    <div v-else>
+        <img v-if="size != 'small'" class="absolute rounded-full" :class="`${imgCss}`" :src="`https://images.hive.blog/u/${name}/avatar/${size}`"/>     
+        <img class="rounded-full" :class="`${imgCss}`" :src="`https://images.hive.blog/u/${name}/avatar/small`" :alt="name" />     
     </div>
-  </div>-->
 </template>
 <script setup>
-import VueSimpleContextMenu from 'vue-simple-context-menu';
 const props = defineProps({
     name: String,
-    community: Object,
-    displayOnly: Boolean,
-    imgCss: {type: String, default: 'avMessage'} 
+    imgCss: {type: String, default: 'avMessage'},
+    letterIcon: {type: String, default: null},
+    name2: {type: String, default: null},
+    size: {type: String, default: 'small'}
 });
-const showUserModal = ref(false);
-const userRef = ref();
-function toggleUserModal(user) {
-    if(user == null) showUserModal.value = false;
-    else {
-        userRef.value = user;
-        showUserModal.value = true;
+const profileLetter = ref(null);
+async function initProfileImage() {
+    var name = props.name;
+    if(!name) return true;
+    var letterIcon = props.letterIcon;
+    console.log(name, letterIcon);
+    if(letterIcon !== undefined && letterIcon !== null) {
+        profileLetter.value = letterIcon?letterIcon:
+                (name.substring(0, 1).toUpperCase()+name.substring(1, 2));
+        return true;
     }
-}    
-const iconMenuOptions = [
-    {name:"message"},{name:"blog"}
-];
-const iconMenu = ref(null);
-function clickOnIcon(event) { 
-    console.log("iconMenu ", iconMenu.value);
-    iconMenu.value.showMenu(event, "item");
+    try {
+        var data = await stlib.Utils.getAccountData(name);
+        var json = data.posting_json_metadata;
+        if(json && json.length > 0) {
+            json = JSON.parse(json);
+            if(json.profile && json.profile.profile_image)
+                return true;
+        }
+        var name2 = props.name2;
+        if(!name2 || name2.length < 1) name2 = name;
+        var text = '';
+        if(name2.length > 0) text += name2[0].toUpperCase();
+        if(name2.length > 1) text += name2[1].toLowerCase();
+        profileLetter.value = text;
+        return false;
+    }
+    catch(e) { console.log(e); return true; }
 }
-</script> 
+initProfileImage();
+function hash(text) {
+  var h = 0;
+  for(var i = 0; i < text.length; i++) h = (((h << 5) - h) + text.charCodeAt(i))|0;
+  return h;
+}
+function randomColor(text) {
+    var h = hash(text)%360;
+    return `color:hsl(${h+60}, 100%, 25%); background-color:hsl(${h}, 100%, 85%);`;
+}
+</script>
+<style scoped>
+.textIcon {
+    @apply flex justify-center content-center rounded-full text-center;
+    font-style: italic;
+}
+.textIcon span { align-self: center; margin-top: -2px; }
+</style>
