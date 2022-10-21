@@ -39,6 +39,9 @@
         </div>
     </div>
     <div class="mt-2">
+        <span v-if="relations">        
+            <button class="btn" @click="add(user, !relations.follows)"><span class="oi oi-people"></span> {{relations.follows?'Remove':'Add'}}</button>   
+        </span> 
         <router-link :to="`/p/${user}`"><span class="btn" ><span class="oi oi-chat text-sm"></span> Message</span></router-link> 
         <a class="btn" :href="`https://peakd.com/@${user}`" target="_blank" rel="noreferrer noopener"><span class="oi oi-external-link text-sm"></span> Blog</a>
     </div>
@@ -60,6 +63,7 @@ var isMod = ref(false);
 var roleSet = ref(new stlib.PermissionSet());
 var created = ref(null);
 var reputation = ref(null);
+var relations = ref(null);
 async function saveChanges() {
     if(roleSet.value.role != role.value) await setRole(roleSet.value.role);
     var titleToSet = roleSet.value.titles.join(",");
@@ -74,6 +78,32 @@ function toggleEditable() {
     roleSet.value.setRole(role.value);
     roleSet.value.titles = stlib.Utils.copy(titles.value);
     editable.value = true;
+}
+async function add(toAdd, addOrRemove) {
+    var user = getManager().user;
+    if(!user) return;
+    var json = ["follow",{
+        "follower": user,
+        "following": toAdd,
+        "what": addOrRemove?["blog"]:[]
+      }
+    ];
+    updateMessage.value = "";
+
+    var p = stlib.Utils.queueKeychain((keychain, resolve, error)=>{
+        keychain.requestCustomJson(user, "follow", "Posting",
+         JSON.stringify(json), "Add User", (result)=>{
+            if(result.success) resolve(result.result);
+            else error(result);
+        });
+    });
+    try {
+        await p;
+        updateMessage.value="Succesfully "+(addOrRemove?'added.':'removed.');
+    } catch(e) {
+        updateMessage.value="Error: " + e.error;
+        console.log(e);
+    }
 }
 async function setRole(role) {
     var user = getManager().user;
@@ -133,6 +163,14 @@ function formatDate(date) {
     if(t !== -1) date = date.substring(0, t);
     return date;
 }
+async function initRelation() {
+    var user = getManager().user;
+    var user2 = props.user;
+    if(!user || !user2 || user === user2) return; 
+    var data = await stlib.Utils.getDhiveClient().call("bridge", "get_relationship_between_accounts", [user, user2]);
+    if(data) relations.value = data;
+}
+initRelation();
 async function initUserData() {
     var user = props.user;
     if(!user) return; 
