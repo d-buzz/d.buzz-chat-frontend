@@ -1,21 +1,28 @@
 <template>
   <DefaultModal>
-    <div class="flex" v-if='communityData'>
-        <div class="flex-shrink-0 mr-5px">
-            <img
-            class="rounded-full" style="width:128px; height: 128px; "
-            :src="`https://images.hive.blog/u/${communityData.getName()}/avatar/medium`"
-            alt="@"
-            />
-        </div>
-        <div class="grow" style="margin-top:-7px;">
-            <div class="flex justify-between">
-                <small>C/{{communityData.getName()}}</small>
-                <small>{{communityData.communityData.subscribers}} <span class="oi oi-people"></span></small>
+    <div style="min-height:128px;">
+        <Transition>
+            <div v-if='communityData'>
+                <div class="flex">
+                    <div class="flex-shrink-0 mr-5px">
+                        <!--<img
+                        class="rounded-full" style="width:128px; height: 128px; "
+                        :src="`https://images.hive.blog/u/${communityData.getName()}/avatar/medium`"
+                        alt="@"
+                        />-->
+                        <UserIcon :name="communityData.getName()" imgCss="av128" size="medium"/>
+                    </div>
+                    <div class="grow" style="margin-top:-7px;">
+                        <div class="flex justify-between">
+                            <small>C/{{communityData.getName()}}</small>
+                            <small>{{communityData.communityData.subscribers}} <span class="oi oi-people"></span></small>
+                        </div>
+                        <h1 class="text-xl font-bold">{{communityData.getTitle()}}</h1>
+                        <p>{{communityData.getAbout()}}</p>
+                    </div>
+                </div>
             </div>
-            <h1 class="text-xl font-bold">{{communityData.getTitle()}}</h1>
-            <p>{{communityData.getAbout()}}</p>
-        </div>
+        </Transition>
     </div>
     <div class="mt-2">
         <button class="btn" @click="visitCommunity(community)"><span class="oi oi-globe text-sm"></span> Visit</button>
@@ -88,3 +95,14 @@ async function init() {
 }
 init();
 </script>
+<style scoped>
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+</style>

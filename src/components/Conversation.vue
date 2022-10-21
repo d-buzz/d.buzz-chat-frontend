@@ -2,11 +2,12 @@
     <router-link :to="`${link}`">
         <div class="flex style" :class="{selected: $route.path == link}">
             <div class="flex-shrink-0 mr-5px">
-                <img
+                <!--<img
                 class="rounded-full avConversation"
                 :src="`https://images.hive.blog/u/${iconUsername}/avatar/small`"
                 alt="@"
-                />
+                />-->
+                <UserIcon v-if="iconUsername" :name="iconUsername" imgCss="avConversation"/>
             </div>
             <div class="grow"> 
                 <div>{{users}}</div>

@@ -45,8 +45,8 @@ function toggleJoinModal() {
 }
 
 const hasImg = ref(hasProfileImage(props.community));
-function onClick(community) {
-    const manager = getManager();
+async function onClick(community) {
+    //const manager = getManager();
     //router.push(manager.getSelectedCommunityPage(community, `/i/${community}/about`));
     toggleJoinModal();
 }

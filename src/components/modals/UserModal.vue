@@ -11,7 +11,16 @@
             <UserIcon :name="user" imgCss="av128" size="medium"/>
         </div>
         <div class="grow" style="margin-top:-7px;">
-            <b class="text-lg">{{user}}</b>
+            <div class="flex justify-between">
+                <b class="text-lg">{{user}}</b>
+                <span>
+                    <small class="text-gray-700 mr-1" 
+                        style="align-self: center; padding: 1px 2px; " title="reputation">{{reputation}}
+                        <span class="oi oi-badge" style="opacity:0.5;"></span></small> 
+                    <small class="text-gray-700" style="align-self: center;" title="created date">
+                        {{created}}<span class="oi oi-calendar" style="margin-left:1px; opacity:0.5;"></span></small> 
+                </span>            
+            </div>
             <hr/>
             <div v-if="communityData">
                 <div v-if="editable" class="mt-1">
@@ -49,6 +58,8 @@ var updateMessage = ref("");
 var editable = ref(false);
 var isMod = ref(false);
 var roleSet = ref(new stlib.PermissionSet());
+var created = ref(null);
+var reputation = ref(null);
 async function saveChanges() {
     if(roleSet.value.role != role.value) await setRole(roleSet.value.role);
     var titleToSet = roleSet.value.titles.join(",");
@@ -117,6 +128,21 @@ async function setTitle(titles) {
         console.log(e);
     }
 }
+function formatDate(date) {
+    var t = date.indexOf('T');
+    if(t !== -1) date = date.substring(0, t);
+    return date;
+}
+async function initUserData() {
+    var user = props.user;
+    if(!user) return; 
+    var data = await stlib.Utils.getAccountData(user);
+    if(data) { 
+        created.value = formatDate(data.created);
+        reputation.value = hive.formatter.reputation(data.reputation);    
+    }
+}
+initUserData();
 async function init() {
     //bridge.list_community_roles
     var community = props.community;
