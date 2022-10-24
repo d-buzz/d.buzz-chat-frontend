@@ -28,7 +28,7 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: "/home",
-        name: "Control Panel",
+        name: "Home",
         component: () => import("./Home.vue"),
       },
       {

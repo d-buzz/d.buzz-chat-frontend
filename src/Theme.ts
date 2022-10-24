@@ -14,7 +14,8 @@ export const defaultColors = [
 
 export const colorTypes = [
     ["bg", "Background", null],
-    ["fg", "Foreground", (x)=>calcFg(x)]
+    ["fg", "Foreground", (x)=>calcFg(x)],
+    ["sg", "Selection", (x)=>calcSg(x)]
 ];
 
 export const defaultThemes = {
@@ -134,7 +135,7 @@ export class ThemeColor {
     colorToString(): string {
         var a = this.color;
         if(a.length === 3) return `rgb(${a[0]}, ${a[1]}, ${a[2]})`;
-        if(a.length === 4) return `rgba(${a[0]}, ${a[1]}, ${a[2]}, ${a[3]})`;
+        if(a.length === 4) return `rgba(${a[0]}, ${a[1]}, ${a[2]}, ${a[3]/255.0})`;
         console.log("warning: color", this.name, "is", this.color);
         return 'rgb(255,0,255)';
     }
@@ -248,7 +249,12 @@ function parseRGB(color): number[] {
     }
     return null;    
 }
-function calcFg(rgb) {
+function calcFg(rgb,compare=128) {
     var sum = ((rgb[0]*299) + (rgb[1] * 587) + (rgb[2] * 114)) * 0.001;
-    return (sum > 128) ? [0,0,0] : [255,255,255];
+    return (sum > compare) ? [0,0,0] : [255,255,255];
+}
+function calcSg(rgb) {
+    var sg = calcFg(rgb,200);
+    sg.push((sg[0] === 0)?23:95);
+    return sg;
 }

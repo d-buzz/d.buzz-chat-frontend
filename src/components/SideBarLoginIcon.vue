@@ -1,7 +1,7 @@
 <template>
   <LoginModal :show="loginModalOpen" @close="toggleLoginModal(false)"></LoginModal>
 
-  <div class="relative flex items-center justify-start">
+  <div class="relative flex items-center justify-start pt-1 pr-1 pl-1 pb-1" :class="{selected: $route.name == 'Home'}">
     <small v-if="number && number != '0'" class="number"><b>{{number}}</b></small>
     <div class="flex-shrink-0 avCommunity">
       <div v-if="accountStore.account.authenticated" class="nameParent" :title="accountStore.account.name">
@@ -51,6 +51,10 @@ const toggleLoginModal = () => {
     align-self: flex-start;
     border-radius: 3px;
     bottom: 5px;
+}
+.selected { 
+    @apply rounded;
+    background: var(--appsg0);
 }
 .number {
     display: block;

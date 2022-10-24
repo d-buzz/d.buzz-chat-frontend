@@ -88,16 +88,16 @@
 }
 
 .border-r-1 {
-    border-right: 1px solid #950017;
+    border-right: 1px solid #0000002e;
 }
 .border-l-1 {
-    border-left: 1px solid #950017;
+    border-left: 1px solid #0000002e;
 }
 .border-t-1 {
-    border-top: 1px solid #950017;
+    border-top: 1px solid #0000002e;
 }
 .border-b-1 {
-    border-bottom: 1px solid #950017;
+    border-bottom: 1px solid #0000002e;
 }
 .av128 {
     font-size: 45px;

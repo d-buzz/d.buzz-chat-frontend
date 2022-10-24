@@ -2,11 +2,7 @@
     <div class="appbg2 w-full h-full break-all overflow-scroll" v-if="accountStore.account.name">
         <div class="flex mt-3 mr-3">
             <div class="flex-shrink-0 mr-5px">
-                <img
-                class="rounded-full"
-                :src="`https://images.hive.blog/u/${accountStore.account.name}/avatar/medium`"
-                alt="@"
-                />
+                <UserIcon :name="accountStore.account.name" imgCss="av128" size="medium"/>
             </div>
             <div class="grow" style="margin-top:-7px;">
                 <div><b class="text-lg">{{accountStore.account.name}}</b></div>

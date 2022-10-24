@@ -105,7 +105,7 @@ function getLetterIcon() {
 }
 .selected { 
     @apply rounded;
-    background: rgba(255,255,255,0.37);
+    background: var(--appsg0);
 }
 .name2 {
     pointer-events: none;
