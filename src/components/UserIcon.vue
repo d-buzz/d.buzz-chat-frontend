@@ -53,7 +53,6 @@ async function initProfileImage() {
 }
 initProfileImage();
 function imgLoadError() {
-    console.log("imgLoadError", backupLetter.value);
     profileLetter.value = backupLetter.value;
 }
 function hash(text) {

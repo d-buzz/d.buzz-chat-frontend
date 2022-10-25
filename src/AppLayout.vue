@@ -8,7 +8,7 @@
     <div class="streambar h-screen flex flex-col appbg1 appfg1 shadow-lg" ref="streamBar">
         <StreamBar :key="getKey(route.path)"></StreamBar>
     </div>
-    <div class="ml-3 grow">
+    <div class="ml-3 grow" @click="hideStreambar()">
         <router-view :key="getKey(route.path)"></router-view>
     </div>
   </div>
@@ -22,6 +22,9 @@ function getKey(path) {
 function toggleStreambar() {
     var value = streamBar.value.dataset.show;
     streamBar.value.dataset.show = !("true" === value);
+}
+function hideStreambar() {
+    streamBar.value.dataset.show = false;
 }
 </script>
 <style scoped>

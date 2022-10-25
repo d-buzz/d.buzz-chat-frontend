@@ -19,7 +19,7 @@
 import VueSimpleContextMenu from 'vue-simple-context-menu';
 const props = defineProps({
     name: String,
-    community: Object,
+    community: String,
     displayOnly: Boolean,
     imgCss: {type: String, default: 'avMessage'} 
 });
@@ -39,5 +39,8 @@ const iconMenu = ref(null);
 function clickOnIcon(event) { 
     console.log("iconMenu ", iconMenu.value);
     iconMenu.value.showMenu(event, "item");
+}
+function clickOnIconOption(item) {
+    console.log("click", item);
 }
 </script>
