@@ -5,7 +5,7 @@
     </div>
     <div v-else class="relative">
         <img v-if="size != 'small'" class="absolute rounded-full" :class="`${imgCss}`" :src="`https://images.hive.blog/u/${name}/avatar/${size}`"/>     
-        <img class="rounded-full" :class="`${imgCss}`" :src="`https://images.hive.blog/u/${name}/avatar/small`" :alt="name" />     
+        <img class="rounded-full" :class="`${imgCss}`" :src="`https://images.hive.blog/u/${name}/avatar/small`" @error="imgLoadError()" alt="" />     
     </div>
 </template>
 <script setup>
@@ -17,6 +17,7 @@ const props = defineProps({
     size: {type: String, default: 'small'}
 });
 const profileLetter = ref(null);
+const backupLetter = ref("Hi");
 async function initProfileImage() {
     var name = props.name;
     if(!name) return true;
@@ -34,22 +35,27 @@ async function initProfileImage() {
             return;
         }
         var json = data.posting_json_metadata;
-        if(json && json.length > 0) {
-            json = JSON.parse(json);
-            if(json.profile && json.profile.profile_image)
-                return true;
-        }
         var name2 = props.name2;
         if(!name2 || name2.length < 1) name2 = name;
         var text = '';
         if(name2.length > 0) text += name2[0].toUpperCase();
         if(name2.length > 1) text += name2[1].toLowerCase();
+        backupLetter.value = text;
+        if(json && json.length > 0) {
+            json = JSON.parse(json);
+            if(json.profile && json.profile.profile_image)
+                return true;
+        }  
         profileLetter.value = text;
         return false;
     }
     catch(e) { console.log(e); return true; }
 }
 initProfileImage();
+function imgLoadError() {
+    console.log("imgLoadError", backupLetter.value);
+    profileLetter.value = backupLetter.value;
+}
 function hash(text) {
   var h = 0;
   for(var i = 0; i < text.length; i++) h = (((h << 5) - h) + text.charCodeAt(i))|0;

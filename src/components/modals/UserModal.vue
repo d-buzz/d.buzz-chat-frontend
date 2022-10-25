@@ -171,7 +171,7 @@ async function initUserData() {
     var data = await stlib.Utils.getAccountData(user);
     if(data) { 
         created.value = formatDate(data.created);
-        reputation.value = hive.formatter.reputation(data.reputation);    
+        reputation.value = data.reputation===0?25:hive.formatter.reputation(data.reputation);    
     }
 }
 initUserData();
