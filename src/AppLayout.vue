@@ -29,7 +29,7 @@ function toggleStreambar() {
     .streambar {
         display: none;
         position: fixed;
-        z-index: 11;
+        z-index: 7;
         left: 63px;
     }
     .streambar[data-show="true"] {
