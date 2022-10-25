@@ -6,14 +6,14 @@
         <DeleteThemeModal :name="name" @close="toggleDeleteModal"></DeleteThemeModal>
     </TransitionRoot>
     <div><b>{{name}}</b></div>
-    <div ref="root"  class="flex row border rounded border-gray-400" style="height:50px;">
-        <div class="appbg0 appfg0 border-r-1" style="width:63px;" 
+    <div ref="root"  class="flex flex-wrap row rounded">
+        <div class="appbg0 appfg0 border-default mrb1" style="width:63px;height:50px;" 
             :style="`background:${style[0]};color:`">
             <div class="w-full text-center mt-1" style="padding-left: 1px;">
                 <span class="oi oi-menu" style="font-size:30px;"></span>
             </div>
         </div>
-        <div class="appbg1 appfg1 border-r-1" style="width:200px;">
+        <div class="appbg1 appfg1 border-default grow mrb1" style="width:200px;height:50px;">
             <div class="flex justify-between pr-1 pl-1">
                 <b class="border-b-1">Direct Messages</b>
                 <button class="text-sm">
@@ -21,13 +21,16 @@
                 </button>
             </div>
         </div>
-        <div class="appbg2 appfg2 border-r-1 grow pr-3 pl-3" style="width:200px;">
-            <b>Action </b> <button class="btn ml-1" @click="pick()">Pick</button> 
-            <button class="btn2" @click="action()">{{edit?'Edit':'Clone'}}</button>
-            <button v-if="edit" class="cursor-pointer" @click=toggleDeleteModal() title="Delete"><span class="oi oi-x"></span></button>
-        </div>
-        <div class="appbg3 appfg3 pr-1 pl-1" style="width:100px;">
-            <b>Users</b>
+        <div class="flex" style="flex-grow:10000;height:50px;">
+            <div class="appbg2 appfg2 border-default grow pr-3 pl-3 mrb1" style="width:210px;height:50px;">
+                <b>Action </b> <button class="btn ml-1" @click="pick()">Pick</button> 
+                <button class="btn2" @click="action()">{{edit?'Edit':'Clone'}}</button>
+                <button v-if="edit" class="cursor-pointer" @click=toggleDeleteModal() title="Delete"><span class="oi oi-x"></span></button>
+                
+            </div>
+            <div class="appbg3 appfg3 border-default pr-1 pl-1" style="width:100px;height:50px;">
+                <b>Users</b>
+            </div>
         </div>
     </div>
 </template>
@@ -78,3 +81,10 @@ function pick() {
     theme.applyTheme();
 }
 </script> 
+<style scoped>
+.mrb1 {
+    margin-right: -1px;
+    margin-bottom: -1px;
+}
+</style>
+

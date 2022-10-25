@@ -87,6 +87,9 @@
     border-bottom: 5px solid var(--appbgbtn1);
 }
 
+.border-default {
+    border: 1px solid #0000002e;
+}
 .border-r-1 {
     border-right: 1px solid #0000002e;
 }
