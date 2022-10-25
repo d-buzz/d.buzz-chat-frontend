@@ -22,7 +22,6 @@ async function initProfileImage() {
     var name = props.name;
     if(!name) return true;
     var letterIcon = props.letterIcon;
-    console.log(name, letterIcon);
     if(letterIcon !== undefined && letterIcon !== null) {
         profileLetter.value = letterIcon?letterIcon:
                 (name.substring(0, 1).toUpperCase()+name.substring(1, 2));

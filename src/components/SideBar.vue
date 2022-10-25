@@ -1,15 +1,16 @@
 <template>
-  <div class="h-screen m-0 flex flex-col shadow-lg overflow-y-scroll border-r-1"
-        style="overflow-x: clip;">
-    <div class="border-b-1">
+    <div>
         <SideBarLoginIcon :number="number" />
     </div>
-    <div>
+    <div class="border-b-1">
         <button class="w-full avCommunity md:hidden border-r-1" style="padding-left: 1px;"
              @click="$emit('toggleStreambar')"><span class="oi oi-menu" style="font-size:30px;"></span></button>
     </div>    
+  <div class="h-screen m-0 flex flex-col shadow-lg overflow-y-scroll border-r-1"
+        style="overflow-x: clip;">
     <div :key="updateKey">
-      <SideBarIcon v-for="community in communities" :img="community[0]" :name="community[1]" :community="community" :number="community.lastReadNumber"  />
+      <SideBarIcon v-for="community in communities" :img="community[0]" :name="community[1]"
+         :community="community" :number="community.lastReadNumber" @toggleStreambar="$emit('toggleStreambar')" />
     </div>
   </div>
 </template>

@@ -29,6 +29,7 @@
   </div>
 </template>
 <script setup>
+const emit = defineEmits(["toggleStreambar"]);
 const router = useRouter();
 const props = defineProps({
     img: String,
@@ -40,7 +41,9 @@ const props = defineProps({
 const hasImg = ref(hasProfileImage(props.community));
 function onClick(community) {
     const manager = getManager();
-    router.push(manager.getSelectedCommunityPage(community, `/i/${community}/about`));
+    var link = manager.getSelectedCommunityPage(community, `/i/${community}/about`);
+    if(link === router.currentRoute._value.fullPath) emit('toggleStreambar');
+    else router.push(link);
 }
 function hasProfileImage(community) {
     if(!community) return true;
