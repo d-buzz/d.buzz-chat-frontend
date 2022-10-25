@@ -29,6 +29,10 @@ async function initProfileImage() {
     }
     try {
         var data = await stlib.Utils.getAccountData(name);
+        if(data === undefined) {
+            console.log("data is undefined ", name, data);
+            return;
+        }
         var json = data.posting_json_metadata;
         if(json && json.length > 0) {
             json = JSON.parse(json);

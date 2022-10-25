@@ -2752,24 +2752,27 @@ class Utils {
                 });
         });
     }
-    static getAccountData(user) {
+    static getAccountData(_user) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield accountDataCache.cacheLogic(user, (user) => {
+            return yield accountDataCache.cacheLogic(_user, (user) => {
+                if (!Array.isArray(user))
+                    user = [user];
                 return Utils.getDhiveClient().database
-                    .getAccounts([user]).then((array) => {
-                    if (array.length === 1 && array[0].name === user) {
-                        return {
-                            name: array[0].name,
-                            posting: array[0].posting,
-                            memo_key: array[0].memo_key,
-                            posting_json_metadata: array[0].posting_json_metadata,
-                            created: array[0].created,
-                            reputation: array[0].reputation
+                    .getAccounts(user).then((array) => {
+                    var result = {};
+                    for (var i = 0; i < array.length; i++) {
+                        result[array[i].name] = {
+                            name: array[i].name,
+                            posting: array[i].posting,
+                            memo_key: array[i].memo_key,
+                            posting_json_metadata: array[i].posting_json_metadata,
+                            created: array[i].created,
+                            reputation: array[i].reputation
                         };
                     }
-                    return null;
+                    return result;
                 });
-            });
+            }, 25);
         });
     }
     static getCommunityData(user) {
@@ -2844,6 +2847,8 @@ account and community data for X time
 class AccountDataCache {
     constructor() {
         this.data = {};
+        this.batch = null;
+        this.batchPromise = null;
     }
     lookup(user) {
         return this.data[user];
@@ -2872,7 +2877,29 @@ class AccountDataCache {
             this.data[user].value = value;
         }
     }
-    cacheLogic(user, dataPromise) {
+    callBatched(dataPromise, batch = this.batch) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                var results = yield dataPromise(batch);
+                for (var i = 0; i < batch.length; i++) {
+                    var user = batch[i];
+                    var result = results[user];
+                    if (result !== undefined)
+                        this.store(user, result);
+                }
+            }
+            catch (e) {
+                console.log(e);
+            }
+            finally {
+                if (batch === this.batch) {
+                    this.batch = null;
+                    this.batchPromise = null;
+                }
+            }
+        });
+    }
+    cacheLogic(user, dataPromise, aggregate = 1) {
         return __awaiter(this, void 0, void 0, function* () {
             //TODO cache for x time
             //TODO group many requests into one
@@ -2886,10 +2913,40 @@ class AccountDataCache {
                     return cachedData.value;
                 }
             }
-            var promise = dataPromise(user).then((result) => {
-                this.store(user, result);
-                return result;
-            });
+            var promise;
+            if (aggregate > 1) {
+                var _this = this;
+                var batch = this.batch;
+                if (batch == null) {
+                    this.batch = batch = [user];
+                    this.batchPromise = new Promise((resolve) => {
+                        batch.resolve = resolve;
+                        setTimeout(resolve, 10);
+                    }).then(() => __awaiter(this, void 0, void 0, function* () {
+                        yield _this.callBatched(dataPromise, batch);
+                    }));
+                    this.batchPromise.resolve = batch.resolve;
+                }
+                else if (batch.indexOf(user) === -1) {
+                    batch.push(user);
+                }
+                var batchPromise = this.batchPromise;
+                if (batch.length === aggregate) {
+                    batchPromise.resolve();
+                    yield batchPromise;
+                    return this.lookupValue(user);
+                }
+                promise = new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+                    yield batchPromise;
+                    resolve(_this.lookupValue(user));
+                }));
+            }
+            else {
+                promise = dataPromise(user).then((result) => {
+                    this.store(user, result);
+                    return result;
+                });
+            }
             this.storeLater(user, promise);
             return yield promise;
         });
