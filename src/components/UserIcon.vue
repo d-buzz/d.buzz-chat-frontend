@@ -3,7 +3,7 @@
         :style="`${randomColor(name)}`">
         <span>{{profileLetter}}</span>
     </div>
-    <div v-else>
+    <div v-else class="relative">
         <img v-if="size != 'small'" class="absolute rounded-full" :class="`${imgCss}`" :src="`https://images.hive.blog/u/${name}/avatar/${size}`"/>     
         <img class="rounded-full" :class="`${imgCss}`" :src="`https://images.hive.blog/u/${name}/avatar/small`" :alt="name" />     
     </div>
