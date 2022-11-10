@@ -38,6 +38,11 @@ class Client {
             return yield this.emit('s', "");
         });
     }
+    readInfo() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.emit('i', "");
+        });
+    }
     readNodeVersion() {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.emit('v', "");
@@ -100,6 +105,9 @@ class Client {
                 }
             });
         });
+    }
+    close() {
+        this.io.close();
     }
 }
 exports.Client = Client;
@@ -2475,7 +2483,7 @@ const data_path_1 = require("./data-path");
 if (window !== undefined) {
     window.stlib = {
         Client: client_1.Client, Community: community_1.Community, Content: imports_1.Content, DataStream: data_stream_1.DataStream, DataPath: data_path_1.DataPath, DisplayableEmote: displayable_message_1.DisplayableEmote, DisplayableMessage: displayable_message_1.DisplayableMessage,
-        PermissionSet: permission_set_1.PermissionSet, MessageManager: message_manager_1.MessageManager, Utils: utils_1.Utils, SignableMessage: signable_message_1.SignableMessage,
+        PermissionSet: permission_set_1.PermissionSet, MessageManager: message_manager_1.MessageManager, Utils: utils_1.Utils, SignableMessage: signable_message_1.SignableMessage, TransientCache: utils_1.TransientCache,
         newSignableMessage: signable_message_1.SignableMessage.create,
         utcTime: utils_1.Utils.utcTime
     };
@@ -2602,7 +2610,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AccountDataCache = exports.Utils = void 0;
+exports.AccountDataCache = exports.TransientCache = exports.Utils = void 0;
 const signable_message_1 = require("./signable-message");
 const default_stream_data_cache_1 = require("./default-stream-data-cache");
 var keyChainRequest = null;
@@ -2825,6 +2833,22 @@ class Utils {
         lastRandomPublicKey = key;
         return key;
     }
+    static xorArray(a, b, result = null) {
+        var length = Math.min(a.length, b.length);
+        if (result === null)
+            result = new Array(length).fill(0);
+        for (var i = 0; i < length; i++)
+            result[i] = a[i] ^ b[i];
+        return result;
+    }
+    static arrayEquals(a, b) {
+        if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length)
+            return false;
+        for (var i = 0; i < a.length; i++)
+            if (a[i] !== b[i])
+                return false;
+        return true;
+    }
     static newCache() {
         return new AccountDataCache();
     }
@@ -2837,6 +2861,45 @@ class Utils {
     }
 }
 exports.Utils = Utils;
+class TransientCache {
+    constructor(duration, binDuration, newBinInstanceFn) {
+        this.items = {};
+        this.duration = duration;
+        this.binDuration = binDuration;
+        this.newBinInstanceFn = newBinInstanceFn;
+    }
+    binTime(time) {
+        return time - time % this.binDuration;
+    }
+    get(time, createIfNotPresent = true) {
+        var now = Utils.utcTime();
+        var ti = this.binTime(time);
+        if (now - this.duration > ti)
+            return null;
+        var bin = this.items[ti];
+        if (bin === undefined) {
+            if (createIfNotPresent)
+                this.items[ti] = bin = this.newBinInstanceFn();
+            else
+                bin = null;
+        }
+        return bin;
+    }
+    add(time, item) {
+        var bin = this.get(time);
+        if (bin == null)
+            return null;
+        bin.add(time, item);
+        return bin;
+    }
+    deleteOldEntries() {
+        var now = Utils.utcTime();
+        for (var ti in this.items)
+            if (now - this.duration > Number(ti))
+                delete this.items[ti];
+    }
+}
+exports.TransientCache = TransientCache;
 /*
 TODO a simple cache for now
 will have to discuss and redesign later
