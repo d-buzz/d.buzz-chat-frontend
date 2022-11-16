@@ -259,10 +259,8 @@ function toRelativeTimeString(ti) {
 }
 async function init() {
     var message = props.message;
-    console.log("message ", message);
     if(!message) return;
     var community = message.getCommunity();
-    console.log("community ", community);
     if(!community) return;
     var data = await stlib.Community.load(community);
     var role = data.getRole(message.getUser());

@@ -2438,6 +2438,10 @@ class SignableMessage {
                 var accountData = yield utils_1.Utils.getAccountData(user);
                 if (accountData === null)
                     return false;
+                if (accountData === undefined) {
+                    console.log("error: undefined account data for user '", user, "'");
+                    return false;
+                }
                 return this.verifyWithAccountData(accountData);
             }
         });
@@ -2967,8 +2971,6 @@ class AccountDataCache {
     cacheLogic(user, dataPromise, aggregate = 1) {
         return __awaiter(this, void 0, void 0, function* () {
             //TODO cache for x time
-            //TODO group many requests into one
-            //TODO limit hive api calls
             var cachedData = this.lookup(user);
             if (cachedData !== undefined) {
                 if (cachedData.value !== undefined)
@@ -2982,7 +2984,18 @@ class AccountDataCache {
             if (aggregate > 1) {
                 var _this = this;
                 var batch = this.batch;
+                var batchPromise = this.batchPromise;
+                while (batch != null && batch.length === aggregate && batchPromise != null) {
+                    yield batchPromise;
+                    if (batchPromise === this.batchPromise) {
+                        console.log("error cacheLogic");
+                        break;
+                    }
+                    batch = this.batch;
+                    batchPromise = this.batchPromise;
+                }
                 if (batch == null) {
+                    console.log("batch is null");
                     this.batch = batch = [user];
                     this.batchPromise = new Promise((resolve) => {
                         batch.resolve = resolve;
@@ -2995,7 +3008,7 @@ class AccountDataCache {
                 else if (batch.indexOf(user) === -1) {
                     batch.push(user);
                 }
-                var batchPromise = this.batchPromise;
+                batchPromise = this.batchPromise;
                 if (batch.length === aggregate) {
                     batchPromise.resolve();
                     yield batchPromise;
