@@ -106,26 +106,36 @@
     font-size: 45px;
     width: 128px;
     height: 128px;
+    min-width: 128px;
+    min-height: 128px;
 }
 .avCommunity {
     font-size: 20px;
     width: 54px;
     height: 54px;
+    min-width: 54px;
+    min-height: 54px;
 }
 .avMini {
     font-size: 8.5px;
     width: 20px;
     height: 20px;
+    min-width: 20px;
+    min-height: 20px;
 }
 .avMessage {
     font-size: 19px;
     width: 42px;
     height: 42px;
+    min-width: 42px;
+    min-height: 42px;
 }
 .avConversation {
     font-size: 16px;
     width: 35px;
     height: 35px;
+    min-width: 35px;
+    min-height: 35px;
 }
 .w-200 { width: 200px; }
 .mr-5px { margin-right: 5px;}
