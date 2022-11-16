@@ -1,6 +1,6 @@
 <template>
     <div>
-        <SideBarLoginIcon :number="number" />
+        <SideBarLoginIcon :number="number" @toggleStreambar="$emit('toggleStreambar')"/>
     </div>
     <div class="border-b-1">
         <button class="w-full avCommunity md:hidden border-r-1" style="padding-left: 1px;"

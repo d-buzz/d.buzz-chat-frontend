@@ -6,9 +6,9 @@
     <div class="flex-shrink-0" style="width:54px;height:54px;">
       <div v-if="accountStore.account.authenticated" class="nameParent" :title="accountStore.account.name">
         <small class="name"><b>{{accountStore.account.name}}</b></small>
-        <router-link to="/home">
+        <span class="cursor-pointer" @click="onClick()">
             <UserIcon :name="accountStore.account.name" imgCss="avCommunity"/>
-        </router-link>
+        </span>
       </div>
       <div v-else>
         
@@ -21,11 +21,19 @@
 <script setup>
 import Login from "../assets/images/icons/login.svg";
 import { useAccountStore } from "../stores/account";
+const emit = defineEmits(["toggleStreambar"]);
+const router = useRouter();
 const accountStore = useAccountStore();
 
 const props = defineProps({
     number: String
 });
+function onClick() {
+    const manager = getManager();
+    var link = '/home';
+    if(link === router.currentRoute._value.fullPath) emit('toggleStreambar');
+    else router.push(link);
+}
 let loginModalOpen = ref(false);
 const toggleLoginModal = () => {
   loginModalOpen.value = !loginModalOpen.value;
