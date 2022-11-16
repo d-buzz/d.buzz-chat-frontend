@@ -6,6 +6,13 @@
             </div>
             <div class="grow" style="margin-top:-7px;">
                 <div><b class="text-lg">{{accountStore.account.name}}</b></div>
+                <span>
+                    <small class="text-gray-700 mr-1" 
+                        style="align-self: center; padding: 1px 2px; " title="reputation">{{reputation}}
+                        <span class="oi oi-badge" style="opacity:0.5;"></span></small> 
+                    <small class="text-gray-700" style="align-self: center;" title="created date">
+                        {{created}}<span class="oi oi-calendar" style="margin-left:1px; opacity:0.5;"></span></small> 
+                </span>
             </div>
             <div style="margin-top:-7px;">
                 <button class="btn" @click="logout()">logout</button>
@@ -115,6 +122,8 @@
 import { useAccountStore } from "../stores/account";
 const accountStore = useAccountStore();
 const router = useRouter();
+const created = ref(null);
+const reputation = ref(null);
 const communities = ref([]);
 const communitiesFound = ref([]);
 const communitiesActive = ref([]);
@@ -243,7 +252,21 @@ async function initActiveCommunities() {
     }
 }
 initActiveCommunities();
-
+function formatDate(date) {
+    var t = date.indexOf('T');
+    if(t !== -1) date = date.substring(0, t);
+    return date;
+}
+async function initUserData() {
+    var user = accountStore.account.name;
+    if(!user) return; 
+    var data = await stlib.Utils.getAccountData(user);
+    if(data) { 
+        created.value = formatDate(data.created);
+        reputation.value = data.reputation===0?25:hive.formatter.reputation(data.reputation);    
+    }
+}
+initUserData();
 async function updatePreferences() {
     var user = accountStore.account.name;
     if(user == null) return;
