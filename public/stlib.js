@@ -68,6 +68,11 @@ class Client {
             return yield this.emit("r", ["r", conversation, fromTimestamp, toTimestamp]);
         });
     }
+    createGuestAccount(username, publicPostingKey) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.emit("a", ["a", username, username, publicPostingKey]);
+        });
+    }
     write(msg) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!msg.isSigned())
@@ -801,6 +806,48 @@ class Preferences extends imports_1.JSONContent {
     }
     getPreferencesJSON() { return this.json[1]; }
     /*setPreferencesJSON(json: any): void { this.json[1] = json; }*/
+    createGuestAccount(name, publicKeyPost, publicKeyMemo = "", posting_json_metadata = "") {
+        var account = this.getAccount();
+        account.name = name;
+        account.posting = publicKeyPost;
+        account.posting_json_metadata = posting_json_metadata;
+        account.created = imports_1.Utils.utcTime();
+        account.reputation = 0;
+        account.creator = "";
+        account.creatorKeyType = 'p';
+        account.signature = "";
+    }
+    signGuestAccountWithKey(creator, key, accountName) {
+        var account = this.getAccount(false);
+        if (account) {
+            account.name = accountName;
+            var message = imports_1.SignableMessage.create(account.creator, account.user, account.posting, imports_1.SignableMessage.TYPE_ACCOUNT);
+            account.creator = creator;
+            account.creatorKeyType = 'p';
+            message.signWithKey(key, account.creatorKeyType);
+            account.signature = message.getSignatureHex();
+            return true;
+        }
+        return false;
+    }
+    hasAccount(user) {
+        var account = this.getAccount(false);
+        return account && account.name === user;
+    }
+    verifyAccount(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var account = this.getAccount(false);
+            if (account && account.name === user) {
+                //check if account.creator has permission to create account
+                var message = imports_1.SignableMessage.fromJSON(['a', account.creator, account.user,
+                    [account.posting], account.created, account.creatorKeyType,
+                    account.signature
+                ]);
+                return yield message.verify();
+            }
+            return false;
+        });
+    }
     getValueBoolean(name, def = false) {
         var value = this.getValues()[name + ":b"];
         return (value === undefined) ? def : value;
@@ -838,12 +885,13 @@ class Preferences extends imports_1.JSONContent {
         var group = groups[groupId];
         return group == null ? null : group;
     }
-    getValues() { return this.getValueSet('values'); }
-    getGroups() { return this.getValueSet('groups'); }
-    getValueSet(name) {
+    getAccount(create = true) { return this.getValueSet('account', create); }
+    getValues(create = true) { return this.getValueSet('values', create); }
+    getGroups(create = true) { return this.getValueSet('groups', create); }
+    getValueSet(name, create = true) {
         var json = this.getPreferencesJSON();
         var set = json[name];
-        if (set === undefined)
+        if (create && set === undefined)
             json[name] = set = {};
         return set;
     }
@@ -2269,13 +2317,15 @@ class SignableMessage {
     constructor() {
         this.type = "w";
     }
-    static create(user, conversation, json) {
+    static create(user, conversation, json, type = 'w') {
         var s = new SignableMessage();
+        s.setMessageType(type);
         s.setUser(user);
         s.setConversation(conversation);
         s.setJSON(json);
         return s;
     }
+    setMessageType(type) { this.type = type; }
     setUser(user) { this.user = user; }
     setConversation(a) {
         if (Array.isArray(a))
@@ -2313,6 +2363,7 @@ class SignableMessage {
     isSignedWithPosting() { return this.keytype === "p"; }
     isSignedWithGroupKey() { return this.keytype === "g"; }
     getSignature() { return this.signature; }
+    getSignatureHex() { return this.signature == null ? null : this.signature.toString('hex'); }
     getReference() {
         return this.getUser() + "|" + this.getTimestamp();
     }
@@ -2340,13 +2391,17 @@ class SignableMessage {
     static fromJSON(json) {
         var array = (typeof json === 'string') ? JSON.parse(json) : json;
         var message = new SignableMessage();
-        message.type = array[0];
-        message.setUser(array[1]);
-        message.setConversation(array[2]);
-        message.setJSON(array[3]);
-        message.timestamp = array[4];
-        message.keytype = array[5];
-        message.signature = Buffer.from(array[6], 'hex');
+        if (array.length > 0)
+            switch (array.length) {
+                default:
+                case 7: message.signature = Buffer.from(array[6], 'hex');
+                case 6: message.keytype = array[5];
+                case 5: message.timestamp = array[4];
+                case 4: message.setJSON(array[3]);
+                case 3: message.setConversation(array[2]);
+                case 2: message.setUser(array[1]);
+                case 1: message.type = array[0];
+            }
         return message;
     }
     encodeWithKey(privateK, publicK = null) {
@@ -2436,8 +2491,19 @@ class SignableMessage {
             }
             else {
                 var accountData = yield utils_1.Utils.getAccountData(user);
-                if (accountData === null)
+                if (accountData === null) {
+                    if (utils_1.Utils.isGuest(user) && this.isPreference()) {
+                        try {
+                            var preferences = this.getContent();
+                            if (preferences instanceof imports_1.Preferences)
+                                return yield preferences.verifyAccount(user);
+                        }
+                        catch (e) {
+                            console.log(e);
+                        }
+                    }
                     return false;
+                }
                 if (accountData === undefined) {
                     console.log("error: undefined account data for user '", user, "'");
                     return false;
@@ -2469,6 +2535,8 @@ class SignableMessage {
     }
 }
 exports.SignableMessage = SignableMessage;
+SignableMessage.TYPE_ACCOUNT = 'a';
+SignableMessage.TYPE_WRITE_MESSAGE = 'w';
 
 }).call(this)}).call(this,require("buffer").Buffer)
 },{"./content/imports":9,"./utils":25,"buffer":27}],23:[function(require,module,exports){
@@ -2768,6 +2836,15 @@ class Utils {
     }
     static getAccountData(_user) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (Utils.isGuest(_user)) {
+                var preferences = yield Utils.getAccountPreferences(_user);
+                return (preferences) ? preferences.getAccount() : null;
+            }
+            return yield Utils.getHAccountData(_user);
+        });
+    }
+    static getHAccountData(_user) {
+        return __awaiter(this, void 0, void 0, function* () {
             return yield accountDataCache.cacheLogic(_user, (user) => {
                 if (!Array.isArray(user))
                     user = [user];
@@ -2829,6 +2906,27 @@ class Utils {
     }
     static isWholeNumber(text) {
         return /^\d+$/.test(text);
+    }
+    static isGuest(user) {
+        return user.indexOf('#') !== -1;
+    }
+    static parseGuest(guestName) {
+        var i = guestName.indexOf('#');
+        if (i === -1)
+            return [guestName];
+        return [guestName.substring(0, i), guestName.substring(i + 1)];
+    }
+    static isValidGuestName(guestName) {
+        if (guestName.length > 20)
+            return false;
+        var i = guestName.indexOf('#');
+        var username = (i === -1) ? guestName : guestName.substring(0, i);
+        var number = (i === -1) ? null : guestName.substring(i + 1);
+        if (username.length <= 2 || username.length > 16)
+            return false;
+        if (number !== null && (number.length <= 0 || !Utils.isWholeNumber(number)))
+            return false;
+        return /^[A-Za-z0-9._]*$/.test(username);
     }
     static randomPublicKey(extraEntropy = "") {
         var seed = extraEntropy + new Date().getTime() + lastRandomPublicKey + Math.random();
