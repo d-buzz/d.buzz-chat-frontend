@@ -116,9 +116,19 @@ async function loginGuest(username) {
         errorMessage.value = "enter username";
         return;
     }    
-    console.log("login guest", username);
-    await accountStore.loginGuest(username);
-    router.push((community.value == null)?'/home':`/i/${community.value.getName()}/about`);
+    try {
+        isLoading.value = true;
+        console.log("login guest", username);
+        await accountStore.loginGuest(username);
+        router.push((community.value == null)?'/home':`/i/${community.value.getName()}/about`);
+    }
+    catch(e) {
+        errorMessage.value = "login failed";
+        console.log(e);
+    }
+    finally {
+        isLoading.value = false;    
+    }
 }
 async function loginKeychain(username) {
     if(username == null || !((username=username.trim()).length > 0)) { 

@@ -63,7 +63,7 @@ export const useAccountStore = defineStore("account", () => {
             console.log(e);
         }
     };
-    const loginGuest = (user: string) => {        //todo
+    const loginGuest = async (user: string) => {        //todo
         account.value.name = user;
         account.value.authenticated = false;
         updateStore();

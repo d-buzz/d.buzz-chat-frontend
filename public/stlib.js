@@ -805,44 +805,20 @@ class Preferences extends imports_1.JSONContent {
         this.privatePreferences = null;
     }
     getPreferencesJSON() { return this.json[1]; }
-    /*setPreferencesJSON(json: any): void { this.json[1] = json; }*/
-    createGuestAccount(name, publicKeyPost, publicKeyMemo = "", posting_json_metadata = "") {
+    createGuestAccount(message) {
         var account = this.getAccount();
-        account.name = name;
-        account.posting = publicKeyPost;
-        account.posting_json_metadata = posting_json_metadata;
-        account.created = imports_1.Utils.utcTime();
-        account.reputation = 0;
-        account.creator = "";
-        account.creatorKeyType = 'p';
-        account.signature = "";
-    }
-    signGuestAccountWithKey(creator, key, accountName) {
-        var account = this.getAccount(false);
-        if (account) {
-            account.name = accountName;
-            var message = imports_1.SignableMessage.create(account.creator, account.user, account.posting, imports_1.SignableMessage.TYPE_ACCOUNT);
-            account.creator = creator;
-            account.creatorKeyType = 'p';
-            message.signWithKey(key, account.creatorKeyType);
-            account.signature = message.getSignatureHex();
-            return true;
-        }
-        return false;
+        account.message = message;
     }
     hasAccount(user) {
         var account = this.getAccount(false);
-        return account && account.name === user;
+        return account && account.message && account.message.length > 2 && account.message[2] === user;
     }
     verifyAccount(user) {
         return __awaiter(this, void 0, void 0, function* () {
             var account = this.getAccount(false);
-            if (account && account.name === user) {
+            if (account && account.message && account.message.length >= 7 && account.message[2] === user) {
                 //check if account.creator has permission to create account
-                var message = imports_1.SignableMessage.fromJSON(['a', account.creator, account.user,
-                    [account.posting], account.created, account.creatorKeyType,
-                    account.signature
-                ]);
+                var message = imports_1.SignableMessage.fromJSON(account.message);
                 return yield message.verify();
             }
             return false;
@@ -1511,6 +1487,7 @@ class MessageManager {
         this.selectedConversation = null;
         this.conversations = new utils_1.AccountDataCache();
         this.communities = new utils_1.AccountDataCache();
+        this.cachedGuestData = null;
         this.keys = {};
         this.keychainPromise = null;
         this.pauseAutoDecode = false;
@@ -1639,6 +1616,54 @@ class MessageManager {
             console.log(e);
         }
         this.join(user);
+    }
+    readGuests() {
+        if (this.cachedGuestData != null)
+            return this.cachedGuestData;
+        var guestData = window.localStorage.getItem("#guestdata");
+        var obj = (guestData == null) ? {} : JSON.parse(guestData);
+        this.cachedGuestData = obj;
+        return obj;
+    }
+    storeGuestLocally(user, key) {
+        var guestData = this.readGuests();
+        guestData[user] = key;
+        window.localStorage.setItem("#guestdata", JSON.stringify(guestData));
+    }
+    createGuestAccount(username, publicPostingKey = null, storePrivateKeyLocally = null) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var client = this.getClient();
+            if (!utils_1.Utils.isValidGuestName(username))
+                return new client_1.CallbackResult(false, 'username is not valid.');
+            if (publicPostingKey == null) {
+                var piKey = dhive.PrivateKey.fromLogin(username, hive.formatter.createSuggestedPassword() + Math.random(), "posting");
+                publicPostingKey = piKey.createPublic("STM").toString();
+                storePrivateKeyLocally = piKey.toString();
+            }
+            try {
+                var result = yield client.createGuestAccount(username, publicPostingKey);
+                if (!result.isSuccess())
+                    return result;
+                var message = result.getResult();
+                var guestUsername = message[2];
+                if (publicPostingKey !== message[3])
+                    return new client_1.CallbackResult(false, 'error creating account.');
+                var preferences = imports_1.Content.preferences();
+                preferences.createGuestAccount(message);
+                var signableMessage = preferences.forUser(guestUsername);
+                signableMessage.signWithKey(storePrivateKeyLocally, '@');
+                var finalResult = yield client.write(signableMessage);
+                if (finalResult.isSuccess()) {
+                    this.storeGuestLocally(guestUsername, storePrivateKeyLocally);
+                    return new client_1.CallbackResult(true, guestUsername);
+                }
+                return finalResult;
+            }
+            catch (e) {
+                console.log(e);
+            }
+            return new client_1.CallbackResult(false, 'error creating account.');
+        });
     }
     joinGroups() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -2362,6 +2387,7 @@ class SignableMessage {
     isSignedWithMemo() { return this.keytype === "m"; }
     isSignedWithPosting() { return this.keytype === "p"; }
     isSignedWithGroupKey() { return this.keytype === "g"; }
+    isSignedWithGuestKey() { return this.keytype === "@"; }
     getSignature() { return this.signature; }
     getSignatureHex() { return this.signature == null ? null : this.signature.toString('hex'); }
     getReference() {
