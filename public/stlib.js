@@ -2498,6 +2498,19 @@ class SignableMessage {
     verify() {
         return __awaiter(this, void 0, void 0, function* () {
             var user = this.getUser();
+            if (this.getMessageType() === SignableMessage.TYPE_ACCOUNT) {
+                var validators = utils_1.Utils.getGuestAccountValidators();
+                if (this.isSignedWithGuestKey()) {
+                    for (var publicKey of validators)
+                        if (publicKey.length >= 50 && this.verifyWithKey(publicKey))
+                            return true;
+                    return false;
+                }
+                else {
+                    if (validators.indexOf(user) === -1)
+                        return false;
+                }
+            }
             if (this.isEncrypted() && this.isSignedWithGroupKey()) {
                 var conversation = this.getConversation();
                 var i = conversation.indexOf('/');
@@ -2531,7 +2544,7 @@ class SignableMessage {
                     return false;
                 }
                 if (accountData === undefined) {
-                    console.log("error: undefined account data for user '", user, "'");
+                    console.log("error: undefined account data for user ", user);
                     return false;
                 }
                 return this.verifyWithAccountData(accountData);
@@ -2711,6 +2724,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AccountDataCache = exports.TransientCache = exports.Utils = void 0;
 const signable_message_1 = require("./signable-message");
 const default_stream_data_cache_1 = require("./default-stream-data-cache");
+var netname = null;
+var guestAccountValidators = [];
 var keyChainRequest = null;
 var client = null;
 var dhiveclient = null;
@@ -2719,6 +2734,25 @@ var readPreferencesFn = null;
 var lastRandomPublicKey = "";
 var uniqueId = 0;
 class Utils {
+    /*
+        Netname is an unique identifier of the network shared between
+        all nodes to determine whether they belong to each other.
+        Format: name[publickey,account1,account2]
+        where name is the name of the network
+        the part in [] is optional and provides a comma separated list of
+        either public keys or accountnames with the ability to validate
+        guest account creation requests.
+    */
+    static setNetname(name) {
+        netname = name;
+        var from = name.indexOf('[');
+        if (from === -1)
+            return [];
+        var to = name.lastIndexOf(']');
+        guestAccountValidators = name.substring(from + 1, to).trim().split(/[, ]+/);
+    }
+    static getNetname() { return netname; }
+    static getGuestAccountValidators() { return guestAccountValidators; }
     static getVersion() { return 3; }
     static getClient() {
         return client;
@@ -2864,7 +2898,22 @@ class Utils {
         return __awaiter(this, void 0, void 0, function* () {
             if (Utils.isGuest(_user)) {
                 var preferences = yield Utils.getAccountPreferences(_user);
-                return (preferences) ? preferences.getAccount() : null;
+                if (preferences) {
+                    var account = preferences.getAccount();
+                    if (account && account.message && account.message.length >= 7) {
+                        var message = account.message;
+                        return {
+                            message: message,
+                            name: message[2],
+                            posting: message[3],
+                            memo_key: '',
+                            posting_json_metadata: '',
+                            created: message[4],
+                            reputation: 0
+                        };
+                    }
+                }
+                return null;
             }
             return yield Utils.getHAccountData(_user);
         });

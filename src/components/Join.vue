@@ -22,6 +22,12 @@
             <div>
                 <b>Login</b>
             </div>
+            <div v-if="guestAccounts.length>0">
+                <div v-for="name in guestAccounts">
+                    <button class="btn grow" @click="loginGuest(name)" 
+                        :read-only="isLoading" :disabled="isLoading">Login: {{name}}</button>
+                </div>
+            </div>
             <div class="mt-1 mb-1">
               <div class="text-orange-700"><small>{{errorMessage}}</small></div>
               <label for="username" class="block text-sm font-bold text-gray-700">username</label>
@@ -103,13 +109,22 @@ const route = useRoute();
 const router = useRouter();
 const community = ref(null);
 const isLoading = ref(false);
+const guestAccounts = ref([]);
 const errorMessage = ref("");
+const manager = getManager();
+function init() {
+    var array = [];
+    var guests = manager.readGuests();
+    for(var name in guests) array.push(name);
+    guestAccounts.value = array;
+}
 async function initInfo() {
     var user2 = route.params.user;
     if(user2 == null || user2 == "") return;
     community.value = await stlib.Community.load(user2);
     console.log(community.value);
 }
+init();
 initInfo();
 async function loginGuest(username) {
     if(username == null || !((username=username.trim()).length > 0)) { 
