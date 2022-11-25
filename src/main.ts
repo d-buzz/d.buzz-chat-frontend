@@ -8,6 +8,7 @@ import './assets/styles/vue3-emoji-picker.css'
 import './assets/styles/open-iconic.css';
 import "./assets/styles/index.css";
 
+const NETNAME = import.meta.env.NETNAME?import.meta.env.NETNAME:null;
 const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_APP_STING_NODES.split(",") : ["http://localhost:3001"];
 
 var currentManager = null;
@@ -25,6 +26,9 @@ stlib.Utils.nextId = ()=>{
     //console.trace();
     return id;
 };
+if(NETNAME == null) {
+    
+}
 window.defaultTheme = defaultTheme;
 defaultTheme.loadTheme();
 console.log("Theme", Theme);
@@ -43,16 +47,33 @@ document.addEventListener('visibilitychange', async function (event) {
     }
 });
 
-const app = createApp(App);
-app.directive('focus', {
-  mounted(el) {
-    el.focus()
-  }
-});
-window.app = app;
-// init/config libraries
-Object.values(import.meta.globEager("./config/*.ts"))
-  .sort((m, n) => (n.priority || 0) - (m.priority || 0))
-  .map((i) => i.install?.({ app }));
+async function initMain() {
+    if(NETNAME == null) {
+        try {
+            const manager = getManager();
+            var result = await manager.getClient().readInfo();
+            if(result.isSuccess()) 
+                stlib.Utils.setNetname(result.getResult().name);
+        }
+        catch(e) {
+            console.log(e);
+        }
+    }
 
-app.mount("#app");
+    const app = createApp(App);
+    app.directive('focus', {
+      mounted(el) {
+        el.focus()
+      }
+    });
+    window.app = app;
+    // init/config libraries
+    Object.values(import.meta.globEager("./config/*.ts"))
+      .sort((m, n) => (n.priority || 0) - (m.priority || 0))
+      .map((i) => i.install?.({ app }));
+
+    app.mount("#app");
+}
+initMain();
+
+

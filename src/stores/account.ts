@@ -52,6 +52,7 @@ export const useAccountStore = defineStore("account", () => {
         );
         });
         try {
+            manager.setUseKeychain();
             var priv = await manager.getPrivatePreferences();
             account.value.name = user;
             account.value.authenticated = true;
@@ -63,10 +64,30 @@ export const useAccountStore = defineStore("account", () => {
             console.log(e);
         }
     };
-    const loginGuest = async (user: string) => {        //todo
-        account.value.name = user;
-        account.value.authenticated = false;
-        updateStore();
+    const loginGuest = async (user: string) => {       
+        const manager = getManager();
+        var guest = manager.readGuest(user);
+        if(guest == null) {
+            var result = await manager.createGuestAccount(user);
+            if(!result.isSuccess()) return result;
+            guest = manager.readGuest(result.getResult());
+            if(guest == null) return [false, 'error not found.'];
+        }
+        try {
+            manager.setUser(guest[0]);
+            manager.setLoginKey(guest[1]);
+            account.value.name = guest[0];
+            account.value.authenticated = true;
+            updateStore();
+            await manager.joinGroups();
+            await manager.getPrivatePreferences();
+        }
+        catch(e) {
+            account.value.authenticated = false;
+            console.log(e);
+            return [false, 'error.']
+        }
+        return [true, guest[0]];
     };
   const signOut = () => {
     account.value.authenticated = false;

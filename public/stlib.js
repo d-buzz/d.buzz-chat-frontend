@@ -1437,7 +1437,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MessageManager = exports.EventQueue = exports.LoginWithKeychain = exports.LoginMethod = void 0;
+exports.MessageManager = exports.EventQueue = exports.LoginWithKeychain = exports.LoginKey = exports.LoginMethod = void 0;
 const client_1 = require("./client");
 const utils_1 = require("./utils");
 const signable_message_1 = require("./signable-message");
@@ -1446,6 +1446,13 @@ const imports_1 = require("./content/imports");
 class LoginMethod {
 }
 exports.LoginMethod = LoginMethod;
+class LoginKey {
+    constructor(user, key) {
+        this.user = user;
+        this.key = dhive.PrivateKey.fromString(key);
+    }
+}
+exports.LoginKey = LoginKey;
 class LoginWithKeychain extends LoginMethod {
 }
 exports.LoginWithKeychain = LoginWithKeychain;
@@ -1617,6 +1624,16 @@ class MessageManager {
         }
         this.join(user);
     }
+    readGuest(username) {
+        var guests = this.readGuests();
+        if (guests[username] !== undefined)
+            return [username, guests[username]];
+        username = utils_1.Utils.parseGuest(username)[0];
+        for (var name in guests)
+            if (username === utils_1.Utils.parseGuest(name)[0])
+                return [name, guests[name]];
+        return null;
+    }
     readGuests() {
         if (this.cachedGuestData != null)
             return this.cachedGuestData;
@@ -1770,6 +1787,8 @@ class MessageManager {
         var client = this.getClient();
         client.join(room);
     }
+    setLogin(login) { this.loginmethod = login; }
+    setLoginKey(postingkey) { this.loginmethod = new LoginKey(this.user, postingkey); }
     setUseKeychain() { this.loginmethod = new LoginWithKeychain(); }
     getSelectedCommunityPage(community, defaultPage = null) {
         var page = this.selectedCommunityPage[community];
@@ -2528,21 +2547,21 @@ class SignableMessage {
                     return false;
                 return (key == null) ? false : this.verifyWithKey(key.key);
             }
+            else if (utils_1.Utils.isGuest(user) && this.isPreference()) {
+                try {
+                    var preferences = this.getContent();
+                    if (preferences instanceof imports_1.Preferences)
+                        return yield preferences.verifyAccount(user);
+                }
+                catch (e) {
+                    console.log(e);
+                }
+                return false;
+            }
             else {
                 var accountData = yield utils_1.Utils.getAccountData(user);
-                if (accountData === null) {
-                    if (utils_1.Utils.isGuest(user) && this.isPreference()) {
-                        try {
-                            var preferences = this.getContent();
-                            if (preferences instanceof imports_1.Preferences)
-                                return yield preferences.verifyAccount(user);
-                        }
-                        catch (e) {
-                            console.log(e);
-                        }
-                    }
+                if (accountData === null)
                     return false;
-                }
                 if (accountData === undefined) {
                     console.log("error: undefined account data for user ", user);
                     return false;

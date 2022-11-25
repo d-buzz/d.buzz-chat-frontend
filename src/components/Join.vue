@@ -134,8 +134,9 @@ async function loginGuest(username) {
     try {
         isLoading.value = true;
         console.log("login guest", username);
-        await accountStore.loginGuest(username);
-        router.push((community.value == null)?'/home':`/i/${community.value.getName()}/about`);
+        var result = await accountStore.loginGuest(username);
+        if(result[0]) router.push((community.value == null)?'/home':`/i/${community.value.getName()}/about`);
+        else errorMessage.value = "login failed";
     }
     catch(e) {
         errorMessage.value = "login failed";
