@@ -15,6 +15,13 @@ export const useAccountStore = defineStore("account", () => {
             if(userData.authenticated) {
                 const manager = getManager();
                 manager.setUser(userData.name);
+                if(stlib.Utils.isGuest(userData.name)) {
+                    var guest = manager.readGuest(userData.name);
+                    manager.setLoginKey(guest[1]);
+                }
+                else {
+                    manager.setUseKeychain();
+                }
             }
         }
         catch(e) {

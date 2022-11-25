@@ -824,6 +824,12 @@ class Preferences extends imports_1.JSONContent {
             return false;
         });
     }
+    getCommunities() {
+        var account = this.getAccount(false);
+        if (account && account.communities != null)
+            return account.communities;
+        return [];
+    }
     getValueBoolean(name, def = false) {
         var value = this.getValues()[name + ":b"];
         return (value === undefined) ? def : value;
@@ -1437,23 +1443,43 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MessageManager = exports.EventQueue = exports.LoginWithKeychain = exports.LoginKey = exports.LoginMethod = void 0;
+exports.MessageManager = exports.EventQueue = exports.LoginWithKeychain = exports.LoginKey = void 0;
 const client_1 = require("./client");
 const utils_1 = require("./utils");
 const signable_message_1 = require("./signable-message");
 const displayable_message_1 = require("./displayable-message");
 const imports_1 = require("./content/imports");
-class LoginMethod {
-}
-exports.LoginMethod = LoginMethod;
 class LoginKey {
     constructor(user, key) {
         this.user = user;
         this.key = dhive.PrivateKey.fromString(key);
+        this.publickey = this.key.createPublic('STM');
+        this.keystring = key;
+        this.publickeystring = this.publickey.toString();
+    }
+    encodeContent(content, user, groupUsers, keychainKeyType) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return content.encodeWithKey(user, groupUsers, keychainKeyType, this.keystring, this.publickeystring);
+        });
+    }
+    signMessage(message, keychainKeyType) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return message.signWithKey(this.key, keychainKeyType);
+        });
     }
 }
 exports.LoginKey = LoginKey;
-class LoginWithKeychain extends LoginMethod {
+class LoginWithKeychain {
+    encodeContent(content, user, groupUsers, keychainKeyType) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield content.encodeWithKeychain(user, groupUsers, keychainKeyType);
+        });
+    }
+    signMessage(message, keychainKeyType) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield message.signWithKeychain(keychainKeyType);
+        });
+    }
 }
 exports.LoginWithKeychain = LoginWithKeychain;
 class EventQueue {
@@ -1810,8 +1836,10 @@ class MessageManager {
                 return null;
             var _this = this;
             return yield this.communities.cacheLogic(user, (user) => {
-                return hive.api.callAsync("bridge.list_all_subscriptions", { "account": user }).
-                    then((array) => __awaiter(this, void 0, void 0, function* () {
+                var promise = (utils_1.Utils.isGuest(user)) ? utils_1.Utils.getAccountPreferences(user).then((preferences) => {
+                    return (preferences == null) ? [] : preferences.getCommunities();
+                }) : hive.api.callAsync("bridge.list_all_subscriptions", { "account": user });
+                return promise.then((array) => __awaiter(this, void 0, void 0, function* () {
                     var communityNames = [];
                     for (var community of array)
                         communityNames.push(community[0]);
@@ -2082,7 +2110,7 @@ class MessageManager {
             if (typeof conversation === 'string' && conversation.indexOf('|') !== -1)
                 conversation = conversation.split('|');
             if (Array.isArray(conversation)) { //Private message
-                var encoded = yield msg.encodeWithKeychain(user, conversation, keychainKeyType);
+                var encoded = yield this.loginmethod.encodeContent(msg, user, conversation, keychainKeyType);
                 this.recentlySentEncodedContent.push([encoded, msg]);
                 msg = encoded;
             }
@@ -2094,7 +2122,7 @@ class MessageManager {
                 }
             }
             var signableMessage = msg.forUser(user, conversation);
-            yield signableMessage.signWithKeychain(keychainKeyType);
+            yield this.loginmethod.signMessage(signableMessage, keychainKeyType);
             if (encodeKey !== null)
                 signableMessage.encodeWithKey(encodeKey);
             return yield client.write(signableMessage);
@@ -2869,6 +2897,8 @@ class Utils {
                                 return null;
                             else {
                                 var msg = signable_message_1.SignableMessage.fromJSON(result);
+                                if (Utils.isGuest(msg.getUser())) {
+                                }
                                 var verify = yield msg.verify();
                                 if (verify) {
                                     return msg.getContent();
@@ -2924,10 +2954,10 @@ class Utils {
                         return {
                             message: message,
                             name: message[2],
-                            posting: message[3],
+                            posting: { key_auths: [[message[3], 1]] },
                             memo_key: '',
                             posting_json_metadata: '',
-                            created: message[4],
+                            created: new Date(message[4]).toISOString(),
                             reputation: 0
                         };
                     }
@@ -3002,10 +3032,10 @@ class Utils {
         return /^\d+$/.test(text);
     }
     static isGuest(user) {
-        return user.indexOf('#') !== -1;
+        return user.indexOf(Utils.GUEST_CHAR) !== -1;
     }
     static parseGuest(guestName) {
-        var i = guestName.indexOf('#');
+        var i = guestName.indexOf(Utils.GUEST_CHAR);
         if (i === -1)
             return [guestName];
         return [guestName.substring(0, i), guestName.substring(i + 1)];
@@ -3013,14 +3043,14 @@ class Utils {
     static isValidGuestName(guestName) {
         if (guestName.length > 20)
             return false;
-        var i = guestName.indexOf('#');
+        var i = guestName.indexOf(Utils.GUEST_CHAR);
         var username = (i === -1) ? guestName : guestName.substring(0, i);
         var number = (i === -1) ? null : guestName.substring(i + 1);
         if (username.length <= 2 || username.length > 16)
             return false;
         if (number !== null && (number.length <= 0 || !Utils.isWholeNumber(number)))
             return false;
-        return /^[A-Za-z0-9._]*$/.test(username);
+        return /^[A-Za-z0-9-._]*$/.test(username);
     }
     static randomPublicKey(extraEntropy = "") {
         var seed = extraEntropy + new Date().getTime() + lastRandomPublicKey + Math.random();
@@ -3057,6 +3087,7 @@ class Utils {
     }
 }
 exports.Utils = Utils;
+Utils.GUEST_CHAR = '@';
 class TransientCache {
     constructor(duration, binDuration, newBinInstanceFn) {
         this.items = {};
