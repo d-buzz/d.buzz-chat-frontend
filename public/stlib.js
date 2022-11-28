@@ -824,6 +824,28 @@ class Preferences extends imports_1.JSONContent {
             return false;
         });
     }
+    setCommunity(community, join) {
+        var account = this.getAccount(false);
+        if (account == null)
+            return false;
+        var communities = this.getCommunities();
+        var index = communities.indexOf(community);
+        if (join) {
+            if (index === -1) {
+                communities.push(community);
+                account.communities = communities;
+                return true;
+            }
+        }
+        else {
+            if (index !== -1) {
+                communities.splice(index, 1);
+                account.communities = communities;
+                return true;
+            }
+        }
+        return false;
+    }
     getCommunities() {
         var account = this.getAccount(false);
         if (account && account.communities != null)
@@ -884,6 +906,31 @@ class Preferences extends imports_1.JSONContent {
                 return i;
         return -1;
     }
+    getPrivatePreferencesWithKey(privateK) {
+        var pref = this.privatePreferences;
+        if (pref !== null)
+            return pref;
+        var json = this.getPreferencesJSON();
+        var message = json['#'];
+        if (message !== undefined && typeof message === 'string') {
+            var result = hive.memo.decode(privateK, message);
+            if (result.startsWith("#"))
+                result = result.substring(1);
+            this.privatePreferences = new PrivatePreferences(JSON.parse(result));
+        }
+        else
+            this.privatePreferences = new PrivatePreferences({});
+        return this.privatePreferences;
+    }
+    encodePrivatePreferencesWithKey(privateK, publicK, onlyIfUpdated = true) {
+        var pref = this.privatePreferences;
+        if (pref == null || (onlyIfUpdated && !pref.updated))
+            return;
+        var text = hive.memo.encode(privateK, publicK, "#" + JSON.stringify(pref.json));
+        var json = this.getPreferencesJSON();
+        json['#'] = text;
+        pref.updated = false;
+    }
     getPrivatePreferencesWithKeychain(user, keychainKeyType = 'Posting') {
         return __awaiter(this, void 0, void 0, function* () {
             var pref = this.privatePreferences;
@@ -900,7 +947,7 @@ class Preferences extends imports_1.JSONContent {
             return this.privatePreferences;
         });
     }
-    encodePrivatePreferencsWithKeychan(user, keychainKeyType = 'Posting', onlyIfUpdated = true) {
+    encodePrivatePreferencesWithKeychan(user, keychainKeyType = 'Posting', onlyIfUpdated = true) {
         return __awaiter(this, void 0, void 0, function* () {
             var pref = this.privatePreferences;
             if (pref == null || (onlyIfUpdated && !pref.updated))
@@ -1457,6 +1504,14 @@ class LoginKey {
         this.keystring = key;
         this.publickeystring = this.publickey.toString();
     }
+    decodePrivatePreferences(preferences) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return preferences.getPrivatePreferencesWithKey(this.keystring);
+        });
+    }
+    encodePrivatePreferences(preferences) {
+        preferences.encodePrivatePreferencesWithKey(this.keystring, this.publickeystring);
+    }
     encodeContent(content, user, groupUsers, keychainKeyType) {
         return __awaiter(this, void 0, void 0, function* () {
             return content.encodeWithKey(user, groupUsers, keychainKeyType, this.keystring, this.publickeystring);
@@ -1470,6 +1525,19 @@ class LoginKey {
 }
 exports.LoginKey = LoginKey;
 class LoginWithKeychain {
+    constructor(user) {
+        this.user = user;
+    }
+    decodePrivatePreferences(preferences) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield preferences.getPrivatePreferencesWithKeychain(this.user);
+        });
+    }
+    encodePrivatePreferences(preferences) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield preferences.encodePrivatePreferencesWithKeychan(this.user);
+        });
+    }
     encodeContent(content, user, groupUsers, keychainKeyType) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield content.encodeWithKeychain(user, groupUsers, keychainKeyType);
@@ -1734,7 +1802,7 @@ class MessageManager {
             var p = yield this.getPreferences();
             if (this.keychainPromise != null)
                 yield this.keychainPromise;
-            var promise = p.getPrivatePreferencesWithKeychain(this.user);
+            var promise = this.loginmethod.decodePrivatePreferences(p);
             this.keychainPromise = promise;
             return yield promise;
         });
@@ -1766,7 +1834,7 @@ class MessageManager {
     closeGroup(group) {
         return __awaiter(this, void 0, void 0, function* () {
             var pref = yield this.getPreferences();
-            yield pref.getPrivatePreferencesWithKeychain(this.user);
+            yield this.loginmethod.decodePrivatePreferences(pref);
             pref = pref.copy();
             var privatePref = pref.privatePreferences;
             privatePref.setKeyFor(group, null);
@@ -1790,9 +1858,9 @@ class MessageManager {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.user == null)
                 return null;
-            yield preferences.encodePrivatePreferencsWithKeychan(this.user);
+            yield this.loginmethod.encodePrivatePreferences(preferences);
             var signableMessage = preferences.forUser(this.user);
-            yield signableMessage.signWithKeychain('Posting');
+            yield this.loginmethod.signMessage(signableMessage, 'Posting');
             var client = this.getClient();
             var result = yield client.write(signableMessage);
             if (result.isSuccess()) {
@@ -1815,7 +1883,7 @@ class MessageManager {
     }
     setLogin(login) { this.loginmethod = login; }
     setLoginKey(postingkey) { this.loginmethod = new LoginKey(this.user, postingkey); }
-    setUseKeychain() { this.loginmethod = new LoginWithKeychain(); }
+    setUseKeychain() { this.loginmethod = new LoginWithKeychain(this.user); }
     getSelectedCommunityPage(community, defaultPage = null) {
         var page = this.selectedCommunityPage[community];
         return page == null ? defaultPage : page;
@@ -2790,7 +2858,7 @@ class Utils {
         either public keys or accountnames with the ability to validate
         guest account creation requests.
     */
-    static setNetname(name) {
+    static setNetworkname(name) {
         netname = name;
         var from = name.indexOf('[');
         if (from === -1)
@@ -2798,7 +2866,7 @@ class Utils {
         var to = name.lastIndexOf(']');
         guestAccountValidators = name.substring(from + 1, to).trim().split(/[, ]+/);
     }
-    static getNetname() { return netname; }
+    static getNetworkname() { return netname; }
     static getGuestAccountValidators() { return guestAccountValidators; }
     static getVersion() { return 3; }
     static getClient() {

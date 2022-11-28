@@ -26,9 +26,6 @@ stlib.Utils.nextId = ()=>{
     //console.trace();
     return id;
 };
-if(NETNAME == null) {
-    
-}
 window.defaultTheme = defaultTheme;
 defaultTheme.loadTheme();
 console.log("Theme", Theme);

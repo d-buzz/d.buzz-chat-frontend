@@ -42,25 +42,35 @@ var joinedCommunity = ref(false);
 var updateMessage = ref("");
 
 async function join(joinOrLeave=true) {
-    var user = getManager().user;
+    const manager = getManager();
+    var user = manager.user;
     var community = props.community;
     if(!community || !user) return;
-    var json = [joinOrLeave?"subscribe":"unsubscribe", { community }];
     updateMessage.value = "";
-    
-    var p = stlib.Utils.queueKeychain((keychain, resolve, error)=>{
-        keychain.requestCustomJson(user, "community", "Posting",
-         JSON.stringify(json), json[0] + " " + community, (result)=>{
-            if(result.success) resolve(result.result);
-            else error(result);
+
+    if(stlib.Utils.isGuest(user)) {
+        var preferences = await manager.getPreferences();
+        preferences.setCommunity(community, joinOrLeave);
+        var result = await manager.updatePreferences(preferences);
+        if(result.isSuccess()) updateMessage.value = "Succesfully " + (joinOrLeave?"joined.":"left.");
+        else updateMessage.value = "Error: " + result.getError();
+    }
+    else {
+        var json = [joinOrLeave?"subscribe":"unsubscribe", { community }];
+        var p = stlib.Utils.queueKeychain((keychain, resolve, error)=>{
+            keychain.requestCustomJson(user, "community", "Posting",
+             JSON.stringify(json), json[0] + " " + community, (result)=>{
+                if(result.success) resolve(result.result);
+                else error(result);
+            });
         });
-    });
-    try {
-        await p;
-        updateMessage.value="Succesfully " + (joinOrLeave?"joined.":"left.");
-    } catch(e) {
-        updateMessage.value="Error: " + e.error;
-        console.log(e);
+        try {
+            await p;
+            updateMessage.value="Succesfully " + (joinOrLeave?"joined.":"left.");
+        } catch(e) {
+            updateMessage.value="Error: " + e.error;
+            console.log(e);
+        }
     }
 }
 function visitCommunity(community) {
