@@ -1904,9 +1904,15 @@ class MessageManager {
                 return null;
             var _this = this;
             return yield this.communities.cacheLogic(user, (user) => {
-                var promise = (utils_1.Utils.isGuest(user)) ? utils_1.Utils.getAccountPreferences(user).then((preferences) => {
-                    return (preferences == null) ? [] : preferences.getCommunities();
-                }) : hive.api.callAsync("bridge.list_all_subscriptions", { "account": user });
+                var promise = (utils_1.Utils.isGuest(user)) ? utils_1.Utils.getAccountPreferences(user).then((preferences) => __awaiter(this, void 0, void 0, function* () {
+                    var array = (preferences == null) ? [] : preferences.getCommunities();
+                    var result = [];
+                    for (var name of array) {
+                        var data = yield utils_1.Utils.getCommunityData(name);
+                        result.push([name, data.title, '', '']);
+                    }
+                    return result;
+                })) : hive.api.callAsync("bridge.list_all_subscriptions", { "account": user });
                 return promise.then((array) => __awaiter(this, void 0, void 0, function* () {
                     var communityNames = [];
                     for (var community of array)
