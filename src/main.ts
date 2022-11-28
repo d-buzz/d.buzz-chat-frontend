@@ -8,7 +8,7 @@ import './assets/styles/vue3-emoji-picker.css'
 import './assets/styles/open-iconic.css';
 import "./assets/styles/index.css";
 
-const NETNAME = import.meta.env.NETNAME?import.meta.env.NETNAME:null;
+const NETWORK_NAME = import.meta.env.NETWORK_NAME?import.meta.env.NETWORK_NAME:null;
 const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_APP_STING_NODES.split(",") : ["http://localhost:3001"];
 
 var currentManager = null;
@@ -48,17 +48,18 @@ document.addEventListener('visibilitychange', async function (event) {
 });
 
 async function initMain() {
-    if(NETNAME == null) {
+    if(NETWORK_NAME == null) {
         try {
             const manager = getManager();
             var result = await manager.getClient().readInfo();
             if(result.isSuccess()) 
-                stlib.Utils.setNetname(result.getResult().name);
+                stlib.Utils.setNetworkname(result.getResult().name);
         }
         catch(e) {
             console.log(e);
         }
     }
+    else stlib.Utils.setNetworkname(NETWORK_NAME);
 
     const app = createApp(App);
     app.directive('focus', {
