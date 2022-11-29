@@ -18,11 +18,6 @@
             :title="`${name} (${img})`">
          <!--<small class="name2"><b>{{name}}</b></small>-->
         <router-link :to="`/i/${img}/about`">
-            <!--<img
-            :class="`rounded-full ${getImgCss()} border border-solid borderColor`"
-            :src="`https://images.hive.blog/u/${img}/avatar/small`"
-            alt="@"
-            />-->
             <UserIcon :name="img" :imgCss="getImgCss()" :letterIcon="getLetterIcon()"/>
         </router-link>
     </div>

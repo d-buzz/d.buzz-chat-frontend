@@ -38,6 +38,7 @@ export const useAccountStore = defineStore("account", () => {
   const authenticate = async (user: string) => {
     const manager = getManager();
     manager.setUser(user);
+    manager.setUseKeychain();
     await manager.joinGroups();
     var pref = await manager.getPreferences();
     var pref0 = await stlib.Utils.getAccountPreferences(user);
@@ -59,7 +60,6 @@ export const useAccountStore = defineStore("account", () => {
         );
         });
         try {
-            manager.setUseKeychain();
             var priv = await manager.getPrivatePreferences();
             account.value.name = user;
             account.value.authenticated = true;

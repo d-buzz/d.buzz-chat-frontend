@@ -28,17 +28,22 @@ async function initProfileImage() {
         return true;
     }
     try {
-        var data = await stlib.Utils.getAccountData(name);
-        if(data === undefined) {
-            console.log("data is undefined ", name, data);
-            return;
-        }
-        var json = data.posting_json_metadata;
         var name2 = props.name2;
         if(!name2 || name2.length < 1) name2 = name;
         var text = '';
         if(name2.length > 0) text += name2[0].toUpperCase();
         if(name2.length > 1) text += name2[1].toLowerCase();
+        if(stlib.Utils.isGuest(name)) {
+            profileLetter.value = text;
+            return false;    
+        }
+
+        var data = await stlib.Utils.getAccountData(name);
+        if(data === undefined) {
+            console.log("data is undefined ", name, data);
+            return true;
+        }
+        var json = data.posting_json_metadata;
         backupLetter.value = text;
         if(json && json.length > 0) {
             json = JSON.parse(json);

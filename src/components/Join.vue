@@ -22,7 +22,7 @@
             <div>
                 <b>Login</b>
             </div>
-            <div v-if="guestAccounts.length>0">
+            <div v-if="guestAccounts.length>0" class="flex">
                 <div v-for="name in guestAccounts">
                     <button class="btn grow" @click="loginGuest(name)" 
                         :read-only="isLoading" :disabled="isLoading">Login: {{name}}</button>

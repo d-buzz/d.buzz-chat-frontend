@@ -691,18 +691,27 @@ class JSONContent {
     getType() { return this.json[0]; }
     toJSON() { return this.json; }
     copy() { return new this.constructor(JSON.parse(JSON.stringify(this.json))); }
-    encodeWithKey(user, groupUsers, keytype, privateK, publicK) {
-        groupUsers.sort();
-        var string = JSON.stringify(this.json);
-        var encoded = [imports_1.Encoded.TYPE, keytype.toLowerCase().charAt(0)];
-        for (var groupUser of groupUsers) {
-            if (user === groupUser) {
-                encoded.push(null);
-                continue;
+    encodeWithKey(user, groupUsers, keytype, privateK, publicK = null) {
+        return __awaiter(this, void 0, void 0, function* () {
+            groupUsers.sort();
+            var string = JSON.stringify(this.json);
+            var encoded = [imports_1.Encoded.TYPE, keytype.toLowerCase().charAt(0)];
+            for (var groupUser of groupUsers) {
+                if (user === groupUser) {
+                    encoded.push(null);
+                    continue;
+                }
+                var puKey = publicK;
+                if (puKey == null) {
+                    var accountData = yield imports_1.Utils.getAccountData(groupUser);
+                    if (accountData == null)
+                        throw "error could not find public key of user: " + groupUser;
+                    puKey = accountData.posting.key_auths[0][0];
+                }
+                encoded.push(hive.memo.encode(privateK, puKey, "#" + string));
             }
-            encoded.push(hive.memo.encode(privateK, publicK, "#" + string));
-        }
-        return new imports_1.Encoded(encoded);
+            return new imports_1.Encoded(encoded);
+        });
     }
     encodeWithKeychain(user, groupUsers, keychainKeyType) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -1514,7 +1523,7 @@ class LoginKey {
     }
     encodeContent(content, user, groupUsers, keychainKeyType) {
         return __awaiter(this, void 0, void 0, function* () {
-            return content.encodeWithKey(user, groupUsers, keychainKeyType, this.keystring, this.publickeystring);
+            return yield content.encodeWithKey(user, groupUsers, keychainKeyType, this.keystring);
         });
     }
     signMessage(message, keychainKeyType) {
