@@ -74,12 +74,25 @@
                 <TabPanel>
                     <div class="mt-2"></div>
                     <div class="flex flex-row" v-for="item in preferences" :key="updateKey+'#3'">
-                        <div>
-                            <div><b>{{item.display}}</b></div>
-                            <div><small>{{item.desc}}</small></div>
+                        <div v-if="item.options">
+                            <div>
+                                <div><b>{{item.display}}</b></div>
+                                <div><small>{{item.desc}}</small></div>
+                            </div>
+                            <div>
+                                <select v-model="item.newvalue">
+                                    <option v-for="option in item.options" :value="option[0]">{{option[1]}}</option>
+                                </select>
+                            </div>
                         </div>
-                        <div>
-                            <input type="checkbox" v-model="item.newvalue">
+                        <div v-else>
+                            <div>
+                                <div><b>{{item.display}}</b></div>
+                                <div><small>{{item.desc}}</small></div>
+                            </div>
+                            <div>
+                                <input type="checkbox" v-model="item.newvalue">
+                            </div>
                         </div>
                     </div>
                     <div><small>{{updateMessage}}</small></div>
@@ -136,6 +149,10 @@ const updateMessage = ref("");
 const themeObject = ref(defaultTheme);
 
 const defaultPreferences = [
+    {name: "directMessage:s", display: "Direct Message", desc: "Permission to message directly is granted to:",
+     value: '', newvalue:'', options:[
+        ['everyone', 'Everyone'],['accounts', 'Hive users'],
+        ['communities','Communities in common'], ['friends', 'Friends']]},
     {name: "autoDecode:b", display: "Auto Decode", desc: "Automatically decode private messages.", value: false, newvalue:false}
 ];
 
@@ -217,7 +234,7 @@ async function initCommunities() {
         try {
             var name = pref.name;
             var value = values[name];
-            if(value != null) array.push({name, display:pref.display, desc:pref.desc, value, newvalue:value});
+            if(value != null) array.push({name, display:pref.display, desc:pref.desc, value, newvalue:value, options:pref.options});
             else array.push(pref);
         }
         catch(e) {

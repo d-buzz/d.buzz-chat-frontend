@@ -865,6 +865,10 @@ class Preferences extends imports_1.JSONContent {
         var value = this.getValues()[name + ":b"];
         return (value === undefined) ? def : value;
     }
+    getValueString(name, def = null) {
+        var value = this.getValues()[name + ":s"];
+        return (value === undefined) ? def : value;
+    }
     setValue(nameColonType, value = null) {
         var values = this.getValues();
         if (value == null)
@@ -2962,6 +2966,26 @@ class Utils {
             var groups = pref.getGroups();
             var group = groups[path];
             return (group !== null && group.name != null) ? group.name : conversation;
+        });
+    }
+    static canDirectMessage(user, users) {
+        return __awaiter(this, void 0, void 0, function* () {
+            //TODO
+            var pref = yield Utils.getAccountPreferences(user);
+            if (pref != null) {
+                var option = pref.getValueString("directMessage", null);
+                if (option != null) {
+                    //values: 'everyone' 'accounts' 'communities' 'friends'
+                    if (option === 'accounts') {
+                        for (var name of users)
+                            if (Utils.isGuest(name))
+                                return false;
+                    }
+                    else if (option === 'communities') { }
+                    else if (option === 'friends') { }
+                }
+            }
+            return true;
         });
     }
     static getAccountPreferences(user) {
