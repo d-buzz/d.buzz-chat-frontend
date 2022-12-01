@@ -153,6 +153,7 @@ const defaultPreferences = [
      value: '', newvalue:'', options:[
         ['everyone', 'Everyone'],['accounts', 'Hive users'],
         ['communities','Communities in common'], ['friends', 'Friends']]},
+    {name: "showOnline:b", display: "Online Status", desc: "Show online status.", value: true, newvalue:true},
     {name: "autoDecode:b", display: "Auto Decode", desc: "Automatically decode private messages.", value: false, newvalue:false}
 ];
 

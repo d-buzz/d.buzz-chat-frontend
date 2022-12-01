@@ -2471,6 +2471,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SignableMessage = void 0;
 const imports_1 = require("./content/imports");
+const community_1 = require("./community");
 const utils_1 = require("./utils");
 class SignableMessage {
     constructor() {
@@ -2706,13 +2707,54 @@ class SignableMessage {
             publicKey = dhive.PublicKey.fromString(publicKey);
         return publicKey.verify(this.toSignableHash(), signature);
     }
+    verifyPermissions() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.isCommunityConversation()) {
+                var conversation = this.getConversation();
+                var communityName = this.getConversationUsername();
+                var communityStreamId = conversation.substring(communityName.length + 1);
+                var community = yield community_1.Community.load(communityName);
+                var stream = community.findTextStreamById(communityStreamId);
+                if (stream !== null) {
+                    var writePermissions = stream.getWritePermissions();
+                    if (!writePermissions.isEmpty()) {
+                        var dataCache = utils_1.Utils.getStreamDataCache();
+                        var role, titles;
+                        if (utils_1.Utils.isGuest(this.getUser())) {
+                            role = "";
+                            titles = [];
+                        }
+                        else {
+                            role = yield dataCache.getRole(communityName, this.getUser());
+                            titles = yield dataCache.getTitles(communityName, this.getUser());
+                        }
+                        if (!writePermissions.validate(role, titles))
+                            return false;
+                    }
+                }
+            }
+            else if (this.isGroupConversation()) {
+                var messageUser = this.getUser();
+                var groupUsernames = this.getGroupUsernames();
+                for (var groupUsername of groupUsernames) {
+                    if (groupUsername === messageUser)
+                        continue;
+                    var canDirectMessage = yield utils_1.Utils.canDirectMessage(groupUsername, groupUsernames);
+                    if (!canDirectMessage)
+                        return false;
+                }
+            }
+            return true;
+        });
+    }
 }
 exports.SignableMessage = SignableMessage;
 SignableMessage.TYPE_ACCOUNT = 'a';
+SignableMessage.TYPE_MESSAGE = 'm';
 SignableMessage.TYPE_WRITE_MESSAGE = 'w';
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"./content/imports":9,"./utils":25,"buffer":27}],23:[function(require,module,exports){
+},{"./community":2,"./content/imports":9,"./utils":25,"buffer":27}],23:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("./client");
