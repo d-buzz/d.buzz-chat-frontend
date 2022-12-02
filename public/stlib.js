@@ -354,7 +354,7 @@ class Community {
 exports.Community = Community;
 Community.MAX_TEXT_STREAMS = 64;
 
-},{"./data-path":16,"./data-stream":17,"./utils":25}],3:[function(require,module,exports){
+},{"./data-path":17,"./data-stream":18,"./utils":26}],3:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -366,7 +366,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.Images = exports.GroupInvite = exports.Encoded = exports.Edit = exports.JSONContent = exports.decodeTextWithKeychain = exports.encodeTextWithKeychain = exports.decodedMessage = exports.encodedMessage = exports.preferences = exports.groupInvite = exports.emote = exports.edit = exports.quote = exports.thread = exports.images = exports.text = exports.fromJSON = exports.type = exports.addType = void 0;
+exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.OnlineStatus = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.Images = exports.GroupInvite = exports.Encoded = exports.Edit = exports.JSONContent = exports.decodeTextWithKeychain = exports.encodeTextWithKeychain = exports.decodedMessage = exports.encodedMessage = exports.onlineStatus = exports.preferences = exports.groupInvite = exports.emote = exports.edit = exports.quote = exports.thread = exports.images = exports.text = exports.fromJSON = exports.type = exports.addType = void 0;
 const imports_1 = require("./imports");
 Object.defineProperty(exports, "JSONContent", { enumerable: true, get: function () { return imports_1.JSONContent; } });
 Object.defineProperty(exports, "Encoded", { enumerable: true, get: function () { return imports_1.Encoded; } });
@@ -375,6 +375,7 @@ Object.defineProperty(exports, "Images", { enumerable: true, get: function () { 
 Object.defineProperty(exports, "Text", { enumerable: true, get: function () { return imports_1.Text; } });
 Object.defineProperty(exports, "WithReference", { enumerable: true, get: function () { return imports_1.WithReference; } });
 Object.defineProperty(exports, "Thread", { enumerable: true, get: function () { return imports_1.Thread; } });
+Object.defineProperty(exports, "OnlineStatus", { enumerable: true, get: function () { return imports_1.OnlineStatus; } });
 Object.defineProperty(exports, "Quote", { enumerable: true, get: function () { return imports_1.Quote; } });
 Object.defineProperty(exports, "Edit", { enumerable: true, get: function () { return imports_1.Edit; } });
 Object.defineProperty(exports, "Emote", { enumerable: true, get: function () { return imports_1.Emote; } });
@@ -447,6 +448,10 @@ function preferences(json = {}) {
     return new imports_1.Preferences([imports_1.Preferences.TYPE, json]);
 }
 exports.preferences = preferences;
+function onlineStatus(online) {
+    return new imports_1.OnlineStatus([imports_1.OnlineStatus.TYPE, online]);
+}
+exports.onlineStatus = onlineStatus;
 function encodedMessage(msg, privateK, publicK) {
     if (typeof privateK !== 'string')
         privateK = privateK.toString();
@@ -629,7 +634,7 @@ Images.TYPE = "i";
 },{"./imports":9}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Utils = exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.Edit = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.Images = exports.GroupInvite = exports.Encoded = exports.JSONContent = exports.Content = exports.SignableMessage = void 0;
+exports.Utils = exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.Edit = exports.Quote = exports.OnlineStatus = exports.Thread = exports.WithReference = exports.Text = exports.Images = exports.GroupInvite = exports.Encoded = exports.JSONContent = exports.Content = exports.SignableMessage = void 0;
 const signable_message_1 = require("../signable-message");
 Object.defineProperty(exports, "SignableMessage", { enumerable: true, get: function () { return signable_message_1.SignableMessage; } });
 const utils_1 = require("../utils");
@@ -646,6 +651,8 @@ const group_invite_1 = require("./group-invite");
 Object.defineProperty(exports, "GroupInvite", { enumerable: true, get: function () { return group_invite_1.GroupInvite; } });
 const images_1 = require("./images");
 Object.defineProperty(exports, "Images", { enumerable: true, get: function () { return images_1.Images; } });
+const online_status_1 = require("./online-status");
+Object.defineProperty(exports, "OnlineStatus", { enumerable: true, get: function () { return online_status_1.OnlineStatus; } });
 const with_reference_1 = require("./with-reference");
 Object.defineProperty(exports, "WithReference", { enumerable: true, get: function () { return with_reference_1.WithReference; } });
 const thread_1 = require("./thread");
@@ -669,8 +676,9 @@ Content.addType(images_1.Images);
 Content.addType(group_invite_1.GroupInvite);
 Content.addType(preferences_1.Preferences);
 Content.addType(encoded_1.Encoded);
+Content.addType(online_status_1.OnlineStatus);
 
-},{"../signable-message":22,"../utils":25,"./content":3,"./edit":4,"./emote":5,"./encoded":6,"./group-invite":7,"./images":8,"./jsoncontent":10,"./preferences":11,"./quote":12,"./text":13,"./thread":14,"./with-reference":15}],10:[function(require,module,exports){
+},{"../signable-message":23,"../utils":26,"./content":3,"./edit":4,"./emote":5,"./encoded":6,"./group-invite":7,"./images":8,"./jsoncontent":10,"./online-status":11,"./preferences":12,"./quote":13,"./text":14,"./thread":15,"./with-reference":16}],10:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -758,6 +766,21 @@ class JSONContent {
 exports.JSONContent = JSONContent;
 
 },{"./imports":9}],11:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.OnlineStatus = void 0;
+const imports_1 = require("./imports");
+class OnlineStatus extends imports_1.JSONContent {
+    constructor(json) { super(json); }
+    isOnline() { return this.getStatus() === true; }
+    setOnline(value = true) { this.setStatus(value); }
+    getStatus() { return this.json[1]; }
+    setStatus(value) { this.json[1] = value; }
+}
+exports.OnlineStatus = OnlineStatus;
+OnlineStatus.TYPE = "o";
+
+},{"./imports":9}],12:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -999,7 +1022,7 @@ exports.Preferences = Preferences;
 Preferences.TYPE = "p";
 Preferences.MAX_USER_GROUPS = 64;
 
-},{"./imports":9}],12:[function(require,module,exports){
+},{"./imports":9}],13:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Quote = void 0;
@@ -1016,7 +1039,7 @@ class Quote extends imports_1.WithReference {
 exports.Quote = Quote;
 Quote.TYPE = "q";
 
-},{"./imports":9}],13:[function(require,module,exports){
+},{"./imports":9}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Text = void 0;
@@ -1029,7 +1052,7 @@ class Text extends imports_1.JSONContent {
 exports.Text = Text;
 Text.TYPE = "t";
 
-},{"./imports":9}],14:[function(require,module,exports){
+},{"./imports":9}],15:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Thread = void 0;
@@ -1054,7 +1077,7 @@ class Thread extends imports_1.Text {
 exports.Thread = Thread;
 Thread.TYPE = "h";
 
-},{"./imports":9}],15:[function(require,module,exports){
+},{"./imports":9}],16:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WithReference = void 0;
@@ -1068,7 +1091,7 @@ class WithReference extends imports_1.JSONContent {
 }
 exports.WithReference = WithReference;
 
-},{"./imports":9}],16:[function(require,module,exports){
+},{"./imports":9}],17:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DataPath = void 0;
@@ -1134,7 +1157,7 @@ DataPath.TYPE_INFO = "i";
 DataPath.TYPE_TEXT = "t";
 DataPath.TYPE_GROUP = "g";
 
-},{"./utils":25}],17:[function(require,module,exports){
+},{"./utils":26}],18:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DataStream = void 0;
@@ -1181,7 +1204,7 @@ class DataStream {
 }
 exports.DataStream = DataStream;
 
-},{"./data-path":16,"./permission-set":21}],18:[function(require,module,exports){
+},{"./data-path":17,"./permission-set":22}],19:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1375,7 +1398,7 @@ class DefaultStreamDataCache extends stream_data_cache_1.StreamDataCache {
 }
 exports.DefaultStreamDataCache = DefaultStreamDataCache;
 
-},{"./community":2,"./stream-data-cache":24,"./utils":25}],19:[function(require,module,exports){
+},{"./community":2,"./stream-data-cache":25,"./utils":26}],20:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DisplayableEmote = exports.DisplayableMessage = void 0;
@@ -1491,7 +1514,7 @@ class DisplayableEmote {
 }
 exports.DisplayableEmote = DisplayableEmote;
 
-},{"./content/imports":9}],20:[function(require,module,exports){
+},{"./content/imports":9}],21:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -2187,6 +2210,22 @@ class MessageManager {
             return messages;
         });
     }
+    sendOnlineStatus(online) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var user = this.user;
+            if (user === null)
+                return null;
+            var onlineKey = yield this.getKeyFor('$');
+            if (onlineKey === null) {
+                console.log("unknown key");
+                return null;
+            }
+            var msg = signable_message_1.SignableMessage.create(user, '$online', imports_1.Content.onlineStatus(online), signable_message_1.SignableMessage.TYPE_MESSAGE);
+            msg.encodeWithKey(onlineKey, '$');
+            var client = this.getClient();
+            return yield client.write(msg);
+        });
+    }
     sendMessage(msg, conversation, keychainKeyType = 'Posting') {
         return __awaiter(this, void 0, void 0, function* () {
             var user = this.user;
@@ -2371,7 +2410,7 @@ class MessageManager {
 }
 exports.MessageManager = MessageManager;
 
-},{"./client":1,"./content/imports":9,"./displayable-message":19,"./signable-message":22,"./utils":25}],21:[function(require,module,exports){
+},{"./client":1,"./content/imports":9,"./displayable-message":20,"./signable-message":23,"./utils":26}],22:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PermissionSet = void 0;
@@ -2456,7 +2495,7 @@ class PermissionSet {
 }
 exports.PermissionSet = PermissionSet;
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 (function (Buffer){(function (){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -2518,11 +2557,13 @@ class SignableMessage {
     isGroupConversation() { return this.conversation.indexOf('|') !== -1; }
     isEncrypted() { return this.conversation.startsWith("#"); }
     isPreference() { return this.conversation === "@"; }
+    isOnlineStatus() { return this.conversation === "$online"; }
     isSigned() { return this.signature != null; }
     isSignedWithMemo() { return this.keytype === "m"; }
     isSignedWithPosting() { return this.keytype === "p"; }
     isSignedWithGroupKey() { return this.keytype === "g"; }
     isSignedWithGuestKey() { return this.keytype === "@"; }
+    isSignedWithPreferencesKey() { return this.keytype.startsWith("$"); }
     getSignature() { return this.signature; }
     getSignatureHex() { return this.signature == null ? null : this.signature.toString('hex'); }
     getReference() {
@@ -2641,6 +2682,13 @@ class SignableMessage {
                             return true;
                     return false;
                 }
+                else if (this.isSignedWithPreferencesKey()) {
+                    var accountPreferences = yield utils_1.Utils.getAccountPreferences(user);
+                    if (accountPreferences == null)
+                        return false;
+                    var publicKey = accountPreferences.getValueString(this.keytype);
+                    return (publicKey == null) ? false : this.verifyWithKey(publicKey);
+                }
                 else {
                     if (validators.indexOf(user) === -1)
                         return false;
@@ -2661,7 +2709,7 @@ class SignableMessage {
                 var key = accountPreferences.getGroup(groupId);
                 if (key == null)
                     return false;
-                return (key == null) ? false : this.verifyWithKey(key.key);
+                return (key.key == null) ? false : this.verifyWithKey(key.key);
             }
             else if (utils_1.Utils.isGuest(user) && this.isPreference()) {
                 try {
@@ -2754,7 +2802,7 @@ SignableMessage.TYPE_MESSAGE = 'm';
 SignableMessage.TYPE_WRITE_MESSAGE = 'w';
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"./community":2,"./content/imports":9,"./utils":25,"buffer":27}],23:[function(require,module,exports){
+},{"./community":2,"./content/imports":9,"./utils":26,"buffer":28}],24:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("./client");
@@ -2776,7 +2824,7 @@ if (window !== undefined) {
     };
 }
 
-},{"./client":1,"./community":2,"./content/imports":9,"./data-path":16,"./data-stream":17,"./displayable-message":19,"./message-manager":20,"./permission-set":21,"./signable-message":22,"./utils":25}],24:[function(require,module,exports){
+},{"./client":1,"./community":2,"./content/imports":9,"./data-path":17,"./data-stream":18,"./displayable-message":20,"./message-manager":21,"./permission-set":22,"./signable-message":23,"./utils":26}],25:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -2885,7 +2933,7 @@ class StreamDataCache {
 }
 exports.StreamDataCache = StreamDataCache;
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -3407,7 +3455,7 @@ const accountDataCache = new AccountDataCache();
 const communityDataCache = new AccountDataCache();
 var streamDataCache = null;
 
-},{"./default-stream-data-cache":18,"./signable-message":22}],26:[function(require,module,exports){
+},{"./default-stream-data-cache":19,"./signable-message":23}],27:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -3559,7 +3607,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 (function (Buffer){(function (){
 /*!
  * The buffer module from node.js, for the browser.
@@ -5340,7 +5388,7 @@ function numberIsNaN (obj) {
 }
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"base64-js":26,"buffer":27,"ieee754":28}],28:[function(require,module,exports){
+},{"base64-js":27,"buffer":28,"ieee754":29}],29:[function(require,module,exports){
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
@@ -5427,4 +5475,4 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}]},{},[23]);
+},{}]},{},[24]);
