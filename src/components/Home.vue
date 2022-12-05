@@ -294,7 +294,9 @@ async function updatePreferences() {
         item.value = item.newvalue;
         prefs.setValue(item.name, item.value);
     }
-    var result = await manager.updatePreferences(prefs);
+    var result;
+    if(prefs.getValue("showOnline:b", false) === true) result = await manager.setupOnlineStatus(true);
+    else result = await manager.updatePreferences(prefs);
     if(result.isSuccess()) updateMessage.value = "Succesfully updated settings.";
     else updateMessage.value = "Failed to update preferences. " + result.getError();
 }

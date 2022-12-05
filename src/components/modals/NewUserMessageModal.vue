@@ -252,7 +252,7 @@ async function createGroup() {
         var conversation = "#"+manager.user+"/"+groupId;
         switch(storeType) {
             case "local":
-                await manager.storeKeyLocallyEncryptedWithKeychain(conversation, piKey);
+                await manager.storeKeyLocallyEncrypted(conversation, piKey);
                 break;
             case "preferences":
                 var privatePref = await manager.getPrivatePreferences();
