@@ -104,14 +104,23 @@
             <button class="float-right" @click="setContentMessage(null)"><span class="oi oi-circle-x align-top"></span></button>
             <div class="overflow-x-hidden" style="text-overflow: ellipsis;"><span class="font-bold">{{contentMsg.msg.getUser()}}:</span> {{contentMsg.text}}</div>
         </div>
-        <div class="flex mt-4 mb-2 mr-3">
+        <div class="flex mt-4 mr-3">
           <MessageBox
             ref="messageBox"
             class="grow"
+            @fullorblank="updateStatus"
             @entermessage="enterMessage"
             v-focus
           ></MessageBox>
-    </div>
+        </div>
+        <div class="mt-0 mb-2" style="line-height: 1;">
+            <span v-if="writingUsers && writingUsers.length > 0">
+                <small><span v-for="user in writingUsers" class="oiMini oi" :class="user[1]"><b>{{user[0]}}&nbsp;</b></span>
+                <span class="oiMini oi text-gray-700">{{writingUsers.length==1?'is writing':' are writing'}}</span>
+                </small>
+            </span>
+            &nbsp;
+        </div>
    </div>
  </div>
 </template>
@@ -131,6 +140,7 @@ const threadName = ref(null);
 const community = ref(null);
 const communityUsers = ref({});
 const sharedCommunities = ref(null);
+const writingUsers = ref(null);
 const messageBox = ref();
 const messages = ref();
 const valueAutoDecode = ref(false);
@@ -190,10 +200,11 @@ async function initChat() {
     manager.setUser(user);
     manager.setSelectedCommunityPage(user2, route.path);
 
+    var community0 = null;
     var conversation = getConversation(); 
     if(conversation != null) {
         if(route.name === 'CommunityPath') {
-            var community0 = await stlib.Community.load(user2);
+            community0 = await stlib.Community.load(user2);
             var stream = (community0)?community0.findTextStreamById(''+route.params.path):null;
             streamName.value = stream?stream.getName():conversation;
             community.value = community0;
@@ -257,6 +268,26 @@ async function initChat() {
         if(data) canLoadPreviousMessages.value = data.maxTime > 0;
 
         manager.setCallback("Community.vue", updateMessages);
+
+        var updateStatus = (e)=>{
+            var array = manager.getSelectedWritingUsers();
+            if(array == null || array.length === 0) writingUsers.value = null;
+            else {
+                var users = [];
+                for(var user of array) {
+                    var roleCss = '';
+                    if(community0 !== null) {
+                        var role = community0.getRole(user);
+                        var icon = {"owner":"oi-globe", "admin":"oi-cog", "mod":"oi-flag"};
+                        if(role === "owner" || role === "admin" || role === "mod") 
+                            roleCss = `${icon[role]} color${role}`;
+                    }
+                    users.push([user, roleCss]);
+                }
+                writingUsers.value = users;
+            }
+        };
+        manager.onstatusmessage.set("Community.vue", updateStatus)
 
         if(isAutoDecode === true)
             await decode();        
@@ -420,6 +451,11 @@ const enterMessage = async (message, contentMessage=null, block=true, clearBox=t
         if(onsuccess !== null && result !== null && result.isSuccess()) onsuccess();
     }
 };
+async function updateStatus(writing) {
+    console.log("update status ", writing);
+    var manager = getManager();
+    await manager.setSelectedOnlineStatus(writing);
+}
 function isAtScrollBottom(e) {
     return e.scrollTop + e.clientHeight >= e.scrollHeight;
 }

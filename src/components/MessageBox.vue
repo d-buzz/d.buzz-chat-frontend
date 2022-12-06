@@ -16,6 +16,10 @@
             <div tex
               class="fg70 shadow appearance-none border border-gray-700 rounded-xl w-[calc(100%-1rem)] py-2 px-3 leading-tight focus:outline-none focus:shadow-outline mr-1"
               ref="box"
+              @keyup="onChange"
+              @paste="onChange"
+              @copy="onChange"
+              @cut="onChange"
               @keydown.enter.exact.prevent="enterMessage"
               role="textbox"
               contenteditable>
@@ -31,7 +35,7 @@
 <script setup type="ts">
 const box = ref(null);
 const images = ref([]);
-const emit = defineEmits(["entermessage"]);
+const emit = defineEmits(["entermessage", "fullorblank"]);
 const showAddImageModal = ref(false);
 const showAddEmoteModal = ref(false);
 function toggleAddImageModal() {
@@ -61,9 +65,18 @@ function delImage(i) {
 function focus() {
     box.value.focus();
 }
+var lastNonBlank = false;
 function setText(text) {
     box.value.innerText = text;
     setCaretAtEnd(box.value);
+}
+function onChange(e) {
+    var text = e.target.innerText;
+    var nonBlank = text && text.trim() != '';
+    if(nonBlank !== lastNonBlank) {
+        lastNonBlank = nonBlank;
+        emit("fullorblank", nonBlank);
+    } 
 }
 function enterMessage(e) {
     if(images.value.length > 0) {

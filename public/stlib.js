@@ -91,7 +91,7 @@ class Client {
     }
     write0(msg) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.emit(msg.type, msg.toJSON());
+            return yield this.emit('w', msg.toJSON());
         });
     }
     join(conversation) {
@@ -1660,6 +1660,7 @@ class MessageManager {
     constructor() {
         this.userPreferences = null;
         this.onmessage = new EventQueue();
+        this.onstatusmessage = new EventQueue();
         this.onpreferences = new EventQueue();
         this.joined = {};
         this.cachedUserMessages = null;
@@ -1669,6 +1670,7 @@ class MessageManager {
         this.conversationsLastReadData = {};
         this.selectedCommunityPage = {};
         this.selectedConversation = null;
+        this.selectedOnlineStatus = null;
         this.conversations = new utils_1.AccountDataCache();
         this.communities = new utils_1.AccountDataCache();
         this.cachedGuestData = null;
@@ -1723,7 +1725,7 @@ class MessageManager {
                 return __awaiter(this, void 0, void 0, function* () {
                     var signableMessage = signable_message_1.SignableMessage.fromJSON(json);
                     if (signableMessage.getMessageType() !== signable_message_1.SignableMessage.TYPE_WRITE_MESSAGE) {
-                        console.log("msg", json);
+                        _this.handleMessage(signableMessage);
                         return;
                     }
                     var displayableMessage = yield _this.signableToDisplayable(json);
@@ -1772,6 +1774,8 @@ class MessageManager {
                         else {
                             data.messages.push(displayableMessage);
                             _this.resolveReference(data.messages, displayableMessage);
+                            delete data.status[displayableMessage.getUser()];
+                            this.onstatusmessage.post([displayableMessage.getUser(), displayableMessage.getConversation(), null, 0]);
                         }
                     }
                     _this.postCallbackEvent(displayableMessage);
@@ -1785,6 +1789,25 @@ class MessageManager {
         catch (e) {
             console.log("connect error");
             console.log(e);
+        }
+    }
+    handleMessage(signableMessage) {
+        console.log("msg", signableMessage);
+        if (signableMessage.getMessageType() !== signable_message_1.SignableMessage.TYPE_MESSAGE)
+            return;
+        var content = signableMessage.getContent();
+        if (content instanceof imports_1.OnlineStatus) {
+            var status = [signableMessage.getUser(), signableMessage.getConversation(), content.getStatus(), signableMessage.getTimestamp()];
+            if (signableMessage.isOnlineStatus()) {
+                this.onstatusmessage.post(status);
+            }
+            else {
+                var data = this.conversations.lookupValue(signableMessage.getConversation());
+                if (data != null) {
+                    data.status[signableMessage.getUser()] = status;
+                    this.onstatusmessage.post(status);
+                }
+            }
         }
     }
     getClient() { return this.client; }
@@ -1991,6 +2014,42 @@ class MessageManager {
         this.selectedConversation = conversation;
         if (conversation != null)
             this.join(conversation);
+    }
+    setSelectedOnlineStatus(writing) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var conversation = this.selectedConversation;
+            if (conversation) {
+                if (conversation === this.selectedOnlineStatus) {
+                    if (!writing) {
+                        yield this.sendOnlineStatus(null, conversation);
+                        this.selectedOnlineStatus = null;
+                    }
+                }
+                else {
+                    if (writing) {
+                        if (this.selectedOnlineStatus !== null)
+                            yield this.sendOnlineStatus(null, this.selectedOnlineStatus);
+                        yield this.sendOnlineStatus('writing', conversation);
+                        this.selectedOnlineStatus = conversation;
+                    }
+                }
+            }
+        });
+    }
+    getSelectedWritingUsers(conversation = this.selectedConversation, time = 300000) {
+        var result = [];
+        if (conversation != null) {
+            var data = this.conversations.lookupValue(conversation);
+            if (data != null) {
+                var minTime = utils_1.Utils.utcTime() - time;
+                for (var user in data.status) {
+                    var status = data.status[user];
+                    if (status[2] != null && status[3] >= minTime)
+                        result.push(user);
+                }
+            }
+        }
+        return result;
     }
     getCommunities(user = null) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -2202,7 +2261,7 @@ class MessageManager {
                         var encoded = messages0.filter((m) => m.isEncoded());
                         if (this.cachedUserMessagesLoadedAll)
                             maxTime = 0;
-                        return { messages, encoded, maxTime };
+                        return { messages, encoded, maxTime, status: {} };
                     });
                 }
                 else {
@@ -2214,7 +2273,7 @@ class MessageManager {
                         _this.resolveReferences(messages);
                         if (messages.length < 100)
                             maxTime = 0;
-                        return { messages, maxTime };
+                        return { messages, maxTime, status: {} };
                     });
                 }
                 return promise;
@@ -2294,7 +2353,7 @@ class MessageManager {
             return yield this.updatePreferences(pref);
         });
     }
-    sendOnlineStatus(online) {
+    sendOnlineStatus(online, conversation = '$online') {
         return __awaiter(this, void 0, void 0, function* () {
             var user = this.user;
             if (user === null)
@@ -2304,7 +2363,7 @@ class MessageManager {
                 console.log("unknown key");
                 return null;
             }
-            var msg = signable_message_1.SignableMessage.create(user, '$online', imports_1.Content.onlineStatus(online), signable_message_1.SignableMessage.TYPE_MESSAGE);
+            var msg = signable_message_1.SignableMessage.create(user, conversation, imports_1.Content.onlineStatus(online), signable_message_1.SignableMessage.TYPE_MESSAGE);
             msg.signWithKey(onlineKey, '$');
             var client = this.getClient();
             return yield client.write(msg);
@@ -2785,16 +2844,18 @@ class SignableMessage {
                             return true;
                     return false;
                 }
-                else if (this.isSignedWithPreferencesKey()) {
+                else {
+                    if (validators.indexOf(user) === -1)
+                        return false;
+                }
+            }
+            else if (this.getMessageType() === SignableMessage.TYPE_MESSAGE) {
+                if (this.isSignedWithPreferencesKey()) {
                     var accountPreferences = yield utils_1.Utils.getAccountPreferences(user);
                     if (accountPreferences == null)
                         return false;
                     var publicKey = accountPreferences.getValueString(this.keytype);
                     return (publicKey == null) ? false : this.verifyWithKey(publicKey);
-                }
-                else {
-                    if (validators.indexOf(user) === -1)
-                        return false;
                 }
             }
             if (this.isEncrypted() && this.isSignedWithGroupKey()) {
