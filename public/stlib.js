@@ -1728,7 +1728,7 @@ class MessageManager {
                         _this.handleMessage(signableMessage);
                         return;
                     }
-                    var displayableMessage = yield _this.signableToDisplayable(json);
+                    var displayableMessage = yield _this.signableToDisplayable(signableMessage);
                     var conversation = displayableMessage.getConversation();
                     var lastRead = _this.conversationsLastReadData[conversation];
                     if (lastRead == null) {
