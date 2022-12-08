@@ -18,7 +18,8 @@
             <small :class="roleCss(role)"><b>{{role}}</b></small>
             <div class="p-1 flex" v-for="team in users" >
                 <div class="flex-shrink-0 mr-5px">
-                    <UserCommunityIcon :name="team[0]" :community="community.getName()" :imgCss="`avConversation`"/>
+                    <UserCommunityIcon :name="team[0]" :community="community.getName()" 
+                        :imgCss="`avConversation`" :displayOnlineStatus="true"/>
                 </div>
                 <div class="grow relative" style="margin-top:-7px;">
                     <small :class="roleCss(role)"><b>{{team[0]}}</b></small>
