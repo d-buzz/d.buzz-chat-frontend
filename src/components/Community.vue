@@ -16,10 +16,10 @@
 
         <div v-for="(users,role) in communityUsers">
             <small :class="roleCss(role)"><b>{{role}}</b></small>
-            <div class="p-1 flex" v-for="team in users" >
+            <div class="p-1 flex" v-for="team in users" :class="(team.online == true)?'':'offline'">
                 <div class="flex-shrink-0 mr-5px">
                     <UserCommunityIcon :name="team[0]" :community="community.getName()" 
-                        :imgCss="`avConversation`" :displayOnlineStatus="true"/>
+                    :imgCss="`avConversation`" :displayOnlineStatus="team.online == true"/>
                 </div>
                 <div class="grow relative" style="margin-top:-7px;">
                     <small :class="roleCss(role)"><b>{{team[0]}}</b></small>
@@ -204,17 +204,22 @@ async function initChat() {
     var community0 = null;
     var conversation = getConversation(); 
     if(conversation != null) {
+        manager.setConversation(conversation);
         if(route.name === 'CommunityPath') {
             community0 = await stlib.Community.load(user2);
             var stream = (community0)?community0.findTextStreamById(''+route.params.path):null;
             streamName.value = stream?stream.getName():conversation;
             community.value = community0;
-            var usersCategories = {};
-            for(var team of community0.communityData.team) {
-                if(usersCategories[team[1]] === undefined) usersCategories[team[1]] = [];
-                usersCategories[team[1]].push(team);
-            }
-            communityUsers.value = usersCategories;
+
+            manager.readOnlineUsers(community0).then((users)=>{
+                if(manager.selectedConversation != conversation) return;
+                var usersCategories = {};
+                for(var team of users) {
+                    if(usersCategories[team[1]] === undefined) usersCategories[team[1]] = [];
+                    usersCategories[team[1]].push(team);
+                }
+                communityUsers.value = usersCategories;
+            });
         }
         else if(route.name === 'CommunityGroup') {
             var pref = await stlib.Utils.getAccountPreferences(user2);
@@ -233,8 +238,6 @@ async function initChat() {
             sharedCommunities.value = await findSharedCommunities(conversation);
         }
 
-        manager.setConversation(conversation);
-       
         var updateMessages = async () => {
             var container = messages.value;
             var scrollToBottom = true;
@@ -502,5 +505,8 @@ async function loadPrevious() {
   align-self: center;
   border-top: 3px dotted #bababa;
   margin-top: 1px;
+}
+.offline {
+    opacity: 0.5;
 }
 </style>

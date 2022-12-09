@@ -52,8 +52,9 @@ function clickOnIconOption(item) {
     width: 11px;
     height: 11px;
     border: 2px solid white;
-    border-radius: 5px;
+    border-radius: 7px;
     background-color: green;
+    left: 0;
     bottom: 0;
 }
 </style>

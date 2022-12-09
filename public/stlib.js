@@ -141,6 +141,9 @@ const data_stream_1 = require("./data-stream");
 const data_path_1 = require("./data-path");
 const utils_1 = require("./utils");
 class Community {
+    constructor() {
+        this.joined = null;
+    }
     initialize(communityData) {
         this.communityData = communityData;
         var settings = this.getSettings();
@@ -310,12 +313,22 @@ class Community {
             copy.streams.push(data_stream_1.DataStream.fromJSON(stream.community, stream.toJSON()));
         return copy;
     }
+    listJoined() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.joined != null)
+                return yield this.joined;
+            var name = this.getName();
+            this.joined = utils_1.Utils.retrieveAll("bridge", "list_subscribers", { community: name, last: null, limit: 100 });
+            return yield this.joined;
+        });
+    }
     reload() {
         return __awaiter(this, void 0, void 0, function* () {
             var name = this.getName();
             utils_1.Utils.getCommunityDataCache().reload(name);
             var data = yield utils_1.Utils.getCommunityData(name);
             this.initialize(data);
+            this.joined = null;
             data.community = this;
             return this;
         });
@@ -1553,7 +1566,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MessageManager = exports.EventQueue = exports.LoginWithKeychain = exports.LoginKey = void 0;
+exports.MessageManager = exports.UserOnlineStatus = exports.EventQueue = exports.LoginWithKeychain = exports.LoginKey = void 0;
 const client_1 = require("./client");
 const utils_1 = require("./utils");
 const signable_message_1 = require("./signable-message");
@@ -1656,6 +1669,18 @@ class EventQueue {
     }
 }
 exports.EventQueue = EventQueue;
+class UserOnlineStatus {
+    constructor(user, content, message, verified) {
+        this.user = user;
+        this.content = content;
+        this.message = message;
+        this.verified = verified;
+    }
+    isOnline() {
+        return this.content && this.content.isOnline();
+    }
+}
+exports.UserOnlineStatus = UserOnlineStatus;
 class MessageManager {
     constructor() {
         this.userPreferences = null;
@@ -1871,7 +1896,9 @@ class MessageManager {
                 if (publicPostingKey !== message[3])
                     return new client_1.CallbackResult(false, 'error creating account.');
                 var preferences = imports_1.Content.preferences();
+                var privatePref = preferences.getPrivatePreferencesWithKey(storePrivateKeyLocally);
                 preferences.createGuestAccount(message);
+                MessageManager.setupOnlineStatusGenerateOnlineKey(username, preferences, privatePref);
                 var signableMessage = preferences.forUser(guestUsername);
                 signableMessage.signWithKey(storePrivateKeyLocally, '@');
                 var finalResult = yield client.write(signableMessage);
@@ -2329,6 +2356,40 @@ class MessageManager {
             return messages;
         });
     }
+    readOnlineUsers(community, verifyOnlineMessages = false) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var joined = yield community.listJoined();
+            var client = this.getClient();
+            var users = [];
+            for (var user of joined)
+                users.push(user[0]);
+            var onlineResult = yield client.readOnlineStatus(users);
+            if (onlineResult.isSuccess()) {
+                var online = onlineResult.getResult();
+                var onlineMap = {};
+                for (var onlineUser of online)
+                    onlineMap[onlineUser[1]] = onlineUser;
+                for (var user of joined) {
+                    var username = user[0];
+                    if (onlineMap[username]) {
+                        try {
+                            var message = signable_message_1.SignableMessage.fromJSON(onlineMap[username]);
+                            if (!verifyOnlineMessages || (yield message.verify())) {
+                                var content = message.getContent();
+                                if (content instanceof imports_1.OnlineStatus) {
+                                    user.online = content.isOnline();
+                                }
+                            }
+                        }
+                        catch (e) {
+                            console.log(e);
+                        }
+                    }
+                }
+            }
+            return joined;
+        });
+    }
     setupOnlineStatus(enabled, storeLocally = false, onlinePrivateKey = null, onlinePublicKey = null) {
         return __awaiter(this, void 0, void 0, function* () {
             var pref = yield this.getPreferences();
@@ -2352,6 +2413,18 @@ class MessageManager {
             }
             return yield this.updatePreferences(pref);
         });
+    }
+    static setupOnlineStatusGenerateOnlineKey(user, pref, privatePref, onlinePrivateKey = null, onlinePublicKey = null) {
+        pref.setValue("showOnline:b", true);
+        if (onlinePrivateKey == null && onlinePublicKey == null) {
+            var entropy = hive.formatter.createSuggestedPassword() + Math.random();
+            var privateK = dhive.PrivateKey.fromLogin(user, entropy, 'online');
+            var publicK = privateK.createPublic('STM');
+            onlinePrivateKey = privateK.toString();
+            onlinePublicKey = publicK.toString();
+        }
+        pref.setValue("$:s", onlinePublicKey);
+        privatePref.setKeyFor('$', onlinePrivateKey);
     }
     sendOnlineStatus(online, conversation = '$online') {
         return __awaiter(this, void 0, void 0, function* () {
@@ -3350,6 +3423,23 @@ class Utils {
                     return result;
                 });
             }, 25);
+        });
+    }
+    static retrieveAll(api, method, params) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var array = [];
+            var limit = params.limit;
+            if (!(limit > 0))
+                return array;
+            while (true) {
+                var result = yield Utils.getDhiveClient().call(api, method, params);
+                for (var a of result)
+                    array.push(a);
+                if (!(result.length > 0) || result.length < limit)
+                    return array;
+                var lastItem = array[array.length - 1];
+                params.last = Array.isArray(lastItem) ? lastItem[0] : lastItem;
+            }
         });
     }
     static getCommunityData(user) {
