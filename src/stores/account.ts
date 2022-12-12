@@ -22,7 +22,6 @@ export const useAccountStore = defineStore("account", () => {
                 else {
                     manager.setUseKeychain();
                 }
-                manager.sendOnlineStatus(true);
             }
         }
         catch(e) {

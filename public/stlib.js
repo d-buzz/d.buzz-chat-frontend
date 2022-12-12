@@ -58,6 +58,11 @@ class Client {
             return yield this.emit("r", ["r", '@@', username]);
         });
     }
+    readCommunity(username) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.emit("rg", username);
+        });
+    }
     readUserMessages(username, fromTimestamp, toTimestamp) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.read('@' + username, fromTimestamp, toTimestamp);
@@ -322,13 +327,17 @@ class Community {
             return yield this.joined;
         });
     }
-    reload() {
+    setJoined(joined) {
+        this.joined = Promise.resolve(joined);
+    }
+    reload(reloadJoined = false) {
         return __awaiter(this, void 0, void 0, function* () {
             var name = this.getName();
             utils_1.Utils.getCommunityDataCache().reload(name);
             var data = yield utils_1.Utils.getCommunityData(name);
             this.initialize(data);
-            this.joined = null;
+            if (reloadJoined)
+                this.joined = null;
             data.community = this;
             return this;
         });
@@ -369,6 +378,16 @@ class Community {
                 case "": return 0;
             }
         return -1;
+    }
+    toJSON() {
+        var copy = {};
+        var data = this.communityData;
+        for (var item in data) {
+            if (item === 'community')
+                continue;
+            copy[item] = data[item];
+        }
+        return copy;
     }
 }
 exports.Community = Community;
@@ -1302,6 +1321,7 @@ class DefaultStreamDataCache extends stream_data_cache_1.StreamDataCache {
             setTimeout(() => __awaiter(this, void 0, void 0, function* () {
                 console.log("community update", community);
                 var data = yield community_1.Community.load(community);
+                yield data.listJoined();
                 //var copy = data.copy();
                 //TODO add consistency check to see if reloaded data
                 //is equal to current updated data from stream
@@ -3425,20 +3445,35 @@ class Utils {
             }, 25);
         });
     }
-    static retrieveAll(api, method, params) {
+    static delay(ms) {
+        return __awaiter(this, void 0, void 0, function* () { return new Promise(r => { setTimeout(r, ms); }); });
+    }
+    static retrieveAll(api, method, params, delayMs = 500) {
         return __awaiter(this, void 0, void 0, function* () {
             var array = [];
             var limit = params.limit;
             if (!(limit > 0))
                 return array;
+            var users = {};
             while (true) {
                 var result = yield Utils.getDhiveClient().call(api, method, params);
                 for (var a of result)
                     array.push(a);
                 if (!(result.length > 0) || result.length < limit)
                     return array;
+                var added = false;
+                for (var a of result) {
+                    var item = Array.isArray(item) ? item[0] : item;
+                    if (users[item] === undefined) {
+                        added = true;
+                        users[item] = item;
+                    }
+                }
+                if (!added)
+                    return array;
                 var lastItem = array[array.length - 1];
                 params.last = Array.isArray(lastItem) ? lastItem[0] : lastItem;
+                yield Utils.delay(delayMs);
             }
         });
     }
