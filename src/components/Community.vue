@@ -13,17 +13,16 @@
     </TransitionRoot>
   <div class="appbg2 appfg2 w-full h-full break-all" v-if='messageKey'>
      <div class="appbg3 appfg3 h-full border-l-1 float-right pr-1 pl-1 w-200 overflow-y-scroll hidden md:block" v-if="$route.name === 'CommunityPath' && community">
-
-        <div v-for="(users,role) in communityUsers">
-            <small :class="roleCss(role)"><b>{{role}}</b></small>
-            <div class="p-1 flex" v-for="team in users" :class="(team.online == true)?'':'offline'">
+        <div v-for="roleUsers in communityUsers">
+            <small :class="roleCss(roleUsers[0])"><b>{{roleUsers[0]}}</b></small>
+            <div class="p-1 flex" v-for="team in roleUsers[1]" :class="(team[3] == true)?'':'offline'">
                 <div class="flex-shrink-0 mr-5px">
                     <UserCommunityIcon :name="team[0]" :community="community.getName()" 
-                    :imgCss="`avConversation`" :displayOnlineStatus="team.online == true"/>
+                    :imgCss="`avConversation`" :displayOnlineStatus="team[3] == true"/>
                 </div>
                 <div class="grow relative" style="margin-top:-7px;">
-                    <small :class="roleCss(role)"><b>{{team[0]}}</b></small>
-                    <div class="flex" v-if="team[2]"><small v-for="title in team[2].split(',')" class="rounded-lg bg-green-700 pr-1 pl-1 text-white font-bold">{{title}}</small></div>
+                    <small :class="roleCss(roleUsers[0])"><b>{{team[0]}}</b></small>
+                    <div class="flex" v-if="team[2]"><small v-for="title in team[2]" class="rounded-lg bg-green-700 pr-1 pl-1 text-white font-bold">{{title}}</small></div>
                 </div>
             </div>
         </div>
@@ -213,11 +212,19 @@ async function initChat() {
 
             manager.readOnlineUsers(community0).then((users)=>{
                 if(manager.selectedConversation != conversation) return;
-                var usersCategories = {};
-                for(var team of users) {
-                    if(usersCategories[team[1]] === undefined) usersCategories[team[1]] = [];
-                    usersCategories[team[1]].push(team);
-                }
+                console.log(users);
+                var roles = ['owner', 'admin', 'mod', 'member'];
+                var usersCategories = [];
+                for(var role of roles)
+                    if(users.role[role] != null && users.role[role].length > 0) usersCategories.push([role, users.role[role]]);
+                for(var title in users.title)
+                    if(users.title[title].length > 0)
+                        usersCategories.push([title, users.title[title]]);
+                if(users.online.length > 0)
+                    usersCategories.push(['online', users.online]);
+                for(var role in users.role)
+                    if(roles.indexOf(role) === -1 && users.role[role].length > 0)
+                        usersCategories.push([role, users.role[role]]);
                 communityUsers.value = usersCategories;
             });
         }

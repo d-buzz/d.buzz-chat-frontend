@@ -68,11 +68,16 @@ class Client {
             return yield this.read('@' + username, fromTimestamp, toTimestamp);
         });
     }
-    readOnlineStatus(usernames) {
+    readOnlineStatus(usernames, maxTimestamp = 0) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!Array.isArray(usernames))
                 usernames = [usernames];
-            return yield this.emit("r", ["r", '$online', usernames]);
+            return yield this.emit("r", ["r", '$online', usernames, maxTimestamp]);
+        });
+    }
+    readOnlineStatusForCommunity(username, maxTimestamp = 0) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.emit("r", ["r", '$online', username, maxTimestamp]);
         });
     }
     read(conversation, fromTimestamp, toTimestamp) {
@@ -214,6 +219,7 @@ class Community {
         var titles = this.getTitles(username);
         return titles === null ? false : titles.indexOf(title) !== -1;
     }
+    listRoles() { return this.communityData.roles; }
     getRoleEntry(username) {
         var roles = this.communityData.roles;
         if (roles == null)
@@ -361,6 +367,8 @@ class Community {
                 return data.community;
             var community = new Community();
             community.initialize(data);
+            if (data.joined != null)
+                community.setJoined(data.joined);
             data.community = community;
             return community;
         });
@@ -487,8 +495,8 @@ function preferences(json = {}) {
     return new imports_1.Preferences([imports_1.Preferences.TYPE, json]);
 }
 exports.preferences = preferences;
-function onlineStatus(online) {
-    return new imports_1.OnlineStatus([imports_1.OnlineStatus.TYPE, online]);
+function onlineStatus(online, communities) {
+    return new imports_1.OnlineStatus([imports_1.OnlineStatus.TYPE, online, communities]);
 }
 exports.onlineStatus = onlineStatus;
 function encodedMessage(msg, privateK, publicK) {
@@ -831,6 +839,8 @@ class OnlineStatus extends imports_1.JSONContent {
     setOnline(value = true) { this.setStatus(value); }
     getStatus() { return this.json[1]; }
     setStatus(value) { this.json[1] = value; }
+    setCommunities(value) { this.json[2] = value; }
+    getCommunities() { return this.json[2]; }
 }
 exports.OnlineStatus = OnlineStatus;
 OnlineStatus.TYPE = "o";
@@ -1321,7 +1331,7 @@ class DefaultStreamDataCache extends stream_data_cache_1.StreamDataCache {
             setTimeout(() => __awaiter(this, void 0, void 0, function* () {
                 console.log("community update", community);
                 var data = yield community_1.Community.load(community);
-                yield data.listJoined();
+                //await data.listJoined();
                 //var copy = data.copy();
                 //TODO add consistency check to see if reloaded data
                 //is equal to current updated data from stream
@@ -1588,6 +1598,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MessageManager = exports.UserOnlineStatus = exports.EventQueue = exports.LoginWithKeychain = exports.LoginKey = void 0;
 const client_1 = require("./client");
+const community_1 = require("./community");
 const utils_1 = require("./utils");
 const signable_message_1 = require("./signable-message");
 const displayable_message_1 = require("./displayable-message");
@@ -2378,36 +2389,79 @@ class MessageManager {
     }
     readOnlineUsers(community, verifyOnlineMessages = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            var joined = yield community.listJoined();
+            if (typeof community === 'string')
+                community = yield community_1.Community.load(community);
+            var roles = community.listRoles();
+            var maxTime = utils_1.Utils.utcTime() - 7 * 60 * 1000; //7 minutes      
             var client = this.getClient();
-            var users = [];
-            for (var user of joined)
-                users.push(user[0]);
-            var onlineResult = yield client.readOnlineStatus(users);
+            var onlineResult = yield client.readOnlineStatusForCommunity(community.getName(), maxTime);
             if (onlineResult.isSuccess()) {
                 var online = onlineResult.getResult();
                 var onlineMap = {};
-                for (var onlineUser of online)
-                    onlineMap[onlineUser[1]] = onlineUser;
-                for (var user of joined) {
-                    var username = user[0];
-                    if (onlineMap[username]) {
-                        try {
-                            var message = signable_message_1.SignableMessage.fromJSON(onlineMap[username]);
-                            if (!verifyOnlineMessages || (yield message.verify())) {
-                                var content = message.getContent();
-                                if (content instanceof imports_1.OnlineStatus) {
-                                    user.online = content.isOnline();
-                                }
+                var role = {};
+                var title = {};
+                var added = {};
+                var _online = [];
+                for (var json of online) {
+                    var username = json[1];
+                    onlineMap[username] = json;
+                    var isOnline = false;
+                    try {
+                        var message = signable_message_1.SignableMessage.fromJSON(json);
+                        if (!verifyOnlineMessages || (yield message.verify())) {
+                            var content = message.getContent();
+                            if (content instanceof imports_1.OnlineStatus) {
+                                isOnline = content.isOnline();
+                                json.online = isOnline;
                             }
                         }
-                        catch (e) {
-                            console.log(e);
+                    }
+                    catch (e) {
+                        console.log(e);
+                    }
+                    if (isOnline) {
+                        added[username] = true;
+                        if (roles[username] != null) {
+                            var userRole = roles[username][1];
+                            var userTitles = roles[username][2];
+                            if (userRole != "") {
+                                if (role[userRole] === undefined)
+                                    role[userRole] = [];
+                                role[userRole].push([username, userRole, userTitles, true]);
+                            }
+                            if (userTitles != null)
+                                for (var userTitle of userTitles) {
+                                    if (title[userTitle] === undefined)
+                                        title[userTitle] = [];
+                                    title[userTitle].push([username, userRole, userTitles, true]);
+                                }
+                        }
+                        else {
+                            _online.push([username, "", [], true]);
                         }
                     }
                 }
+                for (var user in roles) {
+                    if (added[user])
+                        continue;
+                    var roleData = roles[user];
+                    var userRole = roleData[1];
+                    var userTitles = roleData[2];
+                    if (userRole != "") {
+                        if (role[userRole] === undefined)
+                            role[userRole] = [];
+                        role[userRole].push([user, userRole, userTitles, false]);
+                    }
+                    if (userTitles != null)
+                        for (var userTitle of userTitles) {
+                            if (title[userTitle] === undefined)
+                                title[userTitle] = [];
+                            title[userTitle].push([user, userRole, userTitles, false]);
+                        }
+                }
+                return { role, title, online: _online };
             }
-            return joined;
+            return null;
         });
     }
     setupOnlineStatus(enabled, storeLocally = false, onlinePrivateKey = null, onlinePublicKey = null) {
@@ -2456,7 +2510,12 @@ class MessageManager {
                 console.log("unknown key");
                 return null;
             }
-            var msg = signable_message_1.SignableMessage.create(user, conversation, imports_1.Content.onlineStatus(online), signable_message_1.SignableMessage.TYPE_MESSAGE);
+            var communities = [];
+            var communities2 = yield this.getCommunities(user);
+            if (communities2 != null)
+                for (var community of communities2)
+                    communities.push(community[0]);
+            var msg = signable_message_1.SignableMessage.create(user, conversation, imports_1.Content.onlineStatus(online, communities), signable_message_1.SignableMessage.TYPE_MESSAGE);
             msg.signWithKey(onlineKey, '$');
             var client = this.getClient();
             return yield client.write(msg);
@@ -2665,7 +2724,7 @@ class MessageManager {
 }
 exports.MessageManager = MessageManager;
 
-},{"./client":1,"./content/imports":9,"./displayable-message":20,"./signable-message":23,"./utils":26}],22:[function(require,module,exports){
+},{"./client":1,"./community":2,"./content/imports":9,"./displayable-message":20,"./signable-message":23,"./utils":26}],22:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PermissionSet = void 0;
@@ -3477,20 +3536,40 @@ class Utils {
             }
         });
     }
-    static getCommunityData(user) {
+    static getCommunityData(user, loadFromNode = true) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield communityDataCache.cacheLogic(user, (user) => {
-                return Utils.getDhiveClient().call("bridge", "get_community", [user]).then((result) => __awaiter(this, void 0, void 0, function* () {
-                    var array = yield Utils.getDhiveClient().call("bridge", "list_community_roles", [user]);
-                    result.roles = {};
-                    if (Array.isArray(array))
-                        for (var role of array) {
-                            role[2] = role[2] === "" ? [] : role[2].split(",");
-                            result.roles[role[0]] = role;
+            if (isNode || !loadFromNode) {
+                return yield communityDataCache.cacheLogic(user, (user) => {
+                    return Utils.getDhiveClient().call("bridge", "get_community", [user]).then((result) => __awaiter(this, void 0, void 0, function* () {
+                        var array = yield Utils.getDhiveClient().call("bridge", "list_community_roles", [user]);
+                        result.roles = {};
+                        if (Array.isArray(array))
+                            for (var role of array) {
+                                role[2] = role[2] === "" ? [] : role[2].split(",");
+                                result.roles[role[0]] = role;
+                            }
+                        return result;
+                    }));
+                });
+            }
+            else {
+                if (Utils.getClient() == null)
+                    throw 'client is null, use Utils.setClient(...) to initialize.';
+                return yield communityDataCache.cacheLogic(user, (user) => {
+                    return Utils.getClient().readCommunity(user).then((res) => __awaiter(this, void 0, void 0, function* () {
+                        if (res.isSuccess()) {
+                            var result = res.getResult();
+                            if (result == null)
+                                return null;
+                            if (result[1] != null)
+                                result[0].joined = result[1];
+                            return result[0];
                         }
-                    return result;
-                }));
-            });
+                        else
+                            throw res.getError();
+                    }));
+                });
+            }
         });
     }
     static parseGroupConversation(conversation) {
