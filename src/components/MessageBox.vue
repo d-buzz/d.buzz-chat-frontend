@@ -92,6 +92,8 @@ function enterMessage(e) {
             emit("entermessage", text);
         }
     }
+    console.log("enter", e.target);
+    e.target.blur();
 }
 function setCaretAtEnd(element) {
     var range,selection;
