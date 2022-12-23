@@ -13,16 +13,19 @@
             </span>
         </div>
         <div class="flex">
-            <div tex
-              class="fg70 shadow appearance-none border border-gray-700 rounded-xl w-[calc(100%-1rem)] py-2 px-3 leading-tight focus:outline-none focus:shadow-outline mr-1"
-              ref="box"
-              @keyup="onChange"
-              @paste="onChange"
-              @copy="onChange"
-              @cut="onChange"
-              @keydown.enter.exact.prevent="enterMessage"
-              role="textbox"
-              contenteditable>
+            <div class="flex fg70 shadow appearance-none border border-gray-700 rounded-xl w-[calc(100%-1rem)] leading-tight mr-1">
+                <div tex
+                  class="appearance-none w-[calc(100%-1rem)] py-2 px-3 focus:outline-none focus:shadow-outline"
+                  ref="box"
+                  @keyup="onChange"
+                  @paste="onChange"
+                  @copy="onChange"
+                  @cut="onChange"
+                  @keydown.enter.exact.prevent="enterMessage"
+                  role="textbox"
+                  contenteditable>
+                </div>
+                <div @click="enterMessage(null)" class="float-right my-2 mx-3 cursor-pointer oi oi-envelope-open envelope" title="send"></div>
             </div>
             <div class="flex gap-x-1" style="max-height: 38px;">
                 <span @click="toggleAddEmoteModal()" class="cursor-pointer" style="font-size: 22px;" title="add emote">&#x263a;</span>
@@ -79,6 +82,7 @@ function onChange(e) {
     } 
 }
 function enterMessage(e) {
+    var target = box.value;
     if(images.value.length > 0) {
         var msg = { type: stlib.Content.Images.TYPE, images: images.value};
         emit("entermessage", null, msg, true, false, ()=>{
@@ -87,13 +91,12 @@ function enterMessage(e) {
         });
     }
     else {
-        var text = e.target.innerText;
+        var text = target.innerText;
         if(text && text.length > 0) {
             emit("entermessage", text);
         }
     }
-    console.log("enter", e.target);
-    e.target.blur();
+    target.blur();
 }
 function setCaretAtEnd(element) {
     var range,selection;
@@ -118,6 +121,12 @@ defineExpose({
 });
 </script>
 <style scoped>
+.envelope:hover::before {
+    content:'\e05c';
+}
+.envelope:hover {
+    padding-top:2px;
+}
 .imgPreview {
     @apply relative;
 }
