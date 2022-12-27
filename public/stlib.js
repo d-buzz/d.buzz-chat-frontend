@@ -1729,6 +1729,7 @@ class MessageManager {
         this.selectedOnlineStatus = null;
         this.conversations = new utils_1.AccountDataCache();
         this.communities = new utils_1.AccountDataCache();
+        this.onlineStatusTimer = null;
         this.cachedGuestData = null;
         this.keys = {};
         this.keychainPromise = null;
@@ -1944,6 +1945,21 @@ class MessageManager {
             }
             return new client_1.CallbackResult(false, 'error creating account.');
         });
+    }
+    setOnlineStatusTimer(enabled) {
+        if (enabled) {
+            if (this.onlineStatusTimer != null)
+                return;
+            this.onlineStatusTimer = setInterval(() => {
+                this.sendOnlineStatus("true");
+            }, 5 * 60 * 1000);
+        }
+        else {
+            if (this.onlineStatusTimer == null)
+                return;
+            clearInterval(this.onlineStatusTimer);
+            this.onlineStatusTimer = null;
+        }
     }
     joinGroups() {
         return __awaiter(this, void 0, void 0, function* () {

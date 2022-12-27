@@ -22,6 +22,8 @@ export const useAccountStore = defineStore("account", () => {
                 else {
                     manager.setUseKeychain();
                 }
+                manager.setOnlineStatusTimer(true);
+                manager.sendOnlineStatus(true);
             }
         }
         catch(e) {
@@ -52,6 +54,7 @@ export const useAccountStore = defineStore("account", () => {
                     account.value.name = user;
                     account.value.authenticated = true;
                     updateStore();
+                    manager.setOnlineStatusTimer(true);
                     manager.sendOnlineStatus(true);
                     return resolve(account.value);
                 }
@@ -65,6 +68,7 @@ export const useAccountStore = defineStore("account", () => {
             account.value.name = user;
             account.value.authenticated = true;
             updateStore();
+            manager.setOnlineStatusTimer(true);
             await manager.sendOnlineStatus(true);
             return account.value;
         }
@@ -88,6 +92,7 @@ export const useAccountStore = defineStore("account", () => {
             account.value.name = guest[0];
             account.value.authenticated = true;
             updateStore();
+            manager.setOnlineStatusTimer(true);
             await manager.joinGroups();
             await manager.getPrivatePreferences();
             await manager.sendOnlineStatus(true);
