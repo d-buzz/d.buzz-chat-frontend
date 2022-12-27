@@ -154,7 +154,8 @@ const defaultPreferences = [
         ['everyone', 'Everyone'],['accounts', 'Hive users'],
         ['communities','Communities in common'], ['friends', 'Friends']]},
     {name: "showOnline:b", display: "Online Status", desc: "Show online status.", value: true, newvalue:true},
-    {name: "autoDecode:b", display: "Auto Decode", desc: "Automatically decode private messages.", value: false, newvalue:false}
+    {name: "autoDecode:b", display: "Auto Decode", desc: "Automatically decode private messages.", value: false, newvalue:false},
+    {name: "flipMessageBox:b", display: "Flip Message Box", desc: "Flip message box on y-axis.", value: false, newvalue:false}
 ];
 
 const defaultColors = [

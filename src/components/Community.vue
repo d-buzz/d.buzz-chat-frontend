@@ -21,15 +21,15 @@
                     :imgCss="`avConversation`" :displayOnlineStatus="team[3] == true"/>
                 </div>
                 <div class="grow relative" style="margin-top:-7px;">
-                    <small :class="roleCss(roleUsers[0])"><b>{{team[0]}}</b></small>
+                    <small :class="roleCss(team[1])"><b>{{team[0]}}</b></small>
                     <div class="flex" v-if="team[2]"><small v-for="title in team[2]" 
                         class="titlebg">{{title}}</small></div>
                 </div>
             </div>
         </div>
       </div>
-    <div class="h-full flex flex-col justify-end">
-        <div class="font-bold">
+    <div class="h-full flex flex-col justify-between">
+        <div class="font-bold" style="order:1;">
             <span class="cursor-pointer" @click="setThread(null)">{{streamName}}</span> <span v-if="threadName !== null" class="font-normal"><span class="oi oi-chevron-right cursor-pointer" style="font-size:10px;vertical-align:top;margin-top:6px;" @click="setThread(null)"></span> {{threadName}}</span>
             <span class="inline-block" v-if="sharedCommunities">
                 <span class="flex">
@@ -50,11 +50,16 @@
                 </span>
             </span>
         </div>
-        <div ref="messages" :key="messageKey" class="flex flex-col overflow-y-scroll pr-3">
+
+
+        
+
+
+        <div ref="messages" :key="messageKey" class="grow flex flex-col overflow-y-scroll pr-3" style="order:5;">
             <button v-if="canLoadPreviousMessages" class="btn" @click="loadPrevious()">{{loadingPreviousMessages?'loading':'load previous messages'}}</button>
-            <div v-if="threadName !== null">
+            <div v-if="threadName !== null" :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
                 <div v-for="messageArray in displayableMessages" >
-                    <div v-if="messageArray.type === 'h'">
+                    <div v-if="messageArray.type === 'h'" :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
                         <div v-for="message in messageArray">
                             <div v-if="message.getThreadName() === threadName">
                                 <hr style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
@@ -64,7 +69,7 @@
                     </div>
                 </div>
             </div>
-            <div v-else>
+            <div v-else :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
                 <div v-for="messageArray in displayableMessages" >
                     <div v-if="messageArray.type === 'h'">
                         <small class="flex text-gray-700 cursor-pointer" style="margin-top: 0.5rem;" @click="toggleFold(messageArray)">
@@ -75,9 +80,9 @@
                                 <div>{{messageArray.length}} thread message</div>
                             </div>
                         </small>
-                        <div v-if="showFold(messageArray)" class="fold">
+                        <div v-if="showFold(messageArray)" :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col', 'fold']">
                             <div v-for="(message, i) in messageArray">
-                                <div v-if="i !== 0" class="flex text-gray-700" style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
+                                <div v-if="(!valueFlipMessageBox && i !== 0) || (valueFlipMessageBox && i !== messageArray.length-1)" class="flex text-gray-700" style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
                                     <span class="hr grow"></span>
                                     <small class="cursor-pointer" @click="setThread(message.getThreadName())">{{message.getThreadName()}}</small>
                                     <span class="hr grow"></span>
@@ -86,42 +91,49 @@
                             </div>
                         </div>
                     </div>
-                    <div v-else>
+                    <div v-else :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
                         <div v-for="(message, i) in messageArray" >
-                            <hr v-if="i !== 0" style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
+                            <hr v-if="(!valueFlipMessageBox && i !== 0) || (valueFlipMessageBox && i !== messageArray.length-1)" style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
                             <Message :message="message" @action="setContentMessage" />
                         </div>
                     </div>
                </div>
             </div>
         </div>
-        <div v-if="decodeNMessages>0">
-            <hr>
-            <div><small>Click to decode {{decodeNMessages}} message/s.</small></div>            
-            <button class="btn" @click="decode()">Decode</button>
-            <button class="btn" @click="autoDecode()">{{valueAutoDecode?'Manual decode':'Auto decode'}}</button>
+        
+        <div :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']" 
+             :style="[valueFlipMessageBox?'order:3;':'order:7;']">
+            <div v-if="decodeNMessages>0">
+                <hr>
+                <div><small>Click to decode {{decodeNMessages}} message/s.</small></div>            
+                <button class="btn" @click="decode()">Decode</button>
+                <button class="btn" @click="autoDecode()">{{valueAutoDecode?'Manual decode':'Auto decode'}}</button>
+            </div>
+            <div v-if="contentMsg" class="border-t-1"></div>
+            <div v-if="contentMsg" class="text-sm pr-3">
+                <button class="float-right" @click="setContentMessage(null)"><span class="oi oi-circle-x align-top"></span></button>
+                <div class="overflow-x-hidden" style="text-overflow: ellipsis;"><span class="font-bold">{{contentMsg.msg.getUser()}}:</span> {{contentMsg.text}}</div>
+            </div>
+            <div class="mt-1"></div>
+            <div class="flex mr-3">
+              <MessageBox
+                ref="messageBox"
+                class="grow"
+                @fullorblank="updateStatus"
+                @entermessage="enterMessage"
+                v-focus
+              ></MessageBox>
+            </div>
+            <div>
+                <span v-if="writingUsers && writingUsers.length > 0">
+                    <small class="align-top"><span v-for="user in writingUsers" class="oiMini oi" :class="user[1]"><b>{{user[0]}}&nbsp;</b></span>
+                    <span class="oiMini oi text-gray-700">{{writingUsers.length==1?'is writing':' are writing'}}</span>
+                    </small>
+                </span>
+                &nbsp;
+            </div>
         </div>
-        <div v-if="contentMsg" class="text-sm border-t-1 pr-3">
-            <button class="float-right" @click="setContentMessage(null)"><span class="oi oi-circle-x align-top"></span></button>
-            <div class="overflow-x-hidden" style="text-overflow: ellipsis;"><span class="font-bold">{{contentMsg.msg.getUser()}}:</span> {{contentMsg.text}}</div>
-        </div>
-        <div class="flex mt-4 mr-3">
-          <MessageBox
-            ref="messageBox"
-            class="grow"
-            @fullorblank="updateStatus"
-            @entermessage="enterMessage"
-            v-focus
-          ></MessageBox>
-        </div>
-        <div class="mt-0 mb-2" style="line-height: 1;">
-            <span v-if="writingUsers && writingUsers.length > 0">
-                <small><span v-for="user in writingUsers" class="oiMini oi" :class="user[1]"><b>{{user[0]}}&nbsp;</b></span>
-                <span class="oiMini oi text-gray-700">{{writingUsers.length==1?'is writing':' are writing'}}</span>
-                </small>
-            </span>
-            &nbsp;
-        </div>
+
    </div>
  </div>
 </template>
@@ -144,6 +156,7 @@ const sharedCommunities = ref(null);
 const writingUsers = ref(null);
 const messageBox = ref();
 const messages = ref();
+const valueFlipMessageBox = ref(false);
 const valueAutoDecode = ref(false);
 const canLoadPreviousMessages = ref(true);
 const loadingPreviousMessages = ref(false);
@@ -248,7 +261,7 @@ async function initChat() {
 
         var updateMessages = async () => {
             var container = messages.value;
-            var scrollToBottom = true;
+            var scrollToBottom = !valueFlipMessageBox.value;
             var scrollTop = 0;
             if(container) { 
                 scrollToBottom = isAtScrollBottom(container); 
@@ -274,6 +287,7 @@ async function initChat() {
             return data;
         };
         var prefs = await manager.getPreferences();
+        valueFlipMessageBox.value = prefs.getValueBoolean("flipMessageBox", false);
         var isAutoDecode = prefs.getValueBoolean("autoDecode", false);
         valueAutoDecode.value = isAutoDecode;
         var data = await updateMessages();

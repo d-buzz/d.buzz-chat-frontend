@@ -51,7 +51,7 @@ function clickOnIconOption(item) {
     position: absolute;
     width: 11px;
     height: 11px;
-    border: 2px solid white;
+    border: 2px solid var(--appbg3);
     border-radius: 7px;
     background-color: green;
     left: 0;
