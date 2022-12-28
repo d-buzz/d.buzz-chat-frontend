@@ -12,7 +12,7 @@
         <ThreadModal @oninput="setThread" @close="toggleThreads"></ThreadModal>
     </TransitionRoot>
   <div class="appbg2 appfg2 w-full h-full break-all" v-if='messageKey'>
-     <div class="appbg3 appfg3 h-full border-l-1 float-right pr-1 pl-1 w-200 overflow-y-scroll hidden md:block" v-if="$route.name === 'CommunityPath' && community">
+     <div class="appbg3 appfg3 h-full border-l-1 float-right pr-1 pl-1 w-200 overflow-y-scroll sidebar" v-if="$route.name === 'CommunityPath' && community" ref="sidebar">
         <div v-for="roleUsers in communityUsers">
             <small :class="roleCss(roleUsers[0])"><b>{{roleUsers[0]}}</b></small>
             <div class="p-1 flex" v-for="team in roleUsers[1]" :class="(team[3] == true)?'':'offline'">
@@ -42,12 +42,15 @@
                 </button>
                 <span v-if="route.name === 'Group' || route.name === 'CommunityGroup'">
                     <button class="text-sm mr-2" @click="toggleShareGroup" title="share group">
-                        <span class="oi oi-people"></span>
+                        <span class="oi oi-share-boxed"></span>
                     </button>
                     <button class="text-sm" @click="toggleCloseGroup" title="close group">
                         <span class="oi oi-x align-top"></span>
                     </button>
                 </span>
+                <button v-if="$route.name === 'CommunityPath' && community" class="text-sm mr-2" @click="toggleSideBar" title="toggle sidebar">
+                    <span class="oi oi-people"></span>
+                </button>
             </span>
         </div>
 
@@ -148,6 +151,7 @@ const displayableMessagesFold = ref({});
 const displayableMessages = ref([]);
 const decodeNMessages = ref(0);
 const messageKey = ref("");
+const sidebar = ref(null);
 const streamName = ref("");
 const threadName = ref(null);
 const community = ref(null);
@@ -165,6 +169,7 @@ const showGroupUserModal = ref(false);
 const showCloseGroupModal = ref(false);
 const showDeleteMessageModal = ref(false);
 const showThreadsModal = ref(false);
+const showSidebar = ref(false);
 const deleteMessageRef = ref();
 
 function toggleShareGroup() {
@@ -188,6 +193,12 @@ function toggleFold(messages, value=null) {
 function showFold(messages) {
     var key = messages[0].message.getReference();
     return displayableMessagesFold.value[key] === true;
+}
+function toggleSideBar() {
+    var bar = sidebar.value;
+    if(bar == null) return;
+    var value = bar.dataset.show;
+    bar.dataset.show = !("true" === value);
 }
 function setMessages(messages) {
     var result = [];
@@ -509,6 +520,24 @@ async function loadPrevious() {
 });*/
 </script>
 <style scoped>
+.sidebar {
+    display: block;
+}
+.sidebar[data-show="true"] {
+    display: none;
+}
+@media (max-width: 767px) {
+    .sidebar {
+        display: none;
+        position: fixed;
+        z-index: 7;
+        top: 20px;
+        right: 0px;
+    }
+    .sidebar[data-show="true"] {
+        display: block;
+    }
+}
 .fold {
   padding-left: 10px;
   padding-bottom: 10px;
