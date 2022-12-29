@@ -25,11 +25,14 @@ export const install: ViteSetupModule = ({ app }) => {
         history: createWebHistory(),
         routes,
     });
-    router.beforeEach((to, from, next) => {
+    router.beforeEach(async (to, from, next) => {
         //redirect if not logged and login is required
-        if(to.name && !to.name.startsWith('@') && !accountStore.account.authenticated) {
-            next('/join');
-            return;
+        if(to.name && !to.name.startsWith('@')) {
+            if(accountStore.account.authenticated === null) await accountStore.initStore();
+            if(accountStore.account.authenticated === false) {
+                next('/join');
+                return;
+            }
         }
         next();
     });

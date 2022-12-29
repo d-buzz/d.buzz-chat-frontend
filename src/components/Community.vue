@@ -12,7 +12,11 @@
         <ThreadModal @oninput="setThread" @close="toggleThreads"></ThreadModal>
     </TransitionRoot>
   <div class="appbg2 appfg2 w-full h-full break-all" v-if='messageKey'>
-     <div class="appbg3 appfg3 h-full border-l-1 float-right pr-1 pl-1 w-200 overflow-y-scroll sidebar" v-if="$route.name === 'CommunityPath' && community" ref="sidebar">
+     <div class="appbg3 appfg3 h-full border-l-1 float-right pr-1 pl-1 w-200 overflow-y-scroll sidebar" 
+        v-if="$route.name === 'CommunityPath' && community" ref="sidebar" :key="communityUsersKey" style="padding-bottom:150px;">
+        <div class="text-right" :title="`online: ${onlineCount} users\njoined: ${community.communityData.subscribers} users`"><small class="fg70">
+            {{onlineCount}} / {{community.communityData.subscribers}}</small>
+        </div>        
         <div v-for="roleUsers in communityUsers">
             <small :class="roleCss(roleUsers[0])"><b>{{roleUsers[0]}}</b></small>
             <div class="p-1 flex" v-for="team in roleUsers[1]" :class="(team[3] == true)?'':'offline'">
@@ -151,10 +155,12 @@ const displayableMessagesFold = ref({});
 const displayableMessages = ref([]);
 const decodeNMessages = ref(0);
 const messageKey = ref("");
+const communityUsersKey = ref("#"+stlib.Utils.nextId());
 const sidebar = ref(null);
 const streamName = ref("");
 const threadName = ref(null);
 const community = ref(null);
+const onlineCount = ref(null);
 const communityUsers = ref({});
 const sharedCommunities = ref(null);
 const writingUsers = ref(null);
@@ -227,6 +233,7 @@ async function initChat() {
 
     var community0 = null;
     var conversation = getConversation(); 
+    var updateOnlineUsers = null;
     if(conversation != null) {
         manager.setConversation(conversation);
         if(route.name === 'CommunityPath') {
@@ -235,23 +242,33 @@ async function initChat() {
             streamName.value = stream?stream.getName():conversation;
             community.value = community0;
 
-            manager.readOnlineUsers(community0).then((users)=>{
+            updateOnlineUsers = async ()=> {
+                var users = await manager.readOnlineUsers(community0);
                 if(manager.selectedConversation != conversation) return;
-                console.log(users);
                 var roles = ['owner', 'admin', 'mod', 'member'];
                 var usersCategories = [];
-                for(var role of roles)
+                for(var role of roles) 
                     if(users.role[role] != null && users.role[role].length > 0) usersCategories.push([role, users.role[role]]);
                 for(var title in users.title)
                     if(users.title[title].length > 0)
                         usersCategories.push([title, users.title[title]]);
                 if(users.online.length > 0)
                     usersCategories.push(['online', users.online]);
+                var onlineCountMap = {};
+                var _onlineCount = 0;
+                for(var categories of usersCategories)
+                    for(var categoryUser of categories[1])
+                        if(categoryUser[3] && !onlineCountMap[categoryUser[0]]) {
+                            onlineCountMap[categoryUser[0]] = true; 
+                            _onlineCount++;
+                        }
+                onlineCount.value = _onlineCount;
                 for(var role in users.role)
                     if(roles.indexOf(role) === -1 && users.role[role].length > 0)
                         usersCategories.push([role, users.role[role]]);
                 communityUsers.value = usersCategories;
-            });
+            };
+            updateOnlineUsers();
         }
         else if(route.name === 'CommunityGroup') {
             var pref = await stlib.Utils.getAccountPreferences(user2);
@@ -306,22 +323,30 @@ async function initChat() {
 
         manager.setCallback("Community.vue", updateMessages);
 
-        var updateStatus = (e)=>{
-            var array = manager.getSelectedWritingUsers();
-            if(array == null || array.length === 0) writingUsers.value = null;
-            else {
-                var users = [];
-                for(var user of array) {
-                    var roleCss = '';
-                    if(community0 !== null) {
-                        var role = community0.getRole(user);
-                        var icon = {"owner":"oi-globe", "admin":"oi-cog", "mod":"oi-flag"};
-                        if(role === "owner" || role === "admin" || role === "mod") 
-                            roleCss = `${icon[role]} color${role}`;
-                    }
-                    users.push([user, roleCss]);
+        var updateStatus = async (e)=>{
+            if(e[1] === '$online') {
+                if(updateOnlineUsers) {
+                    await updateOnlineUsers();
+                    communityUsersKey.value = "#"+stlib.Utils.nextId();
                 }
-                writingUsers.value = users;
+            }
+            else {
+                var array = manager.getSelectedWritingUsers();
+                if(array == null || array.length === 0) writingUsers.value = null;
+                else {
+                    var users = [];
+                    for(var user of array) {
+                        var roleCss = '';
+                        if(community0 !== null) {
+                            var role = community0.getRole(user);
+                            var icon = {"owner":"oi-globe", "admin":"oi-cog", "mod":"oi-flag"};
+                            if(role === "owner" || role === "admin" || role === "mod") 
+                                roleCss = `${icon[role]} color${role}`;
+                        }
+                        users.push([user, roleCss]);
+                    }
+                    writingUsers.value = users;
+                }
             }
         };
         manager.onstatusmessage.set("Community.vue", updateStatus)
@@ -341,8 +366,6 @@ async function findSharedCommunities(conversation) {
         if(name === user) userCommunities = communities;
         else list.push(communities);
     }
-    console.log("user ", userCommunities);
-    console.log("list ", list);
     var shared = [];
     if(userCommunities != null) {
         skip:
@@ -357,7 +380,6 @@ async function findSharedCommunities(conversation) {
             shared.push(community);
         }            
     }
-    console.log("shared ", shared);
     return shared;
 }
 function focusMessageBox() {
@@ -374,7 +396,6 @@ function setThread(name) {
 }
 const contentMsg = ref(null);
 async function setContentMessage(obj) {
-    console.log("contentMessage", obj);
     if(obj == null) {
         var val = contentMsg.value; //clear message field if closing edit action
         if(val && val.type === stlib.Content.Edit.TYPE) messageBox.value.setText("");

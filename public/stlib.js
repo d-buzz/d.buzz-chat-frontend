@@ -1736,6 +1736,9 @@ class MessageManager {
         this.pauseAutoDecode = false;
         this.defaultReadHistoryMS = 30 * 24 * 60 * 60000;
     }
+    /*
+    List of backend messaging nodes to connect to.
+    */
     setNodes(nodes) {
         for (var i = 0; i < nodes.length; i++)
             nodes[i] = nodes[i].replace(/^http/, 'ws');
@@ -1885,6 +1888,7 @@ class MessageManager {
             console.log(e);
         }
         this.join(user);
+        this.join('$online');
     }
     readGuest(username) {
         var guests = this.readGuests();

@@ -7,31 +7,38 @@ type AccountData = {
 };
 
 export const useAccountStore = defineStore("account", () => {
-    var userData = localStorage.getItem("_user");
-    if(userData == null) userData = { name: null, authenticated: false }; 
-    else {
-        try {
-            userData = JSON.parse(userData);
-            if(userData.authenticated) {
-                const manager = getManager();
-                manager.setUser(userData.name);
-                if(stlib.Utils.isGuest(userData.name)) {
-                    var guest = manager.readGuest(userData.name);
-                    manager.setLoginKey(guest[1]);
+    const account: Ref<AccountData> = ref({name: null, authenticated: null});
+    
+    const initStore = async ()=>{
+        var userData = localStorage.getItem("_user");
+        if(userData == null) account.value.authenticated = false;
+        else {
+            try {
+                var _userData = JSON.parse(userData);
+                if(_userData.authenticated) {   
+                    account.value.name = _userData.name;
+                    account.value.authenticated = _userData.authenticated;
+                    const manager = getManager();
+                    manager.setUser(_userData.name);
+                    if(stlib.Utils.isGuest(_userData.name)) {
+                        var guest = manager.readGuest(_userData.name);
+                        manager.setLoginKey(guest[1]);
+                    }
+                    else {
+                        manager.setUseKeychain();
+                    }
+                    manager.setOnlineStatusTimer(true);
+                    manager.sendOnlineStatus(true);
                 }
-                else {
-                    manager.setUseKeychain();
-                }
-                manager.setOnlineStatusTimer(true);
-                manager.sendOnlineStatus(true);
+            }
+            catch(e) {
+                userData = { name: null, authenticated: false }; 
+                console.log(e);
             }
         }
-        catch(e) {
-            userData = { name: null, authenticated: false }; 
-            console.log(e);
-        }
-    }
-    const account: Ref<AccountData> = ref(userData);
+    };
+    
+    
     const updateStore = ()=>{
         localStorage.setItem("_user", JSON.stringify(account.value));
     };
@@ -109,6 +116,7 @@ export const useAccountStore = defineStore("account", () => {
     updateStore();
   };
   return {
+    initStore,
     authenticate, loginGuest, 
     signOut,
     account,
