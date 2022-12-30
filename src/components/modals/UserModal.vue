@@ -33,7 +33,7 @@
         </div>
     </div>
     <div class="mt-2">
-        <span v-if="relations">        
+        <span v-if="relations">     
             <button class="btn" @click="add(user, !relations.follows)"><span class="oi oi-people"></span> {{relations.follows?'Remove':'Add'}}</button>   
         </span> 
         <router-link :to="`/p/${user}`"><span class="btn" ><span class="oi oi-chat text-sm"></span> Message</span></router-link> 
@@ -160,7 +160,8 @@ function formatDate(date) {
 async function initRelation() {
     var user = getManager().user;
     var user2 = props.user;
-    if(!user || !user2 || user === user2) return; 
+    if(!user || !user2 || user === user2) return;
+    relations.value = {"follows": false }; 
     var data = await stlib.Utils.getDhiveClient().call("bridge", "get_relationship_between_accounts", [user, user2]);
     if(data) relations.value = data;
 }

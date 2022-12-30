@@ -2129,6 +2129,46 @@ class MessageManager {
         }
         return result;
     }
+    storeCommunitySortOrderLocally(sortOrder) {
+        window.localStorage.setItem(this.user + "|sortOrder|", JSON.stringify(sortOrder));
+    }
+    loadCommunitySortOrderLocally() {
+        try {
+            var str = window.localStorage.getItem(this.user + "|sortOrder|");
+            if (str == null)
+                return null;
+            var result = JSON.parse(str);
+            if (Array.isArray(result))
+                return result;
+        }
+        catch (e) {
+            console.log(e);
+        }
+        return null;
+    }
+    getCommunitiesSorted(user = null, sortOrder = null) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (sortOrder == null)
+                sortOrder = this.loadCommunitySortOrderLocally();
+            var array = yield this.getCommunities(user);
+            if (sortOrder != null && sortOrder.length > 0) {
+                var sortedArray = [];
+                var tmpArray = [];
+                for (var item of array) {
+                    var index = sortOrder.indexOf(item[0]);
+                    if (index === -1)
+                        sortedArray.push(item);
+                    else
+                        tmpArray[index] = item;
+                }
+                for (var item of tmpArray)
+                    if (item != null)
+                        sortedArray.push(item);
+                return sortedArray;
+            }
+            return array;
+        });
+    }
     getCommunities(user = null) {
         return __awaiter(this, void 0, void 0, function* () {
             if (user === null)
