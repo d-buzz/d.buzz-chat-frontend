@@ -144,6 +144,21 @@
     line-height:1;
     padding: 2px 3px;
 }
+.scrollBox {
+    visibility: hidden;
+    transition: visibility 0.20s;
+    scrollbar-color: #00000010 #00000000;
+    transition: scrollbar-color 200ms;
+}
+.scrollBox:focus, .scrollBox:hover, .scrollBoxContent {
+    visibility: visible;
+}
+.scrollBox:hover {
+    transition: visibility 0s 0.20s;
+    scrollbar-color: #00000077 #00000000;
+    transition: scrollbar-color 200ms linear;
+}
+
 .w-200 { width: 200px; }
 .mr-5px { margin-right: 5px;}
 .oi-x { top: 0px;}

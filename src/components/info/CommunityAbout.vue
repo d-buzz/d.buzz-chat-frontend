@@ -1,23 +1,25 @@
 <template>
-  <div class="w-full h-full flex flex-col overflow-y-scroll pr-3" v-if='community'>
-    <div class="flex font-bold">About</div>
-    <div>{{community.getAbout()}}</div>
-    <hr>
-    <div class="flex font-bold">Description</div>
-    <div>{{community.getDescription()}}</div>
-    <hr>
-    <div class="flex font-bold">Rules</div>
-    <div>{{community.getRules()}}</div>
-    <hr>
-    <div class="flex font-bold">Team and Moderators</div>
-    <div class="flex flex-wrap justify-between">
-        <div v-for="team in community.communityData.team" class="p-1 flex">
-            <div class="flex-shrink-0 mr-5px">
-                <UserCommunityIcon :name="team[0]" :community="community.getName()" :imgCss="`avConversation`"/>
-            </div>
-            <div class="grow relative" style="margin-top:-7px;">
-                <small :class="roleCss(role)"><b>{{team[0]}}</b></small>
-                <div class="flex" v-if="team[2]"><small v-for="title in team[2].split(',')" class="titlebg">{{title}}</small></div>
+  <div class="w-full h-full flex flex-col overflow-y-scroll scrollBox pr-3" v-if='community'>
+    <div class="scrollBoxContent flex flex-col">
+        <div class="flex font-bold">About</div>
+        <div>{{community.getAbout()}}</div>
+        <hr>
+        <div class="flex font-bold">Description</div>
+        <div>{{community.getDescription()}}</div>
+        <hr>
+        <div class="flex font-bold">Rules</div>
+        <div>{{community.getRules()}}</div>
+        <hr>
+        <div class="flex font-bold">Team and Moderators</div>
+        <div class="flex flex-wrap justify-between">
+            <div v-for="team in community.communityData.team" class="p-1 flex">
+                <div class="flex-shrink-0 mr-5px">
+                    <UserCommunityIcon :name="team[0]" :community="community.getName()" :imgCss="`avConversation`"/>
+                </div>
+                <div class="grow relative" style="margin-top:-7px;">
+                    <small :class="roleCss(role)"><b>{{team[0]}}</b></small>
+                    <div class="flex" v-if="team[2]"><small v-for="title in team[2].split(',')" class="titlebg">{{title}}</small></div>
+                </div>
             </div>
         </div>
     </div>

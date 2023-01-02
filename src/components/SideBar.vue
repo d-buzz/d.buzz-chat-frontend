@@ -6,14 +6,16 @@
         <button class="w-full avCommunity md:hidden border-r-1" style="padding-left: 1px;"
              @click="$emit('toggleStreambar')"><span class="oi oi-menu" style="font-size:30px;"></span></button>
     </div>    
-  <div class="h-screen m-0 flex flex-col shadow-lg overflow-y-scroll border-r-1"
+  <div class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox"
         style="overflow-x: clip;" @dragover.prevent @drop.stop.prevent="onDrop">
-    <Draggable v-model="communities" :key="updateKey">
-        <template v-slot:item="{item}">
-          <SideBarIcon :img="item[0]" :name="item[1]"
-             :community="item" :number="item.lastReadNumber" @toggleStreambar="$emit('toggleStreambar')" />
-        </template>
-    </Draggable>
+    <div class="scrollBoxContent flex flex-col border-r-1">
+        <Draggable v-model="communities" :key="updateKey">
+            <template v-slot:item="{item}">
+              <SideBarIcon :img="item[0]" :name="item[1]"
+                 :community="item" :number="item.lastReadNumber" @toggleStreambar="$emit('toggleStreambar')" />
+            </template>
+        </Draggable>
+    </div>
   </div>
 </template>
 <script setup>

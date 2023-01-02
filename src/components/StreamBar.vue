@@ -6,31 +6,32 @@
         <NewUserMessageModal @close="toggleNewUserMessageModalOpen(false)"></NewUserMessageModal>
     </TransitionRoot>
 
-  <div class="h-screen m-0 flex flex-col shadow-lg overflow-y-scroll border-r-1 pr-1 pl-1 w-200" :key="updateKey">
-    
-    <div v-if="isCommunity">
-        <div class="flex justify-between">
-            <b class="border-b-1 cursor-pointer" @click="toggleJoinModal()">C/{{title}}</b>
-            <router-link v-if="isAdmin" :to="`/s/${route.params.user}`">
-               <span class="oi oi-cog"></span>
-            </router-link>
+  <div class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox pl-1 w-200" :key="updateKey">
+    <div class="scrollBoxContent flex flex-col border-r-1 pr-1">
+        <div v-if="isCommunity">
+            <div class="flex justify-between">
+                <b class="border-b-1 cursor-pointer" @click="toggleJoinModal()">C/{{title}}</b>
+                <router-link v-if="isAdmin" :to="`/s/${route.params.user}`">
+                   <span class="oi oi-cog"></span>
+                </router-link>
+            </div>
+            <div v-for="stream in streams" >
+                <Stream v-if="stream.visible" :community="communityName"
+                     :stream="stream" :number="''+stream.lastReadNumber"/>
+            </div>
         </div>
-        <div v-for="stream in streams" >
-            <Stream v-if="stream.visible" :community="communityName"
-                 :stream="stream" :number="''+stream.lastReadNumber"/>
+        <div v-else>
+            <div class="flex justify-between">
+                <b class="border-b-1">{{title}}</b>
+                <button class="text-sm" @click="toggleNewUserMessageModalOpen">
+                    <span class="oi oi-plus"></span>
+                </button>
+            </div>
+            
+            <Conversation v-for="group in groups" :conversation="group.conversation" :id="group.id" :username="group.username" :number="''+group.lastReadNumber"/>
+            <Conversation v-for="conversation in conversations" :conversation="conversation.conversation"
+                 :username="username" :number="''+conversation.number" />
         </div>
-    </div>
-    <div v-else>
-        <div class="flex justify-between">
-            <b class="border-b-1">{{title}}</b>
-            <button class="text-sm" @click="toggleNewUserMessageModalOpen">
-                <span class="oi oi-plus"></span>
-            </button>
-        </div>
-        
-        <Conversation v-for="group in groups" :conversation="group.conversation" :id="group.id" :username="group.username" :number="''+group.lastReadNumber"/>
-        <Conversation v-for="conversation in conversations" :conversation="conversation.conversation"
-             :username="username" :number="''+conversation.number" />
     </div>
   </div>
 </template>

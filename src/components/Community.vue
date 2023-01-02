@@ -12,26 +12,28 @@
         <ThreadModal @oninput="setThread" @close="toggleThreads"></ThreadModal>
     </TransitionRoot>
   <div class="appbg2 appfg2 w-full h-full break-all" v-if='messageKey'>
-     <div class="appbg3 appfg3 h-full border-l-1 float-right pr-1 pl-1 w-200 overflow-y-scroll sidebar" 
+     <div class="appbg3 appfg3 h-full float-right w-200 overflow-y-scroll scrollBox sidebar" 
         v-if="$route.name === 'CommunityPath' && community" ref="sidebar" :key="communityUsersKey" style="padding-bottom:150px;">
-        <div class="text-right" :title="`online: ${onlineCount} users\njoined: ${community.communityData.subscribers} users`"><small class="fg70">
-            {{onlineCount}} / {{community.communityData.subscribers}}</small>
-        </div>        
-        <div v-for="roleUsers in communityUsers">
-            <small :class="roleCss(roleUsers[0])"><b>{{roleUsers[0]}}</b></small>
-            <div class="p-1 flex" v-for="team in roleUsers[1]" :class="(team[3] == true)?'':'offline'">
-                <div class="flex-shrink-0 mr-5px">
-                    <UserCommunityIcon :name="team[0]" :community="community.getName()" 
-                    :imgCss="`avConversation`" :displayOnlineStatus="team[3] == true"/>
-                </div>
-                <div class="grow relative" style="margin-top:-7px;">
-                    <small :class="roleCss(team[1])"><b>{{team[0]}}</b></small>
-                    <div class="flex" v-if="team[2]"><small v-for="title in team[2]" 
-                        class="titlebg">{{title}}</small></div>
+        <div class="scrollBoxContent border-l-1 pr-1 pl-1">
+            <div class="text-right" :title="`online: ${onlineCount} users\njoined: ${community.communityData.subscribers} users`"><small class="fg70">
+                {{onlineCount}} / {{community.communityData.subscribers}}</small>
+            </div>        
+            <div v-for="roleUsers in communityUsers">
+                <small :class="roleCss(roleUsers[0])"><b>{{roleUsers[0]}}</b></small>
+                <div class="p-1 flex" v-for="team in roleUsers[1]" :class="(team[3] == true)?'':'offline'">
+                    <div class="flex-shrink-0 mr-5px">
+                        <UserCommunityIcon :name="team[0]" :community="community.getName()" 
+                        :imgCss="`avConversation`" :displayOnlineStatus="team[3] == true"/>
+                    </div>
+                    <div class="grow relative" style="margin-top:-7px;">
+                        <small :class="roleCss(team[1])"><b>{{team[0]}}</b></small>
+                        <div class="flex" v-if="team[2]"><small v-for="title in team[2]" 
+                            class="titlebg">{{title}}</small></div>
+                    </div>
                 </div>
             </div>
         </div>
-      </div>
+    </div>
     <div class="h-full flex flex-col justify-between">
         <div class="font-bold" style="order:1;">
             <span class="cursor-pointer" @click="setThread(null)">{{streamName}}</span> <span v-if="threadName !== null" class="font-normal"><span class="oi oi-chevron-right cursor-pointer" style="font-size:10px;vertical-align:top;margin-top:6px;" @click="setThread(null)"></span> {{threadName}}</span>
@@ -62,49 +64,51 @@
         
 
 
-        <div ref="messages" :key="messageKey" class="grow flex flex-col overflow-y-scroll pr-3" style="order:5;">
-            <button v-if="canLoadPreviousMessages" class="btn" @click="loadPrevious()">{{loadingPreviousMessages?'loading':'load previous messages'}}</button>
-            <div v-if="threadName !== null" :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
-                <div v-for="messageArray in displayableMessages" >
-                    <div v-if="messageArray.type === 'h'" :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
-                        <div v-for="message in messageArray">
-                            <div v-if="message.getThreadName() === threadName">
-                                <hr style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
-                                <Message :message="message" @action="setContentMessage" />
+        <div ref="messages" :key="messageKey" class="grow overflow-y-scroll scrollBox" style="order:5;">
+            <div class="scrollBoxContent flex flex-col pr-3">
+                <button v-if="canLoadPreviousMessages" class="btn" @click="loadPrevious()">{{loadingPreviousMessages?'loading':'load previous messages'}}</button>
+                <div v-if="threadName !== null" :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
+                    <div v-for="messageArray in displayableMessages" >
+                        <div v-if="messageArray.type === 'h'" :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
+                            <div v-for="message in messageArray">
+                                <div v-if="message.getThreadName() === threadName">
+                                    <hr style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
+                                    <Message :message="message" @action="setContentMessage" />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div v-else :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
-                <div v-for="messageArray in displayableMessages" >
-                    <div v-if="messageArray.type === 'h'">
-                        <small class="flex text-gray-700 cursor-pointer" style="margin-top: 0.5rem;" @click="toggleFold(messageArray)">
-                            <div class="threadLine grow"></div>
-                            <div @click="setThread(messageArray[0].getThreadName())">{{messageArray[0].getThreadName()}}</div>
-                            <div class="flex grow">
+                <div v-else :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
+                    <div v-for="messageArray in displayableMessages" >
+                        <div v-if="messageArray.type === 'h'">
+                            <small class="flex text-gray-700 cursor-pointer" style="margin-top: 0.5rem;" @click="toggleFold(messageArray)">
                                 <div class="threadLine grow"></div>
-                                <div>{{messageArray.length}} thread message</div>
-                            </div>
-                        </small>
-                        <div v-if="showFold(messageArray)" :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col', 'fold']">
-                            <div v-for="(message, i) in messageArray">
-                                <div v-if="(!valueFlipMessageBox && i !== 0) || (valueFlipMessageBox && i !== messageArray.length-1)" class="flex text-gray-700" style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
-                                    <span class="hr grow"></span>
-                                    <small class="cursor-pointer" @click="setThread(message.getThreadName())">{{message.getThreadName()}}</small>
-                                    <span class="hr grow"></span>
+                                <div @click="setThread(messageArray[0].getThreadName())">{{messageArray[0].getThreadName()}}</div>
+                                <div class="flex grow">
+                                    <div class="threadLine grow"></div>
+                                    <div>{{messageArray.length}} thread message</div>
                                 </div>
+                            </small>
+                            <div v-if="showFold(messageArray)" :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col', 'fold']">
+                                <div v-for="(message, i) in messageArray">
+                                    <div v-if="(!valueFlipMessageBox && i !== 0) || (valueFlipMessageBox && i !== messageArray.length-1)" class="flex text-gray-700" style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
+                                        <span class="hr grow"></span>
+                                        <small class="cursor-pointer" @click="setThread(message.getThreadName())">{{message.getThreadName()}}</small>
+                                        <span class="hr grow"></span>
+                                    </div>
+                                    <Message :message="message" @action="setContentMessage" />
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
+                            <div v-for="(message, i) in messageArray" >
+                                <hr v-if="(!valueFlipMessageBox && i !== 0) || (valueFlipMessageBox && i !== messageArray.length-1)" style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
                                 <Message :message="message" @action="setContentMessage" />
                             </div>
                         </div>
-                    </div>
-                    <div v-else :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
-                        <div v-for="(message, i) in messageArray" >
-                            <hr v-if="(!valueFlipMessageBox && i !== 0) || (valueFlipMessageBox && i !== messageArray.length-1)" style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
-                            <Message :message="message" @action="setContentMessage" />
-                        </div>
-                    </div>
-               </div>
+                   </div>
+                </div>
             </div>
         </div>
         
