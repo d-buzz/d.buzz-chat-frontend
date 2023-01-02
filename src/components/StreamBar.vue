@@ -1,4 +1,7 @@
 <template>
+    <TransitionRoot :show="showJoinModal">
+        <JoinModal :community="route.params.user" :hideVisitButton="true" @close="toggleJoinModal"></JoinModal>
+    </TransitionRoot>
     <TransitionRoot :show="newUserMessageModalOpen">
         <NewUserMessageModal @close="toggleNewUserMessageModalOpen(false)"></NewUserMessageModal>
     </TransitionRoot>
@@ -7,7 +10,7 @@
     
     <div v-if="isCommunity">
         <div class="flex justify-between">
-            <b class="border-b-1">C/{{title}}</b>
+            <b class="border-b-1 cursor-pointer" @click="toggleJoinModal()">C/{{title}}</b>
             <router-link v-if="isAdmin" :to="`/s/${route.params.user}`">
                <span class="oi oi-cog"></span>
             </router-link>
@@ -51,6 +54,10 @@ const newUserMessageModalOpen = ref(false);
 const toggleNewUserMessageModalOpen = () => {
   newUserMessageModalOpen.value = !newUserMessageModalOpen.value;
 };
+const showJoinModal = ref(false);
+function toggleJoinModal() {
+    showJoinModal.value = !showJoinModal.value;
+}
 
 async function initConversations(route) {
     console.log(route);

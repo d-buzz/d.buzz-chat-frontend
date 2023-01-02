@@ -25,7 +25,7 @@
         </Transition>
     </div>
     <div class="mt-2">
-        <button class="btn" @click="visitCommunity(community)"><span class="oi oi-globe text-sm"></span> Visit</button>
+        <button v-if="!hideVisitButton" class="btn" @click="visitCommunity(community)"><span class="oi oi-globe text-sm"></span> Visit</button>
         <button class="btn" @click="join(!joinedCommunity)"><span class="oi oi-people text-sm"></span> {{joinedCommunity?'Leave':'Join'}}</button>
     </div>
     <div class="mt-1"><small>{{updateMessage}}</small></div>
@@ -35,7 +35,8 @@
 <script setup lang="ts">
 const router = useRouter();
 const props = defineProps<{
-    community: String
+    community: String,
+    hideVisitButton: Boolean
 }>();
 var communityData = ref(null);
 var joinedCommunity = ref(false);
