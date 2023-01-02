@@ -40,7 +40,13 @@ async function initCommunities() {
     var manager = getManager();
     manager.setUser(user);
     manager.joinGroups();
-    communities.value = await manager.getCommunitiesSorted();
+    var _communities = await manager.getCommunitiesSorted();
+    for(var community of _communities) 
+        try {
+            await stlib.Community.load(community[0]);
+        }
+        catch(e) { console.log(e); }
+    communities.value = _communities;
     updateKey.value = ''+stlib.Utils.nextId();
     var update = async () => {
         number.value = ''+await manager.getLastReadTotal();

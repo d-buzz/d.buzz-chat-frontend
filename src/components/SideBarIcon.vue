@@ -41,7 +41,7 @@ function onClick(community) {
     else router.push(link);
 }
 function hasProfileImage(community) {
-    if(!community) return true;
+    if(!community || !community.account) return true;
     try {
         var json = community.account.posting_json_metadata;
         if(json && json.length > 0) {
