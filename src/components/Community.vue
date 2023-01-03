@@ -130,6 +130,7 @@
               <MessageBox
                 ref="messageBox"
                 class="grow"
+                :canWrite="canWrite"
                 @fullorblank="updateStatus"
                 @entermessage="enterMessage"
                 v-focus
@@ -174,6 +175,7 @@ const valueFlipMessageBox = ref(false);
 const valueAutoDecode = ref(false);
 const canLoadPreviousMessages = ref(true);
 const loadingPreviousMessages = ref(false);
+const canWrite = ref(true);
 
 const showGroupUserModal = ref(false);
 const showCloseGroupModal = ref(false);
@@ -240,6 +242,10 @@ async function initChat() {
     var updateOnlineUsers = null;
     if(conversation != null) {
         manager.setConversation(conversation);
+        try {
+            canWrite.value = await stlib.Utils.verifyPermissions(user, conversation);
+        }
+        catch(e) { console.log(e); }
         if(route.name === 'CommunityPath') {
             community0 = await stlib.Community.load(user2);
             var stream = (community0)?community0.findTextStreamById(''+route.params.path):null;

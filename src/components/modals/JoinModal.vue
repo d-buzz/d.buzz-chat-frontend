@@ -34,10 +34,10 @@
 
 <script setup lang="ts">
 const router = useRouter();
-const props = defineProps<{
+const props = defineProps({
     community: String,
     hideVisitButton: Boolean
-}>();
+});
 var communityData = ref(null);
 var joinedCommunity = ref(false);
 var updateMessage = ref("");

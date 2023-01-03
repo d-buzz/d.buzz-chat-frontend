@@ -2884,7 +2884,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SignableMessage = void 0;
 const imports_1 = require("./content/imports");
-const community_1 = require("./community");
 const utils_1 = require("./utils");
 class SignableMessage {
     constructor() {
@@ -2926,9 +2925,9 @@ class SignableMessage {
     getJSONString() { return this.json; }
     getContent() { return imports_1.Content.fromJSON(JSON.parse(this.json)); }
     getTimestamp() { return this.timestamp; }
-    getGroupUsernames() { return this.conversation.split('|'); }
-    isCommunityConversation() { return this.conversation.startsWith('hive-') && this.conversation.indexOf('/') !== -1; }
-    isGroupConversation() { return this.conversation.indexOf('|') !== -1; }
+    getGroupUsernames() { return utils_1.Utils.getGroupUsernames(this.conversation); }
+    isCommunityConversation() { return utils_1.Utils.isCommunityConversation(this.conversation); }
+    isGroupConversation() { return utils_1.Utils.isGroupConversation(this.conversation); }
     isEncrypted() { return this.conversation.startsWith("#"); }
     isPreference() { return this.conversation === "@"; }
     isOnlineStatus() { return this.conversation === "$online"; }
@@ -3133,42 +3132,7 @@ class SignableMessage {
     }
     verifyPermissions() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.isCommunityConversation()) {
-                var conversation = this.getConversation();
-                var communityName = this.getConversationUsername();
-                var communityStreamId = conversation.substring(communityName.length + 1);
-                var community = yield community_1.Community.load(communityName);
-                var stream = community.findTextStreamById(communityStreamId);
-                if (stream !== null) {
-                    var writePermissions = stream.getWritePermissions();
-                    if (!writePermissions.isEmpty()) {
-                        var dataCache = utils_1.Utils.getStreamDataCache();
-                        var role, titles;
-                        if (utils_1.Utils.isGuest(this.getUser())) {
-                            role = "";
-                            titles = [];
-                        }
-                        else {
-                            role = yield dataCache.getRole(communityName, this.getUser());
-                            titles = yield dataCache.getTitles(communityName, this.getUser());
-                        }
-                        if (!writePermissions.validate(role, titles))
-                            return false;
-                    }
-                }
-            }
-            else if (this.isGroupConversation()) {
-                var messageUser = this.getUser();
-                var groupUsernames = this.getGroupUsernames();
-                for (var groupUsername of groupUsernames) {
-                    if (groupUsername === messageUser)
-                        continue;
-                    var canDirectMessage = yield utils_1.Utils.canDirectMessage(groupUsername, groupUsernames);
-                    if (!canDirectMessage)
-                        return false;
-                }
-            }
-            return true;
+            return yield utils_1.Utils.verifyPermissions(this.getUser(), this.getConversation());
         });
     }
 }
@@ -3178,7 +3142,7 @@ SignableMessage.TYPE_MESSAGE = 'm';
 SignableMessage.TYPE_WRITE_MESSAGE = 'w';
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"./community":2,"./content/imports":9,"./utils":26,"buffer":28}],24:[function(require,module,exports){
+},{"./content/imports":9,"./utils":26,"buffer":28}],24:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("./client");
@@ -3322,6 +3286,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AccountDataCache = exports.TransientCache = exports.Utils = void 0;
+const community_1 = require("./community");
 const signable_message_1 = require("./signable-message");
 const default_stream_data_cache_1 = require("./default-stream-data-cache");
 var netname = null;
@@ -3414,10 +3379,6 @@ class Utils {
         return JSON.parse(JSON.stringify(object));
     }
     static utcTime() { return new Date().getTime(); }
-    static getConversationUsername(conversation) {
-        var i = conversation.indexOf('/');
-        return conversation.substring(conversation.startsWith('#') ? 1 : 0, i === -1 ? conversation.length : i);
-    }
     static getConversationPath(conversation) {
         var i = conversation.indexOf('/');
         return i === -1 ? '' : conversation.substring(i + 1);
@@ -3434,6 +3395,70 @@ class Utils {
             return (group !== null && group.name != null) ? group.name : conversation;
         });
     }
+    static getRole(community, user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var data = yield community_1.Community.load(community);
+            if (!data)
+                return null;
+            return data.getRole(user);
+        });
+    }
+    static getTitles(community, user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var data = yield community_1.Community.load(community);
+            if (!data)
+                return null;
+            return data.getTitles(user);
+        });
+    }
+    static verifyPermissions(user, conversation) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (Utils.isCommunityConversation(conversation)) {
+                var communityName = Utils.getConversationUsername(conversation);
+                var communityStreamId = conversation.substring(communityName.length + 1);
+                var community = yield community_1.Community.load(communityName);
+                if (community == null)
+                    return false;
+                var stream = community.findTextStreamById(communityStreamId);
+                if (stream !== null) {
+                    if (community.getRole(user) === 'muted')
+                        return false;
+                    var writePermissions = stream.getWritePermissions();
+                    if (!writePermissions.isEmpty()) {
+                        var role, titles;
+                        if (Utils.isGuest(user)) {
+                            role = "";
+                            titles = [];
+                        }
+                        else {
+                            role = yield Utils.getRole(communityName, user);
+                            titles = yield Utils.getTitles(communityName, user);
+                        }
+                        if (!writePermissions.validate(role, titles))
+                            return false;
+                    }
+                }
+            }
+            else if (Utils.isGroupConversation(conversation)) {
+                var groupUsernames = Utils.getGroupUsernames(conversation);
+                for (var groupUsername of groupUsernames) {
+                    if (groupUsername === user)
+                        continue;
+                    var canDirectMessage = yield Utils.canDirectMessage(groupUsername, groupUsernames);
+                    if (!canDirectMessage)
+                        return false;
+                }
+            }
+            return true;
+        });
+    }
+    static getConversationUsername(conversation) {
+        var i = conversation.indexOf('/');
+        return conversation.substring(conversation.startsWith('#') ? 1 : 0, i === -1 ? conversation.length : i);
+    }
+    static getGroupUsernames(conversation) { return conversation.split('|'); }
+    static isCommunityConversation(conversation) { return conversation.startsWith('hive-') && conversation.indexOf('/') !== -1; }
+    static isGroupConversation(conversation) { return conversation.indexOf('|') !== -1; }
     static canDirectMessage(user, users) {
         return __awaiter(this, void 0, void 0, function* () {
             //TODO
@@ -3884,7 +3909,7 @@ const accountDataCache = new AccountDataCache();
 const communityDataCache = new AccountDataCache();
 var streamDataCache = null;
 
-},{"./default-stream-data-cache":19,"./signable-message":23}],27:[function(require,module,exports){
+},{"./community":2,"./default-stream-data-cache":19,"./signable-message":23}],27:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
