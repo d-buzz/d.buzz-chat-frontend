@@ -34,6 +34,7 @@ declare module '@vue/runtime-core' {
     Join: typeof import('./components/Join.vue')['default']
     JoinModal: typeof import('./components/modals/JoinModal.vue')['default']
     Landing: typeof import('./components/Landing.vue')['default']
+    'Landing (copy)': typeof import('./components/Landing (copy).vue')['default']
     LoginModal: typeof import('./components/LoginModal.vue')['default']
     Message: typeof import('./components/Message.vue')['default']
     MessageBox: typeof import('./components/MessageBox.vue')['default']
@@ -63,6 +64,7 @@ declare module '@vue/runtime-core' {
     UserModal: typeof import('./components/modals/UserModal.vue')['default']
     UserPopover: typeof import('./components/modals/UserPopover.vue')['default']
     ViewEditHistoryModal: typeof import('./components/modals/ViewEditHistoryModal.vue')['default']
+    WidgetTest: typeof import('./components/WidgetTest.vue')['default']
   }
 }
 

@@ -9,7 +9,7 @@
     <AddInfoModal @oninput="addInfo" @close="toggleAddInfoModal"></AddInfoModal>
   </TransitionRoot>
   <div class="appbg2 w-full h-full flex flex-col">
-    <div class="flex border-b-1 font-bold">Settings</div>
+    <div class="flex border-b-1 font-bold">Settings {{pageTitle}}</div>
 
     <div>
         <button class="btn" @click="toggleAddChatModal()"><span class="oi oi-chat"></span> chat</button>
@@ -82,22 +82,10 @@
 
     <div><small>{{updateMessage}}</small></div>
     <div>
-        <button class="btn" @click="updateSettings">Update</button>
-        <button class="btn2" @click="resetSettings"><span class="oi oi-reload"></span> Reset</button>
+        <button class="btn" @click="updateSettings" title="Save changes">Update</button>
+        <button class="btn2" @click="resetSettings" title="Discard changes and reload existing settings"><span class="oi oi-reload"></span> Reset</button>
     </div>
-    <!--<div id="messages" :key="messageKey" class="flex flex-col overflow-y-scroll">
-        <Message v-for="message in displayableMessages" :message="message" />
-    </div>
-    <div class="flex mt-4 mb-2">
-      <input
-        class="shadow appearance-none border border-gray-700 rounded-full w-[calc(100%-4rem)] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline grow"
-        id="Message"
-        v-model="messageText"
-        @keyup.enter="enterMessage(messageText)"
-        type="text"
-        placeholder="Message"
-      />
-   </div>-->
+    
  </div>
 </template>
 <script setup>
@@ -233,44 +221,13 @@ async function initChat() {
     if(community) {
         community = community.copy();
 
-        pageTitle.value = community.getTitle();
+        pageTitle.value = community.getTitle() + ` (${community.getName()})`;
         streams.value = community.getStreams();
         if(streams.value.length > 0) select(streams.value[0]);
         update();
     }
 }
 initChat();
-const enterMessage = async (message) => {
-    var user = accountStore.account.name;
-    var user2 = route.params.user;
-
-    if(user == null) return; //TODO ask to login
-    if(user2 == null || user2 == "") return;
-
-    const manager = getManager();
-    var client = manager.client;
-    var textMsg = stlib.Content.text(message);
-
-    var conversation = null;
-    if(route.name === 'CommunityPath') {
-        conversation = user2+'/'+route.params.path;
-    }
-    else {
-        conversation = [user, user2];
-        textMsg = await textMsg.encodeWithKeychain(user, conversation, "Posting"); 
-    }
-
-    var signableMessage = textMsg.forUser(user, conversation);
-    await signableMessage.signWithKeychain('Posting');
-    
-    var result = await client.write(signableMessage);
-    if(result.isSuccess()) {
-        document.getElementById("Message").value = "";
-    }
-    else { 
-        console.log(result);
-    }
-};
 function isAtScrollBottom(e) {
     return e.scrollTop + e.clientHeight >= e.scrollHeight;
 }

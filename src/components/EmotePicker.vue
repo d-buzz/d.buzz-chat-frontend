@@ -1,32 +1,40 @@
 <template>
-    <div class="flex gap-x-2">
-        <div v-for="category in categories" class="cursor-pointer" 
-            v-on:click.prevent="scrollIntoView($refs[category[0]])" :title="category[0]">
-            {{category[1]}}
+<div class="flex">
+    <div class="grow">
+        <div class="flex gap-x-2">
+            <div v-for="category in categories" class="cursor-pointer" 
+                v-on:click.prevent="scrollIntoView($refs[category[0]])" :title="category[0]">
+                {{category[1]}}
+            </div>
         </div>
-    </div>
-    <div style="overflow: auto; max-height:350px;">
-        <div v-for="category in categories">
-            <small :ref="category[0]" class="text-gray-700"><b>{{category[0]}}</b></small>
-            <div v-for="(subgroup, name2) in emotes[category[0]]">
-                <div class="flex flex-wrap gap-x-2">
-                    <div v-for="emote in subgroup" class="cursor-pointer" :title="emote[1]" @click="action(emote[0])">
-                        {{emote[0]}}
+        <div style="overflow: auto; max-height:350px;">
+            <div v-for="category in categories">
+                <small :ref="category[0]" class="text-gray-700"><b>{{category[0]}}</b></small>
+                <div v-for="(subgroup, name2) in emotes[category[0]]">
+                    <div class="flex flex-wrap gap-x-2">
+                        <div v-for="emote in subgroup" class="cursor-pointer" :title="emote[1]" @click="action(emote[0])">
+                            {{emote[0]}}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!--<div v-for="community in communityList">
-        {{community.name}} {{community.title}}
-    </div>-->
+    <div class="scrollBox" style="margin-right: -15px;">
+        <div class="flex flex-col scrollBoxContent" style="overflow: auto; max-height:375px;">
+            <div v-for="community in communityList" class="p-1">
+                <UserIcon :name="community.name" :title="community.title"></UserIcon>
+            </div>
+        </div>
+    </div>
+</div>
 </template>
 <script setup>
 const emit = defineEmits(["oninput"]);
 const communityList = ref([]);
 async function init() {
     const manager = getManager();
-    var communities = await manager.getCommunities();
+    var communities = await manager.getCommunitiesSorted();
     var result = [];
     for(var community of communities) {
         var name = community[0];
