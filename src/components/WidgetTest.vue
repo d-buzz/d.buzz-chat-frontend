@@ -38,23 +38,33 @@
     </div>
   </section>
 </div>
-    <div ref="widget" class="widget"></div>
+    <div ref="widget" class="widget" hidden></div>
 </template>
 <script setup>
 import { nextTick } from 'vue';
 const widget = ref();
 function initWidget() {
+    window.addEventListener("message", (event) => {
+        //if (event.origin !== "http://example.com:8080")
+        //  return;
+        console.log("message", event);
+
+        /*event.source.postMessage("response ", event.origin);*/
+    });
+
     var e = widget.value;
-    e.hidden = true;
     var iframe = document.createElement('iframe');
     iframe.src = '/home';
     iframe.style.width = "100%";
     iframe.style.height = "100%";
     e.appendChild(iframe);
 }
-nextTick(initWidget);
-
+var init = true;
 function toggleWidget() {
+    if(init) {
+        init = false;
+        initWidget();
+    }
     var e = widget.value;
     if(e) {
         e.hidden = !e.hidden;

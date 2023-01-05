@@ -11,39 +11,54 @@ import "./assets/styles/index.css";
 const NETWORK_NAME = import.meta.env.NETWORK_NAME?import.meta.env.NETWORK_NAME:null;
 const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_APP_STING_NODES.split(",") : ["http://localhost:3001"];
 
-var currentManager = null;
-window.getManager = function () {
-  if (currentManager == null) {
-    currentManager = new stlib.MessageManager();
-    currentManager.setNodes(STING_NODES);
-  }
-  return currentManager;
-};
-var idFn = stlib.Utils.nextId;
-stlib.Utils.nextId = ()=>{
-    var id = idFn();
-    console.log("id", id);
-    //console.trace();
-    return id;
-};
-window.defaultTheme = defaultTheme;
-defaultTheme.loadTheme();
-console.log("Theme", Theme);
-window.defaultEmotes = defaultEmotes;
-document.addEventListener('visibilitychange', async function (event) {
-    var manager = getManager();
-    if (document.hidden) {
-        manager.pauseAutoDecode = true;
-    } else {
-        manager.pauseAutoDecode = false;
-        var prefs = await manager.getPreferences();
-        if(prefs !== null) {
-            var isAutoDecode = prefs.getValueBoolean("autoDecode", false);
-            if(isAutoDecode) await manager.decodeSelectedConversations();
-        }
+(()=>{
+    if(window.hive_keychain === undefined && window.parent != null && 
+        window.parent.hive_keychain !== undefined) {
+        window.hive_keychain = window.parent.hive_keychain;
     }
-});
-
+    /*if(window.hive_keychain === undefined && window.parent != null && window.parent.postMessage) {
+        
+       // window.hive_keychain 
+        window.hive_keychain    = new Proxy({}, {
+              get(target, prop, receiver) {
+                return function (){ return window.parent.postMessage(JSON.stringify([prop, arguments]), "*");};
+              }
+        });
+    }*/
+     
+    var currentManager = null;
+    window.getManager = function () {
+      if (currentManager == null) {
+        currentManager = new stlib.MessageManager();
+        currentManager.setNodes(STING_NODES);
+      }
+      return currentManager;
+    };
+    var idFn = stlib.Utils.nextId;
+    stlib.Utils.nextId = ()=>{
+        var id = idFn();
+        console.log("id", id);
+        //console.trace();
+        return id;
+    };
+    window.defaultTheme = defaultTheme;
+    defaultTheme.loadTheme();
+    console.log("Theme", Theme);
+    window.defaultEmotes = defaultEmotes;
+    document.addEventListener('visibilitychange', async function (event) {
+        var manager = getManager();
+        if (document.hidden) {
+            manager.pauseAutoDecode = true;
+        } else {
+            manager.pauseAutoDecode = false;
+            var prefs = await manager.getPreferences();
+            if(prefs !== null) {
+                var isAutoDecode = prefs.getValueBoolean("autoDecode", false);
+                if(isAutoDecode) await manager.decodeSelectedConversations();
+            }
+        }
+    });
+})();
 async function initMain() {
     if(NETWORK_NAME == null) {
         try {
