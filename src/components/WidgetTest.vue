@@ -76,7 +76,7 @@ function toggleWidget() {
     position: absolute;
     z-index: 10000;
     border: 1px solid gray;
-    width: 400px;
+    width: 450px;
     height: 556px;
     top: 51px;
     right: 32px;

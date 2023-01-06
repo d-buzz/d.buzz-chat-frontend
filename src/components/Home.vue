@@ -1,16 +1,28 @@
 <template>
     <div class="appbg2 w-full h-full break-all overflow-scroll" v-if="accountStore.account.name">
-        <div class="flex mt-3 mr-3">
+<!--HomeHeaderA-->
+        <div v-if="!showDetailedProfile()" class="flex pt-3 pl-3 pr-3">
+            <div class="grow" style="margin-top:-7px;">
+                <div class="flex gap-x-1"><b class="text-3xl">@{{accountStore.account.name}}</b>
+                <span class="oi oi-info infocircle" :title="`Reputation: ${reputation}\nCreated: ${created}`"></span>
+                </div>
+            </div>
+            <div style="margin-top:-7px;">
+                <button class="btn" @click="logout()">logout</button>
+            </div>
+        </div>
+<!--HomeHeaderB-->
+        <div v-else class="flex p-3 coverImage" :style="[coverImage?`background-image:url(${coverImage});`:'', '']">
             <div class="flex-shrink-0 mr-5px">
                 <UserIcon :name="accountStore.account.name" imgCss="av128" size="medium"/>
             </div>
             <div class="grow" style="margin-top:-7px;">
-                <div><b class="text-lg">{{accountStore.account.name}}</b></div>
+                <div><b class="text-lg text-gray-700 textBg">@{{accountStore.account.name}}</b></div>
                 <span>
-                    <small class="text-gray-700 mr-1" 
+                    <small class="text-gray-700 mr-1 textBg" 
                         style="align-self: center; padding: 1px 2px; " title="reputation">{{reputation}}
                         <span class="oi oi-badge" style="opacity:0.5;"></span></small> 
-                    <small class="text-gray-700" style="align-self: center;" title="created date">
+                    <small class="text-gray-700 textBg" style="align-self: center;" title="created date">
                         {{created}}<span class="oi oi-calendar" style="margin-left:1px; opacity:0.5;"></span></small> 
                 </span>
             </div>
@@ -18,16 +30,17 @@
                 <button class="btn" @click="logout()">logout</button>
             </div>
         </div>
-        <div class="mt-2 mr-3">
+<!--HomeHeader End-->
+        <div class="ml-3 mt-2 mr-3">
             <TabGroup>
                 <TabList class="tab">
-                  <Tab>Communities</Tab>
+                  <Tab>Communities {{showDetailedProfile()}}</Tab>
                   <Tab>Preferences</Tab>
                   <Tab>Themes</Tab>
                 </TabList>
             <TabPanels class="mt-1">
                 <TabPanel>
-                    <div class="text-sm font-bold text-right md:text-center text-gray-400 mt-1">joined</div>
+                    <!--<div class="text-sm font-bold text-right md:text-center text-gray-400 mt-1">joined</div>-->
                     <div class="flex flex-row flex-wrap" :key="updateKey">
                        <CommunityIcon v-for="community in communities" :img="community[0]" :name="community[1]" :number="''" />
                     </div>
@@ -53,7 +66,7 @@
                                 <div v-if="communitiesFound.length > 0">
                                     <div class="w-100 text-sm font-bold text-right md:text-center text-gray-400 mt-1">found</div>
                                     <div class="flex flex-row flex-wrap" :key="updateKey+'#2'">
-                                     <CommunityIcon v-for="community in communitiesFound" :img="community.name" :name="community.title" :number="''+community.subscribers"  />
+                                     <CommunityIcon v-for="community in communitiesFound" :fade="!isActive(community.name, communitiesActive)" :img="community.name" :name="community.title" :number2="''+community.subscribers"  />
                                         <div v-if="hasNextPage" class="btn" @click="findCommunities(searchBar, true)">
                                            next<br>page
                                         </div>
@@ -80,7 +93,7 @@
                                 <div><small>{{item.desc}}</small></div>
                             </div>
                             <div>
-                                <select v-model="item.newvalue">
+                                <select v-model="item.newvalue" class="inputSelect1">
                                     <option v-for="option in item.options" :value="option[0]">{{option[1]}}</option>
                                 </select>
                             </div>
@@ -135,6 +148,7 @@
 import { useAccountStore } from "../stores/account";
 const accountStore = useAccountStore();
 const router = useRouter();
+const homeheader = ref(0);
 const created = ref(null);
 const reputation = ref(null);
 const communities = ref([]);
@@ -147,6 +161,7 @@ const updateKey = ref('#'+stlib.Utils.nextId());
 const updateThemesKey = ref('#'+stlib.Utils.nextId());
 const updateMessage = ref("");
 const themeObject = ref(defaultTheme);
+const coverImage = ref(null);
 
 const defaultPreferences = [
     {name: "directMessage:s", display: "Direct Message", desc: "Permission to message directly is granted to:",
@@ -155,7 +170,8 @@ const defaultPreferences = [
         ['communities','Communities in common'], ['friends', 'Friends']]},
     {name: "showOnline:b", display: "Online Status", desc: "Show online status.", value: true, newvalue:true},
     {name: "autoDecode:b", display: "Auto Decode", desc: "Automatically decode private messages.", value: false, newvalue:false},
-    {name: "flipMessageBox:b", display: "Flip Message Box", desc: "Flip message box on y-axis.", value: false, newvalue:false}
+    {name: "flipMessageBox:b", display: "Flip Message Box", desc: "Flip message box on y-axis.", value: false, newvalue:false},
+    {name: "showDetailedProfile:b", display: "Show Detailed Profile", desc: "Show user profile image and data.", value: false, newvalue:false}
 ];
 
 const defaultColors = [
@@ -222,13 +238,25 @@ function calcFg(rgb) {
     return (sum > 128) ? 'black' : 'white';
 
 }
-
+function isActive(name, communities) {
+    if(!communities) return true;
+    for(var community of communities) { if(community.name == name) return true; }
+    return false;
+}
+function showDetailedProfile() {
+    var prefs = preferences.value;
+    if(prefs)
+        for(var pref of prefs) {
+            if(pref.name === "showDetailedProfile:b") return pref.newvalue;
+        }
+    return false;
+}
 var defaultCommunities = [];
 async function initCommunities() {
     var user = accountStore.account.name;
     if(user == null) return;
     var manager = getManager();
-    communities.value = await manager.getCommunities(user);
+    communities.value = await manager.getCommunitiesSorted(user);
     var prefs = await manager.getPreferences();
     var values = prefs.getValues();
     var array = [];
@@ -243,6 +271,8 @@ async function initCommunities() {
             console.log(e);
         }
     }
+    //var showDetailedProfile = prefs.getValueBoolean("showDetailedProfile", false);
+    //homeheader.value = showDetailedProfile?1:0;
     preferences.value = array;
     await findCommunities();
     defaultCommunities = communitiesFound.value;
@@ -282,7 +312,21 @@ async function initUserData() {
     var data = await stlib.Utils.getAccountData(user);
     if(data) { 
         created.value = formatDate(data.created);
-        reputation.value = data.reputation===0?25:hive.formatter.reputation(data.reputation);    
+        reputation.value = data.reputation===0?25:hive.formatter.reputation(data.reputation); 
+        var postingJsonStr = data.posting_json_metadata;
+        try { 
+            if(postingJsonStr != null && postingJsonStr != "") {
+                var postingJson = JSON.parse(postingJsonStr);
+                if(postingJson.profile) {
+                    var profile = postingJson.profile;
+                    if(profile.cover_image) {
+                        var cover = profile.cover_image;
+                        if(!cover.startsWith("https://images.hive.blog")) cover = "https://images.hive.blog/768x0/"+cover;
+                        coverImage.value = cover;
+                    }
+                }
+            }        
+        } catch(e) { console.log(e); }
     }
 }
 initUserData();
@@ -331,3 +375,27 @@ function logout() {
 }
 //will be used when click on user's own profile to logout, change settings, etc
 </script>
+<style scoped>
+.infocircle {
+    border-radius: 50px;
+    background-color: var(--appbgbtn1);
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    font-size: 16px;
+    vertical-align: text-top;
+    padding-left: 5px;
+    color: var(--appfgbtn1);
+    padding-top: 2px;
+    position: relative;
+    top: 0;
+}
+.coverImage {
+    background-size: cover;
+}
+.textBg {
+    @apply px-1 rounded-full;
+    background-color: var(--appbg2);
+}
+</style>
+

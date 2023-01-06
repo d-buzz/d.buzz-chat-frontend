@@ -11,24 +11,26 @@
     <TransitionRoot :show="showThreadsModal">
         <ThreadModal @oninput="setThread" @close="toggleThreads"></ThreadModal>
     </TransitionRoot>
-  <div class="appbg2 appfg2 w-full h-full break-all" v-if='messageKey'>
+  <div class="appbg2 appfg2 w-full h-full break-all ml-3 mr-3" v-if='messageKey'>
      <div class="appbg3 appfg3 h-full float-right w-200 overflow-y-scroll scrollBox sidebar" 
         v-if="$route.name === 'CommunityPath' && community" ref="sidebar" :key="communityUsersKey" style="padding-bottom:150px;">
-        <div class="scrollBoxContent border-l-1 pr-1 pl-1">
+        <div class="scrollBoxContent border-l-1 pr-1 pl-1 appbg3">
             <div class="text-right" :title="`online: ${onlineCount} users\njoined: ${community.communityData.subscribers} users`"><small class="fg70">
                 {{onlineCount}} / {{community.communityData.subscribers}}</small>
             </div>        
             <div v-for="roleUsers in communityUsers">
-                <small :class="roleCss(roleUsers[0])"><b>{{roleUsers[0]}}</b></small>
-                <div class="p-1 flex" v-for="team in roleUsers[1]" :class="(team[3] == true)?'':'offline'">
-                    <div class="flex-shrink-0 mr-5px">
-                        <UserCommunityIcon :name="team[0]" :community="community.getName()" 
-                        :imgCss="`avConversation`" :displayOnlineStatus="team[3] == true"/>
-                    </div>
-                    <div class="grow relative" style="margin-top:-7px;">
-                        <small :class="roleCss(team[1])"><b>{{team[0]}}</b></small>
-                        <div class="flex" v-if="team[2]"><small v-for="title in team[2]" 
-                            class="titlebg">{{title}}</small></div>
+                <div v-if="roleUsers[0] != 'muted'">
+                    <small :class="roleCss(roleUsers[0])"><b>{{roleUsers[0]}}</b></small>
+                    <div class="p-1 flex" v-for="team in roleUsers[1]" :class="(team[3] == true)?'':'offline'">
+                        <div class="flex-shrink-0 mr-5px">
+                            <UserCommunityIcon :name="team[0]" :community="community.getName()" 
+                            :imgCss="`avConversation`" :displayOnlineStatus="team[3] == true"/>
+                        </div>
+                        <div class="grow relative" style="margin-top:-7px;">
+                            <small :class="roleCss(team[1])"><b>{{team[0]}}</b></small>
+                            <div class="flex" v-if="team[2]"><small v-for="title in team[2]" 
+                                class="titlebg">{{title}}</small></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -36,13 +38,13 @@
     </div>
     <div class="h-full flex flex-col justify-between">
         <div class="font-bold" style="order:1;">
-            <span class="cursor-pointer" @click="setThread(null)">{{streamName}}</span> <span v-if="threadName !== null" class="font-normal"><span class="oi oi-chevron-right cursor-pointer" style="font-size:10px;vertical-align:top;margin-top:6px;" @click="setThread(null)"></span> {{threadName}}</span>
+            <span class="cursor-pointer" @click.stop="setThread(null)">{{streamName}}</span> <span v-if="threadName !== null" class="font-normal"><span class="oi oi-chevron-right cursor-pointer" style="font-size:10px;vertical-align:top;margin-top:6px;" @click="setThread(null)"></span> {{threadName}}</span>
             <span class="inline-block" v-if="sharedCommunities">
                 <span class="flex">
                     <SideBarIcon v-for="community in sharedCommunities" :img="community[0]" :name="community[1]" :community="community" :imgCss="`avMini`" />
                 </span>
             </span>
-            <span class="float-right mr-2">
+            <span class="float-right mr-3">
                 <button class="text-sm mr-2" @click="toggleThreads" title="threads">
                     <span class="oi oi-fork"></span>
                 </button>
@@ -112,7 +114,7 @@
             </div>
         </div>
         
-        <div :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']" 
+        <div :class="[valueFlipMessageBox?'flex flex-col-reverse pr-3':'flex flex-col pr-3']" 
              :style="[valueFlipMessageBox?'order:3;':'order:7;']">
             <div v-if="decodeNMessages>0">
                 <hr>
@@ -398,11 +400,16 @@ function focusMessageBox() {
 }
 initChat();
 function setThread(name) {
-    threadName.value = name;
-    nextTick(async () => {
-        var container = messages.value;
-        if(container) container.scrollTop = container.scrollHeight;
-    });
+    if(name === null && threadName.value == null) {
+        if(window.showStreambar != null) window.showStreambar(true);
+    }
+    else {
+        threadName.value = name;
+        nextTick(async () => {
+            var container = messages.value;
+            if(container) container.scrollTop = container.scrollHeight;
+        });
+    }
 }
 const contentMsg = ref(null);
 async function setContentMessage(obj) {

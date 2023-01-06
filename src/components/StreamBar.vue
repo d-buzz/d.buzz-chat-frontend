@@ -10,7 +10,7 @@
     <div class="scrollBoxContent flex flex-col border-r-1 pr-1">
         <div v-if="isCommunity">
             <div class="flex justify-between">
-                <b class="border-b-1 cursor-pointer" @click="toggleJoinModal()">C/{{title}}</b>
+                <b class="border-b-1">C/{{title}}</b>
                 <router-link v-if="isAdmin" :to="`/s/${route.params.user}`">
                    <span class="oi oi-cog"></span>
                 </router-link>

@@ -2,9 +2,10 @@
     <TransitionRoot :show="showJoinModal">
         <JoinModal :community="img" @close="toggleJoinModal"></JoinModal>
     </TransitionRoot>
-  <div class="flex nameParent relative items-center justify-start" v-if="hasImg || getImgCss() == 'avMini'">
+  <div class="flex nameParent relative items-center justify-start" :class="{fade:fade}" v-if="hasImg || getImgCss() == 'avMini'">
     <small class="name"><b>{{name}}</b></small>
     <small v-if="number && number != '0'" class="number"><b>{{number}}</b></small>
+    <small v-if="number2 && number2 != '0'" class="number2"><b>{{number2}}</b></small>
     <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" 
             :title="`${name} (${img})`">
         <span class="cursor-pointer" @click="onClick(img)">
@@ -18,7 +19,7 @@
     </div>
   </div>
   <div class="flex relative items-center justify-start" v-else>
-    <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" 
+    <div class="flex-shrink-0" :class="{fade:fade, selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" 
             :title="`${name} (${img})`" @click="toggleJoinModal">
          <small class="name2"><b>{{name}}</b></small>
             <img
@@ -36,7 +37,9 @@ const props = defineProps({
     name: String,
     community: Object,
     imgCss: String,
-    number: String
+    number: String,
+    number2: String,
+    fade: {type: Boolean, default: false}
 });
 
 const showJoinModal = ref(false);
@@ -74,6 +77,8 @@ function getImgCss() {
     min-width: 54px;
     color: white;
 }
+.fade { opacity: 0.5; }
+.fade:hover { opacity: 1; }
 .number {
     display: block;
     position: absolute;
@@ -87,6 +92,23 @@ function getImgCss() {
     border-radius: 10px;
     padding: 2px 4px;
     line-height: 1;
+}
+.number2 {
+    display: block;
+    position: absolute;
+    pointer-events: none;
+    z-index: 5;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    line-height: 1;
+    text-align: center;
+}
+.number2 b {
+    background: rgb(0, 113, 12);
+    padding: 2px 4px;
+    border-radius: 10px;
+    color: white;
 }
 .nameParent:hover .name{
     display: block;

@@ -1,8 +1,11 @@
 <template>
-  <div class="w-full h-full flex flex-col overflow-y-scroll scrollBox pr-3" v-if='community'>
+  <div class="w-full h-full flex flex-col overflow-y-scroll scrollBox pl-3 pr-3 pt-3" v-if='community'>
     <div class="scrollBoxContent flex flex-col">
+        <JoinModalContent :community="community.getName()" :hideVisitButton="true" :showMessageButton="true"></JoinModalContent>
+        <!--<h1 class="font-bold text-xl">{{community.getTitle()}}</h1>
+        <small class="font-bold text-gray-700">C/{{community.getName()}}</small>
         <div class="flex font-bold">About</div>
-        <div>{{community.getAbout()}}</div>
+        <div>{{community.getAbout()}}</div>-->
         <hr>
         <div class="flex font-bold">Description</div>
         <div>{{community.getDescription()}}</div>

@@ -5,8 +5,8 @@
     <TransitionRoot :show="showDeleteModal">
         <DeleteThemeModal :name="name" @close="toggleDeleteModal"></DeleteThemeModal>
     </TransitionRoot>
-    <div><b>{{name}}</b></div>
-    <div ref="root"  class="flex flex-wrap row rounded">
+    <div class="cursor-pointer" @click="pick()"><b>「{{name}}」</b></div>
+    <div ref="root"  class="flex flex-wrap row rounded cursor-pointer" @click="pick()">
         <div class="appbg0 appfg0 border-default mrb1" style="width:63px;height:50px;" 
             :style="`background:${style[0]};color:`">
             <div class="w-full text-center mt-1" style="padding-left: 1px;">
@@ -16,9 +16,9 @@
         <div class="appbg1 appfg1 border-default grow mrb1" style="width:200px;height:50px;">
             <div class="flex justify-between pr-1 pl-1">
                 <b class="border-b-1">Direct Messages</b>
-                <button class="text-sm">
+                <a class="text-sm">
                     <span class="oi oi-plus"></span>
-                </button>
+                </a>
             </div>
         </div>
         <div class="flex" style="flex-grow:10000;height:50px;">
