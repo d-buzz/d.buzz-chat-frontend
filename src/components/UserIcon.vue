@@ -1,11 +1,14 @@
 <template>
-    <div v-if="profileLetter" class="textIcon" :class="`${imgCss}`"
-        :style="`${randomColor(name)}`">
-        <span>{{profileLetter}}</span>
-    </div>
-    <div v-else class="relative">
-        <img v-if="size != 'small'" class="absolute rounded-full" :class="`${imgCss}`" :src="`https://images.hive.blog/u/${name}/avatar/${size}`"/>     
-        <img class="rounded-full" :class="`${imgCss}`" :src="`https://images.hive.blog/u/${name}/avatar/small`" @error="imgLoadError()" alt="" />     
+    <div class="relative">
+        <div v-if="profileLetter" class="textIcon" :class="`${imgCss}`"
+            :style="`${randomColor(name)}`">
+            <span>{{profileLetter}}</span>
+        </div>
+        <div v-else class="">
+            <img v-if="size != 'small'" class="absolute rounded-full" :class="`${imgCss}`" :src="`https://images.hive.blog/u/${name}/avatar/${size}`"/>     
+            <img class="rounded-full" :class="`${imgCss}`" :src="`https://images.hive.blog/u/${name}/avatar/small`" @error="imgLoadError()" alt="" />     
+        </div>
+        <div v-if="online" class="onlineIcon"></div>
     </div>
 </template>
 <script setup>
@@ -14,7 +17,8 @@ const props = defineProps({
     imgCss: {type: String, default: 'avMessage'},
     letterIcon: {type: String, default: null},
     name2: {type: String, default: null},
-    size: {type: String, default: 'small'}
+    size: {type: String, default: 'small'},
+    online: {type: Boolean, default: null}
 });
 const profileLetter = ref(null);
 const backupLetter = ref("Hi");
@@ -75,4 +79,14 @@ function randomColor(text) {
     font-style: italic;
 }
 .textIcon span { align-self: center; margin-top: -2px; }
+.onlineIcon {
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    border: 2px solid var(--appbg3);
+    border-radius: 7px;
+    background-color: green;
+    left: 0;
+    bottom: 0;
+}
 </style>

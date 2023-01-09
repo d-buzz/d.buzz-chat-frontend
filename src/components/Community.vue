@@ -15,8 +15,8 @@
      <div class="appbg3 appfg3 h-full float-right w-200 overflow-y-scroll scrollBox sidebar" 
         v-if="$route.name === 'CommunityPath' && community" ref="sidebar" :key="communityUsersKey" style="padding-bottom:150px;">
         <div class="scrollBoxContent border-l-1 pr-1 pl-1 appbg3">
-            <div class="text-right" :title="`online: ${onlineCount} users\njoined: ${community.communityData.subscribers} users`"><small class="fg70">
-                {{onlineCount}} / {{community.communityData.subscribers}}</small>
+            <div class="text-right" :title="`online/joined: ${onlineCount}`"><small class="fg70">
+                {{onlineCount}}</small>
             </div>        
             <div v-for="roleUsers in communityUsers">
                 <div v-if="roleUsers[0] != 'muted'">
@@ -36,6 +36,23 @@
             </div>
         </div>
     </div>
+    <div class="appbg3 appfg3 h-full float-right w-200 overflow-y-scroll scrollBox sidebar" 
+        v-else-if="$route.name === 'Group'" ref="sidebar" :key="communityUsersKey" style="padding-bottom:150px;">
+        <div class="scrollBoxContent border-l-1 pr-1 pl-1 appbg3">
+            <div class="text-right" :title="`online/joined: ${onlineCount}`"><small class="fg70">
+                {{onlineCount}}</small>
+            </div>   
+            <div class="p-1 flex" v-for="(online, user) in messageUsers" :class="online?'':'offline'">
+                <div class="flex-shrink-0 mr-5px">
+                    <UserIcon :name="user" 
+                    :imgCss="`avConversation`" :online="online"/>
+                </div>
+                <div class="grow relative" style="margin-top:-7px;">
+                    <small :class="roleCss('')"><b>{{user}}</b></small>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="h-full flex flex-col justify-between">
         <div class="font-bold" style="order:1;">
             <span class="cursor-pointer" @click.stop="setThread(null)">{{streamName}}</span> <span v-if="threadName !== null" class="font-normal"><span class="oi oi-chevron-right cursor-pointer" style="font-size:10px;vertical-align:top;margin-top:6px;" @click="setThread(null)"></span> {{threadName}}</span>
@@ -48,6 +65,9 @@
                 <button class="text-sm mr-2" @click="toggleThreads" title="threads">
                     <span class="oi oi-fork"></span>
                 </button>
+                <button v-if="($route.name === 'CommunityPath' && community) || $route.name === 'Group'" class="text-sm mr-2" @click="toggleSideBar" title="toggle sidebar">
+                    <span class="oi oi-people"></span>
+                </button>
                 <span v-if="route.name === 'Group' || route.name === 'CommunityGroup'">
                     <button class="text-sm mr-2" @click="toggleShareGroup" title="share group">
                         <span class="oi oi-share-boxed"></span>
@@ -56,9 +76,6 @@
                         <span class="oi oi-x align-top"></span>
                     </button>
                 </span>
-                <button v-if="$route.name === 'CommunityPath' && community" class="text-sm mr-2" @click="toggleSideBar" title="toggle sidebar">
-                    <span class="oi oi-people"></span>
-                </button>
             </span>
         </div>
 
@@ -169,6 +186,7 @@ const threadName = ref(null);
 const community = ref(null);
 const onlineCount = ref(null);
 const communityUsers = ref({});
+const messageUsers = ref({});
 const sharedCommunities = ref(null);
 const writingUsers = ref(null);
 const messageBox = ref();
@@ -229,6 +247,19 @@ function setMessages(messages) {
     }
     displayableMessages.value = result;
 }
+async function setMessageUsers(messages) {
+    const manager = getManager();
+    var users = {};
+    for(var msg of messages) {
+        if(!msg || msg.isEdit || msg.isEmote() || msg.getContent() == null) continue;
+        if(msg.isVerified()) { users[msg.getUser()] = true; }
+    }
+    users = await manager.readOnlineUsers(Object.keys(users));
+    messageUsers.value = users;
+    var online = 0, sum = 0;
+    for(var user in users) { if(users[user]) online++; sum++; }
+    onlineCount.value = online + ' / ' + sum;
+} 
 async function initChat() {
     var user = accountStore.account.name;
     if(user == null) return; //TODO ask to login
@@ -242,6 +273,7 @@ async function initChat() {
     var community0 = null;
     var conversation = getConversation(); 
     var updateOnlineUsers = null;
+    var usersFromMessages = false;
     if(conversation != null) {
         manager.setConversation(conversation);
         try {
@@ -255,7 +287,7 @@ async function initChat() {
             community.value = community0;
 
             updateOnlineUsers = async ()=> {
-                var users = await manager.readOnlineUsers(community0);
+                var users = await manager.readOnlineUsersCommunity(community0);
                 if(manager.selectedConversation != conversation) return;
                 var roles = ['owner', 'admin', 'mod', 'member'];
                 var usersCategories = [];
@@ -274,7 +306,7 @@ async function initChat() {
                             onlineCountMap[categoryUser[0]] = true; 
                             _onlineCount++;
                         }
-                onlineCount.value = _onlineCount;
+                onlineCount.value = _onlineCount + ' / ' + community.communityData.subscribers;
                 for(var role in users.role)
                     if(roles.indexOf(role) === -1 && users.role[role].length > 0)
                         usersCategories.push([role, users.role[role]]);
@@ -293,6 +325,10 @@ async function initChat() {
             var groups = pref.getGroups();
             var group = groups[route.params.path];
             streamName.value = (group !== null && group.name != null)?`${group.name} ${conversation}`:conversation;
+            usersFromMessages = true;
+            updateOnlineUsers = async ()=> {
+                messageUsers.value = await manager.readOnlineUsers(Object.keys(messageUsers.value));
+            };
         }
         else if(route.name.startsWith('PrivateChat')) {
             streamName.value = conversation;
@@ -311,6 +347,7 @@ async function initChat() {
             if(data == null || manager.selectedConversation != conversation) return null;
             data.messages.sort((a,b)=>a.getTimestamp()-b.getTimestamp());
             setMessages(data.messages);
+            if(usersFromMessages) setMessageUsers(data.messages);
             if(data.encoded && data.encoded.length > 0)
                 decodeNMessages.value = data.encoded.length;
             else decodeNMessages.value = 0;
@@ -364,7 +401,9 @@ async function initChat() {
         manager.onstatusmessage.set("Community.vue", updateStatus)
 
         if(isAutoDecode === true)
-            await decode();        
+            await decode();  
+
+              
     }
 }
 async function findSharedCommunities(conversation) {

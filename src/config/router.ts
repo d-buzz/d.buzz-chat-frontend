@@ -29,7 +29,7 @@ export const install: ViteSetupModule = ({ app }) => {
         //redirect if not logged and login is required
         if(to.name && !to.name.startsWith('@')) {
             if(accountStore.account.authenticated === null) await accountStore.initStore();
-            if(accountStore.account.authenticated === false) {
+            if(accountStore.account.authenticated === null || accountStore.account.authenticated === false) {
                 next('/join');
                 return;
             }

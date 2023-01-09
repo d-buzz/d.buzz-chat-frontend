@@ -2447,7 +2447,41 @@ class MessageManager {
             return messages;
         });
     }
-    readOnlineUsers(community, verifyOnlineMessages = false) {
+    readOnlineUsers(users, verifyOnlineMessages = false) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var usersMap = {};
+            if (users.length === 0)
+                return usersMap;
+            var maxTime = utils_1.Utils.utcTime() - 7 * 60 * 1000; //7 minutes    
+            var client = this.getClient();
+            for (var user of users)
+                usersMap[user] = null;
+            var onlineResult = yield client.readOnlineStatus(users, maxTime);
+            if (onlineResult.isSuccess()) {
+                var online = onlineResult.getResult();
+                for (var json of online) {
+                    var username = json[1];
+                    var isOnline = false;
+                    try {
+                        var message = signable_message_1.SignableMessage.fromJSON(json);
+                        if (!verifyOnlineMessages || (yield message.verify())) {
+                            var content = message.getContent();
+                            if (content instanceof imports_1.OnlineStatus) {
+                                isOnline = content.isOnline();
+                                json.online = isOnline;
+                            }
+                        }
+                    }
+                    catch (e) {
+                        console.log(e);
+                    }
+                    usersMap[username] = isOnline;
+                }
+            }
+            return usersMap;
+        });
+    }
+    readOnlineUsersCommunity(community, verifyOnlineMessages = false) {
         return __awaiter(this, void 0, void 0, function* () {
             if (typeof community === 'string')
                 community = yield community_1.Community.load(community);
@@ -2457,14 +2491,14 @@ class MessageManager {
             var onlineResult = yield client.readOnlineStatusForCommunity(community.getName(), maxTime);
             if (onlineResult.isSuccess()) {
                 var online = onlineResult.getResult();
-                var onlineMap = {};
+                //var onlineMap = {};
                 var role = {};
                 var title = {};
                 var added = {};
                 var _online = [];
                 for (var json of online) {
                     var username = json[1];
-                    onlineMap[username] = json;
+                    //onlineMap[username] = json;
                     var isOnline = false;
                     try {
                         var message = signable_message_1.SignableMessage.fromJSON(json);
