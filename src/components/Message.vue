@@ -12,22 +12,13 @@
         <AddEmoteModal @oninput="emoteAction" @close="toggleAddEmoteModal"></AddEmoteModal>
     </TransitionRoot>
     <div v-if="hasQuotedText(message)" class="flex mb-1">
-        <!--<img
-            @click.right.prevent.stop="clickOnIcon($event)"
-            class="rounded-full avMini"
-            :src="`https://images.hive.blog/u/${message.reference.getUser()}/avatar/small`"
-            alt="@"
-            />-->
-
         <UserCommunityIcon :name="message.reference.getUser()" :community="message.getCommunity()" 
                   :imgCss="`avMini`"/>
         <small class="pl-1"><b :class="roleReferenceColor?roleReferenceColor:''">{{message.reference.getUser()}}</b> {{getQuotedText(message)}}</small>
     </div>
     <div class="message flex" :data-verified="message.isVerified()">
         <div class="flex-shrink-0 mr-5px">
-
             <UserCommunityIcon :name="message.getUser()" :community="message.getCommunity()"/>
-
             <vue-simple-context-menu
               :element-id="msgMenuId"
               v-if="!displayOnly"
@@ -65,7 +56,7 @@
                 <div v-else-if="content.getType() == 'g'" class="border border-solid border-green-700 rounded p-1">
                     <small>{{content.getGroup()}}</small>
                     <div ref="messageText" class="whitespace-pre-wrap">{{content.getText()}}</div>
-                    <button class="btn" v-on:click="join(message)">Join</button>
+                    <button class="btn" v-on:click="join(message)">{{hasJoinedGroup?'Already Joined':'Join'}}</button>
                 </div>
                 <div v-else-if="content.getText" class="whitespace-pre-wrap">
                     <div ref="messageText">{{content.getText()}}</div>
@@ -102,6 +93,12 @@ const props = defineProps({
 });
 const roleColor = ref(null);
 const roleReferenceColor = ref(null);
+const hasJoinedGroup = ref(false);
+async function hasJoinedGroupX(group) {
+    const manager = getManager();
+    var groups = await manager.getJoinedAndCreatedGroups();
+    return groups[group] !== undefined;
+}
 function initContent() {
     var content = null; 
     if(props.message) {
@@ -114,6 +111,10 @@ function initContent() {
         }
         if(content instanceof stlib.Content.Thread)
             content = content.getContent();
+        if(content instanceof stlib.Content.GroupInvite)
+            hasJoinedGroupX(content.getGroup()).then((x)=>{
+                hasJoinedGroup.value = x;
+            });
     }
     return content;
 }
@@ -271,7 +272,7 @@ async function init() {
         role = data.getRole(message.reference.getUser()); 
         if(role === "owner" || role === "admin" || role === "mod")
             roleReferenceColor.value = `oiMini oi ${icon[role]} color${role}`;
-    }   
+    }
 }
 init();
 </script>
