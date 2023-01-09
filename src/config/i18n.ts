@@ -5,9 +5,10 @@ export const priority = 2
 
 export const install: ViteSetupModule = ({ app }) => {
   const messages = Object.fromEntries(
-    Object.entries(import.meta.globEager('../../locales/*.{y(a)?ml,json}')).map(([key, value]) => {
-      const isYamlOrJson = key.endsWith('.yaml') || key.endsWith('.json')
-      return [key.slice(14, isYamlOrJson ? -5 : -4), value.default]
+    Object.entries(import.meta.globEager('../locales/*.{y(a)?ml,json}')).map(([key, value]) => {
+        console.log("values", value.default);
+      const isYamlOrJson = key.endsWith('.yaml') || key.endsWith('.json');
+      return [key.slice(11, isYamlOrJson ? -5 : -4), value.default];
     })
   )
 

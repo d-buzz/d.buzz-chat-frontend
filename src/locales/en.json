@@ -1,0 +1,27 @@
+{
+"Landing.openApp": "Open App",
+
+"StreamBar.DirectMessage": "Direct Message",
+"StreamBar.DirectMessages": "Direct Messages",
+"StreamBar.GroupMessage": "Group Message",
+"StreamBar.GroupMessages": "Group Messages",
+"StreamBar.JoinGroup": "Join Group",
+
+"Home.Community": "Community",
+"Home.Communities": "Communities",
+"Home.Preference": "Preference",
+"Home.Preferences": "Preferences",
+"Home.Theme": "Theme",
+"Home.Themes": "Themes",
+"Home.All": "All",
+"Home.Active": "Active",
+"Home.Logout": "Logout",
+
+"Home.Theme.Msg.Info": "Pick a theme or edit cloned one.",
+
+"CommunityAbout.Description": "Description",
+"CommunityAbout.Rules": "Rules",
+"CommunityAbout.TeamModerators": "Team and Moderators"
+}
+
+

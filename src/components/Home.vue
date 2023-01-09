@@ -8,7 +8,7 @@
                 </div>
             </div>
             <div style="margin-top:-7px;">
-                <button class="btn" @click="logout()">logout</button>
+                <button class="btn" @click="logout()">{{$t("Home.Logout")}}</button>
             </div>
         </div>
 <!--HomeHeaderB-->
@@ -34,9 +34,9 @@
         <div class="ml-3 mt-2 mr-3">
             <TabGroup>
                 <TabList class="tab">
-                  <Tab>Communities {{showDetailedProfile()}}</Tab>
-                  <Tab>Preferences</Tab>
-                  <Tab>Themes</Tab>
+                  <Tab>{{$t("Home.Communities")}}</Tab>
+                  <Tab>{{$t("Home.Preferences")}}</Tab>
+                  <Tab>{{$t("Home.Themes")}}</Tab>
                 </TabList>
             <TabPanels class="mt-1">
                 <TabPanel>
@@ -58,8 +58,8 @@
                     </div>
                     <TabGroup>
                         <TabList class="tab">
-                            <Tab>All</Tab>
-                            <Tab>Active</Tab>
+                            <Tab>{{$t("Home.All")}}</Tab>
+                            <Tab>{{$t("Home.Active")}}</Tab>
                         </TabList>
                         <TabPanels class="mt-1">
                             <TabPanel>
@@ -130,7 +130,7 @@
                     </div>-->
                 </TabPanel>
                 <TabPanel :key="updateThemesKey">
-                    <small class="float-right text-gray-700">Pick a theme or edit cloned one.</small>
+                    <small class="float-right text-gray-700">{{$t("Home.Theme.Msg.Info")}}</small>
                     <div class="mt-2"></div>
                     <div v-for="(style, name) in themeObject.defaultThemes">
                         <ThemeView :name="name" :style="style" :edit="false" @update="updateThemes"></ThemeView>

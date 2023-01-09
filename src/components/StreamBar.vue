@@ -22,7 +22,7 @@
         </div>
         <div v-else>
             <div class="flex justify-between">
-                <b class="border-b-1">{{title}}</b>
+                <b class="border-b-1">{{$t("StreamBar.DirectMessages")}}</b>
                 <button class="text-sm" @click="toggleNewUserMessageModalOpen">
                     <span class="oi oi-plus"></span>
                 </button>

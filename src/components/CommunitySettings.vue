@@ -8,7 +8,7 @@
   <TransitionRoot :show="showInfoModal">
     <AddInfoModal @oninput="addInfo" @close="toggleAddInfoModal"></AddInfoModal>
   </TransitionRoot>
-  <div class="appbg2 w-full h-full flex flex-col">
+  <div class="appbg2 w-full h-full flex flex-col ml-3">
     <div class="flex border-b-1 font-bold">Settings {{pageTitle}}</div>
 
     <div>

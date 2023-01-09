@@ -7,13 +7,13 @@
         <div class="flex font-bold">About</div>
         <div>{{community.getAbout()}}</div>-->
         <hr>
-        <div class="flex font-bold">Description</div>
+        <div class="flex font-bold">{{$t("CommunityAbout.Description")}}</div>
         <div>{{community.getDescription()}}</div>
         <hr>
-        <div class="flex font-bold">Rules</div>
+        <div class="flex font-bold">{{$t("CommunityAbout.Rules")}}</div>
         <div>{{community.getRules()}}</div>
         <hr>
-        <div class="flex font-bold">Team and Moderators</div>
+        <div class="flex font-bold">{{$t("CommunityAbout.TeamModerators")}}</div>
         <div class="flex flex-wrap justify-between">
             <div v-for="team in community.communityData.team" class="p-1 flex">
                 <div class="flex-shrink-0 mr-5px">
