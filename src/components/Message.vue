@@ -32,7 +32,7 @@
                 <small :class="roleColor?roleColor:''"><b>{{message.getUser()}}</b></small>
                 <span class="pr-2 float-right fg70">
                     <small v-if="!displayEdits && message.edits && message.edits.length > 0" class="cursor-pointer" :title="toAbsoluteTimeString(message.edits[0].getTimestamp())" @click="toggleViewEditHistoryModal()">(edited {{toRelativeTimeString(message.edits[0].getTimestamp())}}) </small>
-                    <small :title="toAbsoluteTimeString(message.getTimestamp())">{{toRelativeTimeString(message.getTimestamp())}}</small>
+                    <small :title="toRelativeTimeString(message.getTimestamp(),3)+'\n'+toAbsoluteTimeString(message.getTimestamp())">{{toRelativeTimeString(message.getTimestamp())}}</small>
                     <span v-if="!message.isVerified()" class="pl-1">&#10008;</span>
                 </span>
             </div>
@@ -247,15 +247,20 @@ function toAbsoluteTimeString(ti) {
     var date = new Date(ti);
     return date.toString()+'\n'+date.toUTCString();
 }
-function toRelativeTimeString(ti) {
+function toRelativeTimeString(ti,maxLen=1,maxUnit='m') {
     ti = stlib.Utils.utcTime()-ti;
 	var d = Math.floor(ti/86400000); ti -= d*86400000;  
 	var h = Math.floor(ti/3600000); ti -= h*3600000;
-	var m = Math.floor(ti/60000);
-	var str = null;
-	if(d > 0) str = `${d}d ${h}h ${m}m`;
-	else if(h > 0) str = `${h}h ${m}m`;
-	else str = `${m}m`;
+	var m = Math.floor(ti/60000); ti -= m*60000;
+    var s = Math.floor(ti/1000);
+	var str = '';
+    var format = 'dhms';
+    var time = [d,h,m,s];
+    for(var i = 0; i < time.length; i++) {
+        if((str === '' && time[i] > 0) || str !== '' || format[i] === 'maxUnit')
+            str += (str===''?'':' ')+time[i]+format[i]; 
+        if(format[i] === 'maxUnit' || (str !== '' && --maxLen === 0)) break;
+    }
 	return str;
 }
 async function init() {
