@@ -1,9 +1,9 @@
 <template>
   <div class="flex min-h-full h-screen appbg2 appfg2">
-    <div class="h-screen flex flex-col appbg0 appfg0 shadow-lg">
+    <div class="h-screen flex flex-col appbg0 appfg0">
         <SideBar @toggleStreambar="toggleStreambar()"></SideBar>
     </div>
-    <div class="streambar h-screen flex flex-col appbg1 appfg1 shadow-lg" ref="streamBar">
+    <div class="streambar flex flex-col appbg1 appfg1 border-r-1" ref="streamBar">
         <StreamBar :key="getKey(route.path)"></StreamBar>
     </div>
     <div class="grow" @click="hideStreambar()">
@@ -28,6 +28,7 @@ function hideStreambar() {
     streamBar.value.dataset.show = false;
 }
 window.showStreambar = showStreambar;
+window.toggleStreambar = toggleStreambar;
 </script>
 <style scoped>
 @media (max-width: 767px) {
@@ -36,6 +37,10 @@ window.showStreambar = showStreambar;
         position: fixed;
         z-index: 7;
         left: 63px;
+        top: 23px;
+        border-top: 1px solid #0000002e;
+        border-bottom: 1px solid #0000002e;
+        padding-bottom: 20px;
     }
     .streambar[data-show="true"] {
         display: block;

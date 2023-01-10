@@ -6,8 +6,8 @@
         <NewUserMessageModal @close="toggleNewUserMessageModalOpen(false)"></NewUserMessageModal>
     </TransitionRoot>
 
-  <div class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox pl-1 w-200" :key="updateKey">
-    <div class="scrollBoxContent flex flex-col border-r-1 pr-1">
+  <div class="m-0 overflow-y-scroll scrollBox pl-1 w-200" :key="updateKey">
+    <div class="scrollBoxContent flex flex-col pr-1">
         <div v-if="isCommunity">
             <div class="flex justify-between">
                 <b class="border-b-1">C/{{title}}</b>

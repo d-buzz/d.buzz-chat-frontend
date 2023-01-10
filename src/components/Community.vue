@@ -11,7 +11,8 @@
     <TransitionRoot :show="showThreadsModal">
         <ThreadModal @oninput="setThread" @close="toggleThreads"></ThreadModal>
     </TransitionRoot>
-  <div class="appbg2 appfg2 w-full h-full break-all ml-3 mr-3" v-if='messageKey'>
+    
+  <div class="appbg2 appfg2 h-full break-all ml-3" v-if='messageKey'>
      <div class="appbg3 appfg3 h-full float-right w-200 overflow-y-scroll scrollBox sidebar" 
         v-if="$route.name === 'CommunityPath' && community" ref="sidebar" :key="communityUsersKey" style="padding-bottom:150px;">
         <div class="scrollBoxContent border-l-1 pr-1 pl-1 appbg3">
@@ -306,7 +307,7 @@ async function initChat() {
                             onlineCountMap[categoryUser[0]] = true; 
                             _onlineCount++;
                         }
-                onlineCount.value = _onlineCount + ' / ' + community.communityData.subscribers;
+                onlineCount.value = _onlineCount + ' / ' + community0.communityData.subscribers;
                 for(var role in users.role)
                     if(roles.indexOf(role) === -1 && users.role[role].length > 0)
                         usersCategories.push([role, users.role[role]]);
@@ -440,7 +441,7 @@ function focusMessageBox() {
 initChat();
 function setThread(name) {
     if(name === null && threadName.value == null) {
-        if(window.showStreambar != null) window.showStreambar(true);
+        if(window.showStreambar != null) window.toggleStreambar();
     }
     else {
         threadName.value = name;

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="border-r-1">
         <SideBarLoginIcon :number="number" @toggleStreambar="$emit('toggleStreambar')"/>
     </div>
     <div class="border-b-1">
