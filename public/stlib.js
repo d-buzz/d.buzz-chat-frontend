@@ -172,6 +172,15 @@ class Community {
     getRules() { return this.communityData.flag_text; }
     getSettings() { return this.communityData.settings; }
     getStreams() { return this.streams; }
+    getDefaultStream() {
+        if (this.streams === null)
+            return null;
+        for (var stream of this.streams) {
+            if (stream.getPathType() === 't')
+                return stream;
+        }
+        return null;
+    }
     setStreams(streams) { this.streams = streams; }
     addStream(stream) { this.streams.push(stream); }
     canSetRole(username, account, role) {
@@ -350,10 +359,9 @@ class Community {
     }
     static defaultStreams(community) {
         return [
+            data_stream_1.DataStream.fromJSON(community, ["General", "0"]),
             data_stream_1.DataStream.fromJSON(community, ["About", "/about"]),
-            data_stream_1.DataStream.fromJSON(community, ["Posts", "/created"]),
-            data_stream_1.DataStream.fromJSON(community, ["Text"]),
-            data_stream_1.DataStream.fromJSON(community, ["General", "0"])
+            data_stream_1.DataStream.fromJSON(community, ["Visit Community", "/created"])
         ];
     }
     static load(communityUsername) {

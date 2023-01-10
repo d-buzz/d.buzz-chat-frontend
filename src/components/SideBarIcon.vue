@@ -34,11 +34,33 @@ const props = defineProps({
     number: String
 });
 const hasImg = ref(hasProfileImage(props.community));
-function onClick(community) {
+async function onClick(community) {
     const manager = getManager();
-    var link = manager.getSelectedCommunityPage(community, `/i/${community}/about`);
+    var defLink = `/i/${community}/about`;
+    try {
+        var community0 = await stlib.Community.load(community);
+        var defaultStream = community0.getDefaultStream();
+        if(defaultStream !== null) defLink = getPath(defaultStream);
+    }
+    catch(e) { console.log(e); }
+    var link = manager.getSelectedCommunityPage(community, defLink);
     if(link === router.currentRoute._value.fullPath) emit('toggleStreambar');
     else router.push(link);
+}
+function getPath(stream) {
+    var path = stream.getPath();
+    if(path==null) return '';
+    if(path.getType() === 't')
+        return '/t/'+path.getUser()+'/'+path.getPath();
+    if(path.getType() === 'g')
+        return '/g/'+props.community+'/'+path.getUser()+'/'+path.getPath();
+    if(path.getType() === 'i') {
+        if(path.getPath() === 'created')
+            return 'https://peakd.com/c/'+path.getUser()+'/created';
+
+        return '/i/'+path.getUser()+'/'+path.getPath();
+    }
+    return '';
 }
 function hasProfileImage(community) {
     if(!community || !community.account) return true;
