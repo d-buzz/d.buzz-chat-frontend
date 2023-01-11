@@ -21,7 +21,12 @@
 
 "CommunityAbout.Description": "Description",
 "CommunityAbout.Rules": "Rules",
-"CommunityAbout.TeamModerators": "Team and Moderators"
+"CommunityAbout.TeamModerators": "Team and Moderators",
+
+"Message.Join": "Join",
+"Message.Joined": "Joined",
+
+"AddGroupUserModal.Msg.Join": "You are invited to join new group:"
 }
 
 

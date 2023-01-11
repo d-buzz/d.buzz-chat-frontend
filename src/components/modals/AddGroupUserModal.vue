@@ -62,19 +62,31 @@
 
 <script setup lang="ts">
 import { useAccountStore } from "../../stores/account";
+const { t } = useI18n();
 const accountStore = useAccountStore();
 const router = useRouter();
 const emit = defineEmits();
-//const props = defineProps<{
-//}>();
+//
 const isLoading = ref(false);
 const accountName = ref("");
-const message = ref("You are invited to join group:");
+const message = ref(t("AddGroupUserModal.Msg.Join"));
 const errorMessage = ref("");
+
+async function init() {
+    var groupInfo = await stlib.Utils.findGroupInfo("#borislavzlatanov/0");
+    if(groupInfo != null && groupInfo.name != null)
+    message.value = t("AddGroupUserModal.Msg.Join") + ' ' + groupInfo.name;
+}
+init();
 
 const action = async (account: string) => {
   if (isLoading.value) return;
   try {
+    account = account.trim();
+    if(account.length == 0) {
+        errorMessage.value = "Enter users to invite.";
+        return;
+    }
     isLoading.value = true;
     var users = account.split(/[ ,]+/);
     const manager = getManager();

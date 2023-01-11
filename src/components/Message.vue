@@ -56,7 +56,8 @@
                 <div v-else-if="content.getType() == 'g'" class="border border-solid border-green-700 rounded p-1">
                     <small>{{content.getGroup()}}</small>
                     <div ref="messageText" class="whitespace-pre-wrap">{{content.getText()}}</div>
-                    <button class="btn" v-on:click="join(message)">{{hasJoinedGroup?'Already Joined':'Join'}}</button>
+                    <small v-if="hasJoinedGroup"><b>{{$t("Message.Joined")}}</b></small>
+                    <button v-else class="btn" v-on:click="join(message)">{{$t("Message.Join")}}</button>
                 </div>
                 <div v-else-if="content.getText" class="whitespace-pre-wrap">
                     <div ref="messageText">{{content.getText()}}</div>

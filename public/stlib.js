@@ -3699,6 +3699,17 @@ class Utils {
             }
         });
     }
+    static findGroupInfo(conversation) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var groupConversation = Utils.parseGroupConversation(conversation);
+            if (groupConversation == null)
+                return null;
+            var prefs = yield Utils.getAccountPreferences(groupConversation[1]);
+            if (prefs == null)
+                return null;
+            return prefs.getGroup(groupConversation[2]);
+        });
+    }
     static parseGroupConversation(conversation) {
         var array = Utils.parseConversation(conversation);
         if (array.length !== 3 || array[0] !== '#' || !Utils.isWholeNumber(array[2]))
