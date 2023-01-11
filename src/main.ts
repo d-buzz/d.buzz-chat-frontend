@@ -12,19 +12,40 @@ const NETWORK_NAME = import.meta.env.NETWORK_NAME?import.meta.env.NETWORK_NAME:n
 const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_APP_STING_NODES.split(",") : ["http://localhost:3001"];
 
 (()=>{
-    if(window.hive_keychain === undefined && window.parent != null && 
+    /*if(window.hive_keychain === undefined && window.parent != null && 
         window.parent.hive_keychain !== undefined) {
         window.hive_keychain = window.parent.hive_keychain;
-    }
-    /*if(window.hive_keychain === undefined && window.parent != null && window.parent.postMessage) {
-        
-       // window.hive_keychain 
-        window.hive_keychain    = new Proxy({}, {
-              get(target, prop, receiver) {
-                return function (){ return window.parent.postMessage(JSON.stringify([prop, arguments]), "*");};
-              }
-        });
     }*/
+    if(window.hive_keychain === undefined && window.parent != null && window.parent.postMessage) {
+        var proxy = { id: 0, callbacks: {} };
+        window.addEventListener("message", (event) => {
+            try {
+                if(event.data != null && typeof event.data === 'string') {
+                    var data = JSON.parse(event.data);
+                    if(Array.isArray(data) && data.length === 3 && data[0] === 'stlib') {
+                        var callback = proxy.callbacks[data[1]];
+                        if(callback != null) {
+                            delete proxy.callbacks[data[1]];
+                            callback(data[2]);
+                        }
+                    }
+                }
+            }
+            catch(e) { console.log(e); }
+        });
+        window.hive_keychain = new Proxy({}, {
+            get(target, prop, receiver) {
+                return function () {
+                    var msgId = proxy.id++; 
+                    var data = ["stlib", msgId, prop];
+                    for(var i = 0; i < arguments.length-1; i++)
+                        data.push(arguments[i]);
+                    proxy.callbacks[msgId] = arguments[arguments.length-1];
+                    return window.parent.postMessage(JSON.stringify(data), "*");
+                };
+            }
+        });
+    }
      
     var currentManager = null;
     window.getManager = function () {

@@ -45,15 +45,36 @@ import { nextTick } from 'vue';
 const widget = ref();
 function initWidget() {
     window.addEventListener("message", (event) => {
-        //if (event.origin !== "http://example.com:8080")
-        //  return;
-        console.log("message", event);
-
-        /*event.source.postMessage("response ", event.origin);*/
+        try {
+            if(event.data != null && typeof event.data === 'string') {
+                var data = JSON.parse(event.data);
+                if(Array.isArray(data) && data.length > 2 && data[0] === 'stlib') {
+                    switch(data[2]) {
+                        case "requestVerifyKey":
+                            window.hive_keychain.requestVerifyKey(data[3], data[4], data[5], (r)=>{
+                                event.source.postMessage(JSON.stringify(["stlib", data[1], r]), event.origin);
+                            });
+                        break;
+                        case "requestSignBuffer":
+                            window.hive_keychain.requestSignBuffer(data[3], data[4], data[5], (r)=>{
+                                event.source.postMessage(JSON.stringify(["stlib", data[1], r]), event.origin);
+                            });
+                        break;
+                        case "requestEncodeMessage":
+                            window.hive_keychain.requestEncodeMessage(data[3], data[4], data[5], data[6], (r)=>{
+                                event.source.postMessage(JSON.stringify(["stlib", data[1], r]), event.origin);
+                            });
+                        break;
+                    }
+                }
+            }
+        }
+        catch(e) { console.log(e); }
     });
 
     var e = widget.value;
     var iframe = document.createElement('iframe');
+    //iframe.src = 'https://sting-message-frontend.pages.dev/home';
     iframe.src = '/home';
     iframe.style.width = "100%";
     iframe.style.height = "100%";
