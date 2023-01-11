@@ -3865,6 +3865,8 @@ class AccountDataCache {
     callBatched(dataPromise, batch = this.batch) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                this.batch = null;
+                this.batchPromise = null;
                 var results = yield dataPromise(batch);
                 for (var i = 0; i < batch.length; i++) {
                     var user = batch[i];
@@ -3875,12 +3877,6 @@ class AccountDataCache {
             }
             catch (e) {
                 console.log(e);
-            }
-            finally {
-                if (batch === this.batch) {
-                    this.batch = null;
-                    this.batchPromise = null;
-                }
             }
         });
     }

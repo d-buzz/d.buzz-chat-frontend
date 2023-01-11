@@ -43,11 +43,6 @@ async function initCommunities() {
     manager.setUser(user);
     manager.joinGroups();
     var _communities = await manager.getCommunitiesSorted();
-    for(var community of _communities) 
-        try {
-            await stlib.Community.load(community[0]);
-        }
-        catch(e) { console.log(e); }
     communities.value = _communities;
     updateKey.value = ''+stlib.Utils.nextId();
     var update = async () => {
@@ -58,6 +53,12 @@ async function initCommunities() {
     };
     await update();
     manager.setCallback("SideBar.vue", update);
+    
+    for(var community of _communities) 
+        try {
+            stlib.Community.load(community[0]);
+        }
+        catch(e) { console.log(e); }
 }
 initCommunities();
 </script>
