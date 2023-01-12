@@ -1,5 +1,50 @@
 
 class StWidget {
+
+    constructor(url) { 
+        this.url = url;
+        this.element = null;
+        this.iframe = null;
+    }
+    createElement(width=450, height=556) {
+        var div = document.createElement('div');
+        this.element = div;
+        var style = {
+            position: 'absolute',
+            'z-index': 10000,
+            border: '1px solid gray'
+        };
+        
+        this.setStyle(style);
+        this.resize(width, height);
+
+        var iframe = document.createElement('iframe');
+        this.iframe = iframe;
+        iframe.src = this.url;
+        iframe.style.width = "100%";
+        iframe.style.height = "100%";
+        div.appendChild(iframe);
+
+        return div;
+    }
+    resize(width=450, height=556) {
+        this.setStyle({
+            width: typeof width === 'string'?width:(width+'px'),
+            height: typeof height === 'string'?height:(height+'px'),
+        });
+    }
+    setStyle(style) {
+        for(var name in style) this.element.style.setProperty(name, style[name]);
+    }
+    /*setUser(username) {
+        var iframe = this.iframe;
+        if(iframe.contentWindow != null)
+            iframe.contentWindow.postMessage(JSON.stringify(["stlib", "setUser", username]), '*');
+        else iframe.addEventListener( "load", ()=>{
+            iframe.contentWindow.postMessage(JSON.stringify(["stlib", "setUser", username]), '*');
+        });
+    }*/
+
     static keychainPassthroughListener = null;
     static enableKeychainPassthrough(enable = true) {
         if(enable && StWidget.keychainPassthroughListener == null) {

@@ -17,21 +17,31 @@ const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_
         window.hive_keychain = window.parent.hive_keychain;
     }*/
     if(window.hive_keychain === undefined && window.parent != null && window.parent.postMessage) {
-        var proxy = { id: 0, callbacks: {} };
+        var proxy = { id: 0, callbacks: {}, methods: {
+            setUser: function (username) {
+                
+            }
+        } };
         window.addEventListener("message", (event) => {
             try {
                 if(event.data != null && typeof event.data === 'string') {
                     var data = JSON.parse(event.data);
                     if(Array.isArray(data) && data.length === 3 && data[0] === 'stlib') {
-                        var callback = proxy.callbacks[data[1]];
-                        if(callback != null) {
-                            delete proxy.callbacks[data[1]];
-                            callback(data[2]);
+                        if(typeof data[1] === 'string') {
+                            var method = proxy.methods[data[1]];
+                            if(method != null) method(data[2]);
+                        }
+                        else {
+                            var callback = proxy.callbacks[data[1]];
+                            if(callback != null) {
+                                delete proxy.callbacks[data[1]];
+                                callback(data[2]);
+                            }
                         }
                     }
                 }
             }
-            catch(e) { console.log(e); }
+            catch(e) { console.log(e, event); }
         });
         window.hive_keychain = new Proxy({}, {
             get(target, prop, receiver) {

@@ -38,47 +38,26 @@
     </div>
   </section>
 </div>
-    <div ref="widget" class="widget" hidden></div>
+    <div ref="widget" hidden></div>
 </template>
 <script setup>
 import { nextTick } from 'vue';
 const widget = ref();
+
+var script = document.createElement("script");
+script.setAttribute("src", "/stwidget.js");
+script.setAttribute("type", 'text/javascript');
+document.head.appendChild(script); 
+
 function initWidget() {
-    window.addEventListener("message", (event) => {
-        try {
-            if(event.data != null && typeof event.data === 'string') {
-                var data = JSON.parse(event.data);
-                if(Array.isArray(data) && data.length > 2 && data[0] === 'stlib') {
-                    switch(data[2]) {
-                        case "requestVerifyKey":
-                            window.hive_keychain.requestVerifyKey(data[3], data[4], data[5], (r)=>{
-                                event.source.postMessage(JSON.stringify(["stlib", data[1], r]), event.origin);
-                            });
-                        break;
-                        case "requestSignBuffer":
-                            window.hive_keychain.requestSignBuffer(data[3], data[4], data[5], (r)=>{
-                                event.source.postMessage(JSON.stringify(["stlib", data[1], r]), event.origin);
-                            });
-                        break;
-                        case "requestEncodeMessage":
-                            window.hive_keychain.requestEncodeMessage(data[3], data[4], data[5], data[6], (r)=>{
-                                event.source.postMessage(JSON.stringify(["stlib", data[1], r]), event.origin);
-                            });
-                        break;
-                    }
-                }
-            }
-        }
-        catch(e) { console.log(e); }
-    });
+    StWidget.enableKeychainPassthrough();
+    
+    var stwidget = new StWidget('/home');
+    var element = stwidget.createElement()
+    stwidget.setStyle({ top: '51px', right: '32px' });
 
     var e = widget.value;
-    var iframe = document.createElement('iframe');
-    //iframe.src = 'https://sting-message-frontend.pages.dev/home';
-    iframe.src = '/home';
-    iframe.style.width = "100%";
-    iframe.style.height = "100%";
-    e.appendChild(iframe);
+    e.appendChild(element);
 }
 var init = true;
 function toggleWidget() {
@@ -93,14 +72,6 @@ function toggleWidget() {
 }
 </script>
 <style scoped>
-.widget {
-    position: absolute;
-    z-index: 10000;
-    border: 1px solid gray;
-    width: 450px;
-    height: 556px;
-    top: 51px;
-    right: 32px;
-}
+
 </style>
 
