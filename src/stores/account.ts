@@ -29,6 +29,7 @@ export const useAccountStore = defineStore("account", () => {
                     }
                     manager.setOnlineStatusTimer(true);
                     manager.sendOnlineStatus(true);
+                    manager.joinCommunities();
                 }
             }
             catch(e) {

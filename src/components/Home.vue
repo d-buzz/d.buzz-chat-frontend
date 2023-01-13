@@ -284,7 +284,7 @@ async function initActiveCommunities() {
     var result = await getManager().getClient().readStats();
     if(result.isSuccess()) {
         var obj = {};
-        var dailyStatsArrays = result.getResult();
+        var dailyStatsArrays = result.getResult()[0];
         for(var day of dailyStatsArrays) {
             for(var community in day) {
                 var messageCount = day[community];

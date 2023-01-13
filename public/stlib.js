@@ -33,9 +33,9 @@ class Client {
                 this.onupdate(data);
         });
     }
-    readStats() {
+    readStats(conversations = null) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.emit('s', "");
+            return yield this.emit('s', conversations);
         });
     }
     readInfo() {
@@ -1607,6 +1607,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MessageManager = exports.UserOnlineStatus = exports.EventQueue = exports.LoginWithKeychain = exports.LoginKey = void 0;
 const client_1 = require("./client");
 const community_1 = require("./community");
+const data_path_1 = require("./data-path");
 const utils_1 = require("./utils");
 const signable_message_1 = require("./signable-message");
 const displayable_message_1 = require("./displayable-message");
@@ -1732,6 +1733,7 @@ class MessageManager {
         this.cachedUserConversations = null;
         this.recentlySentEncodedContent = [];
         this.conversationsLastReadData = {};
+        this.conversationsLastMessageTimestamp = {};
         this.selectedCommunityPage = {};
         this.selectedConversation = null;
         this.selectedOnlineStatus = null;
@@ -1978,6 +1980,46 @@ class MessageManager {
             var groups = yield this.getJoinedAndCreatedGroups();
             for (var conversation in groups)
                 this.join(conversation);
+        });
+    }
+    joinCommunities() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.user == null)
+                return;
+            var communities = yield this.getCommunities(this.user);
+            var chanMap = {};
+            for (var community of communities) {
+                try {
+                    var data = yield community_1.Community.load(community[0]);
+                    var streams = data.getStreams();
+                    if (streams != null) {
+                        for (var stream of streams) {
+                            if (stream.hasPath()) {
+                                var path = stream.getPath();
+                                if (path.getType() === data_path_1.DataPath.TYPE_TEXT) {
+                                    var chan = path.getUser() + '/' + path.getPath();
+                                    if (chanMap[chan] === undefined) {
+                                        chanMap[chan] = true;
+                                        this.join(chan);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (e) {
+                    console.log(e);
+                }
+            }
+            var chanList = Object.keys(chanMap);
+            if (chanList.length > 0) {
+                var client = this.getClient();
+                var result = yield client.readStats(chanList);
+                if (result.isSuccess()) {
+                    this.conversationsLastMessageTimestamp = result.getResult()[1];
+                }
+                this.postCallbackEvent(null);
+            }
         });
     }
     getPreferences() {
@@ -2247,11 +2289,9 @@ class MessageManager {
     }
     setLastRead(conversation, timestamp) {
         var lastRead = this.conversationsLastReadData[conversation];
-        if (lastRead != null) {
-            lastRead.number = 0;
-            lastRead.timestamp = timestamp;
-            window.localStorage.setItem(this.user + "#lastReadData", JSON.stringify(this.conversationsLastReadData));
-        }
+        if (lastRead == null)
+            this.conversationsLastReadData[conversation] = { number: 0, timestamp: timestamp };
+        window.localStorage.setItem(this.user + "#lastReadData", JSON.stringify(this.conversationsLastReadData));
     }
     getLastReadTotal() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -2281,6 +2321,21 @@ class MessageManager {
             return number;
         });
     }
+    getLastReadCommunityStream(conversation) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var lastRead = this.getLastRead(conversation);
+            var number = 0;
+            if (lastRead != null)
+                number += lastRead.number;
+            var timestamp = this.conversationsLastMessageTimestamp[conversation];
+            if (timestamp != null) {
+                if (lastRead == null || lastRead.timestamp < timestamp) {
+                    return (number + 1) + '+';
+                }
+            }
+            return "" + number;
+        });
+    }
     getLastReadCommunity(community) {
         return __awaiter(this, void 0, void 0, function* () {
             var communityStreams = community + '/';
@@ -2293,7 +2348,19 @@ class MessageManager {
                         number += lastRead.number;
                 }
             }
-            return number;
+            var plus = '';
+            var timestamps = this.conversationsLastMessageTimestamp;
+            for (var conversation in timestamps) {
+                if (conversation === community || conversation.startsWith(communityStreams)) {
+                    var lastRead = data[conversation];
+                    var timestamp = timestamps[conversation];
+                    if (lastRead == null || lastRead.timestamp < timestamp) {
+                        number++;
+                        plus = '+';
+                    }
+                }
+            }
+            return number + plus;
         });
     }
     getPreviousConversations(conversation = this.selectedConversation) {
@@ -2826,7 +2893,7 @@ class MessageManager {
 }
 exports.MessageManager = MessageManager;
 
-},{"./client":1,"./community":2,"./content/imports":9,"./displayable-message":20,"./signable-message":23,"./utils":26}],22:[function(require,module,exports){
+},{"./client":1,"./community":2,"./content/imports":9,"./data-path":17,"./displayable-message":20,"./signable-message":23,"./utils":26}],22:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PermissionSet = void 0;

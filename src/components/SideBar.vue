@@ -45,20 +45,19 @@ async function initCommunities() {
     var _communities = await manager.getCommunitiesSorted();
     communities.value = _communities;
     updateKey.value = ''+stlib.Utils.nextId();
-    var update = async () => {
-        number.value = ''+await manager.getLastReadTotal();
-        for(var community of communities.value) 
-            community.lastReadNumber = ''+ await manager.getLastReadCommunity(community[0]);
+    var update = async () => { console.log("total");
+        for(var community of communities.value) {
+            var lastReadNumber = await manager.getLastReadCommunity(community[0]);
+            community.lastReadNumber = lastReadNumber;
+        }
         updateKey.value = ''+stlib.Utils.nextId();
+        nextTick(async ()=>{            
+            number.value = ''+await manager.getLastReadTotal();
+            updateKey.value = ''+stlib.Utils.nextId();
+        });
     };
     await update();
     manager.setCallback("SideBar.vue", update);
-    
-    for(var community of _communities) 
-        try {
-            stlib.Community.load(community[0]);
-        }
-        catch(e) { console.log(e); }
 }
 initCommunities();
 </script>

@@ -89,7 +89,7 @@ async function initConversations(route) {
             for(var stream of streams.value) {
                 var path = stream.getPath();
                 stream.lastReadNumber = (path != null && path.getType() === 't')?
-                    manager.getLastReadNumber(path.getUser()+'/'+path.getPath()):'0';
+                    (await manager.getLastReadCommunityStream(path.getUser()+'/'+path.getPath())):'0';
             }
         };
         await update();
