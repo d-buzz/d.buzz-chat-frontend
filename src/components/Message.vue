@@ -50,7 +50,7 @@
                 </div>
                 <div v-if="content.getType() == 'i'" class="flex gap-x-1">
                     <span v-for="i in content.length()">
-                        <img :src="`https://images.hive.blog/768x0/${content.getImage(i-1)}`" class="imgBorder cursor-pointer" @click="toggleImageViewModal(content.getImage(i-1))"> 
+                        <img :src="`https://images.hive.blog/768x0/${content.getImage(i-1)}`" class="imgBorder imgLimit cursor-pointer" @click="toggleImageViewModal(content.getImage(i-1))"> 
                     </span>
                 </div>
                 <div v-else-if="content.getType() == 'g'" class="border border-solid border-green-700 rounded p-1">
@@ -283,6 +283,10 @@ async function init() {
 init();
 </script>
 <style scoped>
+.imgLimit {
+    max-width: 500px;
+    max-height: 275px;
+}
 .message { background-color: lightsalmon; }
 .message[data-verified="true"] {
     background-color: unset;
