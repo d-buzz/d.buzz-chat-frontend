@@ -332,7 +332,7 @@ async function initChat() {
             };
         }
         else if(route.name.startsWith('PrivateChat')) {
-            streamName.value = conversation;
+            streamName.value = conversation.replaceAll("|"," | ");
             sharedCommunities.value = await findSharedCommunities(conversation);
         }
 
