@@ -20,22 +20,25 @@ const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_
         var proxy = { id: 0, callbacks: {}, methods: {
             setUser: function (username) {
                 
+            },
+            setProperties: function(properties) {
+                console.log("setting properties ", properties);
             }
         } };
         window.addEventListener("message", (event) => {
             try {
-                if(event.data != null && typeof event.data === 'string') {
-                    var data = JSON.parse(event.data);
-                    if(Array.isArray(data) && data.length === 3 && data[0] === 'stlib') {
+                if(event.data != null && Array.isArray(event.data)) {
+                    var data = event.data;
+                    if(data.length === 3 && data[0] === 'stlib') {
                         if(typeof data[1] === 'string') {
                             var method = proxy.methods[data[1]];
-                            if(method != null) method(data[2]);
+                            if(method != null) method(JSON.parse(data[2]));
                         }
                         else {
                             var callback = proxy.callbacks[data[1]];
                             if(callback != null) {
                                 delete proxy.callbacks[data[1]];
-                                callback(data[2]);
+                                callback(JSON.parse(data[2]));
                             }
                         }
                     }
@@ -48,13 +51,16 @@ const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_
                 return function () {
                     var msgId = proxy.id++; 
                     var data = ["stlib", msgId, prop];
+                    var args = [];
                     for(var i = 0; i < arguments.length-1; i++)
-                        data.push(arguments[i]);
+                        args.push(arguments[i]);
+                    data.push(args);
                     proxy.callbacks[msgId] = arguments[arguments.length-1];
-                    return window.parent.postMessage(JSON.stringify(data), "*");
+                    return window.parent.postMessage(data, "*");
                 };
             }
         });
+        window.parent.postMessage(["stlib", -1, "initialize"], "*");
     }
      
     var currentManager = null;
@@ -105,6 +111,7 @@ async function initMain() {
     else stlib.Utils.setNetworkname(NETWORK_NAME);
 
     const app = createApp(App);
+    //app.config.globalProperties.$testvar = 'testvar';
     app.directive('focus', {
       mounted(el) {
         el.focus()

@@ -5,8 +5,13 @@ class StWidget {
         this.url = url;
         this.element = null;
         this.iframe = null;
+        this.properties = null;
+        this.initialized = false;
+        this.enableKeychainPassthrough = true;
+        this.messageListener = null;
     }
     createElement(width=450, height=556) {
+        this.initialize();
         var div = document.createElement('div');
         this.element = div;
         var style = {
@@ -36,6 +41,16 @@ class StWidget {
     setStyle(style) {
         for(var name in style) this.element.style.setProperty(name, style[name]);
     }
+    setProperties(properties) {
+        this.properties = properties;
+        if(this.initialized) {
+            if(iframe.contentWindow != null)
+                iframe.contentWindow.postMessage(["stlib", "setProperties", JSON.stringify(username)], '*');
+            else iframe.addEventListener( "load", ()=>{
+                iframe.contentWindow.postMessage(["stlib", "setProperties", JSON.stringify(username)], '*');
+            });
+        }
+    }
     /*setUser(username) {
         var iframe = this.iframe;
         if(iframe.contentWindow != null)
@@ -45,41 +60,50 @@ class StWidget {
         });
     }*/
 
-    static keychainPassthroughListener = null;
-    static enableKeychainPassthrough(enable = true) {
-        if(enable && StWidget.keychainPassthroughListener == null) {
-            StWidget.keychainPassthroughListener = (event) => {
-                try {
-                    if(event.data != null && typeof event.data === 'string') {
-                        var data = JSON.parse(event.data);
-                        if(Array.isArray(data) && data.length > 2 && data[0] === 'stlib') {
-                            switch(data[2]) {
-                                case "requestVerifyKey":
-                                    window.hive_keychain.requestVerifyKey(data[3], data[4], data[5], (r)=>{
-                                        event.source.postMessage(JSON.stringify(["stlib", data[1], r]), event.origin);
-                                    });
-                                break;
-                                case "requestSignBuffer":
-                                    window.hive_keychain.requestSignBuffer(data[3], data[4], data[5], (r)=>{
-                                        event.source.postMessage(JSON.stringify(["stlib", data[1], r]), event.origin);
-                                    });
-                                break;
-                                case "requestEncodeMessage":
-                                    window.hive_keychain.requestEncodeMessage(data[3], data[4], data[5], data[6], (r)=>{
-                                        event.source.postMessage(JSON.stringify(["stlib", data[1], r]), event.origin);
-                                    });
-                                break;
-                            }
-                        }
+    initialize() {
+        if(this.messageListener != null) return;
+        var _this = this;
+        this.messageListener = (event) => {
+            try {
+                if(event.data != null && Array.isArray(event.data)) {
+                    var data = event.data;
+                    if(data.length > 2 && data[0] === 'stlib') {
+                        _this.onMessage(event, data[1], data[2], data.length > 3?data[3]:[]);
                     }
                 }
-                catch(e) { console.log(e); }
-            };
-            window.addEventListener("message", StWidget.keychainPassthroughListener);
+            }
+            catch(e) { console.log(e); }
+        };
+        window.addEventListener("message", this.messageListener);
+    }
+    onMessage(event, msgId, name, args) {
+        switch(name) {
+            case "initialize":
+                this.initialized = true;
+                if(this.properties != null) 
+                    event.source.postMessage(["stlib", "setProperties", JSON.stringify(this.properties)], event.origin);
+                break;
+            case "requestVerifyKey":
+                if(this.enableKeychainPassthrough) window.hive_keychain.requestVerifyKey(args[0], args[1], args[2], (r)=>{
+                    event.source.postMessage(["stlib", msgId, JSON.stringify(r)], event.origin);
+                });
+            break;
+            case "requestSignBuffer":
+                if(this.enableKeychainPassthrough) window.hive_keychain.requestSignBuffer(args[0], args[1], args[2], (r)=>{
+                    event.source.postMessage(["stlib", msgId, JSON.stringify(r)], event.origin);
+                });
+            break;
+            case "requestEncodeMessage":
+                if(this.enableKeychainPassthrough) window.hive_keychain.requestEncodeMessage(args[0], args[1], args[2], args[3], (r)=>{
+                    event.source.postMessage(["stlib", msgId, JSON.stringify(r)], event.origin);
+                });
+            break;
         }
-        else if(!enable && StWidget.keychainPassthroughListener != null) {
-            window.removeEventListener("message", StWidget.keychainPassthroughListener);
-            StWidget.keychainPassthroughListener = null;
+    }
+    cleanup() {
+        if(this.messageListener != null) {
+            window.removeEventListener("message", this.messageListener);
+            this.messageListener = null;
         }
     }
 }

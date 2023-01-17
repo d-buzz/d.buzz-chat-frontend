@@ -50,9 +50,10 @@ script.setAttribute("type", 'text/javascript');
 document.head.appendChild(script); 
 
 function initWidget() {
-    StWidget.enableKeychainPassthrough();
-    
     var stwidget = new StWidget('/home');
+    stwidget.properties = {
+        "test": 123
+    };
     var element = stwidget.createElement()
     stwidget.setStyle({ top: '51px', right: '32px' });
 
