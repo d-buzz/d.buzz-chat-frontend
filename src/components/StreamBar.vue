@@ -28,7 +28,7 @@
                 </button>
             </div>
             <div v-for="conversation in conversations">
-                <Conversation v-if="conversation.id !== undefined" :conversation="conversation.conversation" :id="conversation.id" :username="conversation.username" :number="''+conversation.lastReadNumber"/>
+                <Conversation v-if="conversation.id !== undefined" :conversation="conversation.conversation" :id="conversation.id" :username="conversation.username" :number="conversation.lastReadNumber+conversation.plus"/>
                 <Conversation v-else :conversation="conversation.conversation"
                  :username="username" :number="''+conversation.lastReadNumber" />
             </div>
@@ -104,19 +104,29 @@ async function initConversations(route) {
             var conversationArray = await manager.readUserConversations();
             var conversationObjects = [];
             for(var conversation in groupObjs) {
-                var groupObj = groupObjs[conversation];  console.log("group obj", groupObj);
+                var groupObj = groupObjs[conversation]; console.log("group obj", groupObj);
+                groupObj.tmp = groupObj.timestamp;
                 conversationObjects.push(groupObj);
             }
-            for(var conversation of conversationArray) 
-                conversationObjects.push({conversation,lastReadNumber:manager.getLastReadNumber(conversation),timestamp:0});            
+            for(var conversation of conversationArray) {
+                var obj = {conversation,lastReadNumber:0,timestamp:0,plus:'',tmp:0};
+                var lastRead = manager.getLastRead(conversation);
+                if(lastRead != null) {
+                    obj.lastReadNumber = lastRead.number;
+                    obj.timestamp = obj.tmp = lastRead.timestamp;
+                }   
+                conversationObjects.push(obj);
+            }         
             var conversationMap = {};
             for(var conversation of conversationObjects)
                 conversationMap[conversation.conversation] = conversation;
             var messages = await manager.readCachedUserMessages();           
             for(var message of messages) {
                 var conversation = conversationMap[message.getConversation()];
-                if(conversation && message.isVerified()) 
+                if(conversation && message.isVerified() && message.getTimestamp() > conversation.tmp) {
+                    conversation.lastReadNumber++;
                     conversation.timestamp = Math.max(conversation.timestamp, message.getTimestamp());
+                }
             }
             conversationObjects.sort((a,b)=>b.timestamp-a.timestamp);
             conversations.value = conversationObjects;
@@ -125,6 +135,7 @@ async function initConversations(route) {
         await update();
         manager.setCallback("StreamBar.vue", update);
         manager.onpreferences.set("StreamBar.vue", update);
+        manager.onlastread.set("StreamBar.vue", update);
     }
 }
 initConversations(route);

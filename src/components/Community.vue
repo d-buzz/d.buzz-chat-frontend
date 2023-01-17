@@ -269,7 +269,6 @@ async function initChat() {
 
     const manager = getManager();
     manager.setUser(user);
-    manager.setSelectedCommunityPage(user2, route.path);
 
     var community0 = null;
     var conversation = getConversation(); 
@@ -282,6 +281,8 @@ async function initChat() {
         }
         catch(e) { console.log(e); }
         if(route.name === 'CommunityPath') {
+            manager.setSelectedCommunityPage(user2, route.path);
+
             community0 = await stlib.Community.load(user2);
             var stream = (community0)?community0.findTextStreamById(''+route.params.path):null;
             streamName.value = stream?stream.getName():conversation;
@@ -316,6 +317,8 @@ async function initChat() {
             updateOnlineUsers();
         }
         else if(route.name === 'CommunityGroup') {
+            manager.setSelectedCommunityPage(user2, route.path);
+
             var pref = await stlib.Utils.getAccountPreferences(user2);
             var groups = pref.getGroups();
             var group = groups[route.params.path];
