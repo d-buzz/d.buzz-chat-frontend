@@ -284,7 +284,7 @@ init();
 </script>
 <style scoped>
 .imgLimit {
-    max-width: 500px;
+    max-width: calc(min(100%, 500px));
     max-height: 275px;
 }
 .message { background-color: lightsalmon; }
