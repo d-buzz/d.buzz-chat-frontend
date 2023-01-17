@@ -27,10 +27,11 @@
                     <span class="oi oi-plus"></span>
                 </button>
             </div>
-            
-            <Conversation v-for="group in groups" :conversation="group.conversation" :id="group.id" :username="group.username" :number="''+group.lastReadNumber"/>
-            <Conversation v-for="conversation in conversations" :conversation="conversation.conversation"
-                 :username="username" :number="''+conversation.number" />
+            <div v-for="conversation in conversations">
+                <Conversation v-if="conversation.id !== undefined" :conversation="conversation.conversation" :id="conversation.id" :username="conversation.username" :number="''+conversation.lastReadNumber"/>
+                <Conversation v-else :conversation="conversation.conversation"
+                 :username="username" :number="''+conversation.lastReadNumber" />
+            </div>
         </div>
     </div>
   </div>
@@ -44,7 +45,6 @@ const accountStore = useAccountStore();
 const username = accountStore.account.name;
 const streams = ref([]);
 const conversations = ref([]);
-const groups = ref([]);
 const title = ref("Direct Messages");
 const isAdmin = ref(false);
 const communityName = ref("");
@@ -101,20 +101,25 @@ async function initConversations(route) {
             console.log("Callback message update StreamBar.vue");
 
             var groupObjs = await manager.getJoinedAndCreatedGroups();
-            var groupArray = [];
-            for(var conversation in groupObjs) {
-                var groupObj = groupObjs[conversation];
-                groupArray.push(groupObj);
-            }
-            groups.value = groupArray;
-
             var conversationArray = await manager.readUserConversations();
             var conversationObjects = [];
+            for(var conversation in groupObjs) {
+                var groupObj = groupObjs[conversation];  console.log("group obj", groupObj);
+                conversationObjects.push(groupObj);
+            }
             for(var conversation of conversationArray) 
-                conversationObjects.push({conversation,number:manager.getLastReadNumber(conversation)});
+                conversationObjects.push({conversation,lastReadNumber:manager.getLastReadNumber(conversation),timestamp:0});            
+            var conversationMap = {};
+            for(var conversation of conversationObjects)
+                conversationMap[conversation.conversation] = conversation;
+            var messages = await manager.readCachedUserMessages();           
+            for(var message of messages) {
+                var conversation = conversationMap[message.getConversation()];
+                if(conversation && message.isVerified()) 
+                    conversation.timestamp = Math.max(conversation.timestamp, message.getTimestamp());
+            }
+            conversationObjects.sort((a,b)=>b.timestamp-a.timestamp);
             conversations.value = conversationObjects;
-            for(var group of groups.value)
-                group.lastReadNumber = manager.getLastReadNumber(group.conversation);
             updateKey.value = '#'+stlib.Utils.nextId();
         };
         await update();

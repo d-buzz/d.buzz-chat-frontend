@@ -1728,12 +1728,14 @@ class MessageManager {
         this.onstatusmessage = new EventQueue();
         this.onpreferences = new EventQueue();
         this.joined = {};
+        this.cachedUserMessagesPromise = null;
         this.cachedUserMessages = null;
         this.cachedUserMessagesLoadedAll = false;
         this.cachedUserConversations = null;
         this.recentlySentEncodedContent = [];
         this.conversationsLastReadData = {};
         this.conversationsLastMessageTimestamp = {};
+        this.cachedGroupLastMessageTimestamp = null;
         this.selectedCommunityPage = {};
         this.selectedConversation = null;
         this.selectedOnlineStatus = null;
@@ -2250,6 +2252,22 @@ class MessageManager {
             });
         });
     }
+    getCachedGroupTimestamps(conversations) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.cachedGroupLastMessageTimestamp == null) {
+                try {
+                    var client = this.getClient();
+                    var result = yield client.readStats(conversations);
+                    if (result.isSuccess())
+                        this.cachedGroupLastMessageTimestamp = result.getResult()[1];
+                }
+                catch (e) {
+                    console.log(e);
+                }
+            }
+            return this.cachedGroupLastMessageTimestamp;
+        });
+    }
     getJoinedAndCreatedGroups() {
         return __awaiter(this, void 0, void 0, function* () {
             var pref = yield this.getPreferences();
@@ -2265,7 +2283,8 @@ class MessageManager {
                 var username = groupConversation[1];
                 var id = groupConversation[2];
                 groups[conversation] = {
-                    conversation, username, id, lastReadNumber: this.getLastReadNumber(conversation)
+                    conversation, username, id, lastReadNumber: this.getLastReadNumber(conversation),
+                    timestamp: 0
                 };
             }
             for (var groupId in pref.getGroups()) {
@@ -2273,8 +2292,17 @@ class MessageManager {
                 if (groups[conversation] !== undefined)
                     continue;
                 groups[conversation] = {
-                    conversation, "username": this.user, "id": groupId, lastReadNumber: this.getLastReadNumber(conversation)
+                    conversation, "username": this.user, "id": groupId,
+                    lastReadNumber: this.getLastReadNumber(conversation), timestamp: 0
                 };
+            }
+            var stats = yield this.getCachedGroupTimestamps(Object.keys(groups));
+            if (stats != null) {
+                for (var group in groups) {
+                    var timestamp = stats[group];
+                    if (timestamp !== undefined)
+                        groups[group].timestamp = timestamp;
+                }
             }
             return groups;
         });
@@ -2291,8 +2319,10 @@ class MessageManager {
         var lastRead = this.conversationsLastReadData[conversation];
         if (lastRead == null)
             this.conversationsLastReadData[conversation] = { number: 0, timestamp: timestamp };
-        else
+        else {
+            lastRead.number = 0;
             lastRead.timestamp = timestamp;
+        }
         window.localStorage.setItem(this.user + "#lastReadData", JSON.stringify(this.conversationsLastReadData));
     }
     getLastReadTotal() {
@@ -2441,20 +2471,22 @@ class MessageManager {
                 var maxTime = timeNow + 600000;
                 var promise = null;
                 if (isPrivate) {
-                    if (this.cachedUserMessages == null) {
-                        promise = _this.readUserMessages().then((result) => {
+                    if (_this.cachedUserMessagesPromise == null) {
+                        promise = _this.cachedUserMessagesPromise = _this.readUserMessages().then((result) => {
                             this.cachedUserMessages = result;
                             this.cachedUserMessagesLoadedAll = false;
                             return result;
                         });
                     }
+                    else if (_this.cachedUserMessages == null)
+                        promise = _this.cachedUserMessagesPromise;
                     else
-                        promise = Promise.resolve(this.cachedUserMessages);
+                        promise = Promise.resolve(_this.cachedUserMessages);
                     promise = promise.then((allMessages) => {
                         var messages0 = allMessages.filter((m) => m.getConversation() === conversation);
                         var messages = messages0.filter((m) => !m.isEncoded());
                         var encoded = messages0.filter((m) => m.isEncoded());
-                        if (this.cachedUserMessagesLoadedAll)
+                        if (_this.cachedUserMessagesLoadedAll)
                             maxTime = 0;
                         return { messages, encoded, maxTime, status: {} };
                     });
@@ -2507,6 +2539,19 @@ class MessageManager {
             conversations = result.getResult();
             this.cachedUserConversations = conversations;
             return conversations;
+        });
+    }
+    readCachedUserMessages() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.cachedUserMessagesPromise == null) {
+                this.cachedUserMessagesPromise = this.readUserMessages().then((result) => {
+                    this.cachedUserMessages = result;
+                    this.cachedUserMessagesLoadedAll = false;
+                    return result;
+                });
+                yield this.cachedUserMessagesPromise;
+            }
+            return this.cachedUserMessages;
         });
     }
     readUserMessages() {
@@ -3039,6 +3084,7 @@ class SignableMessage {
     getGroupUsernames() { return utils_1.Utils.getGroupUsernames(this.conversation); }
     isCommunityConversation() { return utils_1.Utils.isCommunityConversation(this.conversation); }
     isGroupConversation() { return utils_1.Utils.isGroupConversation(this.conversation); }
+    isJoinableGroupConversation() { return utils_1.Utils.isJoinableGroupConversation(this.conversation); }
     isEncrypted() { return this.conversation.startsWith("#"); }
     isPreference() { return this.conversation === "@"; }
     isOnlineStatus() { return this.conversation === "$online"; }
@@ -3460,7 +3506,9 @@ class Utils {
             }
             var p = new Promise((resolve, error) => {
                 try {
-                    fn(keychain, resolve, error);
+                    setTimeout(() => {
+                        fn(keychain, resolve, error);
+                    }, 50);
                 }
                 catch (e) {
                     console.log(e);
@@ -3566,6 +3614,12 @@ class Utils {
     static getConversationUsername(conversation) {
         var i = conversation.indexOf('/');
         return conversation.substring(conversation.startsWith('#') ? 1 : 0, i === -1 ? conversation.length : i);
+    }
+    static isJoinableGroupConversation(conversation) {
+        if (conversation === '' || conversation[0] != '#')
+            return false;
+        var i = conversation.indexOf('/');
+        return i !== -1;
     }
     static getGroupUsernames(conversation) { return conversation.split('|'); }
     static isCommunityConversation(conversation) { return conversation.startsWith('hive-') && conversation.indexOf('/') !== -1; }
