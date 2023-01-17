@@ -86,14 +86,17 @@ async function initConversations(route) {
             stream.visible = stream.readSet.validate(role, titles);
 
         var update = async() => {
+            console.log("Callback message update StreamBar.vue Community");
             for(var stream of streams.value) {
                 var path = stream.getPath();
                 stream.lastReadNumber = (path != null && path.getType() === 't')?
                     (await manager.getLastReadCommunityStream(path.getUser()+'/'+path.getPath())):'0';
             }
+            console.log("Callback message end StreamBar.vue Community");
         };
         await update();
         manager.setCallback("StreamBar.vue", update);
+        manager.onlastread.set("StreamBar.vue", update);
         //var streams = temp0.getStreams;
     }
     else {
@@ -131,6 +134,8 @@ async function initConversations(route) {
             conversationObjects.sort((a,b)=>b.timestamp-a.timestamp);
             conversations.value = conversationObjects;
             updateKey.value = '#'+stlib.Utils.nextId();
+
+            console.log("Callback message end StreamBar.vue");
         };
         await update();
         manager.setCallback("StreamBar.vue", update);
