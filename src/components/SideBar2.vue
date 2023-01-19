@@ -1,39 +1,56 @@
 <template>
+    <TransitionRoot :show="newUserMessageModalOpen">
+        <NewUserMessageModal @close="toggleNewUserMessageModalOpen(false)"></NewUserMessageModal>
+    </TransitionRoot>
+    <TransitionRoot :show="addCommunityModal">
+        <AddCommunityModal @close="toggleAddCommunityModal(false)"></AddCommunityModal>
+    </TransitionRoot>
     <div class="border-r-1">
         <SideBarLoginIcon :number="number" @toggleStreambar="$emit('toggleStreambar')"/>
     </div>
-    <div class="border-b-1">
+    <!--<div class="border-b-1">
         <button class="w-full avCommunity md:hidden border-r-1" style="padding-left: 1px;"
              @click="$emit('toggleStreambar')"><span class="oi oi-menu" style="font-size:30px;"></span></button>
-    </div>
-  <div class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox"
-        style="overflow-x: clip;" @dragover.prevent @drop.stop.prevent="onDrop">
-    <div class="scrollBoxContent flex flex-col border-r-1">
-        <div>Direct</div>
+    </div>-->
 
-        <div :key="updateKey2">
-            <div class="flex justify-between">
-                <b class="border-b-1">{{$t("StreamBar.DirectMessages")}}</b>
-                <button class="text-sm" @click="toggleNewUserMessageModalOpen">
-                    <span class="oi oi-plus"></span>
-                </button>
-            </div>
-            <div v-for="conversation in conversations">
-                <Conversation v-if="conversation.id !== undefined" :conversation="conversation.conversation" :id="conversation.id" :username="conversation.username" :number="conversation.lastReadNumber+conversation.plus"/>
-                <Conversation v-else :conversation="conversation.conversation"
-                 :username="username" :number="''+conversation.lastReadNumber" />
+    <div class="flex justify-between border-b-1 p-1 border-r-1 cursor-pointer" @click="toggleDirect">
+        <b class="text-xs">{{$t("SideBar.Direct")}}</b>
+        <button class="text-xs" @click.stop="toggleNewUserMessageModalOpen">
+            <span class="oi oi-plus"></span>
+        </button>
+    </div>
+
+    <div v-if="showDirect" class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox border-b-1"
+        style="overflow-x: clip;" @dragover.prevent @drop.stop.prevent="onDrop">
+        <div class="scrollBoxContent flex flex-col border-r-1">
+            <div :key="updateKey2">
+                <div v-for="conversation in conversations" class="p-1">
+                    <Conversation v-if="conversation.id !== undefined" :conversation="conversation.conversation" 
+                        :id="conversation.id" :username="conversation.username"
+                        :number="conversation.lastReadNumber+conversation.plus" :compact="true"/>
+                    <Conversation v-else :conversation="conversation.conversation"
+                     :username="username" :number="''+conversation.lastReadNumber" :compact="true"/>
+                </div>
             </div>
         </div>
+    </div>
 
-        <div>+</div>
-        <div>C/</div>
+   <div class="flex justify-between gap-x-1 border-b-1 border-r-1 p-1 font-bold cursor-pointer"
+        @click="toggleCommunities">
+        <b class="text-xs">C/</b>
+        <button class="text-xs" @click.stop="toggleAddCommunityModal">
+            <span class="oi oi-plus"></span>
+        </button>
+    </div>
+  <div v-if="showCommunities" class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox"
+        style="overflow-x: clip;" @dragover.prevent @drop.stop.prevent="onDrop">
+    <div class="scrollBoxContent flex flex-col border-r-1">
         <Draggable v-model="communities" :key="updateKey">
             <template v-slot:item="{item}">
               <SideBarIcon :img="item[0]" :name="item[1]"
                  :community="item" :number="item.lastReadNumber" @toggleStreambar="$emit('toggleStreambar')" />
             </template>
         </Draggable>
-        <div>+</div>
     </div>
   </div>
 </template>
@@ -47,6 +64,11 @@ const accountStore = useAccountStore();
 const communities = ref([]);
 const updateKey = ref("");
 const number = ref('0');
+const showDirect = ref(true);
+const showCommunities = ref(true);
+
+function toggleDirect() { showDirect.value = !showDirect.value; }
+function toggleCommunities() { showCommunities.value = !showCommunities.value; }
 
 function onDrop() {
     setTimeout(() => {
@@ -98,7 +120,6 @@ const route = useRoute();
 const username = accountStore.account.name;
 const streams = ref([]);
 const conversations = ref([]);
-const title = ref("Direct Messages");
 const isAdmin = ref(false);
 const communityName = ref("");
 const isCommunity = ref(false);
@@ -106,12 +127,16 @@ const updateKey2 = ref("");
 
 const newUserMessageModalOpen = ref(false);
 const toggleNewUserMessageModalOpen = () => {
-  newUserMessageModalOpen.value = !newUserMessageModalOpen.value;
+    newUserMessageModalOpen.value = !newUserMessageModalOpen.value;
 };
-const showJoinModal = ref(false);
+const addCommunityModal = ref(false);
+const toggleAddCommunityModal = () => {
+    addCommunityModal.value = !addCommunityModal.value;
+};
+/*const showJoinModal = ref(false);
 function toggleJoinModal() {
     showJoinModal.value = !showJoinModal.value;
-}
+}*/
 
 async function initConversations(route) {
     console.log(route);

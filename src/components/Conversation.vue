@@ -1,6 +1,9 @@
 <template>
     <router-link :to="`${link}`">
-        <div class="flex style" :class="{selected: $route.path == link}">
+        <div v-if="compact" :class="{selected: $route.path == link}">
+            <UserIcon v-if="iconUsername" :name="iconUsername" imgCss="avCommunity"/>
+        </div>
+        <div v-else class="flex style" :class="{selected: $route.path == link}">
             <div class="flex-shrink-0 mr-5px">
                 <!--<img
                 class="rounded-full avConversation"
@@ -25,7 +28,8 @@ const props = defineProps({
     id: Number,
     username: String,
     conversation: String,
-    number: String
+    number: String,
+    compact: { type: Boolean, value: false}
 });
 const link = ref("");
 const iconUsername = ref("");
