@@ -5,7 +5,7 @@
     <div class="border-b-1">
         <button class="w-full avCommunity md:hidden border-r-1" style="padding-left: 1px;"
              @click="$emit('toggleStreambar')"><span class="oi oi-menu" style="font-size:30px;"></span></button>
-    </div>    
+    </div>
   <div class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox"
         style="overflow-x: clip;" @dragover.prevent @drop.stop.prevent="onDrop">
     <div class="scrollBoxContent flex flex-col border-r-1">
@@ -43,6 +43,18 @@ async function initCommunities() {
     manager.setUser(user);
     manager.joinGroups();
     var _communities = await manager.getCommunitiesSorted();
+    {
+        var tmp = {};
+        for(var community of _communities) tmp[community[0]] = true;
+        var prepend = globalProperties.prependCommunities;
+        if(prepend && prepend.length > 0) {
+            for(var name of prepend) {
+                if(tmp[name] === true) continue;
+                var data = await stlib.Community.load(name);
+                if(data) _communities.unshift([name, data.getTitle()]);
+            }
+        }
+    }
     communities.value = _communities;
     updateKey.value = ''+stlib.Utils.nextId();
     var update = async () => { console.log("total");

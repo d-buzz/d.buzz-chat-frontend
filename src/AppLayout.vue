@@ -1,7 +1,8 @@
 <template>
   <div class="flex min-h-full h-screen appbg2 appfg2">
     <div class="h-screen flex flex-col appbg0 appfg0">
-        <SideBar @toggleStreambar="toggleStreambar()"></SideBar>
+        <SideBar2 v-if="sidebar === 2" @toggleStreambar="toggleStreambar()"></SideBar2>
+        <SideBar v-else @toggleStreambar="toggleStreambar()"></SideBar>
     </div>
     <div class="streambar flex flex-col appbg1 appfg1 border-r-1" ref="streamBar">
         <StreamBar :key="getKey(route.path)"></StreamBar>
@@ -12,6 +13,7 @@
   </div>
 </template>
 <script setup>
+const sidebar = ref(globalProperties.sidebar);
 const streamBar = ref(null);
 const route = useRoute();
 function getKey(path) {
