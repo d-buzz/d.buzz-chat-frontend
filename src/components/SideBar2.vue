@@ -24,7 +24,7 @@
         style="overflow-x: clip;" @dragover.prevent @drop.stop.prevent="onDrop">
         <div class="scrollBoxContent flex flex-col border-r-1">
             <div :key="updateKey2">
-                <div v-for="conversation in conversations" class="p-1">
+                <div v-for="conversation in conversations">
                     <Conversation v-if="conversation.id !== undefined" :conversation="conversation.conversation" 
                         :id="conversation.id" :username="conversation.username"
                         :number="conversation.lastReadNumber+conversation.plus" :compact="true"/>

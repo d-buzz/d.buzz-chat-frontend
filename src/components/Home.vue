@@ -34,12 +34,12 @@
         <div class="ml-3 mt-2 mr-3">
             <TabGroup>
                 <TabList class="tab">
-                  <Tab>{{$t("Home.Communities")}}</Tab>
-                  <Tab>{{$t("Home.Preferences")}}</Tab>
-                  <Tab>{{$t("Home.Themes")}}</Tab>
+                  <Tab v-if="tabCommunities">{{$t("Home.Communities")}}</Tab>
+                  <Tab v-if="tabPreferences">{{$t("Home.Preferences")}}</Tab>
+                  <Tab v-if="tabSettings">{{$t("Home.Themes")}}</Tab>
                 </TabList>
             <TabPanels class="mt-1">
-                <TabPanel>
+                <TabPanel v-if="tabCommunities">
                     <!--<div class="text-sm font-bold text-right md:text-center text-gray-400 mt-1">joined</div>-->
                     <div class="flex flex-row flex-wrap" :key="updateKey">
                        <CommunityIcon v-for="community in communities" :img="community[0]" :name="community[1]" :number="''" />
@@ -84,7 +84,7 @@
                         </TabPanels>
                     </TabGroup>
                 </TabPanel>
-                <TabPanel>
+                <TabPanel v-if="tabPreferences">
                     <div class="mt-2"></div>
                     <div class="flex flex-row" v-for="item in preferences" :key="updateKey+'#3'">
                         <div v-if="item.options">
@@ -129,7 +129,7 @@
                       </div>
                     </div>-->
                 </TabPanel>
-                <TabPanel :key="updateThemesKey">
+                <TabPanel v-if="tabSettings" :key="updateThemesKey">
                     <small class="float-right text-gray-700">{{$t("Home.Theme.Msg.Info")}}</small>
                     <div class="mt-2"></div>
                     <div v-for="(style, name) in themeObject.defaultThemes">
@@ -146,6 +146,9 @@
 </template>
 <script setup>
 import { useAccountStore } from "../stores/account";
+const tabCommunities = ref(globalProperties.homeTabCommunities);
+const tabPreferences = ref(globalProperties.homeTabPreferences);
+const tabSettings = ref(globalProperties.homeTabSettings);
 const accountStore = useAccountStore();
 const router = useRouter();
 const homeheader = ref(0);

@@ -2573,8 +2573,9 @@ class MessageManager {
                     this.cachedUserMessagesLoadedAll = false;
                     return result;
                 });
-                yield this.cachedUserMessagesPromise;
             }
+            if (this.cachedUserMessages == null)
+                yield this.cachedUserMessagesPromise;
             return this.cachedUserMessages;
         });
     }

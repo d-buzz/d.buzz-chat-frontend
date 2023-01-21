@@ -12,12 +12,14 @@ const NETWORK_NAME = import.meta.env.NETWORK_NAME?import.meta.env.NETWORK_NAME:n
 const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_APP_STING_NODES.split(",") : ["http://localhost:3001"];
 
 window.globalProperties = {
-    /*"sidebar": 0,
+    "sidebar": 0,
+    "homeTabCommunities": true,
+    "homeTabPreferences": true,
+    "homeTabSettings": true,
     "prependCommunities": []
-*/
 
-    "sidebar": 2,
-    "prependCommunities": ["hive-163399"]
+    /*"sidebar": 2,
+    "prependCommunities": ["hive-163399"]*/
 };
 (()=>{
     /*if(window.hive_keychain === undefined && window.parent != null && 
@@ -31,6 +33,9 @@ window.globalProperties = {
             },
             setProperties: function(properties) {
                 console.log("setting properties ", properties);
+                for(var name in properties)
+                    window.globalProperties[name] = properties[name];
+                if(window.refreshApp) window.refreshApp();
             }
         } };
         window.addEventListener("message", (event) => {

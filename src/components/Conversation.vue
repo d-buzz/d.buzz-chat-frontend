@@ -1,7 +1,11 @@
 <template>
     <router-link :to="`${link}`">
-        <div v-if="compact" :class="{selected: $route.path == link}">
-            <UserIcon v-if="iconUsername" :name="iconUsername" imgCss="avCommunity"/>
+        <div v-if="compact" class="nameParent relative" :class="{selected0: $route.path == link}">
+            <small class="name"><b>{{users}}</b></small>
+            <small v-if="number && number != '0'" class="number2"><b>{{number}}</b></small>
+            <div class="p-1" :title="users + '\n' + conversation">
+                <UserIcon v-if="iconUsername" :name="iconUsername" imgCss="avCommunity"/>
+            </div>
         </div>
         <div v-else class="flex style" :class="{selected: $route.path == link}">
             <div class="flex-shrink-0 mr-5px">
@@ -73,13 +77,16 @@ initConversation();
     border: 1px solid transparent;
     padding:3px;
 }
-.selected { 
+.selected, .selected0 { 
     @apply rounded;
     /*background: linear-gradient(rgba(255,255,255,0.25), rgba(0,0,0,0.1));*/
     /*background: rgba(255,255,255,0.37);*/
     background: var(--appsg1);
     border: 1px solid rgba(0,0,0,0.05);
     border-top-color: rgba(255,255,255,0.1);
+}
+.selected0 {
+    background: var(--appsg0);
 }
 .number {
     display: block;
@@ -90,5 +97,37 @@ initConversation();
     margin-top: 5px;
     padding: 2px 4px;
     line-height: 1;
+}
+.number2 {
+    display: block;
+    position: absolute;
+    pointer-events: none;
+    color: white;
+    z-index: 5;
+    background: rgb(0, 113, 12);
+    top: 0;
+    right: 0;
+    margin-right: 3px;
+    border-radius: 10px;
+    padding: 2px 4px;
+    line-height: 1;
+}
+.name {
+    display: none;
+    pointer-events: none;
+    min-width: 54px;
+    color: white;
+}
+.nameParent:hover .name{
+    display: block;
+    position: absolute;
+    z-index: 7;
+    /*background: rgba(0,0,0,0.25);*/
+    /*background: rgba(227, 19, 55, 0.65);*/
+    background: rgba(0, 0, 0, 0.42);
+    padding: 1px;
+    margin: 0;
+    align-self: flex-start;
+    border-radius: 3px;
 }
 </style>

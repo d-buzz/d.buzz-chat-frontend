@@ -1,6 +1,6 @@
 <template>
 <div>
-  <section class="mb-40">
+  <section>
     <nav class="navbar navbar-expand-lg shadow-md py-2 bg-white relative flex items-center w-full justify-between">
       <div class="px-6 w-full flex flex-wrap items-center justify-between">
         <div class="flex items-center">
@@ -24,25 +24,119 @@
       </div>
     </nav>
 
-    <div class="px-6 py-12 md:px-12 bg-gray-50 text-gray-800 text-center lg:text-left">
-      <div class="container mx-auto xl:px-32">
-        <div class="grid lg:grid-cols-2 gap-12 flex items-center">
-          <div class="mt-12 lg:mt-0">
-            <h1 class="text-5xl md:text-6xl xl:text-7xl font-bold tracking-tight mb-12">Widget test page.</h1>
-          </div>
-          <div class="mb-12 lg:mb-0">
-             
-          </div>
+    <div class="px-5 pt-5 pb-2 md:px-12 bg-gray-50 text-gray-800 text-left">
+      <h1 class="font-bold text-3xl pb-1">Widget test page.</h1>
+        <div>
+            <div class="flex flex-row" v-for="item in preferences" :key="updateKey+'#3'">
+                <div v-if="item.options">
+                    <div>
+                        <div><b>{{item.display}}</b></div>
+                        <div><small>{{item.desc}}</small></div>
+                    </div>
+                    <div>
+                        <select v-model="item.newvalue" class="inputSelect1" @change="onChange">
+                            <option v-for="option in item.options" :value="option[0]">{{option[1]}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div v-else-if="Array.isArray(item.value)">
+                    <div>
+                        <div><b>{{item.display}}</b></div>
+                        <div><small>{{item.desc}}</small></div>
+                    </div>
+                    <div>
+                        <input class="inputText" type="text" v-model="item.newvalue" @change="onChange">
+                    </div>
+                </div>
+                <div v-else>
+                    <div>
+                        <div><b>{{item.display}}</b></div>
+                        <div><small>{{item.desc}}</small></div>
+                    </div>
+                    <div>
+                        <input type="checkbox" v-model="item.newvalue" @change="onChange">
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
+
+     
   </section>
 </div>
+    
+    
+
+
     <div ref="widget" hidden></div>
 </template>
 <script setup>
 import { nextTick } from 'vue';
 const widget = ref();
+const preferences = ref([]);
+const updateKey = ref('#'+stlib.Utils.nextId());
+
+const defaultPreferences = [
+    {name: "sidebar", display: "Left sidebar style", desc: "",
+     value: 2, newvalue:2, options:[
+        [0, 'Communities only (0)'],[2, 'Dual: Direct Messages & Communities (2)']]}, 
+    {name: "homeTabCommunities", display: "HomeTab: Communities", desc: "", value: false, newvalue:false},
+    {name: "homeTabPreferences", display: "HomeTab: Preferences", desc: "", value: true, newvalue:true},
+    {name: "homeTabSettings", display: "HomeTab: Settings", desc: "", value: true, newvalue:true}, 
+    {name: "prependCommunities", display: "Prepend Communities", desc: "", value: ["hive-163399"], newvalue:"hive-163399"}
+    /*{name: "autoDecode:b", display: "Auto Decode", desc: "Automatically decode private messages.", value: false, newvalue:false},
+    {name: "flipMessageBox:b", display: "Flip Message Box", desc: "Flip message box on y-axis.", value: false, newvalue:false},
+    {name: "showDetailedProfile:b", display: "Show Detailed Profile", desc: "Show user profile image and data.", value: false, newvalue:false}
+    */
+];
+
+var currentProperties = {};
+var stwidget = null;
+
+/*
+window.globalProperties = {
+    "sidebar": 0,
+    "homeTabCommunities": true,
+    "homeTabPreferences": true,
+    "homeTabSettings": true,
+    "prependCommunities": []
+
+    "sidebar": 2,
+    "prependCommunities": ["hive-163399"]
+};
+*/
+function onChange() {
+    var obj = {};
+    var items = preferences.value;
+    for(var item of items) {
+        var v = item.newvalue;
+        if(Array.isArray(item.value)) v = v.trim().split(/[ ,]+/);
+        obj[item.name] = v;
+    }
+    console.log(obj);
+    currentProperties = obj;
+    if(stwidget) stwidget.setProperties(obj);
+}
+
+function initPropertyEditor() {
+    var values = {};
+    var array = [];
+    for(var pref of defaultPreferences) {
+        try {
+            var name = pref.name;
+            var value = values[name];
+            if(value != null) array.push({name, display:pref.display, desc:pref.desc, value, newvalue:value, options:pref.options});
+            else array.push(pref);
+        }
+        catch(e) {
+            console.log(e);
+        }
+    }
+    preferences.value = array;
+    onChange();
+    updateKey.value = '#'+stlib.Utils.nextId(); 
+}
+initPropertyEditor();
 
 var script = document.createElement("script");
 script.setAttribute("src", "/stwidget.js");
@@ -50,10 +144,13 @@ script.setAttribute("type", 'text/javascript');
 document.head.appendChild(script); 
 
 function initWidget() {
-    var stwidget = new StWidget('/home');
-    stwidget.properties = {
-        "test": 123
-    };
+    stwidget = new StWidget('/home');
+    stwidget.properties = currentProperties;
+    /*stwidget.properties = {
+        "sidebar": 2,
+        "homeTabCommunities": false,
+        "prependCommunities": ["hive-163399"]
+    };*/
     var element = stwidget.createElement()
     stwidget.setStyle({ top: '51px', right: '32px' });
 

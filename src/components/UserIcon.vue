@@ -1,12 +1,12 @@
 <template>
     <div class="relative">
-        <div v-if="profileLetter" class="textIcon" :class="`${imgCss}`"
+        <div v-if="profileLetter" class="textIcon iconborder" :class="`${imgCss}`"
             :style="`${randomColor(name)}`">
             <span>{{profileLetter}}</span>
         </div>
         <div v-else class="">
-            <img v-if="size != 'small'" class="absolute rounded-full" :class="`${imgCss}`" :src="`https://images.hive.blog/u/${name}/avatar/${size}`"/>     
-            <img class="rounded-full" :class="`${imgCss}`" :src="`https://images.hive.blog/u/${name}/avatar/small`" @error="imgLoadError()" alt="" />     
+            <img v-if="size != 'small'" class="absolute iconborder" :class="`${imgCss}`" :src="`https://images.hive.blog/u/${name}/avatar/${size}`"/>     
+            <img class="iconborder" :class="`${imgCss}`" :src="`https://images.hive.blog/u/${name}/avatar/small`" @error="imgLoadError()" alt="" />     
         </div>
         <div v-if="online" class="onlineIcon"></div>
     </div>
@@ -77,6 +77,10 @@ function randomColor(text) {
 .textIcon {
     @apply flex justify-center content-center rounded-full text-center;
     font-style: italic;
+}
+.iconborder {
+    @apply border border-solid rounded-full;
+    border-color: #0003;
 }
 .textIcon span { align-self: center; margin-top: -2px; }
 .onlineIcon {

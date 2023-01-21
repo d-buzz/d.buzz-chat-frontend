@@ -1,7 +1,7 @@
 <template>
-  <div class="flex min-h-full h-screen appbg2 appfg2">
+  <div class="flex min-h-full h-screen appbg2 appfg2" :key="updateKey">
     <div class="h-screen flex flex-col appbg0 appfg0">
-        <SideBar2 v-if="sidebar === 2" @toggleStreambar="toggleStreambar()"></SideBar2>
+        <SideBar2 v-if="globalProperties.sidebar === 2" @toggleStreambar="toggleStreambar()"></SideBar2>
         <SideBar v-else @toggleStreambar="toggleStreambar()"></SideBar>
     </div>
     <div class="streambar flex flex-col appbg1 appfg1 border-r-1" ref="streamBar">
@@ -13,7 +13,8 @@
   </div>
 </template>
 <script setup>
-const sidebar = ref(globalProperties.sidebar);
+const updateKey = ref('#'+stlib.Utils.nextId());
+const globalProperties = ref(window.globalProperties);
 const streamBar = ref(null);
 const route = useRoute();
 function getKey(path) {
@@ -31,6 +32,7 @@ function hideStreambar() {
 }
 window.showStreambar = showStreambar;
 window.toggleStreambar = toggleStreambar;
+window.refreshApp = ()=>{ updateKey.value = '#'+stlib.Utils.nextId(); }; //debug purpose
 </script>
 <style scoped>
 @media (max-width: 767px) {

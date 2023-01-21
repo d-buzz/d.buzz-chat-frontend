@@ -44,10 +44,11 @@ class StWidget {
     setProperties(properties) {
         this.properties = properties;
         if(this.initialized) {
-            if(iframe.contentWindow != null)
-                iframe.contentWindow.postMessage(["stlib", "setProperties", JSON.stringify(username)], '*');
-            else iframe.addEventListener( "load", ()=>{
-                iframe.contentWindow.postMessage(["stlib", "setProperties", JSON.stringify(username)], '*');
+            var _this = this;
+            if(this.iframe.contentWindow != null)
+                this.iframe.contentWindow.postMessage(["stlib", "setProperties", JSON.stringify(this.properties)], '*');
+            else this.iframe.addEventListener( "load", ()=>{
+                _this.iframe.contentWindow.postMessage(["stlib", "setProperties", JSON.stringify(this.properties)], '*');
             });
         }
     }
