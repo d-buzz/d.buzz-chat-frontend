@@ -39,13 +39,13 @@
                         </select>
                     </div>
                 </div>
-                <div v-else-if="Array.isArray(item.value)">
+                <div v-else-if="Array.isArray(item.value) || typeof item.value === 'string'">
                     <div>
                         <div><b>{{item.display}}</b></div>
                         <div><small>{{item.desc}}</small></div>
                     </div>
                     <div>
-                        <input class="inputText" type="text" v-model="item.newvalue" @change="onChange">
+                        <textarea class="inputText" type="text" v-model="item.newvalue" @change="onChange"></textarea>
                     </div>
                 </div>
                 <div v-else>
@@ -80,6 +80,8 @@ const defaultPreferences = [
     {name: "sidebar", display: "Left sidebar style", desc: "",
      value: 2, newvalue:2, options:[
         [0, 'Communities only (0)'],[2, 'Dual: Direct Messages & Communities (2)']]}, 
+    {name: "sidebar2enableSharedView", display: "Sidebar (2):", desc: "Enable to open Direct Messages, communities be open at same time", value: true, newvalue:true},
+    {name: "communityChannelNameFormat", display: "Community channel name format.", desc: "Eg.: 'C/<title>/<name> (<account>)'.", value: '<name>', newvalue:'C/<title>/<name>'},
     {name: "homeTabCommunities", display: "HomeTab: Communities", desc: "", value: false, newvalue:false},
     {name: "homeTabPreferences", display: "HomeTab: Preferences", desc: "", value: true, newvalue:true},
     {name: "homeTabSettings", display: "HomeTab: Settings", desc: "", value: true, newvalue:true}, 

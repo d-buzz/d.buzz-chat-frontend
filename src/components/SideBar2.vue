@@ -5,15 +5,15 @@
     <TransitionRoot :show="addCommunityModal">
         <AddCommunityModal @close="toggleAddCommunityModal(false)"></AddCommunityModal>
     </TransitionRoot>
-    <div class="border-r-1">
-        <SideBarLoginIcon :number="number" @toggleStreambar="$emit('toggleStreambar')"/>
+    <div class="border-r-1 border-b-1">
+        <SideBarLoginIcon :number="number" @toggleStreambar=""/>
     </div>
     <!--<div class="border-b-1">
         <button class="w-full avCommunity md:hidden border-r-1" style="padding-left: 1px;"
              @click="$emit('toggleStreambar')"><span class="oi oi-menu" style="font-size:30px;"></span></button>
     </div>-->
 
-    <div class="flex justify-between border-b-1 p-1 border-r-1 cursor-pointer" @click="toggleDirect">
+    <div class="flex justify-between border-b-1 p-1 border-r-1 cursor-pointer appsg0" @click="toggleDirect">
         <b class="text-xs">{{$t("SideBar.Direct")}}</b>
         <button class="text-xs" @click.stop="toggleNewUserMessageModalOpen">
             <span class="oi oi-plus"></span>
@@ -35,7 +35,7 @@
         </div>
     </div>
 
-   <div class="flex justify-between gap-x-1 border-b-1 border-r-1 p-1 font-bold cursor-pointer"
+   <div class="flex justify-between gap-x-1 border-b-1 border-r-1 p-1 font-bold cursor-pointer appsg0"
         @click="toggleCommunities">
         <b class="text-xs">C/</b>
         <button class="text-xs" @click.stop="toggleAddCommunityModal">
@@ -64,11 +64,20 @@ const accountStore = useAccountStore();
 const communities = ref([]);
 const updateKey = ref("");
 const number = ref('0');
+function canOpenBoth() { return window.globalProperties["sidebar2enableSharedView"] === true; }
 const showDirect = ref(true);
-const showCommunities = ref(true);
+const showCommunities = ref(canOpenBoth());
 
-function toggleDirect() { showDirect.value = !showDirect.value; }
-function toggleCommunities() { showCommunities.value = !showCommunities.value; }
+function toggleDirect() {
+    showDirect.value = !showDirect.value;
+    if(!showDirect.value && !showCommunities.value) showCommunities.value = true;
+    else if(!canOpenBoth() && showDirect.value && showCommunities.value) showCommunities.value = false;
+}
+function toggleCommunities() { 
+    showCommunities.value = !showCommunities.value;
+    if(!showDirect.value && !showCommunities.value) showDirect.value = true;
+    else if(!canOpenBoth() && showDirect.value && showCommunities.value) showDirect.value = false;
+}
 
 function onDrop() {
     setTimeout(() => {

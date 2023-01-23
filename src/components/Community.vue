@@ -261,6 +261,14 @@ async function setMessageUsers(messages) {
     for(var user in users) { if(users[user]) online++; sum++; }
     onlineCount.value = online + ' / ' + sum;
 } 
+function addCommunityName(community, streamName) {
+    var prepend = window.globalProperties["communityChannelNameFormat"];
+    if(prepend == null || prepend === '') return '';
+    prepend = prepend.replaceAll("<name>", streamName);
+    prepend = prepend.replaceAll("<account>", community.getName());
+    prepend = prepend.replaceAll("<title>", community.getTitle());
+    return prepend;
+}
 async function initChat() {
     var user = accountStore.account.name;
     if(user == null) return; //TODO ask to login
@@ -285,7 +293,7 @@ async function initChat() {
 
             community0 = await stlib.Community.load(user2);
             var stream = (community0)?community0.findTextStreamById(''+route.params.path):null;
-            streamName.value = stream?stream.getName():conversation;
+            streamName.value = addCommunityName(community0, (stream?stream.getName():conversation));
             community.value = community0;
 
             updateOnlineUsers = async ()=> {
@@ -322,7 +330,7 @@ async function initChat() {
             var pref = await stlib.Utils.getAccountPreferences(user2);
             var groups = pref.getGroups();
             var group = groups[route.params.path];
-            streamName.value = (group !== null && group.name != null)?`${group.name} ${conversation}`:conversation;
+            streamName.value = addCommunityName(community0, ((group !== null && group.name != null)?`${group.name} ${conversation}`:conversation));
         }
         else if(route.name === 'Group') {
             var pref = await stlib.Utils.getAccountPreferences(user2);

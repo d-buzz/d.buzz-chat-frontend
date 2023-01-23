@@ -13,6 +13,8 @@ const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_
 
 window.globalProperties = {
     "sidebar": 0,
+    "sidebar2enableSharedView": true,
+    "communityChannelNameFormat": "<name>",
     "homeTabCommunities": true,
     "homeTabPreferences": true,
     "homeTabSettings": true,
@@ -21,6 +23,7 @@ window.globalProperties = {
     /*"sidebar": 2,
     "prependCommunities": ["hive-163399"]*/
 };
+window.tmpProperties = {};
 (()=>{
     /*if(window.hive_keychain === undefined && window.parent != null && 
         window.parent.hive_keychain !== undefined) {

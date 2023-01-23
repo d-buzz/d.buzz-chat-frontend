@@ -1,6 +1,49 @@
 <template>
    <DefaultModal title="Add community">
-    <div class="mt-5 sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="flex flex-row flex-wrap" :key="updateKey">
+       <CommunityIcon v-for="community in communities" :img="community[0]" :name="community[1]" :number="''" />
+    </div>
+    
+    <div class="display-block flex mt-3 mr-auto ml-auto" style="max-width:350px;">
+        <input class="inputText1 mr-1" type="text" v-model="searchBar"
+            placeholder="find communties"
+            @keyup.enter="findCommunities(searchBar)"/>
+        <button title="find communities" class="btn1 mr-1" @click="findCommunities(searchBar)">
+            <span class="oi oi-magnifying-glass"></span>
+        </button>
+        <button v-if="searchBar" title="reset" class="btn1 mr-1" @click="findReset()">
+            <span class="oi oi-x"></span>
+        </button>
+    </div>
+    <TabGroup>
+        <TabList class="tab">
+            <Tab>{{$t("Home.All")}}</Tab>
+            <Tab>{{$t("Home.Active")}}</Tab>
+        </TabList>
+        <TabPanels class="mt-1">
+            <TabPanel>
+                <div v-if="communitiesFound.length > 0">
+                    <div class="w-100 text-sm font-bold text-right md:text-center text-gray-400 mt-1">found</div>
+                    <div class="flex flex-row flex-wrap" :key="updateKey+'#2'">
+                     <CommunityIcon v-for="community in communitiesFound" :fade="!isActive(community.name, communitiesActive)" :img="community.name" :name="community.title" :number2="''+community.subscribers"  />
+                        <div v-if="hasNextPage" class="btn" @click="findCommunities(searchBar, true)">
+                           next<br>page
+                        </div>
+                    </div>
+                </div>
+            </TabPanel>
+            <TabPanel>
+                <div v-if="communitiesActive.length > 0">
+                    <div class="w-100 text-sm font-bold text-right md:text-center text-gray-400 mt-1">activity measured by messages in last 7 days</div>
+                    <div class="flex flex-row flex-wrap" :key="updateKey+'#2'">
+                     <CommunityIcon v-for="community in communitiesActive" :img="community.name" :name="community.name" :number="''+community.number"  />
+                    </div>
+                </div>
+            </TabPanel>
+        </TabPanels>
+    </TabGroup>
+
+    <div class="mt-5 w-full">
       <div class="space-y-6">
         <div>
           <label for="username" class="block text-sm font-medium text-gray-700"> Title: </label>
@@ -46,11 +89,74 @@
 </template>
 
 <script setup lang="ts">
+import { useAccountStore } from "../../stores/account";
+const accountStore = useAccountStore();
 const router = useRouter();
 const emit = defineEmits(["oninput"]);
 const isLoading = ref(false);
 const accountName = ref("");
 
+const communities = ref([]);
+const communitiesFound = ref([]);
+const communitiesActive = ref([]);
+const hasNextPage = ref(false);
+const searchBar = ref("");
+const updateKey = ref('#'+stlib.Utils.nextId());
+
+function isActive(name, communities) {
+    if(!communities) return true;
+    for(var community of communities) { if(community.name == name) return true; }
+    return false;
+}
+async function findCommunities(text, nextPage=false) {
+    var query = {"limit":100,"sort":"subs"};
+    if(text) query["query"] = text;
+    if(nextPage && communitiesFound.value.length > 0)
+        query.last = communitiesFound.value[communitiesFound.value.length-1].name;
+    var result = await stlib.Utils.getDhiveClient()
+        .call("bridge", "list_communities", query);
+    hasNextPage.value = result.length >= query.limit;
+    if(nextPage) communitiesFound.value.push.apply(communitiesFound.value, result);
+    else communitiesFound.value = result;
+}
+var defaultCommunities = [];
+async function initCommunities() {
+    var user = accountStore.account.name;
+    if(user == null) return;
+    var manager = getManager();
+    communities.value = await manager.getCommunitiesSorted(user);
+    await findCommunities();
+    defaultCommunities = communitiesFound.value;
+    updateKey.value = '#'+stlib.Utils.nextId(); 
+}
+initCommunities();
+var defaultActiveCommunities = [];
+async function initActiveCommunities() {
+    var result = await getManager().getClient().readStats();
+    if(result.isSuccess()) {
+        var obj = {};
+        var dailyStatsArrays = result.getResult()[0];
+        for(var day of dailyStatsArrays) {
+            for(var community in day) {
+                var messageCount = day[community];
+                if(obj[community] === undefined) obj[community] = messageCount;
+                else obj[community] += messageCount;
+            }
+        }
+        var sorted = [];
+        for(var community in obj) sorted.push({name:community,number:obj[community]});
+        sorted.sort((a,b)=>b.number-a.number);
+        defaultActiveCommunities = sorted;
+        communitiesActive.value = defaultActiveCommunities;
+        updateKey.value = '#'+stlib.Utils.nextId(); 
+    }
+}
+initActiveCommunities();
+function formatDate(date) {
+    var t = date.indexOf('T');
+    if(t !== -1) date = date.substring(0, t);
+    return date;
+}
 const authenticate = async (title: string) => {
   if (isLoading.value) return;
   try {
