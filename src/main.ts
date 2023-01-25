@@ -14,7 +14,7 @@ const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_
 window.globalProperties = {
     "sidebar": 0,
     "sidebar2enableSharedView": true,
-    "sidebarAddButton": 0,
+    "sidebarAddButton": 2,
     "communityChannelNameFormat": "<name>",
     "homeTabCommunities": true,
     "homeTabPreferences": true,
