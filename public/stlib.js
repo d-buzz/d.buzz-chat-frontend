@@ -1728,6 +1728,7 @@ class MessageManager {
         this.onstatusmessage = new EventQueue();
         this.onpreferences = new EventQueue();
         this.onlastread = new EventQueue();
+        this.oncommunityhide = new EventQueue();
         this.joined = {};
         this.cachedUserMessagesPromise = null;
         this.cachedUserMessages = null;
@@ -2182,12 +2183,36 @@ class MessageManager {
         }
         return result;
     }
-    storeCommunitySortOrderLocally(sortOrder) {
-        window.localStorage.setItem(this.user + "|sortOrder|", JSON.stringify(sortOrder));
+    hideCommunity(community, hide = true, user = this.user) {
+        var array = this.loadCommunityHiddenLocally(user);
+        if (hide) {
+            if (array === null)
+                this.storeCommunityHiddenLocally([community], user);
+            else {
+                var index = array.indexOf(community);
+                if (index === -1) {
+                    array.push(community);
+                    this.storeCommunityHiddenLocally(array, user);
+                }
+            }
+        }
+        else {
+            if (array != null) {
+                var index = array.indexOf(community);
+                if (index !== -1) {
+                    array.splice(index, 1);
+                    this.storeCommunityHiddenLocally(array, user);
+                }
+            }
+        }
     }
-    loadCommunitySortOrderLocally() {
+    storeCommunityHiddenLocally(hidden, user = this.user) {
+        window.localStorage.setItem(user + "|hiddenCommunity|", JSON.stringify(hidden));
+        this.oncommunityhide.post(hidden);
+    }
+    loadCommunityHiddenLocally(user = this.user) {
         try {
-            var str = window.localStorage.getItem(this.user + "|sortOrder|");
+            var str = window.localStorage.getItem(user + "|hiddenCommunity|");
             if (str == null)
                 return null;
             var result = JSON.parse(str);
@@ -2199,15 +2224,53 @@ class MessageManager {
         }
         return null;
     }
-    getCommunitiesSorted(user = null, sortOrder = null) {
+    storeCommunitySortOrderLocally(sortOrder, user = this.user) {
+        window.localStorage.setItem(user + "|sortOrder|", JSON.stringify(sortOrder));
+    }
+    loadCommunitySortOrderLocally(user = this.user) {
+        try {
+            var str = window.localStorage.getItem(user + "|sortOrder|");
+            if (str == null)
+                return null;
+            var result = JSON.parse(str);
+            if (Array.isArray(result))
+                return result;
+        }
+        catch (e) {
+            console.log(e);
+        }
+        return null;
+    }
+    getCommunitiesHidden(user = this.user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var array = yield this.getCommunities(user);
+            var hide = this.loadCommunityHiddenLocally(user);
+            if (hide != null) {
+                var tmpArray = [];
+                for (var item of array) {
+                    if (hide.indexOf(item[0]) === -1)
+                        continue;
+                    tmpArray.push(item);
+                }
+                return tmpArray;
+            }
+            return array;
+        });
+    }
+    getCommunitiesSorted(user = this.user, sortOrder = null, applyHide = true) {
         return __awaiter(this, void 0, void 0, function* () {
             if (sortOrder == null)
-                sortOrder = this.loadCommunitySortOrderLocally();
+                sortOrder = this.loadCommunitySortOrderLocally(user);
             var array = yield this.getCommunities(user);
             if (sortOrder != null && sortOrder.length > 0) {
+                var hide = null;
+                if (applyHide)
+                    hide = this.loadCommunityHiddenLocally(user);
                 var sortedArray = [];
                 var tmpArray = [];
                 for (var item of array) {
+                    if (hide != null && hide.indexOf(item[0]) !== -1)
+                        continue;
                     var index = sortOrder.indexOf(item[0]);
                     if (index === -1)
                         sortedArray.push(item);

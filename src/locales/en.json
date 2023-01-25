@@ -28,7 +28,9 @@
 "Message.Join": "Join",
 "Message.Joined": "Joined",
 
-"AddGroupUserModal.Msg.Join": "You are invited to join new group:"
+"AddGroupUserModal.Msg.Join": "You are invited to join new group:",
+"AddCommunityModal.Add": "Add",
+"AddCommunityModal.Remove": "Remove"
 }
 
 

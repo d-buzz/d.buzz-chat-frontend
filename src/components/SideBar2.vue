@@ -188,7 +188,7 @@ async function initConversations(route) {
     }
     else {*/
         var update = async() => {
-            console.log("Callback message update StreamBar.vue");
+            console.log("Callback message update SideBar2.vue");
 
             var groupObjs = await manager.getJoinedAndCreatedGroups();
             var conversationArray = await manager.readUserConversations();
@@ -222,12 +222,13 @@ async function initConversations(route) {
             conversations.value = conversationObjects;
             updateKey2.value = '#'+stlib.Utils.nextId();
 
-            console.log("Callback message end StreamBar.vue");
+            console.log("Callback message end SideBar2.vue");
         };
         await update();
-        manager.setCallback("StreamBar.vue", update);
-        manager.onpreferences.set("StreamBar.vue", update);
-        manager.onlastread.set("StreamBar.vue", update);
+        manager.setCallback("SideBar.vue", update);
+        manager.onpreferences.set("SideBar.vue", update);
+        manager.onlastread.set("SideBar.vue", update);
+        manager.oncommunityhide.set("SideBar.vue", initCommunities);
     //}
 }
 initConversations(route);

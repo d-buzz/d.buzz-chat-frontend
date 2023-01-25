@@ -71,5 +71,8 @@ async function initCommunities() {
     await update();
     manager.setCallback("SideBar.vue", update);
 }
-initCommunities();
+async function init() {
+    await initCommunities();
+    getManager().oncommunityhide.set("SideBar.vue", initCommunities);
+}
 </script>

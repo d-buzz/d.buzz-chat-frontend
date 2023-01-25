@@ -26,7 +26,8 @@
             <DialogPanel
               class="relative appbg2 appfg2 rounded-lg px-6 pt-5 pb-5 text-left overflow-hidden shadow-xl transform transition-all w-full" :style="`${dialogPanelCss}`"
             >
-              <div class="min-h-full flex flex-col justify-center"> 
+                <span class="oi oi-x cursor-pointer float-right" @click="$emit('close')"></span>
+              <div class="min-h-full flex flex-col justify-center">
                  <b v-if="title!=null">{{title}}</b>
                  <slot></slot>
               </div>

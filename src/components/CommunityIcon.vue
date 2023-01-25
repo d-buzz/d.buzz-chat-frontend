@@ -39,12 +39,14 @@ const props = defineProps({
     imgCss: String,
     number: String,
     number2: String,
-    fade: {type: Boolean, default: false}
+    fade: {type: Boolean, default: false},
+    joinModal: {type: Boolean, default: true}
 });
 
 const showJoinModal = ref(false);
 function toggleJoinModal() {
-    showJoinModal.value = !showJoinModal.value;
+    if(props.joinModal.value)
+        showJoinModal.value = !showJoinModal.value;
 }
 
 const hasImg = ref(hasProfileImage(props.community));

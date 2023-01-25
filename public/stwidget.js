@@ -10,7 +10,7 @@ class StWidget {
         this.enableKeychainPassthrough = true;
         this.messageListener = null;
     }
-    createElement(width=450, height=556) {
+    createElement(width=450, height=556, resizable=true) {
         this.initialize();
         var div = document.createElement('div');
         this.element = div;
@@ -19,6 +19,11 @@ class StWidget {
             'z-index': 10000,
             border: '1px solid gray'
         };
+
+        if(resizable) {
+            style['resize'] = 'both';
+            style['overflow'] = 'hidden';
+        }
         
         this.setStyle(style);
         this.resize(width, height);

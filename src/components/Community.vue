@@ -410,7 +410,7 @@ async function initChat() {
                 }
             }
         };
-        manager.onstatusmessage.set("Community.vue", updateStatus)
+        manager.onstatusmessage.set("Community.vue", updateStatus);
 
         if(isAutoDecode === true)
             await decode();  
