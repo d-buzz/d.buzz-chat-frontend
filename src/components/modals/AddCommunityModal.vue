@@ -1,15 +1,15 @@
 <template>
-   <DefaultModal title="Sidebar">
+   <DefaultModal :title="$t('AddCommunityModal.Title')">
      <div :key="updateKey">
         <hr v-if="shown.length > 0">
-        <div v-if="shown.length > 0" class="text-gray-700 text-sm">click to remove from sidebar</div>
+        <div v-if="shown.length > 0" class="text-gray-700 text-sm">{{$t("AddCommunityModal.Msg.Add")}}</div>
         <div class="flex flex-row flex-wrap">
             <span v-for="community in shown" @click="hideCommunity(community[0], true)">
                 <CommunityIcon :fade="false" :joinModal="false" :img="community[0]" :name="community[1]" :number="''" />
             </span>
         </div>
         <hr>
-        <div v-if="hidden.length > 0" class="text-gray-700 text-sm">click to add to sidebar</div>
+        <div v-if="hidden.length > 0" class="text-gray-700 text-sm">{{$t("AddCommunityModal.Msg.Remove")}}</div>
         <div class="flex flex-row flex-wrap" :key="updateKey">
             <span v-for="community in hidden" @click="hideCommunity(community[0], false)">
                 <CommunityIcon :fade="true" :joinModal="false" :img="community[0]" :name="community[1]" :number="''" />
@@ -53,10 +53,18 @@
     </div>
     <TabGroup>
         <TabList class="tab">
-            <Tab>{{$t("Home.All")}}</Tab>
             <Tab>{{$t("Home.Active")}}</Tab>
+            <Tab>{{$t("Home.All")}}</Tab>
         </TabList>
         <TabPanels class="mt-1">
+            <TabPanel>
+                <div v-if="communitiesActive.length > 0">
+                    <div class="w-100 text-sm font-bold text-right md:text-center text-gray-400 mt-1">activity measured by messages in last 7 days</div>
+                    <div class="flex flex-row flex-wrap" :key="updateKey+'#3'">
+                     <CommunityIcon v-for="community in communitiesActive" :img="community.name" :name="community.name" :number="''+community.number"  />
+                    </div>
+                </div>
+            </TabPanel>
             <TabPanel>
                 <div v-if="communitiesFound.length > 0">
                     <div class="w-100 text-sm font-bold text-right md:text-center text-gray-400 mt-1">found</div>
@@ -65,14 +73,6 @@
                         <div v-if="hasNextPage" class="btn" @click="findCommunities(searchBar, true)">
                            next<br>page
                         </div>
-                    </div>
-                </div>
-            </TabPanel>
-            <TabPanel>
-                <div v-if="communitiesActive.length > 0">
-                    <div class="w-100 text-sm font-bold text-right md:text-center text-gray-400 mt-1">activity measured by messages in last 7 days</div>
-                    <div class="flex flex-row flex-wrap" :key="updateKey+'#3'">
-                     <CommunityIcon v-for="community in communitiesActive" :img="community.name" :name="community.name" :number="''+community.number"  />
                     </div>
                 </div>
             </TabPanel>

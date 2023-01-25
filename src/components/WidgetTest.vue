@@ -81,6 +81,9 @@ const defaultPreferences = [
      value: 2, newvalue:2, options:[
         [0, 'Communities only (0)'],[2, 'Dual: Direct Messages & Communities (2)']]}, 
     {name: "sidebar2enableSharedView", display: "Sidebar (2):", desc: "Enable to open Direct Messages, communities be open at same time", value: true, newvalue:true},
+    {name: "sidebarAddButton", display: "Sidebar: add button type", desc: "",
+     value: 1, newvalue:1, options:[
+        [0, "'+' icon next to 'Direct', 'C/' [Sidebar (2)] (0)"],[1, "'+' bubble as first scrollable item (1)"], [2, "'+' bubble as last scrollable item (2)"]]}, 
     {name: "communityChannelNameFormat", display: "Community channel name format.", desc: "Eg.: 'C/<title>/<name> (<account>)'.", value: '<name>', newvalue:'C/<title>/<name>'},
     {name: "homeTabCommunities", display: "HomeTab: Communities", desc: "", value: false, newvalue:false},
     {name: "homeTabPreferences", display: "HomeTab: Preferences", desc: "", value: true, newvalue:true},

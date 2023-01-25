@@ -11,9 +11,10 @@
     <TransitionRoot :show="showAddEmoteModal">
         <AddEmoteModal @oninput="emoteAction" @close="toggleAddEmoteModal"></AddEmoteModal>
     </TransitionRoot>
-    <div v-if="hasQuotedText(message)" class="flex mb-1">
+    <div v-if="hasQuotedText(message)" class="flex mb-1" style="margin-left2:24px;">
+        <div class="inline-block">
         <UserCommunityIcon :name="message.reference.getUser()" :community="message.getCommunity()" 
-                  :imgCss="`avMini`"/>
+                  :imgCss="`avMini`"/></div>
         <small class="pl-1"><b :class="roleReferenceColor?roleReferenceColor:''">{{message.reference.getUser()}}</b> {{getQuotedText(message)}}</small>
     </div>
     <div class="message flex" :data-verified="message.isVerified()">

@@ -58,10 +58,18 @@
                     </div>
                     <TabGroup>
                         <TabList class="tab">
-                            <Tab>{{$t("Home.All")}}</Tab>
                             <Tab>{{$t("Home.Active")}}</Tab>
+                            <Tab>{{$t("Home.All")}}</Tab>
                         </TabList>
                         <TabPanels class="mt-1">
+                            <TabPanel>
+                                <div v-if="communitiesActive.length > 0">
+                                    <div class="w-100 text-sm font-bold text-right md:text-center text-gray-400 mt-1">activity measured by messages in last 7 days</div>
+                                    <div class="flex flex-row flex-wrap" :key="updateKey+'#2'">
+                                     <CommunityIcon v-for="community in communitiesActive" :img="community.name" :name="community.name" :number="''+community.number"  />
+                                    </div>
+                                </div>
+                            </TabPanel>
                             <TabPanel>
                                 <div v-if="communitiesFound.length > 0">
                                     <div class="w-100 text-sm font-bold text-right md:text-center text-gray-400 mt-1">found</div>
@@ -70,14 +78,6 @@
                                         <div v-if="hasNextPage" class="btn" @click="findCommunities(searchBar, true)">
                                            next<br>page
                                         </div>
-                                    </div>
-                                </div>
-                            </TabPanel>
-                            <TabPanel>
-                                <div v-if="communitiesActive.length > 0">
-                                    <div class="w-100 text-sm font-bold text-right md:text-center text-gray-400 mt-1">activity measured by messages in last 7 days</div>
-                                    <div class="flex flex-row flex-wrap" :key="updateKey+'#2'">
-                                     <CommunityIcon v-for="community in communitiesActive" :img="community.name" :name="community.name" :number="''+community.number"  />
                                     </div>
                                 </div>
                             </TabPanel>

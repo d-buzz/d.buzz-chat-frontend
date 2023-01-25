@@ -1,4 +1,7 @@
 <template>
+    <TransitionRoot :show="addCommunityModal">
+        <AddCommunityModal @close="toggleAddCommunityModal(false)"></AddCommunityModal>
+    </TransitionRoot>
     <div class="border-r-1">
         <SideBarLoginIcon :number="number" @toggleStreambar="$emit('toggleStreambar')"/>
     </div>
@@ -9,12 +12,14 @@
   <div class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox"
         style="overflow-x: clip;" @dragover.prevent @drop.stop.prevent="onDrop">
     <div class="scrollBoxContent flex flex-col border-r-1">
+        <TextIcon v-if="addButton === 1" class="p-1 cursor-pointer" :text="'+'" @click.stop="toggleAddCommunityModal"/>
         <Draggable v-model="communities" :key="updateKey">
             <template v-slot:item="{item}">
               <SideBarIcon :img="item[0]" :name="item[1]"
                  :community="item" :number="item.lastReadNumber" @toggleStreambar="$emit('toggleStreambar')" />
             </template>
         </Draggable>
+        <TextIcon v-if="addButton === 2" class="p-1 cursor-pointer" :text="'+'" @click.stop="toggleAddCommunityModal"/>
     </div>
   </div>
 </template>
@@ -27,6 +32,12 @@ const accountStore = useAccountStore();
 const communities = ref([]);
 const updateKey = ref("");
 const number = ref('0');
+const addButton = ref(window.globalProperties["sidebarAddButton"]);
+
+const addCommunityModal = ref(false);
+const toggleAddCommunityModal = () => {
+    addCommunityModal.value = !addCommunityModal.value;
+};
 
 function onDrop() {
     setTimeout(() => {
@@ -75,4 +86,5 @@ async function init() {
     await initCommunities();
     getManager().oncommunityhide.set("SideBar.vue", initCommunities);
 }
+init();
 </script>

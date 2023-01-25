@@ -29,8 +29,12 @@
 "Message.Joined": "Joined",
 
 "AddGroupUserModal.Msg.Join": "You are invited to join new group:",
+
+"AddCommunityModal.Title": "Add a community",
 "AddCommunityModal.Add": "Add",
-"AddCommunityModal.Remove": "Remove"
+"AddCommunityModal.Msg.Add": "click to hide",
+"AddCommunityModal.Remove": "Remove",
+"AddCommunityModal.Msg.Remove": "click to add"
 }
 
 

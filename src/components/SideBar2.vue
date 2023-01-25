@@ -15,15 +15,17 @@
 
     <div class="flex justify-between border-b-1 p-1 border-r-1 cursor-pointer appsg0" @click="toggleDirect">
         <b class="text-xs">{{$t("SideBar.Direct")}}</b>
-        <button class="text-xs" @click.stop="toggleNewUserMessageModalOpen">
+        <button v-if="addButton === 0" class="text-xs" @click.stop="toggleNewUserMessageModalOpen">
             <span class="oi oi-plus"></span>
         </button>
+        <span v-else class="oi oi-elevator iconSize"></span>
     </div>
 
     <div v-if="showDirect" class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox border-b-1"
         style="overflow-x: clip;" @dragover.prevent @drop.stop.prevent="onDrop">
         <div class="scrollBoxContent flex flex-col border-r-1">
             <div :key="updateKey2">
+                <TextIcon v-if="addButton === 1" class="p-1 cursor-pointer" :text="'+'" @click.stop="toggleNewUserMessageModalOpen"/>
                 <div v-for="conversation in conversations">
                     <Conversation v-if="conversation.id !== undefined" :conversation="conversation.conversation" 
                         :id="conversation.id" :username="conversation.username"
@@ -31,6 +33,7 @@
                     <Conversation v-else :conversation="conversation.conversation"
                      :username="username" :number="''+conversation.lastReadNumber" :compact="true"/>
                 </div>
+                <TextIcon v-if="addButton === 2" class="p-1 cursor-pointer" :text="'+'" @click.stop="toggleNewUserMessageModalOpen"/>
             </div>
         </div>
     </div>
@@ -38,19 +41,22 @@
    <div class="flex justify-between gap-x-1 border-b-1 border-r-1 p-1 font-bold cursor-pointer appsg0"
         @click="toggleCommunities">
         <b class="text-xs">C/</b>
-        <button class="text-xs" @click.stop="toggleAddCommunityModal">
+        <button v-if="addButton === 0" class="text-xs" @click.stop="toggleAddCommunityModal">
             <span class="oi oi-plus"></span>
         </button>
+        <span v-else class="oi oi-elevator iconSize"></span>
     </div>
   <div v-if="showCommunities" class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox"
         style="overflow-x: clip;" @dragover.prevent @drop.stop.prevent="onDrop">
     <div class="scrollBoxContent flex flex-col border-r-1">
+        <TextIcon v-if="addButton === 1" class="p-1 cursor-pointer" :text="'+'" @click.stop="toggleAddCommunityModal"/>
         <Draggable v-model="communities" :key="updateKey">
             <template v-slot:item="{item}">
               <SideBarIcon :img="item[0]" :name="item[1]"
                  :community="item" :number="item.lastReadNumber" @toggleStreambar="$emit('toggleStreambar')" />
             </template>
         </Draggable>
+        <TextIcon v-if="addButton === 2" class="p-1 cursor-pointer" :text="'+'" @click.stop="toggleAddCommunityModal"/>
     </div>
   </div>
 </template>
@@ -67,6 +73,7 @@ const number = ref('0');
 function canOpenBoth() { return window.globalProperties["sidebar2enableSharedView"] === true; }
 const showDirect = ref(true);
 const showCommunities = ref(canOpenBoth());
+const addButton = ref(window.globalProperties["sidebarAddButton"]);
 
 function toggleDirect() {
     showDirect.value = !showDirect.value;
@@ -233,3 +240,7 @@ async function initConversations(route) {
 }
 initConversations(route);
 </script>
+<style scoped>
+.iconSize { font-size: 10px; }
+</style>
+

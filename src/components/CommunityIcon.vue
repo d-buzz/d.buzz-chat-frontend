@@ -9,11 +9,6 @@
     <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" 
             :title="`${name} (${img})`">
         <span class="cursor-pointer" @click="onClick(img)">
-            <!--<img
-            :class="`rounded-full ${getImgCss()} border border-solid borderColor`"
-            :src="`https://images.hive.blog/u/${img}/avatar/small`"
-            alt="@"
-            />-->
             <UserIcon :name="img" :imgCss="getImgCss()" :name2="name" />
         </span>
     </div>
@@ -45,7 +40,7 @@ const props = defineProps({
 
 const showJoinModal = ref(false);
 function toggleJoinModal() {
-    if(props.joinModal.value)
+    if(props.joinModal)
         showJoinModal.value = !showJoinModal.value;
 }
 
