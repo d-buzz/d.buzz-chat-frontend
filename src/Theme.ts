@@ -20,7 +20,7 @@ export const colorTypes = [
 
 export const defaultThemes = {
     "Light": {
-        "bg0": "#d3d7cf", 
+        "bg0": "#dfdfdd", 
         "bg1": "#eeeeec", 
         "bg2": "#ffffff", 
         "bg3": "#eeeeec",
