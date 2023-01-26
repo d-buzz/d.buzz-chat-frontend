@@ -70,7 +70,7 @@ function hash(text) {
 }
 function randomColor(text) {
     var h = hash(text)%360;
-    return `color:hsl(${h+60}, 100%, 25%); background-color:hsl(${h}, 100%, 85%);`;
+    return `color:hsl(${h+60}, 100%, 21%); background-color:hsl(${h}, 100%, 95%);`;
 }
 </script>
 <style scoped>

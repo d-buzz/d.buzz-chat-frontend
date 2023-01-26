@@ -1,9 +1,9 @@
 :root {
-    --appbg0: rgb(227, 19, 55); --appfg0: white; --appsg0: rgba(227, 19, 55, 0.37);
-    --appbg1: rgb(227, 19, 55); --appfg1: white; --appsg1: rgba(227, 19, 55, 0.37);
+    --appbg0: #860e18; --appfg0: white; --appsg0: rgba(227, 19, 55, 0.37);
+    --appbg1: #9d212c; --appfg1: white; --appsg1: rgba(227, 19, 55, 0.37);
     --appbg2: #ffffff;        --appfg2: black;
     --appbg3: #ffffff;        --appfg3: black;
-    --appbgbtn1: #059669;     --appfgbtn1: white;
+    --appbgbtn1: #2e8336;     --appfgbtn1: white;
     --appbgbtn2: #eab308;     --appfgbtn2: white;
 
     --appbgowner: #007b00;

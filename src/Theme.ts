@@ -20,22 +20,22 @@ export const colorTypes = [
 
 export const defaultThemes = {
     "Light": {
-        "bg0": "#babdb6", 
-        "bg1": "#d3d7cf", 
+        "bg0": "#d3d7cf", 
+        "bg1": "#eeeeec", 
         "bg2": "#ffffff", 
         "bg3": "#eeeeec",
-        "bgbtn1": "#059669", 
+        "bgbtn1": "#2e8336", 
         "bgbtn2": "#eab308",
         "bgowner": "#007b00",
         "bgadmin": "#2368D5",
         "bgmod": "#2e8336"
     },
     "Ignite": {
-        "bg0": "#e31337", 
-        "bg1": "#e31337", 
+        "bg0": "#860e18", 
+        "bg1": "#9d212c", 
         "bg2": "#ffffff", 
         "bg3": "#ffffff",
-        "bgbtn1": "#059669", 
+        "bgbtn1": "#2e8336", 
         "bgbtn2": "#eab308",
         "bgowner": "#007b00",
         "bgadmin": "#2368D5",
@@ -46,7 +46,7 @@ export const defaultThemes = {
         "bg1": "#424242", 
         "bg2": "#555753", 
         "bg3": "#424242",
-        "bgbtn1": "#059669", 
+        "bgbtn1": "#2e8336", 
         "bgbtn2": "#eab308",
         "bgowner": "#5aff5a",
         "bgadmin": "#BBCEEC",
