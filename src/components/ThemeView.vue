@@ -5,7 +5,7 @@
     <TransitionRoot :show="showDeleteModal">
         <DeleteThemeModal :name="name" @close="toggleDeleteModal"></DeleteThemeModal>
     </TransitionRoot>
-    <div class="cursor-pointer" @click="pick()"><b>「{{name}}」</b></div>
+    <div class="cursor-pointer" @click="pick()"><b>“{{name}}„</b></div>
     <div ref="root"  class="flex flex-wrap row rounded cursor-pointer" style="max-width: 753px;" @click="pick()">
         <div class="appbg0 appfg0 border-default mrb1" style="width:63px;height:50px;" 
             :style="`background:${style[0]};color:`">

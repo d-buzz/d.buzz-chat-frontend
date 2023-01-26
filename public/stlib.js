@@ -3403,7 +3403,7 @@ const data_path_1 = require("./data-path");
 if (window !== undefined) {
     window.stlib = {
         Client: client_1.Client, Community: community_1.Community, Content: imports_1.Content, DataStream: data_stream_1.DataStream, DataPath: data_path_1.DataPath, DisplayableEmote: displayable_message_1.DisplayableEmote, DisplayableMessage: displayable_message_1.DisplayableMessage,
-        PermissionSet: permission_set_1.PermissionSet, MessageManager: message_manager_1.MessageManager, Utils: utils_1.Utils, SignableMessage: signable_message_1.SignableMessage, TransientCache: utils_1.TransientCache,
+        EventQueue: message_manager_1.EventQueue, PermissionSet: permission_set_1.PermissionSet, MessageManager: message_manager_1.MessageManager, Utils: utils_1.Utils, SignableMessage: signable_message_1.SignableMessage, TransientCache: utils_1.TransientCache,
         newSignableMessage: signable_message_1.SignableMessage.create,
         utcTime: utils_1.Utils.utcTime
     };

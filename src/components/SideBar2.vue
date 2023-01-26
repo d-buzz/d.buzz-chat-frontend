@@ -5,8 +5,15 @@
     <TransitionRoot :show="addCommunityModal">
         <AddCommunityModal @close="toggleAddCommunityModal(false)"></AddCommunityModal>
     </TransitionRoot>
-    <div class="border-r-1 border-b-1">
-        <SideBarLoginIcon :number="number" @toggleStreambar=""/>
+    <div class="border-r-1 border-b-1 relative">
+        <!--<SideBarLoginIcon :number="number" @click="toggleMenu" @toggleStreambar=""/>-->
+        <UserIcon class="p-1 cursor-pointer" @click="toggleMenu" :name="accountName" :imgCss="'avCommunity'"/>
+        <div v-if="showMenu" class="menu appbg1 border-default flex flex-col">
+            <div><b class="border-b-1"><a :href="`https://peakd.com/@${accountName}`" target="_blank" rel="noreferrer noopener">@{{accountName}}</a></b></div>
+            <div><router-link to="/preferences">Preferences</router-link></div>
+            <div><router-link to="/themes">Themes</router-link></div>
+            <div class="border-t-1" @click="logout">Logout</div>
+        </div>
     </div>
     <!--<div class="border-b-1">
         <button class="w-full avCommunity md:hidden border-r-1" style="padding-left: 1px;"
@@ -65,8 +72,10 @@ import Draggable from "vue3-draggable";
 import { nextTick } from 'vue';
 import { useAccountStore } from "../stores/account";
 import { useRoute } from "vue-router";
+const router = useRouter();
 const emit = defineEmits(["toggleStreambar"]);
 const accountStore = useAccountStore();
+const accountName = ref("");
 const communities = ref([]);
 const updateKey = ref("");
 const number = ref('0');
@@ -74,7 +83,15 @@ function canOpenBoth() { return window.globalProperties["sidebar2enableSharedVie
 const showDirect = ref(true);
 const showCommunities = ref(canOpenBoth());
 const addButton = ref(window.globalProperties["sidebarAddButton"]);
+const showMenu = ref(false);
 
+function logout() {
+    accountStore.signOut();
+    router.push("/");
+}
+function toggleMenu() {
+    showMenu.value = !showMenu.value;
+}
 function toggleDirect() {
     showDirect.value = !showDirect.value;
     if(!showDirect.value && !showCommunities.value) showCommunities.value = true;
@@ -97,6 +114,7 @@ function onDrop() {
 async function initCommunities() {
     var user = accountStore.account.name;
     if(user == null) return;
+    accountName.value = user;
     var manager = getManager();
     manager.setUser(user);
     manager.joinGroups();
@@ -239,8 +257,23 @@ async function initConversations(route) {
     //}
 }
 initConversations(route);
+window.onclickoutside.set("SideBar.vue", ()=>{showMenu.value = false;})
 </script>
 <style scoped>
 .iconSize { font-size: 10px; }
+.menu {
+    @apply absolute py-1 rounded;
+    left: 61px;
+    top: 20px;
+    z-index: 5;
+}
+.menu > div { 
+    @apply px-2 cursor-pointer;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.menu > div:hover { 
+    background-color: var(--appsg1);
+}
 </style>
 

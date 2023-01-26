@@ -37,6 +37,16 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("./Home.vue"),
       },
       {
+        path: "/preferences",
+        name: "Preferences",
+        component: () => import("./Page.vue"),
+      },
+      {
+        path: "/themes",
+        name: "Themes",
+        component: () => import("./Page.vue"),
+      },
+      {
         path: "/s/:user",
         name: "CommunitySettings",
         component: () => import("./CommunitySettings.vue"),

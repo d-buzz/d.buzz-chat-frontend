@@ -45,8 +45,8 @@
               </div>
             </div>
             <div class="mt-2 mb-2 flex flex-row justify-evenly text-center">
-                <button class="btn grow" @click="loginGuest(accountName)" :read-only="isLoading" :disabled="isLoading">Open as Guest</button>
                 <button class="btn grow" @click="loginKeychain(accountName)" :read-only="isLoading" :disabled="isLoading">Login with Keychain</button>
+                <button class="btn grow" @click="loginGuest(accountName)" :read-only="isLoading" :disabled="isLoading">Open as Guest</button>
             </div>
             <div class="mt-2">
                 <div class="relative">

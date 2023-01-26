@@ -18,7 +18,7 @@ window.globalProperties = {
     "communityChannelNameFormat": "<name>",
     "homeTabCommunities": true,
     "homeTabPreferences": true,
-    "homeTabSettings": true,
+    "homeTabThemes": true,
     "prependCommunities": []
 
     /*"sidebar": 2,

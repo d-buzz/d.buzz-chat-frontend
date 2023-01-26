@@ -27,8 +27,10 @@ function toggleStreambar() {
 function showStreambar(visible=true) {
     streamBar.value.dataset.show = visible;
 }
+window.onclickoutside = new stlib.EventQueue();
 function hideStreambar() {
     streamBar.value.dataset.show = false;
+    window.onclickoutside.post();
 }
 window.showStreambar = showStreambar;
 window.toggleStreambar = toggleStreambar;

@@ -87,7 +87,7 @@ const defaultPreferences = [
     {name: "communityChannelNameFormat", display: "Community channel name format.", desc: "Eg.: 'C/<title>/<name> (<account>)'.", value: '<name>', newvalue:'C/<title>/<name>'},
     {name: "homeTabCommunities", display: "HomeTab: Communities", desc: "", value: false, newvalue:false},
     {name: "homeTabPreferences", display: "HomeTab: Preferences", desc: "", value: true, newvalue:true},
-    {name: "homeTabSettings", display: "HomeTab: Settings", desc: "", value: true, newvalue:true}, 
+    {name: "homeTabThemes", display: "HomeTab: Themes", desc: "", value: true, newvalue:true}, 
     {name: "prependCommunities", display: "Prepend Communities", desc: "", value: ["hive-163399"], newvalue:"hive-163399"}
     /*{name: "autoDecode:b", display: "Auto Decode", desc: "Automatically decode private messages.", value: false, newvalue:false},
     {name: "flipMessageBox:b", display: "Flip Message Box", desc: "Flip message box on y-axis.", value: false, newvalue:false},
@@ -149,7 +149,7 @@ script.setAttribute("type", 'text/javascript');
 document.head.appendChild(script); 
 
 function initWidget() {
-    stwidget = new StWidget('/home');
+    stwidget = new StWidget('/t/hive-163399/0');
     stwidget.properties = currentProperties;
     /*stwidget.properties = {
         "sidebar": 2,

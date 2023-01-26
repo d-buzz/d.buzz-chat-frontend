@@ -36,7 +36,7 @@
                 <TabList class="tab">
                   <Tab v-if="tabCommunities">{{$t("Home.Communities")}}</Tab>
                   <Tab v-if="tabPreferences">{{$t("Home.Preferences")}}</Tab>
-                  <Tab v-if="tabSettings">{{$t("Home.Themes")}}</Tab>
+                  <Tab v-if="tabThemes">{{$t("Home.Themes")}}</Tab>
                 </TabList>
             <TabPanels class="mt-1">
                 <TabPanel v-if="tabCommunities">
@@ -73,7 +73,7 @@
                             <TabPanel>
                                 <div v-if="communitiesFound.length > 0">
                                     <div class="w-100 text-sm font-bold text-right md:text-center text-gray-400 mt-1">found</div>
-                                    <div class="flex flex-row flex-wrap" :key="updateKey+'#2'">
+                                    <div class="flex flex-row flex-wrap" :key="updateKey+'#3'">
                                      <CommunityIcon v-for="community in communitiesFound" :fade="!isActive(community.name, communitiesActive)" :img="community.name" :name="community.title" :number2="''+community.subscribers"  />
                                         <div v-if="hasNextPage" class="btn" @click="findCommunities(searchBar, true)">
                                            next<br>page
@@ -85,8 +85,9 @@
                     </TabGroup>
                 </TabPanel>
                 <TabPanel v-if="tabPreferences">
-                    <div class="mt-2"></div>
-                    <div class="flex flex-row" v-for="item in preferences" :key="updateKey+'#3'">
+                    <Preferences/>
+                    <!--<div class="mt-2"></div>
+                    <div class="flex flex-row" v-for="item in preferences" :key="updateKey+'#4'">
                         <div v-if="item.options">
                             <div>
                                 <div><b>{{item.display}}</b></div>
@@ -111,33 +112,18 @@
                     <div><small>{{updateMessage}}</small></div>
                     <button class="btn" @click="updatePreferences" title="Update settings.">Update</button>
                     <button class="btn2" @click="resetChanges" title="Discard changes and show currently set values.">Reset changes</button>
-                     <!--<div class="mt-1">
-                      <label for="username" class="block text-sm font-medium text-gray-700"> Account name/s (add 1-3 users): </label>
-                      <div class="mt-1">
-                        <input
-                          id="username"
-                          name="username"
-                          v-model="accountName"
-                          @keyup.enter="authenticate(accountName)"
-                          type="username"
-                          autocomplete="username"
-                          class="inputText1"
-                          placeholder="Account name"
-                          :read-only="isLoading"
-                          :disabled="isLoading"
-                        />
-                      </div>
-                    </div>-->
+                    -->
                 </TabPanel>
-                <TabPanel v-if="tabSettings" :key="updateThemesKey">
-                    <small class="float-right text-gray-700">{{$t("Home.Theme.Msg.Info")}}</small>
+                <TabPanel v-if="tabThemes" :key="updateThemesKey">
+                    <Themes/>
+                    <!--<small class="float-right text-gray-700">{{$t("Home.Theme.Msg.Info")}}</small>
                     <div class="mt-2"></div>
                     <div v-for="(style, name) in themeObject.defaultThemes">
                         <ThemeView :name="name" :style="style" :edit="false" @update="updateThemes"></ThemeView>
                     </div>
                     <div v-for="(style, name) in themeObject.userThemes">
                         <ThemeView :name="name" :style="style" :edit="true" @update="updateThemes"></ThemeView>
-                    </div>
+                    </div>-->
                 </TabPanel>
             </TabPanels>
             </TabGroup>
@@ -148,7 +134,7 @@
 import { useAccountStore } from "../stores/account";
 const tabCommunities = ref(globalProperties.homeTabCommunities);
 const tabPreferences = ref(globalProperties.homeTabPreferences);
-const tabSettings = ref(globalProperties.homeTabSettings);
+const tabThemes = ref(globalProperties.homeTabThemes);
 const accountStore = useAccountStore();
 const router = useRouter();
 const homeheader = ref(0);
