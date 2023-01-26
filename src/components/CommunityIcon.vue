@@ -102,7 +102,7 @@ function getImgCss() {
     text-align: center;
 }
 .number2 b {
-    background: rgb(0, 113, 12);
+    background: rgb(58, 79, 60);
     padding: 2px 4px;
     border-radius: 10px;
     color: white;
