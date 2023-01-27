@@ -2,30 +2,34 @@
     <TransitionRoot :show="showJoinModal">
         <JoinModal :community="img" @close="toggleJoinModal"></JoinModal>
     </TransitionRoot>
-  <div class="flex nameParent relative items-center justify-start" :class="{fade:fade}" v-if="hasImg || getImgCss() == 'avMini'">
-    <small class="name"><b>{{name}}</b></small>
+  <div class="flex nameParent relative items-center justify-start" 
+  :class="{fade:fade}" v-if="hasImg || getImgCss() == 'avMini'">
+    <!--<small class="name"><b>{{name}}</b></small>-->
     <small v-if="number && number != '0'" class="number"><b>{{number}}</b></small>
     <small v-if="number2 && number2 != '0'" class="number2"><b>{{number2}}</b></small>
     <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" 
-            :title="`${name} (${img})`">
-        <span class="cursor-pointer" @click="onClick(img)">
+            >
+        <span class="cursor-pointer" @click="onClick(img)" ref="el1" @mouseenter="tooltip(el1, `${name} (${img})`)">
             <UserIcon :name="img" :imgCss="getImgCss()" :name2="name" />
         </span>
     </div>
   </div>
   <div class="flex relative items-center justify-start" v-else>
     <div class="flex-shrink-0" :class="{fade:fade, selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" 
-            :title="`${name} (${img})`" @click="toggleJoinModal">
-         <small class="name2"><b>{{name}}</b></small>
-            <img
+             @click="toggleJoinModal">
+         <!-- <small class="name2"><b>{{name}}</b></small>-->
+            <img ref="el2" @mouseenter="tooltip(el2, `${name} (${img})`)"
             :class="`rounded-full ${getImgCss()} border border-solid borderColor`"
             :src="`https://images.hive.blog/u/${img}/avatar/small`"
-            alt="@"
+            alt=""
             />
     </div>
   </div>
 </template>
 <script setup>
+const el1 = ref();
+const el2 = ref();
+const tooltip = ref(window.tooltip);
 const router = useRouter();
 const props = defineProps({
     img: String,

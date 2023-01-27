@@ -1,4 +1,5 @@
 <template>
+    <div class="tooltip" ref="tooltipRef" hidden></div>
   <div class="flex min-h-full h-screen appbg2 appfg2" :key="updateKey">
     <div class="h-screen flex flex-col appbg0 appfg0">
         <SideBar2 v-if="globalProperties.sidebar === 2" @toggleStreambar="toggleStreambar()"></SideBar2>
@@ -13,6 +14,7 @@
   </div>
 </template>
 <script setup>
+const tooltipRef = ref();
 const updateKey = ref('#'+stlib.Utils.nextId());
 const globalProperties = ref(window.globalProperties);
 const streamBar = ref(null);
@@ -32,6 +34,31 @@ function hideStreambar() {
     streamBar.value.dataset.show = false;
     window.onclickoutside.post();
 }
+function showTooltip(element, text) {
+    var el = tooltipRef.value;  
+    if(el == null) return;
+    el.innerText = text;
+    var pos = element.getBoundingClientRect();
+    var x = 0.5*(pos.left+pos.right);
+    var y = pos.bottom;
+
+    el.setAttribute('style','left:'+x+'px;'+'top:'+y+'px;')
+    el.hidden = false;
+    el.currentElement = element;
+
+    var listener = null;
+    listener = ()=>{
+        element.removeEventListener("mouseleave", listener);
+        el.hidden = true;
+    };
+    element.addEventListener("mouseleave", listener);
+    setTimeout(()=>{
+        if(el.currentElement == element) {
+            listener();
+        }
+    }, 5000);
+}
+window.tooltip = showTooltip;
 window.showStreambar = showStreambar;
 window.toggleStreambar = toggleStreambar;
 window.refreshApp = ()=>{ updateKey.value = '#'+stlib.Utils.nextId(); }; //debug purpose
@@ -51,5 +78,14 @@ window.refreshApp = ()=>{ updateKey.value = '#'+stlib.Utils.nextId(); }; //debug
     .streambar[data-show="true"] {
         display: block;
     }
+}
+.tooltip {
+    position: fixed;
+    z-index: 100;
+    color:white;
+    background-color:#111111aa;
+    border-radius:5px;
+    font-size: 16px;
+    padding: 2px 7px;
 }
 </style>

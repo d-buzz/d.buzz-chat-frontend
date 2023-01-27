@@ -1,9 +1,9 @@
 <template>
-  <div class="flex nameParent relative items-center justify-start" v-if="hasImg || getImgCss() == 'avMini'">
-    <small class="name"><b>{{name}}</b></small>
+  <div class="flex nameParent relative items-center justify-start" 
+    v-if="hasImg || getImgCss() == 'avMini'" @mouseenter="tooltip(this.$el, `${name} (${img})`)">
+    <!--<small class="name"><b>{{name}}</b></small>-->
     <small v-if="number && number != '0'" class="number"><b>{{number}}</b></small>
-    <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" 
-            :title="`${name} (${img})`">
+    <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" >
         <span class="cursor-pointer" @click="onClick(img)">
             <img
             :class="`rounded-full ${getImgCss()} border border-solid borderColor`"
@@ -13,9 +13,8 @@
         </span>
     </div>
   </div>
-  <div class="flex relative items-center justify-start" v-else>
-    <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" 
-            :title="`${name} (${img})`">
+  <div class="flex relative items-center justify-start" v-else @mouseenter="tooltip(this.$el, `${name} (${img})`)">
+    <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" >
          <!--<small class="name2"><b>{{name}}</b></small>-->
         <router-link :to="`/i/${img}/about`">
             <UserIcon :name="img" :imgCss="getImgCss()" :letterIcon="getLetterIcon()"/>
@@ -24,6 +23,7 @@
   </div>
 </template>
 <script setup>
+const tooltip = ref(window.tooltip);
 const emit = defineEmits(["toggleStreambar"]);
 const router = useRouter();
 const props = defineProps({
