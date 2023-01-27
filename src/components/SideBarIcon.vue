@@ -13,7 +13,7 @@
         </span>
     </div>
   </div>
-  <div class="flex relative items-center justify-start" v-else @mouseenter="tooltip(this.$el, `${name} (${img})`)">
+  <div class="flex relative items-center justify-start" v-else @mouseenter="tooltip($el, `${name} (${img})`)">
     <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" >
          <!--<small class="name2"><b>{{name}}</b></small>-->
         <router-link :to="`/i/${img}/about`">
