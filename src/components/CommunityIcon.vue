@@ -9,7 +9,7 @@
     <small v-if="number2 && number2 != '0'" class="number2"><b>{{number2}}</b></small>
     <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" 
             >
-        <span class="cursor-pointer" @click="onClick(img)" ref="el1" @mouseenter="tooltip(el1, `${name} (${img})`)">
+        <span class="cursor-pointer" @click="onClick(img)" @mouseenter="tooltip($event.target, `${name} (${img})`)">
             <UserIcon :name="img" :imgCss="getImgCss()" :name2="name" />
         </span>
     </div>
@@ -18,7 +18,7 @@
     <div class="flex-shrink-0" :class="{fade:fade, selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" 
              @click="toggleJoinModal">
          <!-- <small class="name2"><b>{{name}}</b></small>-->
-            <img ref="el2" @mouseenter="tooltip(el2, `${name} (${img})`)"
+            <img @mouseenter="tooltip($event.target, `${name} (${img})`)"
             :class="`rounded-full ${getImgCss()} border border-solid borderColor`"
             :src="`https://images.hive.blog/u/${img}/avatar/small`"
             alt=""
@@ -27,8 +27,6 @@
   </div>
 </template>
 <script setup>
-const el1 = ref();
-const el2 = ref();
 const tooltip = ref(window.tooltip);
 const router = useRouter();
 const props = defineProps({

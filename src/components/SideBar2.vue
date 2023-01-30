@@ -7,7 +7,9 @@
     </TransitionRoot>
     <div class="border-r-1 border-b-1 relative">
         <!--<SideBarLoginIcon :number="number" @click="toggleMenu" @toggleStreambar=""/>-->
-        <UserIcon class="p-1 cursor-pointer" @click="toggleMenu" :name="accountName" :imgCss="'avCommunity'"/>
+        <div @mouseenter="tooltip($event.target, accountName)">
+            <UserIcon class="p-1 cursor-pointer" @click="toggleMenu" :name="accountName" :imgCss="'avCommunity'"/>
+        </div>
         <div v-if="showMenu" class="menu appbg1 border-default flex flex-col">
             <div><b class="border-b-1"><a :href="`https://peakd.com/@${accountName}`" target="_blank" rel="noreferrer noopener">@{{accountName}}</a></b></div>
             <div><router-link to="/preferences">Preferences</router-link></div>
@@ -74,6 +76,7 @@ import { useAccountStore } from "../stores/account";
 import { useRoute } from "vue-router";
 const router = useRouter();
 const emit = defineEmits(["toggleStreambar"]);
+const tooltip = ref(window.tooltip);
 const accountStore = useAccountStore();
 const accountName = ref("");
 const communities = ref([]);

@@ -37,10 +37,11 @@ function hideStreambar() {
 function showTooltip(element, text) {
     var el = tooltipRef.value;  
     if(el == null) return;
-    el.innerText = text;
+    console.log("el", element);
+    el.innerText = text;  console.log("el", element);
     var pos = element.getBoundingClientRect();
     var x = 0.5*(pos.left+pos.right);
-    var y = pos.bottom;
+    var y = pos.bottom; 
 
     el.setAttribute('style','left:'+x+'px;'+'top:'+y+'px;')
     el.hidden = false;

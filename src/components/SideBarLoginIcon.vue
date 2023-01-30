@@ -5,8 +5,8 @@
     <small v-if="number && number != '0'" class="number"><b>{{number}}</b></small>
     <div class="flex-shrink-0" style="width:54px;height:54px;">
       <div v-if="accountStore.account.authenticated" class="nameParent" :title="accountStore.account.name">
-        <small class="name"><b>{{accountStore.account.name}}</b></small>
-        <span class="cursor-pointer" @click="onClick()">
+        <!--<small class="name"><b>{{accountStore.account.name}}</b></small>-->
+        <span class="cursor-pointer" @click="onClick()" @mouseenter="tooltip($event.target, accountStore.account.name)">
             <UserIcon :name="accountStore.account.name" imgCss="avCommunity"/>
         </span>
       </div>
@@ -24,6 +24,7 @@ import { useAccountStore } from "../stores/account";
 const emit = defineEmits(["toggleStreambar"]);
 const router = useRouter();
 const accountStore = useAccountStore();
+const tooltip = ref(window.tooltip);
 
 const props = defineProps({
     number: String

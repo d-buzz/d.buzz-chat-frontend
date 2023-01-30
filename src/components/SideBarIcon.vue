@@ -1,6 +1,6 @@
 <template>
   <div class="flex nameParent relative items-center justify-start" 
-    v-if="hasImg || getImgCss() == 'avMini'" @mouseenter="tooltip(this.$el, `${name} (${img})`)">
+    v-if="hasImg || getImgCss() == 'avMini'" @mouseenter="tooltip($event.target, `${name} (${img})`)">
     <!--<small class="name"><b>{{name}}</b></small>-->
     <small v-if="number && number != '0'" class="number"><b>{{number}}</b></small>
     <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" >
