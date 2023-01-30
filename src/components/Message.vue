@@ -15,7 +15,7 @@
         <div class="inline-block">
         <UserCommunityIcon :name="message.reference.getUser()" :community="message.getCommunity()" 
                   :imgCss="`avMini`"/></div>
-        <small class="pl-1"><b :class="roleReferenceColor?roleReferenceColor:''">{{message.reference.getUser()}}</b> {{getQuotedText(message)}}</small>
+        <small class="pl-1 break-normal"><b :class="roleReferenceColor?roleReferenceColor:''">{{message.reference.getUser()}}</b> {{getQuotedText(message)}}</small>
     </div>
     <div class="message flex" :data-verified="message.isVerified()">
         <div class="flex-shrink-0 mr-5px">
@@ -56,11 +56,11 @@
                 </div>
                 <div v-else-if="content.getType() == 'g'" class="border border-solid border-green-700 rounded p-1">
                     <small>{{content.getGroup()}}</small>
-                    <div ref="messageText" class="whitespace-pre-wrap">{{content.getText()}}</div>
+                    <div ref="messageText" class="whitespace-pre-wrap break-normal">{{content.getText()}}</div>
                     <small v-if="hasJoinedGroup"><b>{{$t("Message.Joined")}}</b></small>
                     <button v-else class="btn" v-on:click="join(message)">{{$t("Message.Join")}}</button>
                 </div>
-                <div v-else-if="content.getText" class="whitespace-pre-wrap">
+                <div v-else-if="content.getText" class="whitespace-pre-wrap break-normal">
                     <div ref="messageText">{{content.getText()}}</div>
                 </div>
                 <div v-else>
