@@ -115,6 +115,31 @@ window.tmpProperties = {};
             }
         }
     });
+    window.tooltip = function(element, text) {
+        var el = document.getElementById("tooltip");  
+        if(el == null) return;
+        el.innerText = text; 
+        var pos = element.getBoundingClientRect();
+        
+        el.hidden = false;
+        el.currentElement = element;
+        var x = Math.min(0.5*(pos.left+pos.right), window.innerWidth-el.offsetWidth-10); 
+        var y = pos.bottom; 
+
+        el.setAttribute('style','left:'+x+'px;'+'top:'+y+'px;');
+
+        var listener = null;
+        listener = ()=>{
+            element.removeEventListener("mouseleave", listener);
+            el.hidden = true;
+        };
+        element.addEventListener("mouseleave", listener);
+        setTimeout(()=>{
+            if(el.currentElement == element) {
+                listener();
+            }
+        }, 5000);
+    };
 })();
 async function initMain() {
     if(NETWORK_NAME == null) {

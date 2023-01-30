@@ -59,8 +59,15 @@
                 </div>
             </div>
         </div>
-    </div>
+        <hr class="my-3" />
+        <h2 class="font-bold text-2xl pb-1">Widget code</h2>
+        <div style="margin-bottom:250px;">
+            <textarea style="font-family: monospace;" class="inputText" rows="15" cols="80" type="text" v-model="widgetcode"></textarea>
+            <button class="btn" @click="copyToClipboard($event.target, widgetcode)"><span class="oi oi-clipboard"></span> Copy</button>        
+        </div>
 
+    </div>
+    
      
   </section>
 </div>
@@ -73,6 +80,7 @@
 <script setup>
 import { nextTick } from 'vue';
 const widget = ref();
+const widgetcode = ref("");
 const preferences = ref([]);
 const updateKey = ref('#'+stlib.Utils.nextId());
 
@@ -118,6 +126,11 @@ function onChange() {
     console.log(obj);
     currentProperties = obj;
     if(stwidget) stwidget.setProperties(obj);
+
+    var code = 
+`var stwidget = new StWidget('...'); /*eg. '/t/hive-163399/0'*/
+stwidget.properties = ${JSON.stringify(obj, null, 4)};`
+    widgetcode.value = code;
 }
 
 function initPropertyEditor() {
@@ -168,6 +181,12 @@ function toggleWidget() {
     var e = widget.value;
     if(e) {
         e.hidden = !e.hidden;
+    }
+}
+function copyToClipboard(target, text) {
+    if(navigator.clipboard) {
+        navigator.clipboard.writeText(text);
+        window.tooltip(target, "Copied to clipboard!");
     }
 }
 </script>

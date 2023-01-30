@@ -88,6 +88,16 @@
     border-bottom: 5px solid var(--appbgbtn1);
 }
 
+.tooltip {
+    position: fixed;
+    z-index: 100;
+    color:white;
+    background-color:#111111aa;
+    border-radius:5px;
+    font-size: 14px;
+    padding: 2px 7px;
+}
+
 .border-default {
     border: 1px solid #0000002e;
 }
