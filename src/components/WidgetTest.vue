@@ -88,11 +88,8 @@ const defaultPreferences = [
     {name: "homeTabCommunities", display: "HomeTab: Communities", desc: "", value: false, newvalue:false},
     {name: "homeTabPreferences", display: "HomeTab: Preferences", desc: "", value: true, newvalue:true},
     {name: "homeTabThemes", display: "HomeTab: Themes", desc: "", value: true, newvalue:true}, 
-    {name: "prependCommunities", display: "Prepend Communities", desc: "", value: ["hive-163399"], newvalue:"hive-163399"}
-    /*{name: "autoDecode:b", display: "Auto Decode", desc: "Automatically decode private messages.", value: false, newvalue:false},
-    {name: "flipMessageBox:b", display: "Flip Message Box", desc: "Flip message box on y-axis.", value: false, newvalue:false},
-    {name: "showDetailedProfile:b", display: "Show Detailed Profile", desc: "Show user profile image and data.", value: false, newvalue:false}
-    */
+    {name: "prependCommunities", display: "Prepend Communities", desc: "", value: ["hive-163399"], newvalue:"hive-163399"},
+    {name: "defaultTheme", display: "Default Theme.", desc: "Eg.: Light, Ignite, Dark.", value: 'Light', newvalue:'Light'},
 ];
 
 var currentProperties = {};

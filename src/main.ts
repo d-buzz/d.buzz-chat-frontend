@@ -1,6 +1,6 @@
 import { createApp } from "vue";
 import App from "./App.vue";
-import { Theme, defaultTheme } from "./Theme.ts";
+import { Theme, defaultTheme, applyTheme } from "./Theme.ts";
 import { defaultEmotes } from "./Emotes.ts";
 
 import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
@@ -19,7 +19,8 @@ window.globalProperties = {
     "homeTabCommunities": true,
     "homeTabPreferences": true,
     "homeTabThemes": true,
-    "prependCommunities": []
+    "prependCommunities": [],
+    "defaultTheme": "Light"
 
     /*"sidebar": 2,
     "prependCommunities": ["hive-163399"]*/
@@ -40,6 +41,8 @@ window.tmpProperties = {};
                 for(var name in properties)
                     window.globalProperties[name] = properties[name];
                 if(window.refreshApp) window.refreshApp();
+                if(properties['defaultTheme'] != null && window.localStorage.getItem("theme") == null)
+                    applyTheme(properties['defaultTheme']);
             }
         } };
         window.addEventListener("message", (event) => {
@@ -96,7 +99,7 @@ window.tmpProperties = {};
         return id;
     };
     window.defaultTheme = defaultTheme;
-    defaultTheme.loadTheme();
+    defaultTheme.loadTheme(window.globalProperties.defaultTheme);
     console.log("Theme", Theme);
     window.defaultEmotes = defaultEmotes;
     document.addEventListener('visibilitychange', async function (event) {

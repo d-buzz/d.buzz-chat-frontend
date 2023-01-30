@@ -7,14 +7,14 @@
         <div class="grow" style="margin-top:-7px;">
             <div class="flex justify-between">
                 <b class="text-lg">{{user}}</b>
-                <span>
-                    <small class="text-gray-700 mr-1" 
-                        style="align-self: center; padding: 1px 2px; " title="reputation">{{reputation}}
-                        <span class="oi oi-badge" style="opacity:0.5;"></span></small> 
-                    <small class="text-gray-700" style="align-self: center;" title="created date">
-                        {{created}}<span class="oi oi-calendar" style="margin-left:1px; opacity:0.5;"></span></small> 
-                </span>            
             </div>
+            <div>
+                <small class="text-gray-700 mr-1" 
+                    style="align-self: center; padding: 1px 2px; " title="reputation">{{reputation}}
+                    <span class="oi oi-badge" style="opacity:0.5;"></span></small> 
+                <small class="text-gray-700" style="align-self: center;" title="created date">
+                    {{created}}<span class="oi oi-calendar" style="margin-left:1px; opacity:0.5;"></span></small> 
+            </div>     
             <hr/>
             <div v-if="communityData">
                 <div v-if="editable" class="mt-1">

@@ -192,7 +192,6 @@ export function initializeTheme() {
         var name = defaultColors[array][0];      
         var themeColors = [];
         for(var type of colorTypes) {
-            console.log("color", type[0], name, type);
             var themeColor = new ThemeColor(name, type[0], '#ffffff', type[2]);
             themeColors.push(themeColor);
         }
@@ -206,22 +205,23 @@ export function findThemeByName(name: string) {
     return (theme)?theme:null;
 }
 export const defaultTheme = initializeTheme();
-
-export function loadTheme() {
+export function applyTheme(obj: any) {
+    var theme = findThemeByName(obj);console.log("initialize theme ", obj, theme, defaultTheme);
+    if(theme) {
+        defaultTheme.set(theme);
+        defaultTheme.applyTheme();
+    }
+}
+export function loadTheme(def=null) {
     try {
         var obj = window.localStorage.getItem("theme");
         if(obj !== null && obj.length > 0) {
             if(obj.startsWith('{')) {
                 obj = JSON.parse(obj);
             }
-            else {
-                var theme = findThemeByName(obj);
-                if(theme) {
-                    defaultTheme.set(theme);
-                    defaultTheme.applyTheme();
-                }
-            }
+            else applyTheme(obj);
         }
+        else if(def != null) applyTheme(def);
     }
     catch(e) { console.log("failed to load theme", e); }
 }
@@ -258,3 +258,4 @@ function calcSg(rgb) {
     sg.push((sg[0] === 0)?23:95);
     return sg;
 }
+
