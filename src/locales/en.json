@@ -18,12 +18,32 @@
 "Home.All": "All",
 "Home.Active": "Active",
 "Home.Logout": "Logout",
+"Home.Reset": "Reset",
+"Home.Reputation": "Reputation",
+"Home.CreatedDate": "Created date",
+"Home.FindCommunities": "Find communities",
+"Home.UpdateSettings": "Update settings.",
+"Home.DiscardChanges": "Discard changes and show currently set values.",
 
 "Home.Theme.Msg.Info": "Pick a theme or edit cloned one.",
+
+"Community.OnlineJoined": "online/joined: {0}",
+"Community.Threads": "Threads",
+"Community.ShareGroup": "Share group",
+"Community.CloseGroup": "Close group",
+"Community.ToggleSidebar": "Toggle sidebar",
+"Community.Decode": "Decode",
+"Community.ClickToDecodeN": "Click to decode a message. | Click to decode {n} messages.",
+"Community.ManualDecode": "Manual decode",
+"Community.AutoDecode": "Auto decode",
 
 "CommunityAbout.Description": "Description",
 "CommunityAbout.Rules": "Rules",
 "CommunityAbout.TeamModerators": "Team and Moderators",
+
+"MessageBox.Send": "Send",
+"MessageBox.AddEmote": "Add emote",
+"MessageBox.AddImage": "Add image",
 
 "Message.Join": "Join",
 "Message.Joined": "Joined",

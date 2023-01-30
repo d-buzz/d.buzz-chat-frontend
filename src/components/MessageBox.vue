@@ -30,17 +30,21 @@
                     >
                     Permission required.
                 </div>
-                <div @click="if(canWrite) enterMessage(null);" class="float-right my-2 mx-3 cursor-pointer oi oi-envelope-open envelope" title="send"></div>
+                <div @click="if(canWrite) enterMessage(null);" class="float-right my-2 mx-3 cursor-pointer oi oi-envelope-open envelope" 
+                    @mouseenter="tooltip($event.target, $t('MessageBox.Send'))"></div>
             </div>
             <div class="flex gap-x-1" style="max-height: 38px;">
-                <span @click="if(canWrite) toggleAddEmoteModal();" class="cursor-pointer" style="font-size: 22px;" title="add emote">&#x263a;</span>
+                <span @click="if(canWrite) toggleAddEmoteModal();" class="cursor-pointer" style="font-size: 22px;" 
+                    @mouseenter="tooltip($event.target, $t('MessageBox.AddEmote'))">&#x263a;</span>
                 <span class="cursor-pointer oi oi-image" style="padding-top:5px;font-size: 1.125rem;"
-                    @click="if(canWrite) toggleAddImageModal();" title="add image"></span>
+                    @click="if(canWrite) toggleAddImageModal();" 
+                    @mouseenter="tooltip($event.target, $t('MessageBox.AddImage'))"></span>
             </div>
         </div>
     </div>
 </template>
 <script setup type="ts">
+const tooltip = ref(window.tooltip);
 const props = defineProps({
     canWrite: {type: Boolean, default: true}
 });

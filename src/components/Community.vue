@@ -16,7 +16,7 @@
      <div class="appbg3 appfg3 h-full float-right w-200 overflow-y-scroll scrollBox sidebar" 
         v-if="$route.name === 'CommunityPath' && community" ref="sidebar" :key="communityUsersKey" style="padding-bottom:150px;">
         <div class="scrollBoxContent border-l-1 pr-1 pl-1 appbg3">
-            <div class="text-right" :title="`online/joined: ${onlineCount}`"><small class="fg70">
+            <div class="text-right" @mouseenter="tooltip($event.target, $t('Community.OnlineJoined', [onlineCount]))"><small class="fg70">
                 {{onlineCount}}</small>
             </div>        
             <div v-for="roleUsers in communityUsers">
@@ -40,7 +40,7 @@
     <div class="appbg3 appfg3 h-full float-right w-200 overflow-y-scroll scrollBox sidebar" 
         v-else-if="$route.name === 'Group'" ref="sidebar" :key="communityUsersKey" style="padding-bottom:150px;">
         <div class="scrollBoxContent border-l-1 pr-1 pl-1 appbg3">
-            <div class="text-right" :title="`online/joined: ${onlineCount}`"><small class="fg70">
+            <div class="text-right" @mouseenter="tooltip($event.target, $t('Community.OnlineJoined', [onlineCount]))"><small class="fg70">
                 {{onlineCount}}</small>
             </div>   
             <div class="p-1 flex" v-for="(online, user) in messageUsers" :class="online?'':'offline'">
@@ -63,17 +63,17 @@
                 </span>
             </span>
             <span class="float-right mr-3">
-                <button class="text-sm mr-2" @click="toggleThreads" title="threads">
+                <button class="text-sm mr-2" @click="toggleThreads" @mouseenter="tooltip($event.target, $t('Community.Threads'))">
                     <span class="oi oi-fork"></span>
                 </button>
-                <button v-if="($route.name === 'CommunityPath' && community) || $route.name === 'Group'" class="text-sm mr-2" @click="toggleSideBar" title="toggle sidebar">
+                <button v-if="($route.name === 'CommunityPath' && community) || $route.name === 'Group'" class="text-sm mr-2" @click="toggleSideBar" @mouseenter="tooltip($event.target, $t('Community.ToggleSidebar'))">
                     <span class="oi oi-people"></span>
                 </button>
                 <span v-if="route.name === 'Group' || route.name === 'CommunityGroup'">
-                    <button class="text-sm mr-2" @click="toggleShareGroup" title="share group">
+                    <button class="text-sm mr-2" @click="toggleShareGroup" @mouseenter="tooltip($event.target, $t('Community.ShareGroup'))">
                         <span class="oi oi-share-boxed"></span>
                     </button>
-                    <button class="text-sm" @click="toggleCloseGroup" title="close group">
+                    <button class="text-sm" @click="toggleCloseGroup" @mouseenter="tooltip($event.target, $t('Community.CloseGroup'))">
                         <span class="oi oi-x align-top"></span>
                     </button>
                 </span>
@@ -136,9 +136,9 @@
              :style="[valueFlipMessageBox?'order:3;':'order:7;']">
             <div v-if="decodeNMessages>0">
                 <hr>
-                <div><small>Click to decode {{decodeNMessages}} message/s.</small></div>            
-                <button class="btn" @click="decode()">Decode</button>
-                <button class="btn" @click="autoDecode()">{{valueAutoDecode?'Manual decode':'Auto decode'}}</button>
+                <div><small>{{$tc('Community.ClickToDecodeN', decodeNMessages)}}</small></div>            
+                <button class="btn" @click="decode()">{{$t('Community.Decode')}}</button>
+                <button class="btn" @click="autoDecode()">{{valueAutoDecode?$t('Community.ManualDecode'):$t('Community.AutoDecode')}}</button>
             </div>
             <div v-if="contentMsg" class="border-t-1"></div>
             <div v-if="contentMsg" class="text-sm pr-3">
@@ -173,7 +173,7 @@
 import { useAccountStore } from "../stores/account";
 import { useRoute } from "vue-router";
 import { ref, nextTick } from 'vue';
-
+const tooltip = ref(window.tooltip);
 const route = useRoute();
 const accountStore = useAccountStore();
 const displayableMessagesFold = ref({});

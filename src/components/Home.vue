@@ -4,7 +4,8 @@
         <div v-if="!showDetailedProfile()" class="flex pt-3 pl-3 pr-3">
             <div class="grow" style="margin-top:-7px;">
                 <div class="flex gap-x-1"><b class="text-3xl">@{{accountStore.account.name}}</b>
-                <span class="oi oi-info infocircle" :title="`Reputation: ${reputation}\nCreated: ${created}`"></span>
+                <span class="oi oi-info infocircle" 
+                    @mouseenter="tooltip($event.target, `$t('Home.Reputation'): ${reputation}\n$t('Home.CreatedDate'): ${created}`)"></span>
                 </div>
             </div>
             <div style="margin-top:-7px;">
@@ -20,9 +21,9 @@
                 <div><b class="text-lg text-gray-700 textBg">@{{accountStore.account.name}}</b></div>
                 <span>
                     <small class="text-gray-700 mr-1 textBg" 
-                        style="align-self: center; padding: 1px 2px; " title="reputation">{{reputation}}
+                        style="align-self: center; padding: 1px 2px; " @mouseenter="tooltip($event.target, $t('Home.Reputation'))">{{reputation}}
                         <span class="oi oi-badge" style="opacity:0.5;"></span></small> 
-                    <small class="text-gray-700 textBg" style="align-self: center;" title="created date">
+                    <small class="text-gray-700 textBg" style="align-self: center;" @mouseenter="tooltip($event.target, $t('Home.CreatedDate'))">
                         {{created}}<span class="oi oi-calendar" style="margin-left:1px; opacity:0.5;"></span></small> 
                 </span>
             </div>
@@ -49,10 +50,10 @@
                         <input class="inputText1 mr-1" type="text" v-model="searchBar"
                             placeholder="find communties"
                             @keyup.enter="findCommunities(searchBar)"/>
-                        <button title="find communities" class="btn1 mr-1" @click="findCommunities(searchBar)">
+                        <button @mouseenter="tooltip($event.target, $t('Home.FindCommunities'))" class="btn1 mr-1" @click="findCommunities(searchBar)">
                             <span class="oi oi-magnifying-glass"></span>
                         </button>
-                        <button v-if="searchBar" title="reset" class="btn1 mr-1" @click="findReset()">
+                        <button v-if="searchBar" @mouseenter="tooltip($event.target, $t('Home.Reset'))"  class="btn1 mr-1" @click="findReset()">
                             <span class="oi oi-x"></span>
                         </button>
                     </div>
@@ -110,8 +111,8 @@
                         </div>
                     </div>
                     <div><small>{{updateMessage}}</small></div>
-                    <button class="btn" @click="updatePreferences" title="Update settings.">Update</button>
-                    <button class="btn2" @click="resetChanges" title="Discard changes and show currently set values.">Reset changes</button>
+                    <button class="btn" @click="updatePreferences" @mouseenter="tooltip($event.target, $t('Home.UpdateSettings'))">Update</button>
+                    <button class="btn2" @click="resetChanges" @mouseenter="tooltip($event.target, $t('Home.DiscardChanges'))">Reset changes</button>
                     -->
                 </TabPanel>
                 <TabPanel v-if="tabThemes" :key="updateThemesKey">
@@ -132,6 +133,7 @@
 </template>
 <script setup>
 import { useAccountStore } from "../stores/account";
+const tooltip = ref(window.tooltip);
 const tabCommunities = ref(globalProperties.homeTabCommunities);
 const tabPreferences = ref(globalProperties.homeTabPreferences);
 const tabThemes = ref(globalProperties.homeTabThemes);

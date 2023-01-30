@@ -86,7 +86,7 @@ window.refreshApp = ()=>{ updateKey.value = '#'+stlib.Utils.nextId(); }; //debug
     color:white;
     background-color:#111111aa;
     border-radius:5px;
-    font-size: 16px;
+    font-size: 14px;
     padding: 2px 7px;
 }
 </style>
