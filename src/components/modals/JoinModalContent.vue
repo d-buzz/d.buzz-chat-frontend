@@ -25,14 +25,21 @@
         </Transition>
     </div>
     <div class="mt-2">
-        <button v-if="showMessageButton" class="btn float-left hideButton" @click.stop="showBar()"><span class="oi oi-envelope-closed text-sm"></span> Message</button>
-        <button v-if="!hideVisitButton" class="btn" @click="visitCommunity(community)"><span class="oi oi-globe text-sm"></span> Visit</button>
-        <button class="btn" @click="join(!joinedCommunity)"><span class="oi oi-people text-sm"></span> {{joinedCommunity?'Leave':'Join'}}</button>
+        <button v-if="showMessageButton" class="btn float-left hideButton" @click.stop="showBar()"><span class="oi oi-envelope-closed text-sm"></span> {{$t('JoinModalContent.Message')}}</button>
+        <button v-if="!hideVisitButton && !addedCommunity" class="btn" 
+            @click="addCommunity(community)"
+            @mouseenter="tooltip($event.target, $t('JoinModalContent.Add.Tooltip'))"><span class="oi oi-plus text-sm"></span> {{$t('JoinModalContent.Add')}}</button>        
+        <button v-if="!hideVisitButton" class="btn" 
+            @click="visitCommunity(community)"
+            @mouseenter="tooltip($event.target, $t('JoinModalContent.Visit.Tooltip'))"><span class="oi oi-globe text-sm"></span> {{$t('JoinModalContent.Visit')}}</button>
+        <button class="btn" @click="join(!joinedCommunity)"
+            @mouseenter="tooltip($event.target, $t(joinedCommunity?'JoinModalContent.Leave.Tooltip':'JoinModalContent.Join.Tooltip'))"><span class="oi oi-people text-sm"></span> {{$t(joinedCommunity?'JoinModalContent.Leave':'JoinModalContent.Join')}}</button>
     </div>
     <div class="mt-1"><small>{{updateMessage}}</small></div>
 </template>
 
 <script setup lang="ts">
+const tooltip = ref(window.tooltip);
 const router = useRouter();
 const props = defineProps({
     community: String,
@@ -40,6 +47,7 @@ const props = defineProps({
     showMessageButton: {type: Boolean, default: false }
 });
 var communityData = ref(null);
+var addedCommunity = ref(false);
 var joinedCommunity = ref(false);
 var updateMessage = ref("");
 
@@ -78,6 +86,11 @@ async function join(joinOrLeave=true) {
 function showBar() {
     if(window.showStreambar)
         window.showStreambar(true);
+}
+function addCommunity(community) {
+    const manager = getManager();
+    manager.addCommunity(community, true);
+    addedCommunity.value = true;
 }
 function visitCommunity(community) {
     const manager = getManager();

@@ -2183,28 +2183,25 @@ class MessageManager {
         }
         return result;
     }
+    addCommunity(community, add = true, user = this.user) {
+        var obj = this.loadCommunityHiddenLocally(user);
+        if (obj === null)
+            obj = {};
+        if (add)
+            obj[community] = false;
+        else
+            delete obj[community];
+        this.storeCommunityHiddenLocally(obj, user);
+    }
     hideCommunity(community, hide = true, user = this.user) {
-        var array = this.loadCommunityHiddenLocally(user);
-        if (hide) {
-            if (array === null)
-                this.storeCommunityHiddenLocally([community], user);
-            else {
-                var index = array.indexOf(community);
-                if (index === -1) {
-                    array.push(community);
-                    this.storeCommunityHiddenLocally(array, user);
-                }
-            }
-        }
-        else {
-            if (array != null) {
-                var index = array.indexOf(community);
-                if (index !== -1) {
-                    array.splice(index, 1);
-                    this.storeCommunityHiddenLocally(array, user);
-                }
-            }
-        }
+        var obj = this.loadCommunityHiddenLocally(user);
+        if (obj === null)
+            obj = {};
+        if (hide)
+            obj[community] = true;
+        else
+            delete obj[community];
+        this.storeCommunityHiddenLocally(obj, user);
     }
     storeCommunityHiddenLocally(hidden, user = this.user) {
         window.localStorage.setItem(user + "|hiddenCommunity|", JSON.stringify(hidden));
@@ -2216,7 +2213,7 @@ class MessageManager {
             if (str == null)
                 return null;
             var result = JSON.parse(str);
-            if (Array.isArray(result))
+            if (typeof result === 'object' && result.constructor === Object)
                 return result;
         }
         catch (e) {
@@ -2248,41 +2245,71 @@ class MessageManager {
             if (hide != null) {
                 var tmpArray = [];
                 for (var item of array) {
-                    if (hide.indexOf(item[0]) === -1)
-                        continue;
-                    tmpArray.push(item);
+                    if (hide[item[0]] === true)
+                        tmpArray.push(item);
                 }
                 return tmpArray;
             }
             return array;
         });
     }
-    getCommunitiesSorted(user = this.user, sortOrder = null, applyHide = true) {
+    getCommunitiesSorted(user = this.user, sortOrder = null, applyHide = true, prepend = null) {
         return __awaiter(this, void 0, void 0, function* () {
             if (sortOrder == null)
                 sortOrder = this.loadCommunitySortOrderLocally(user);
             var array = yield this.getCommunities(user);
-            if (sortOrder != null && sortOrder.length > 0) {
-                var hide = null;
-                if (applyHide)
-                    hide = this.loadCommunityHiddenLocally(user);
-                var sortedArray = [];
-                var tmpArray = [];
-                for (var item of array) {
-                    if (hide != null && hide.indexOf(item[0]) !== -1)
+            var added = {};
+            for (var item of array)
+                added[item[0]] = true;
+            var hide = null;
+            var tmpPrepend = [];
+            if (prepend != null)
+                for (var community of prepend) {
+                    if (added[community])
                         continue;
-                    var index = sortOrder.indexOf(item[0]);
-                    if (index === -1)
-                        sortedArray.push(item);
-                    else
-                        tmpArray[index] = item;
+                    added[community] = true;
+                    var title = "";
+                    try {
+                        var community0 = yield community_1.Community.load(community);
+                        title = community0.getTitle();
+                    }
+                    catch (e) {
+                        console.log(e);
+                    }
+                    tmpPrepend.push([community, title, "guest", ""]);
                 }
-                for (var item of tmpArray)
-                    if (item != null)
-                        sortedArray.push(item);
-                return sortedArray;
+            if (applyHide && (hide = this.loadCommunityHiddenLocally(user)) != null) {
+                for (var community in hide) {
+                    if (hide[community] === false && !added[community]) {
+                        added[community] = true;
+                        var title = "";
+                        try {
+                            var community0 = yield community_1.Community.load(community);
+                            title = community0.getTitle();
+                        }
+                        catch (e) {
+                            console.log(e);
+                        }
+                        tmpPrepend.push([community, title, "guest", ""]);
+                    }
+                }
             }
-            return array;
+            array = tmpPrepend.concat(array);
+            var sortedArray = [];
+            var tmpArray = [];
+            for (var item of array) {
+                if (hide != null && hide[item[0]] === true)
+                    continue;
+                var index = sortOrder != null ? sortOrder.indexOf(item[0]) : -1;
+                if (index === -1)
+                    sortedArray.push(item);
+                else
+                    tmpArray[index] = item;
+            }
+            for (var item of tmpArray)
+                if (item != null)
+                    sortedArray.push(item);
+            return sortedArray;
         });
     }
     getCommunities(user = null) {

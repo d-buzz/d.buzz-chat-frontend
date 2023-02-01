@@ -8,7 +8,7 @@
             <img
             :class="`rounded-full ${getImgCss()} border border-solid borderColor`"
             :src="`https://images.hive.blog/u/${img}/avatar/small`"
-            alt="@"
+            alt=""
             />
         </span>
     </div>

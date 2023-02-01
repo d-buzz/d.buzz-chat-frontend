@@ -50,6 +50,16 @@
 "Message.Join": "Join",
 "Message.Joined": "Joined",
 
+"JoinModalContent.Add": "Add",
+"JoinModalContent.Add.Tooltip": "Add community to the sidebar.",
+"JoinModalContent.Visit": "Visit",
+"JoinModalContent.Visit.Tooltip": "Visit community.",
+"JoinModalContent.Message": "Message",
+"JoinModalContent.Join": "Join",
+"JoinModalContent.Join.Tooltip": "Join community.",
+"JoinModalContent.Leave": "Leave",
+"JoinModalContent.Leave.Tooltip": "Leave community.",
+
 "AddGroupUserModal.Msg.Join": "You are invited to join new group:",
 
 "AddCommunityModal.Title": "Add a community",
