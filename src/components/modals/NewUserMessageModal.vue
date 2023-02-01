@@ -3,7 +3,7 @@
 <TabGroup :selectedIndex="_selectedTab">
     <TabList class="tab">
       <Tab>Direct Message</Tab>
-      <Tab>Group Message</Tab>
+      <Tab>Group</Tab>
       <Tab>Join Group</Tab>
     </TabList>
 <TabPanels>

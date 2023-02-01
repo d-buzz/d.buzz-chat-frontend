@@ -12,18 +12,19 @@
                         <UserIcon :name="communityData.getName()" imgCss="av128" size="medium"/>
                     </div>
                     <div class="grow" style="margin-top:-7px;">
-                        <div class="flex justify-between">
+                        <div class="flex gap-x-2 justify-between">
                             <small>C/{{communityData.getName()}}</small>
-                            <small>{{communityData.communityData.subscribers}} <span class="oi oi-people"></span></small>
                         </div>
                         <h1 class="text-xl font-bold">{{communityData.getTitle()}}</h1>
                         <p>{{communityData.getAbout()}}</p>
+                        <hr>
+                        <small><span class="oi oi-people"></span> {{communityData.communityData.subscribers}}</small>
                     </div>
                 </div>
             </div>
         </Transition>
     </div>
-    <div class="mt-2 text-right">
+    <div class="mt-2">
         <button v-if="showMessageButton" class="btn float-left hideButton" @click.stop="showBar()"><span class="oi oi-envelope-closed text-sm"></span> Message</button>
         <button v-if="!hideVisitButton" class="btn" @click="visitCommunity(community)"><span class="oi oi-globe text-sm"></span> Visit</button>
         <button class="btn" @click="join(!joinedCommunity)"><span class="oi oi-people text-sm"></span> {{joinedCommunity?'Leave':'Join'}}</button>

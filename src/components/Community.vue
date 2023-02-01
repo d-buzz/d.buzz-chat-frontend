@@ -136,7 +136,7 @@
              :style="[valueFlipMessageBox?'order:3;':'order:7;']">
             <div v-if="decodeNMessages>0">
                 <hr>
-                <div><small>{{$tc('Community.ClickToDecodeN', decodeNMessages)}}</small></div>            
+                <div><small>{{$t('Community.ClickToDecodeN', decodeNMessages)}}</small></div>            
                 <button class="btn" @click="decode()">{{$t('Community.Decode')}}</button>
                 <button class="btn" @click="autoDecode()">{{valueAutoDecode?$t('Community.ManualDecode'):$t('Community.AutoDecode')}}</button>
             </div>

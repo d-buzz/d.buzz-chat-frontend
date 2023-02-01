@@ -7,7 +7,7 @@
     </TransitionRoot>
     <div class="border-r-1 border-b-1 relative">
         <!--<SideBarLoginIcon :number="number" @click="toggleMenu" @toggleStreambar=""/>-->
-        <div @mouseenter="tooltip($event.target, accountName)">
+        <div @mouseenter="tooltip($event.target, '@'+accountName)">
             <UserIcon class="p-1 cursor-pointer" @click="toggleMenu" :name="accountName" :imgCss="'avCommunity'"/>
         </div>
         <div v-if="showMenu" class="menu appbg1 border-default flex flex-col">
@@ -34,7 +34,10 @@
         style="overflow-x: clip;" @dragover.prevent @drop.stop.prevent="onDrop">
         <div class="scrollBoxContent flex flex-col border-r-1">
             <div :key="updateKey2">
-                <TextIcon v-if="addButton === 1" class="p-1 cursor-pointer" :text="'+'" @click.stop="toggleNewUserMessageModalOpen"/>
+                <TextIcon v-if="addButton === 1" class="p-1 cursor-pointer" :text="'+'" 
+                    @click.stop="toggleNewUserMessageModalOpen"
+                    @mouseenter="tooltip($event.target, $t('SideBar.NewConversation'))"                
+                />
                 <div v-for="conversation in conversations">
                     <Conversation v-if="conversation.id !== undefined" :conversation="conversation.conversation" 
                         :id="conversation.id" :username="conversation.username"
@@ -42,7 +45,9 @@
                     <Conversation v-else :conversation="conversation.conversation"
                      :username="username" :number="''+conversation.lastReadNumber" :compact="true"/>
                 </div>
-                <TextIcon v-if="addButton === 2" class="p-1 cursor-pointer" :text="'+'" @click.stop="toggleNewUserMessageModalOpen"/>
+                <TextIcon v-if="addButton === 2" class="p-1 cursor-pointer" :text="'+'"
+                    @click.stop="toggleNewUserMessageModalOpen"
+                    @mouseenter="tooltip($event.target, $t('SideBar.NewConversation'))"/>
             </div>
         </div>
     </div>
@@ -58,14 +63,18 @@
   <div v-if="showCommunities" class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox"
         style="overflow-x: clip;" @dragover.prevent @drop.stop.prevent="onDrop">
     <div class="scrollBoxContent flex flex-col border-r-1">
-        <TextIcon v-if="addButton === 1" class="p-1 cursor-pointer" :text="'+'" @click.stop="toggleAddCommunityModal"/>
+        <TextIcon v-if="addButton === 1" class="p-1 cursor-pointer" :text="'+'" 
+            @click.stop="toggleAddCommunityModal"
+            @mouseenter="tooltip($event.target, $t('SideBar.AddCommunity'))"/>
         <Draggable v-model="communities" :key="updateKey">
             <template v-slot:item="{item}">
               <SideBarIcon :img="item[0]" :name="item[1]"
                  :community="item" :number="item.lastReadNumber" @toggleStreambar="$emit('toggleStreambar')" />
             </template>
         </Draggable>
-        <TextIcon v-if="addButton === 2" class="p-1 cursor-pointer" :text="'+'" @click.stop="toggleAddCommunityModal"/>
+        <TextIcon v-if="addButton === 2" class="p-1 cursor-pointer" :text="'+'" 
+            @click.stop="toggleAddCommunityModal"
+            @mouseenter="tooltip($event.target, $t('SideBar.AddCommunity'))"/>
     </div>
   </div>
 </template>
