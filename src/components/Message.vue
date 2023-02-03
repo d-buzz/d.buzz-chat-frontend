@@ -56,12 +56,12 @@
                 </div>
                 <div v-else-if="content.getType() == 'g'" class="border border-solid border-green-700 rounded p-1">
                     <small>{{content.getGroup()}}</small>
-                    <div ref="messageText" class="whitespace-pre-wrap break-normal">{{content.getText()}}</div>
+                    <div ref="messageText" :data-id="formatText(messageText,content.getText())" class="md whitespace-pre-wrap break-normal"></div>
                     <small v-if="hasJoinedGroup"><b>{{$t("Message.Joined")}}</b></small>
                     <button v-else class="btn" v-on:click="join(message)">{{$t("Message.Join")}}</button>
                 </div>
                 <div v-else-if="content.getText" class="whitespace-pre-wrap break-normal">
-                    <div ref="messageText">{{content.getText()}}</div>
+                    <div ref="messageText" :data-id="formatText(messageText,content.getText())" class="md"></div>
                 </div>
                 <div v-else>
                     Unsupported message type.
@@ -172,6 +172,13 @@ function getQuotedText(message) {
         console.log(e);
     }
     return null;
+}
+function formatText(element, text) {
+    if(element == null) return;
+    console.log("format text", element, text);
+    element.innerHTML = "";
+    stlib.Markdown.imgPrepend = "https://images.hive.blog/768x0/";
+    stlib.Markdown.simpleMarkdown(text.trim(),element);
 }
 /*message menu*/
 const msgMenuOptions = ref([/*{name:"emote"},*/{name:"quote"},{name:"edit"},{name:"delete"}]);

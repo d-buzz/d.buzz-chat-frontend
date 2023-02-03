@@ -97,7 +97,27 @@
     font-size: 14px;
     padding: 2px 7px;
 }
-
+.md { }
+.md p, .md h1, .md h2, .md h3, .md h4, .md h5, .md h6 {
+	margin: 0px;
+	/*margin: 0 0 .7em 0;*/
+}
+.md img {
+	max-width: 100%;
+}
+.md code, .md blockquote {
+    font-size: 14px;
+	border: 1px solid #d5d5d5;
+	border-radius: 5px;
+	padding: 3px 5px;
+	background-color: #f9f8f7;
+}
+.md pre { white-space: pre-wrap; }
+pre > code { display: block; }
+.md-list {
+	
+}
+.md-list > span { margin-left: 5px; }
 .border-default {
     border: 1px solid #0000002e;
 }

@@ -409,7 +409,7 @@ class Community {
 exports.Community = Community;
 Community.MAX_TEXT_STREAMS = 64;
 
-},{"./data-path":17,"./data-stream":18,"./utils":26}],3:[function(require,module,exports){
+},{"./data-path":17,"./data-stream":18,"./utils":27}],3:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -749,7 +749,7 @@ Content.addType(preferences_1.Preferences);
 Content.addType(encoded_1.Encoded);
 Content.addType(online_status_1.OnlineStatus);
 
-},{"../signable-message":23,"../utils":26,"./content":3,"./edit":4,"./emote":5,"./encoded":6,"./group-invite":7,"./images":8,"./jsoncontent":10,"./online-status":11,"./preferences":12,"./quote":13,"./text":14,"./thread":15,"./with-reference":16}],10:[function(require,module,exports){
+},{"../signable-message":24,"../utils":27,"./content":3,"./edit":4,"./emote":5,"./encoded":6,"./group-invite":7,"./images":8,"./jsoncontent":10,"./online-status":11,"./preferences":12,"./quote":13,"./text":14,"./thread":15,"./with-reference":16}],10:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1234,7 +1234,7 @@ DataPath.TYPE_INFO = "i";
 DataPath.TYPE_TEXT = "t";
 DataPath.TYPE_GROUP = "g";
 
-},{"./utils":26}],18:[function(require,module,exports){
+},{"./utils":27}],18:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DataStream = void 0;
@@ -1281,7 +1281,7 @@ class DataStream {
 }
 exports.DataStream = DataStream;
 
-},{"./data-path":17,"./permission-set":22}],19:[function(require,module,exports){
+},{"./data-path":17,"./permission-set":23}],19:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1476,7 +1476,7 @@ class DefaultStreamDataCache extends stream_data_cache_1.StreamDataCache {
 }
 exports.DefaultStreamDataCache = DefaultStreamDataCache;
 
-},{"./community":2,"./stream-data-cache":25,"./utils":26}],20:[function(require,module,exports){
+},{"./community":2,"./stream-data-cache":26,"./utils":27}],20:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DisplayableEmote = exports.DisplayableMessage = void 0;
@@ -1593,6 +1593,267 @@ class DisplayableEmote {
 exports.DisplayableEmote = DisplayableEmote;
 
 },{"./content/imports":9}],21:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Markdown = void 0;
+const markdown_ast_1 = require("markdown-ast");
+const URL_ABSOLUTE_RE = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
+const URL_IMG_RE = /\.(jpeg|jpg|gif|png|webp)$/;
+const GL_URL_HTTP = true;
+const GL_HTTP_TO_HTTPS = true;
+class Markdown {
+    static simpleFilteredURL(url) {
+        var r = {
+            url: "",
+            protocol: "",
+            image: false
+        };
+        if (URL_ABSOLUTE_RE.test(url)) {
+            try {
+                var u = new URL(url);
+                r.protocol = u.protocol;
+                if (u.protocol === "http:") { //optionally upgrade to https
+                    if (GL_HTTP_TO_HTTPS) {
+                        r.url = "https://" + u.href.substring(5);
+                        r.protocol = "https:";
+                    }
+                    else if (GL_URL_HTTP)
+                        r.url = u.href;
+                    r.image = URL_IMG_RE.test(u.pathname);
+                }
+                else if (u.protocol === "https:") {
+                    r.url = u.href;
+                    r.image = URL_IMG_RE.test(u.pathname);
+                }
+                if (u.protocol === "mailto:")
+                    r.url = u.href;
+            }
+            catch (e) {
+                console.log(e);
+            }
+            return r;
+        }
+        else {
+            return r;
+        }
+    }
+    static simpleHtml(html) {
+        /*var result = document.createDocumentFragment();
+        var arr = window.htmlAst(html);
+        console.log(arr);
+        simpleHtml0(arr, result);
+        return result;*/ return null;
+    }
+    static simpleMarkdownTextAdd2(text, result) {
+        var lines = text.split(/\n/);
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            if (i !== 0)
+                result.appendChild(document.createElement("br"));
+            var words = line.split(/\s+/);
+            var str = "";
+            for (var j = 0; j < words.length; j++) {
+                var word = words[j];
+                if (word.startsWith("@")) {
+                    result.appendChild(document.createTextNode(str));
+                    str = " ";
+                    var linkA = document.createElement("a");
+                    linkA.setAttribute("href", "/#" + word);
+                    linkA.innerText = word;
+                    result.appendChild(linkA);
+                }
+                else if (word.startsWith("https://") || word.startsWith("http://")) {
+                    result.appendChild(document.createTextNode(str));
+                    str = " ";
+                    var u = Markdown.simpleFilteredURL(word);
+                    if (u.image) {
+                        var linkImg = document.createElement("img");
+                        linkImg.setAttribute("src", Markdown.imgPrepend + u.url);
+                        linkImg.innerText = word;
+                        result.appendChild(linkImg);
+                    }
+                    else {
+                        var linkA = document.createElement("a");
+                        linkA.setAttribute("href", u.url);
+                        linkA.setAttribute("rel", "noopener noreferrer");
+                        linkA.setAttribute("target", "_blank");
+                        linkA.innerText = word;
+                        result.appendChild(linkA);
+                    }
+                }
+                else
+                    str += word + " ";
+            }
+            result.appendChild(document.createTextNode(str));
+        }
+        return result;
+    }
+    static simpleMarkdownTextAdd(text, html) {
+        html = false;
+        var result = (html) ? Markdown.simpleHtml(text) : Markdown.simpleMarkdownTextAdd2(text, document.createDocumentFragment());
+        return result;
+    }
+    static simpleMarkdownAdd(arr, result, level) {
+        var html = true;
+        var lastType = "";
+        var lastP = null;
+        for (var i = 0; i < arr.length; i++) {
+            var a = arr[i];
+            var item = null;
+            var addP = true;
+            switch (a.type) {
+                case "image": //p ok
+                    item = document.createElement("img");
+                    item.setAttribute("alt", a.alt);
+                    item.setAttribute("src", Markdown.imgPrepend + a.url);
+                    break;
+                case "italic":
+                    item = document.createElement("i");
+                    break;
+                case "bold":
+                    item = document.createElement("b");
+                    break;
+                case "strike":
+                    item = document.createElement("del");
+                    break;
+                case "codeSpan":
+                    item = document.createElement("code");
+                    item.innerText = a.code;
+                    break;
+                case "link":
+                    item = document.createElement("a");
+                    //item.setAttribute("rel", a.rel);
+                    item.setAttribute("href", a.url);
+                    break;
+                case "break":
+                    addP = false;
+                    /*if(lastType != "bold" && lastType != "italic" && lastType != "text" && lastType != "title" && lastType != "quote")*/
+                    //if(lastP === null || !lastP.__skipBreak)
+                    if (level > 0)
+                        item = document.createElement("br");
+                    break;
+                case "codeBlock":
+                    addP = false;
+                    var pre = document.createElement("pre");
+                    var code = document.createElement("code");
+                    code.innerText = a.code;
+                    pre.appendChild(code);
+                    result.appendChild(pre);
+                    break;
+                case "text":
+                    if (lastP !== null) {
+                        item = Markdown.simpleMarkdownTextAdd(a.text, html); //document.createTextNode(a.text);
+                    }
+                    else {
+                        if (level === 0) {
+                            addP = false;
+                            item = document.createElement("p");
+                            lastP = item;
+                            if (a.text !== undefined) {
+                                item.appendChild(Markdown.simpleMarkdownTextAdd(a.text.trimLeft(), html));
+                                //item.innerText = a.text.trimLeft();
+                            }
+                        }
+                        else
+                            item = Markdown.simpleMarkdownTextAdd(a.text, html);
+                    }
+                    //item = document.createElement("p");
+                    //if(a.text !== undefined) { item.innerText = a.text.trim(); }  
+                    /*if(level === 0) {
+                        item = document.createElement("p");
+                        if(a.text !== undefined) { item.innerText = a.text.trim(); }
+                    }
+                    else {
+                        item = document.createTextNode(a.text.trim());
+                    }*/
+                    /*if(a.text == "\n") {
+                        if(level !== 0) item = document.createElement("br");
+                    }
+                    else if(level === 0) {
+                        item = document.createElement("p");
+                        if(a.text !== undefined) { item.innerText = a.text.trim(); }
+                    }
+                    else {
+                        item = document.createTextNode(a.text.trim());
+                    }*/
+                    break;
+                case "title":
+                    addP = false;
+                    item = document.createElement("h" + a.rank);
+                    break;
+                case "quote":
+                    addP = false;
+                    item = document.createElement("blockquote");
+                    break;
+                case "list":
+                    addP = false;
+                    var d = document.createElement("div");
+                    d.setAttribute("class", "md-list");
+                    d.appendChild(document.createTextNode(a.bullet));
+                    var d2 = document.createElement("span");
+                    d.appendChild(d2);
+                    result.appendChild(d);
+                    Markdown.simpleMarkdownAdd(a.block, d2, level + 1);
+                    break;
+                // border linkDef
+                default:
+                    console.log("unknown " + a.type);
+                    console.log(a);
+                    break;
+            }
+            if (item !== lastP && !addP)
+                lastP = null;
+            lastType = a.type;
+            if (item !== null) {
+                if (level === 0 && addP && lastP === null) {
+                    lastP = document.createElement("p");
+                    lastP.__skipBreak = true;
+                    result.appendChild(lastP);
+                }
+                ((lastP !== null && addP) ? lastP : result).appendChild(item);
+                if (a.block != null) {
+                    Markdown.simpleMarkdownAdd(a.block, item, level + 1);
+                }
+            }
+        }
+    }
+    static simpleMarkdownPreviewText(arr, maxSize = 100000) {
+        var lastType = "";
+        var str = "";
+        for (var i = 0; i < arr.length; i++) {
+            var a = arr[i];
+            if (a.code != null)
+                str += a.code;
+            if (a.type === "break") {
+                if (lastType !== "break" && str.length > 0 && str[str.length - 1] !== ' ')
+                    str += " ";
+            }
+            else if (a.text != null) {
+                str += a.text;
+            }
+            if (a.block != null && str.length < maxSize)
+                str += Markdown.simpleMarkdownPreviewText(a.block, maxSize - str.length);
+            if (str.length > maxSize)
+                return str.substring(0, maxSize);
+            lastType = a.type;
+        }
+        return str;
+    }
+    static markdown(text) { return (0, markdown_ast_1.default)(text); }
+    static simpleMarkdown(text, result = null) {
+        var ast = Markdown.markdown(text);
+        console.log(ast);
+        var doc = document.createDocumentFragment();
+        Markdown.simpleMarkdownAdd(ast, doc, 0);
+        if (result)
+            result.appendChild(doc);
+        return doc;
+    }
+}
+exports.Markdown = Markdown;
+Markdown.imgPrepend = "";
+
+},{"markdown-ast":31}],22:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -3055,7 +3316,7 @@ class MessageManager {
 }
 exports.MessageManager = MessageManager;
 
-},{"./client":1,"./community":2,"./content/imports":9,"./data-path":17,"./displayable-message":20,"./signable-message":23,"./utils":26}],22:[function(require,module,exports){
+},{"./client":1,"./community":2,"./content/imports":9,"./data-path":17,"./displayable-message":20,"./signable-message":24,"./utils":27}],23:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PermissionSet = void 0;
@@ -3140,7 +3401,7 @@ class PermissionSet {
 }
 exports.PermissionSet = PermissionSet;
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 (function (Buffer){(function (){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -3414,7 +3675,7 @@ SignableMessage.TYPE_MESSAGE = 'm';
 SignableMessage.TYPE_WRITE_MESSAGE = 'w';
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"./content/imports":9,"./utils":26,"buffer":28}],24:[function(require,module,exports){
+},{"./content/imports":9,"./utils":27,"buffer":29}],25:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("./client");
@@ -3422,6 +3683,7 @@ const community_1 = require("./community");
 const imports_1 = require("./content/imports");
 const displayable_message_1 = require("./displayable-message");
 const message_manager_1 = require("./message-manager");
+const markdown_1 = require("./markdown");
 const utils_1 = require("./utils");
 const signable_message_1 = require("./signable-message");
 const permission_set_1 = require("./permission-set");
@@ -3430,13 +3692,13 @@ const data_path_1 = require("./data-path");
 if (window !== undefined) {
     window.stlib = {
         Client: client_1.Client, Community: community_1.Community, Content: imports_1.Content, DataStream: data_stream_1.DataStream, DataPath: data_path_1.DataPath, DisplayableEmote: displayable_message_1.DisplayableEmote, DisplayableMessage: displayable_message_1.DisplayableMessage,
-        EventQueue: message_manager_1.EventQueue, PermissionSet: permission_set_1.PermissionSet, MessageManager: message_manager_1.MessageManager, Utils: utils_1.Utils, SignableMessage: signable_message_1.SignableMessage, TransientCache: utils_1.TransientCache,
+        EventQueue: message_manager_1.EventQueue, PermissionSet: permission_set_1.PermissionSet, Markdown: markdown_1.Markdown, MessageManager: message_manager_1.MessageManager, Utils: utils_1.Utils, SignableMessage: signable_message_1.SignableMessage, TransientCache: utils_1.TransientCache,
         newSignableMessage: signable_message_1.SignableMessage.create,
         utcTime: utils_1.Utils.utcTime
     };
 }
 
-},{"./client":1,"./community":2,"./content/imports":9,"./data-path":17,"./data-stream":18,"./displayable-message":20,"./message-manager":21,"./permission-set":22,"./signable-message":23,"./utils":26}],25:[function(require,module,exports){
+},{"./client":1,"./community":2,"./content/imports":9,"./data-path":17,"./data-stream":18,"./displayable-message":20,"./markdown":21,"./message-manager":22,"./permission-set":23,"./signable-message":24,"./utils":27}],26:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -3545,7 +3807,7 @@ class StreamDataCache {
 }
 exports.StreamDataCache = StreamDataCache;
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -4196,7 +4458,7 @@ const accountDataCache = new AccountDataCache();
 const communityDataCache = new AccountDataCache();
 var streamDataCache = null;
 
-},{"./community":2,"./default-stream-data-cache":19,"./signable-message":23}],27:[function(require,module,exports){
+},{"./community":2,"./default-stream-data-cache":19,"./signable-message":24}],28:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -4348,7 +4610,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 (function (Buffer){(function (){
 /*!
  * The buffer module from node.js, for the browser.
@@ -6129,7 +6391,7 @@ function numberIsNaN (obj) {
 }
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"base64-js":27,"buffer":28,"ieee754":29}],29:[function(require,module,exports){
+},{"base64-js":28,"buffer":29,"ieee754":30}],30:[function(require,module,exports){
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
@@ -6216,4 +6478,350 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}]},{},[24]);
+},{}],31:[function(require,module,exports){
+const returnTrue = () => true
+
+// Returns true when the given string ends with an unescaped escape.
+const isEscaped = str => {
+  let ESCAPE = '\\'.charCodeAt(0),
+    i = str.length,
+    n = 0
+  while (i && str.charCodeAt(--i) === ESCAPE) n++
+  return n % 2 == 1
+}
+
+// Escape-aware string search.
+const search = (input, target, cursor) => {
+  let i = cursor - 1
+  while (true) {
+    let start = i
+    i = input.indexOf(target, i + 1)
+    if (i < 0) return -1
+    if (!isEscaped(input.slice(start, i))) return i
+  }
+}
+
+/** Convert markdown into a syntax tree */
+const parse = (input, top = []) => {
+  // Stack of unclosed nodes
+  let blocks = []
+  // The last added node
+  let prevNode
+  // The last character index to be escaped
+  let lastEscapeIdx = -1
+
+  // Add text to the previous node if possible.
+  // Otherwise, create a new text node and pass it to `addNode`.
+  let addText = text =>
+    prevNode && prevNode.type == 'text'
+      ? ((prevNode.text += text), prevNode)
+      : addNode({ type: 'text', text })
+
+  // Add a node to the current block.
+  let addNode = node => {
+    let len = blocks.length
+    ;(len ? blocks[len - 1].block : top).push(node)
+    return (prevNode = node)
+  }
+
+  let addBlock = node => {
+    // Ensure links are closed properly.
+    if (node.type == 'link')
+      node = { type: 'link', block: node.block, url: '', ref: '' }
+
+    return addNode(node)
+  }
+
+  // Gracefully close any unclosed nodes (as long as `filter` returns truthy).
+  let flush = (filter = returnTrue) => {
+    for (let i = blocks.length; --i >= 0; ) {
+      let node = blocks[i]
+      if (!filter(node)) return node
+      addBlock(blocks.pop())
+    }
+  }
+
+  // Move the cursor and update the lexer.
+  let moveTo = offset => (lexer.lastIndex = cursor = offset)
+
+  // The primary token scanner
+  let lexer = /(^([*_-])\s*\2(?:\s*\2)+$)|(?:^(\s*)([>*+-]|\d+[.\)])\s+)|(?:^``` *(\w*)\n([\s\S]*?)```$)|(^(?:(?:\t|    )[^\n]*(?:\n|$))+)|(\!?\[)|(\](?:(\(|\[)|\:\s*(.+)$)?)|(?:^([^\s].*)\n(\-{3,}|={3,})$)|(?:^(#{1,6})(?:[ \t]+(.*))?$)|(?:`([^`].*?)`)|(  \n|\n\n)|(__|\*\*|[_*]|~~)/gm
+  let cursor = 0
+  while (true) {
+    let match = lexer.exec(input),
+      matchOffset = match ? match.index : input.length
+
+    // Copy text between this match and the last.
+    let text = input.slice(cursor, matchOffset)
+    if (text) {
+      addText(text)
+
+      // Skip escaped matches.
+      if (match && isEscaped(text)) {
+        lastEscapeIdx = match.index
+        moveTo(match.index + 1)
+        addText(match[0][0])
+        continue
+      }
+    }
+
+    if (!match) break
+    let i = 1
+
+    // Move the cursor _after_ this match.
+    cursor = lexer.lastIndex
+
+    // Borders (-0 to +1)
+    if (match[i]) {
+      flush()
+      addNode({
+        type: 'border',
+        text: input.slice(matchOffset, matchOffset + match[0].length),
+      })
+    }
+
+    // Quotes and lists (-1 to +0)
+    else if (match[(i += 3)]) {
+      flush()
+
+      let bullet = match[i]
+      let isQuote = bullet == '>'
+      let node = isQuote
+        ? addNode({
+            type: 'quote',
+            block: [],
+          })
+        : addNode({
+            type: 'list',
+            block: [],
+            indent: match[i - 1],
+            bullet,
+          })
+
+      // This looks for block-closing lines.
+      let breakRE = isQuote
+        ? /^\s{0,3}([*+-]|\d+[.\)])[ \t]/
+        : /^\s*([>*+-]|\d+[.\)])[ \t]/
+
+      // Find where the first line ends.
+      let start = cursor
+      cursor = search(input, '\n', start)
+      if (cursor < 0) cursor = input.length
+
+      // Parse multi-line blocks.
+      let content = input.slice(start, cursor)
+      while (cursor < input.length) {
+        let start = cursor + 1
+        // Look for "\n\n" break node.
+        if (input.charAt(start) == '\n') break
+
+        // Find where the current line ends.
+        cursor = search(input, '\n', start)
+        if (cursor < 0) cursor = input.length
+
+        // Slice after "> " and before "\n"
+        let line = input.slice(start, cursor)
+
+        // Avoid swallowing EOF newline.
+        if (!line) {
+          cursor = start - 1
+          break
+        }
+
+        // When a line starts with a list/quote node, avoid parsing it here.
+        if (line.match(breakRE)) {
+          cursor = start
+          break
+        }
+
+        content +=
+          '\n' + line.match(isQuote ? /^\s*>?\s*(.*)$/ : /^\s*(.*)$/)[1]
+      }
+
+      parse(content, node.block)
+      moveTo(cursor)
+    }
+
+    // Code blocks: (-1 to +1)
+    else if (match[(i += 2)] != null || match[i + 1]) {
+      flush()
+
+      let code = match[i + 1],
+        syntax = '',
+        indent = ''
+
+      // Indented code
+      if (code) {
+        indent = /^(\t|    )/.exec(code)[0]
+        code = code.replace(/^(\t|    )/gm, '')
+
+        // Avoid capturing the final newline.
+        if (code.slice(-1) == '\n') {
+          code = code.slice(0, -1)
+          moveTo(cursor - 1)
+        }
+      }
+      // Fenced code
+      else {
+        // Omit the final newline.
+        code = match[i].slice(0, -1)
+        syntax = match[i - 1].toLowerCase()
+      }
+
+      addNode({
+        type: 'codeBlock',
+        code,
+        syntax,
+        indent,
+      })
+    }
+
+    // Images / Links (-0 to +0)
+    else if (match[(i += 2)]) {
+      if (match[i][0] == '!') {
+        // Find the closing bracket.
+        let endOffset = search(input, ']', cursor)
+        if (endOffset < 0) {
+          addText(match[0])
+          continue
+        }
+
+        // Images are _not_ actually blocks. We treat it as one temporarily so
+        // we can reuse code between images and links.
+        prevNode = null
+        blocks.push({
+          type: 'image',
+          alt: input.slice(match.index + 2, endOffset),
+          url: '',
+          ref: '',
+        })
+
+        // Process the "]" next.
+        moveTo(endOffset)
+      }
+      // Create a link node.
+      else {
+        prevNode = null
+        blocks.push({
+          type: 'link',
+          block: [],
+          offset: cursor,
+        })
+      }
+    }
+    // Closing bracket (-0 to +2)
+    else if (match[++i]) {
+      let nodeTypes = /^(link|image)$/
+      let node = flush(block => !nodeTypes.test(block.type))
+      if (node) {
+        blocks.pop()
+
+        // [foo]: bar
+        if (match[i + 2]) {
+          if (node.type == 'link') {
+            addNode({
+              type: 'linkDef',
+              key: input.slice(node.offset, matchOffset),
+              url: match[i + 2],
+            })
+            continue
+          }
+          moveTo(match.index + 1) // "]".length
+        }
+
+        node = addBlock(node)
+
+        // [foo](bar) or [foo][bar]
+        if (match[i + 1]) {
+          // Find the closing bracket.
+          let endOffset = search(input, match[i + 1] == '(' ? ')' : ']', cursor)
+          if (endOffset < 0) {
+            addText(match[i + 1])
+          } else {
+            let startOffset = match.index + 2 // "](".length
+            let target = input.slice(startOffset, endOffset)
+            moveTo(endOffset + 1) // ")".length
+
+            // [foo](bar)
+            if (match[i + 1] == '(') {
+              node.url = target
+            }
+            // [foo][bar]
+            else {
+              node.ref = target
+            }
+          }
+        }
+      } else {
+        addText(match[0])
+      }
+    }
+
+    // Titles (-0 to +3)
+    else if (match[(i += 3)] || match[i + 2]) {
+      flush()
+      addNode({
+        type: 'title',
+        block: parse(match[i] || match[i + 3] || ''),
+        rank: match[i + 2]
+          ? match[i + 2].length
+          : match[i + 1][0] == '='
+          ? 1
+          : 2,
+      })
+    }
+
+    // Code spans (-0 to +0)
+    else if (match[(i += 4)]) {
+      let codeOffset = matchOffset + 1
+      addNode({
+        type: 'codeSpan',
+        code: input.slice(codeOffset, codeOffset + match[i].length),
+      })
+    }
+
+    // Breaks (-0 to +0)
+    else if (match[++i]) {
+      flush()
+      addNode({ type: 'break', text: match[0] })
+    }
+
+    // Inline formatting (-0 to +0)
+    else if (match[++i]) {
+      let style = match[i]
+      let type = style.length < 2 ? 'italic' : style == '~~' ? 'strike' : 'bold'
+
+      // Close a matching block..
+      let node = blocks[blocks.length - 1]
+      if (node && node.type == type && node.style == style) {
+        addNode(blocks.pop())
+      }
+      // ..or open a new block.
+      else {
+        // Assume not italic if a word character comes before,
+        // unless that character was an escaped match.
+        if (type == 'italic' && lastEscapeIdx < matchOffset - 1) {
+          let prevChar = input[matchOffset - 1]
+          if (prevChar && /\w/.test(prevChar)) {
+            addText(style)
+            continue
+          }
+        }
+        prevNode = null
+        blocks.push({
+          type,
+          block: [],
+          style,
+        })
+      }
+    }
+  }
+
+  flush()
+  return top
+}
+
+Object.defineProperty(parse, 'default', { value: parse })
+module.exports = parse
+
+},{}]},{},[25]);
