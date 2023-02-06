@@ -1,7 +1,8 @@
 <template>
   <div class="flex min-h-full h-screen">   
     <div class="grow">
-        <router-view :key="getKey(route.path)"></router-view>
+        <router-view></router-view>
+        <!--<router-view :key="getKey(route.path)"></router-view>-->
     </div>
   </div>
 </template>

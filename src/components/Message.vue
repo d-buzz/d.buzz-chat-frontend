@@ -11,11 +11,10 @@
     <TransitionRoot :show="showAddEmoteModal">
         <AddEmoteModal @oninput="emoteAction" @close="toggleAddEmoteModal"></AddEmoteModal>
     </TransitionRoot>
-    <div v-if="hasQuotedText(message)" class="flex mb-1" style="margin-left:24px;">
-        <div class="inline-block">
-        <UserCommunityIcon :name="message.reference.getUser()" :community="message.getCommunity()" 
-                  :imgCss="`avMini`"/></div>
-        <small class="pl-1 break-normal"><b :class="roleReferenceColor?roleReferenceColor:''">{{message.reference.getUser()}}</b> {{getQuotedText(message)}}</small>
+    <div v-if="hasQuotedText(message)" class="flex mb-1" style="margin-left:23px;">
+        <div class="quoteIcon"></div>
+        <small class="break-normal"><div class="float-left inline-block" style="padding-right:3px;"><UserCommunityIcon :name="message.reference.getUser()" :community="message.getCommunity()" 
+                  :imgCss="`avMini`"/></div><b :class="roleReferenceColor?roleReferenceColor:''" style="opacity:0.5;">{{message.reference.getUser()}}</b> <span>{{getQuotedText(message)}}</span></small>
     </div>
     <div class="message flex" :data-verified="message.isVerified()">
         <div class="flex-shrink-0 mr-5px">
@@ -291,6 +290,28 @@ async function init() {
 init();
 </script>
 <style scoped>
+.quoteIcon {
+    display: inline-block;
+    position: relative;
+    width: 25px;
+    min-width: 25px;
+    border-top: 2px solid var(--appfg1);
+    border-left: 2px solid var(--appfg1);
+    border-top-left-radius: 5px;
+    opacity: 0.37;
+    top: 8px;
+    right: 3px;
+    margin-bottom: 8px;
+}
+.quoteIcon::after {
+    position: absolute;
+    content: " ";
+    background: linear-gradient(#00000000, var(--appbg1));
+    width: 7px;
+    height: 100%;
+    margin-left:-5px;
+    margin-top: 5px;
+}
 .imgLimit {
     max-width: calc(min(100%, 500px));
     max-height: 275px;

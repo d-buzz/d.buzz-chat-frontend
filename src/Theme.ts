@@ -206,7 +206,7 @@ export function findThemeByName(name: string) {
 }
 export const defaultTheme = initializeTheme();
 export function applyTheme(obj: any) {
-    var theme = findThemeByName(obj);console.log("initialize theme ", obj, theme, defaultTheme);
+    var theme = findThemeByName(obj);
     if(theme) {
         defaultTheme.set(theme);
         defaultTheme.applyTheme();

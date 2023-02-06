@@ -13,14 +13,16 @@ const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_
 
 window.globalProperties = {
     "sidebar": 0,
-    "sidebar2enableSharedView": true,
+    "sidebar2enableSharedView": false,
     "sidebarAddButton": 2,
     "communityChannelNameFormat": "<name>",
     "homeTabCommunities": true,
     "homeTabPreferences": true,
     "homeTabThemes": true,
     "prependCommunities": [],
-    "defaultTheme": "Light"
+    "defaultTheme": "Light",
+    "--appCommunityIconFontSize": "20px",
+    "--appCommunityIconSize": "52px"
 
     /*"sidebar": 2,
     "prependCommunities": ["hive-163399"]*/
@@ -43,6 +45,10 @@ window.tmpProperties = {};
                 if(window.refreshApp) window.refreshApp();
                 if(properties['defaultTheme'] != null && window.localStorage.getItem("theme") == null)
                     applyTheme(properties['defaultTheme']);
+                var root = root = document.querySelector(':root');
+                for(var name in properties)
+                    if(name.startsWith("--")) 
+                        root.style.setProperty(name, properties[name]);
             }
         } };
         window.addEventListener("message", (event) => {

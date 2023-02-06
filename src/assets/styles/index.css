@@ -9,6 +9,9 @@
     --appbgowner: #007b00;
     --appbgadmin: #2368D5;
     --appbgmod: #2e8336;
+
+    --appCommunityIconFontSize: 20px;
+    --appCommunityIconSize: 52px;
 }
 .appbg0 { background: var(--appbg0); }
 .appbg1 { background: var(--appbg1); }
@@ -141,11 +144,11 @@ pre > code { display: block; }
     min-height: 128px;
 }
 .avCommunity {
-    font-size: 20px;
-    width: 52px;
-    height: 52px;
-    min-width: 52px;
-    min-height: 52px;
+    font-size: var(--appCommunityIconFontSize);
+    width: var(--appCommunityIconSize);
+    height: var(--appCommunityIconSize);
+    min-width: var(--appCommunityIconSize);
+    min-height: var(--appCommunityIconSize);
 }
 .avMini {
     font-size: 8.5px;
