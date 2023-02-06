@@ -3,7 +3,7 @@
         <div v-if="compact" class="nameParent relative" :class="{selected0: $route.path == link}">
              <!--<small class="name"><b>{{users}}</b></small>-->
             <small v-if="number && number != '0'" class="number2"><b>{{number}}</b></small>
-            <div class="p-1" @mouseenter="tooltip(this.$el, `${users}\n${conversation}`)">
+            <div class="p-1" @mouseenter="tooltip($event.target, `${users}\n${conversation}`)">
                 <UserIcon v-if="iconUsername" :name="iconUsername" imgCss="avCommunity"/>
             </div>
         </div>
