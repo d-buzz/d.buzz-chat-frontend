@@ -23,9 +23,16 @@
                 </div>
             </router-link>
         </div>
+        <div v-else-if="stream.getPathType() === 'u'">
+            <a :href="path" target="_blank" rel="noreferrer noopener">
+                <div @mouseenter="tooltip($event.target, path)">
+                    <div class="font-bold"><span class="oi oi-globe text-sm"></span> {{stream.getName()}}</div>
+                </div>
+            </a>
+        </div>
         <div v-else-if="stream.getPathType() === 'i'">
             <a v-if="path.startsWith('https://')" :href="path" target="_blank" rel="noreferrer noopener">
-                <div>
+                <div @mouseenter="tooltip($event.target, path)">
                     <div class="font-bold"><span class="oi oi-external-link text-sm"></span> {{stream.getName()}}</div>
                 </div>
             </a>
@@ -43,6 +50,7 @@
     </div>
 </template>
 <script setup type="ts">
+const tooltip = ref(window.tooltip);
 const props = defineProps({
     stream: Object,
     community: String,
@@ -61,6 +69,7 @@ function getPath() {
 
         return '/i/'+path.getUser()+'/'+path.getPath();
     }
+    if(path.getType() === 'u') return path.getPath();
     return '';
 }
 const path = getPath(); 

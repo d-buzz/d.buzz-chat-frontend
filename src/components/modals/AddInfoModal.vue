@@ -8,6 +8,7 @@
             <select class="inputSelect1 w-full" @change="onSelect($event.target.value)">
                 <option value="/about">About</option>
                 <option value="/created">Posts</option>
+                <option value="https://">Url</option>
             </select>
 
             <!--<select
@@ -82,7 +83,7 @@ const emit = defineEmits(["oninput"]);
 const isLoading = ref(false);
 const displayName = ref("About");
 const dataPathModel = ref("/about");
-const selectData = {"/about":"About", "/created":"Posts"};
+const selectData = {"/about":"About", "/created":"Posts", "https://":"Link label"};
 
 function onSelect(value) {
     displayName.value = selectData[value] || "Info";

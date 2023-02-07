@@ -157,6 +157,9 @@ class Community {
     initialize(communityData) {
         this.communityData = communityData;
         var settings = this.getSettings();
+        if (settings.emotes === undefined) {
+            this.emotes = {};
+        }
         if (settings.streams === undefined) {
             this.streams = Community.defaultStreams(this.getName());
             return;
@@ -320,6 +323,7 @@ class Community {
     }
     updateStreamsCustomJSON() {
         var settings = utils_1.Utils.copy(this.getSettings());
+        settings.emotes = this.emotes;
         settings.streams = [];
         for (var stream of this.streams)
             settings.streams.push(stream.toJSON());
@@ -1199,6 +1203,8 @@ class DataPath {
             return null;
         if (utils_1.Utils.isWholeNumber(text))
             return new DataPath(DataPath.TYPE_TEXT, community, text);
+        if (text.startsWith("http:") || text.startsWith("https:"))
+            return new DataPath(DataPath.TYPE_URL, community, text);
         var typeI = text.indexOf(':');
         var type = null;
         if (typeI !== -1) {
@@ -1217,7 +1223,12 @@ class DataPath {
         return new DataPath((type === null) ? DataPath.TYPE_INFO : type, community, text);
     }
     toString(community) {
-        if (this.user === community) {
+        if (this.type === DataPath.TYPE_URL) {
+            if (this.path.startsWith("http:") || this.path.startsWith("https:"))
+                return this.path;
+            return this.type + ':' + this.path;
+        }
+        else if (this.user === community) {
             if (this.type === DataPath.TYPE_TEXT && utils_1.Utils.isWholeNumber(this.path))
                 return this.path;
             if (this.type === DataPath.TYPE_INFO)
@@ -1231,6 +1242,7 @@ class DataPath {
 }
 exports.DataPath = DataPath;
 DataPath.TYPE_INFO = "i";
+DataPath.TYPE_URL = "u";
 DataPath.TYPE_TEXT = "t";
 DataPath.TYPE_GROUP = "g";
 
@@ -1702,7 +1714,7 @@ class Markdown {
             var item = null;
             var addP = true;
             switch (a.type) {
-                case "image": //p ok
+                case "image":
                     item = document.createElement("img");
                     item.setAttribute("alt", a.alt);
                     item.setAttribute("src", Markdown.imgPrepend + a.url);
@@ -1842,7 +1854,6 @@ class Markdown {
     static markdown(text) { return (0, markdown_ast_1.default)(text); }
     static simpleMarkdown(text, result = null) {
         var ast = Markdown.markdown(text);
-        console.log(ast);
         var doc = document.createDocumentFragment();
         Markdown.simpleMarkdownAdd(ast, doc, 0);
         if (result)

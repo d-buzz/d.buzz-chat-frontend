@@ -44,6 +44,9 @@
             </span>
             <span v-else-if="item.getPathType() == 'i'"><span class="oi oi-info text-center" style="width:14px;"></span> {{item.getName()}} 
                 <span class="float-right text-sm">(info)</span>
+            </span> 
+            <span v-else-if="item.getPathType() == 'u'"><span class="oi oi-globe text-center" style="width:14px;"></span> {{item.getName()}} 
+                <span class="float-right text-sm">(url)</span>
             </span>              
             <span v-else>{{item.getName()}}</span>
             </div>
@@ -66,14 +69,12 @@
                    
             </div>
 
-            
-
             <div v-if="selected">
                 <label class="block text-sm font-medium text gray-700">Shown for:</label>
                 <PermissionSet :set="selected.readSet" :key="selectKey"/>
             </div>
         
-            <div v-if="selected && selected.dataPath != null && selected.dataPath.getType() != 'i' && selected.dataPath.getType() != 'g'">
+            <div v-if="selected && selected.dataPath != null && selected.dataPath.getType() != 'i' && selected.dataPath.getType() != 'g' && selected.dataPath.getType() != 'u'">
                 <label class="block text-sm font-medium text gray-700">Write Permissions:</label>
                 <PermissionSet :set="selected.writeSet" :key="selectKey"/>
             </div>
@@ -85,7 +86,18 @@
         <button class="btn" @click="updateSettings" title="Save changes">Update</button>
         <button class="btn2" @click="resetSettings" title="Discard changes and reload existing settings"><span class="oi oi-reload"></span> Reset</button>
     </div>
-    
+    <hr/>
+    <div class="font-bold">Emotes</div>
+    <div class="flex gap-x-2">
+        <div><input id="emotename" name="emotename" type="text" class="inputText1" placeholder="emote name"></div>
+        <div><input id="emoteimage" name="emoteimage" type="text" class="inputText1" placeholder="emote image url"></div>
+        <button class="btn" @click="" title="Add"><span class="oi oi-plus"></span> Add</button>
+    </div>
+    <div><small>{{updateMessage}}</small></div>
+    <div>
+        <button class="btn" @click="updateSettings" title="Save changes">Update</button>
+        <button class="btn2" @click="resetSettings" title="Discard changes and reload existing settings"><span class="oi oi-reload"></span> Reset</button>
+    </div>
  </div>
 </template>
 <script setup>
