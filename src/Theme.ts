@@ -15,7 +15,8 @@ export const defaultColors = [
 export const colorTypes = [
     ["bg", "Background", null],
     ["fg", "Foreground", (x)=>calcFg(x)],
-    ["sg", "Selection", (x)=>calcSg(x)]
+    ["sg", "Selection", (x)=>calcSg(x)],
+    ["hg", "Highlight", (x)=>calcHg(x)]
 ];
 
 export const defaultThemes = {
@@ -256,6 +257,11 @@ function calcFg(rgb,compare=128) {
 function calcSg(rgb) {
     var sg = calcFg(rgb,200);
     sg.push((sg[0] === 0)?23:95);
+    return sg;
+}
+function calcHg(rgb) {
+    var sg = calcFg(rgb,200);
+    sg.push((sg[0] === 0)?23:25);
     return sg;
 }
 
