@@ -22,61 +22,66 @@
              @click="$emit('toggleStreambar')"><span class="oi oi-menu" style="font-size:30px;"></span></button>
     </div>-->
 
-    <div class="flex justify-between border-b-1 p-1 border-r-1 cursor-pointer appsg0" @click="toggleDirect">
-        <b class="text-xs">{{$t("SideBar.Direct")}}</b>
-        <button v-if="addButton === 0" class="text-xs" @click.stop="toggleNewUserMessageModalOpen">
-            <span class="oi oi-plus"></span>
-        </button>
-        <span v-else class="oi oi-elevator iconSize"></span>
-    </div>
-
-    <div v-if="showDirect" class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox border-b-1"
-        style="overflow-x: clip;" @dragover.prevent @drop.stop.prevent="onDrop">
-        <div class="scrollBoxContent flex flex-col border-r-1">
-            <div :key="updateKey2">
-                <TextIcon v-if="addButton === 1" class="p-1 cursor-pointer" :text="'+'" 
-                    @click.stop="toggleNewUserMessageModalOpen"
-                    @mouseenter="tooltip($event.target, $t('SideBar.NewConversation'))"                
-                />
-                <div v-for="conversation in conversations">
-                    <Conversation v-if="conversation.id !== undefined" :conversation="conversation.conversation" 
-                        :id="conversation.id" :username="conversation.username"
-                        :number="conversation.lastReadNumber+conversation.plus" :compact="true"/>
-                    <Conversation v-else :conversation="conversation.conversation"
-                     :username="username" :number="''+conversation.lastReadNumber" :compact="true"/>
-                </div>
-                <TextIcon v-if="addButton === 2" class="p-1 cursor-pointer" :text="'+'"
-                    @click.stop="toggleNewUserMessageModalOpen"
-                    @mouseenter="tooltip($event.target, $t('SideBar.NewConversation'))"/>
+    <div class="flex flex-col">
+        <div class="flex flex-col" ref="directPanel">
+            <div class="flex justify-between border-b-1 p-1 border-r-1 cursor-pointer appsg0" @click="toggleDirect">
+                <b class="text-xs">{{$t("SideBar.Direct")}}</b>
+                <button v-if="addButton === 0" class="text-xs" @click.stop="toggleNewUserMessageModalOpen">
+                    <span class="oi oi-plus"></span>
+                </button>
+                <span v-else class="oi oi-elevator iconSize"></span>
+            </div>
+        </div>
+        <div class="flex flex-col" ref="communityPanel">
+           <div class="flex justify-between gap-x-1 border-b-1 border-r-1 p-1 font-bold cursor-pointer appsg0"
+                @click="toggleCommunities">
+                <b class="text-xs">C/</b>
+                <button v-if="addButton === 0" class="text-xs" @click.stop="toggleAddCommunityModal">
+                    <span class="oi oi-plus"></span>
+                </button>
+                <span v-else class="oi oi-elevator iconSize"></span>
             </div>
         </div>
     </div>
 
-   <div class="flex justify-between gap-x-1 border-b-1 border-r-1 p-1 font-bold cursor-pointer appsg0"
-        @click="toggleCommunities">
-        <b class="text-xs">C/</b>
-        <button v-if="addButton === 0" class="text-xs" @click.stop="toggleAddCommunityModal">
-            <span class="oi oi-plus"></span>
-        </button>
-        <span v-else class="oi oi-elevator iconSize"></span>
-    </div>
-  <div v-if="showCommunities" class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox"
-        style="overflow-x: clip;" @dragover.prevent @drop.stop.prevent="onDrop">
-    <div class="scrollBoxContent flex flex-col border-r-1">
-        <TextIcon v-if="addButton === 1" class="p-1 cursor-pointer" :text="'+'" 
-            @click.stop="toggleAddCommunityModal"
-            @mouseenter="tooltip($event.target, $t('SideBar.AddCommunity'))"/>
-        <Draggable v-model="communities" :key="updateKey">
-            <template v-slot:item="{item}">
-              <SideBarIcon :img="item[0]" :name="item[1]"
-                 :community="item" :number="item.lastReadNumber" @toggleStreambar="$emit('toggleStreambar')" />
-            </template>
-        </Draggable>
-        <TextIcon v-if="addButton === 2" class="p-1 cursor-pointer" :text="'+'" 
-            @click.stop="toggleAddCommunityModal"
-            @mouseenter="tooltip($event.target, $t('SideBar.AddCommunity'))"/>
-    </div>
-  </div>
+    <div v-if="showDirect" class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox border-b-1"
+                style="overflow-x: clip;" @dragover.prevent @drop.stop.prevent="onDrop">
+            <div class="scrollBoxContent flex flex-col border-r-1">
+                <div :key="updateKey2">
+                    <TextIcon v-if="addButton === 1" class="p-1 cursor-pointer" :text="'+'" 
+                        @click.stop="toggleNewUserMessageModalOpen"
+                        @mouseenter="tooltip($event.target, $t('SideBar.NewConversation'))"                
+                    />
+                    <div v-for="conversation in conversations">
+                        <Conversation v-if="conversation.id !== undefined" :conversation="conversation.conversation" 
+                            :id="conversation.id" :username="conversation.username"
+                            :number="conversation.lastReadNumber+conversation.plus" :compact="true"/>
+                        <Conversation v-else :conversation="conversation.conversation"
+                         :username="username" :number="''+conversation.lastReadNumber" :compact="true"/>
+                    </div>
+                    <TextIcon v-if="addButton === 2" class="p-1 cursor-pointer" :text="'+'"
+                        @click.stop="toggleNewUserMessageModalOpen"
+                        @mouseenter="tooltip($event.target, $t('SideBar.NewConversation'))"/>
+                </div>
+            </div>
+        </div>
+    <div v-if="showCommunities" class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox"
+                style="overflow-x: clip;" @dragover.prevent @drop.stop.prevent="onDrop">
+        <div class="scrollBoxContent flex flex-col border-r-1">
+            <TextIcon v-if="addButton === 1" class="p-1 cursor-pointer" :text="'+'" 
+                @click.stop="toggleAddCommunityModal"
+                @mouseenter="tooltip($event.target, $t('SideBar.AddCommunity'))"/>
+            <Draggable v-model="communities" :key="updateKey">
+                <template v-slot:item="{item}">
+                  <SideBarIcon :img="item[0]" :name="item[1]"
+                     :community="item" :number="item.lastReadNumber" @toggleStreambar="$emit('toggleStreambar')" />
+                </template>
+            </Draggable>
+            <TextIcon v-if="addButton === 2" class="p-1 cursor-pointer" :text="'+'" 
+                @click.stop="toggleAddCommunityModal"
+                @mouseenter="tooltip($event.target, $t('SideBar.AddCommunity'))"/>
+        </div>
+      </div>
 </template>
 <script setup>
 import Draggable from "vue3-draggable";
@@ -92,10 +97,12 @@ const communities = ref([]);
 const updateKey = ref("");
 const number = ref('0');
 function canOpenBoth() { return window.globalProperties["sidebar2enableSharedView"] === true; }
-const showDirect = ref(true);
-const showCommunities = ref(canOpenBoth());
+const showDirect = ref(canOpenBoth());
+const showCommunities = ref(true);
 const addButton = ref(window.globalProperties["sidebarAddButton"]);
 const showMenu = ref(false);
+const directPanel = ref();
+const communityPanel = ref();
 
 function logout() {
     accountStore.signOut();
@@ -104,15 +111,27 @@ function logout() {
 function toggleMenu() {
     showMenu.value = !showMenu.value;
 }
+function order() {
+    if(showDirect.value && !showCommunities.value) {
+        directPanel.value.style.order = "1";
+        communityPanel.style.order = "0";
+    }
+    else if(!showDirect.value && showCommunities.value) {
+        directPanel.value.style.order = "0";
+        communityPanel.style.order = "1";
+    }
+}
 function toggleDirect() {
     showDirect.value = !showDirect.value;
     if(!showDirect.value && !showCommunities.value) showCommunities.value = true;
     else if(!canOpenBoth() && showDirect.value && showCommunities.value) showCommunities.value = false;
+    order();
 }
 function toggleCommunities() { 
     showCommunities.value = !showCommunities.value;
     if(!showDirect.value && !showCommunities.value) showDirect.value = true;
     else if(!canOpenBoth() && showDirect.value && showCommunities.value) showDirect.value = false;
+    order();
 }
 
 function onDrop() {
