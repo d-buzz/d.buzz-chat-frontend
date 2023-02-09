@@ -169,7 +169,7 @@ function initWidget() {
         "prependCommunities": ["hive-163399"]
     };*/
     var element = stwidget.createElement()
-    stwidget.setStyle({ top: '51px', right: '32px' });
+    stwidget.setStyle({ direction: 'rtl', top: '51px', right: '32px' });
 
     var e = widget.value;
     e.appendChild(element);
