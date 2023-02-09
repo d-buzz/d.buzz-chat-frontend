@@ -55,14 +55,14 @@
         </div>
     </div>
     <div class="h-full flex flex-col justify-between">
-        <div class="font-bold" style="order:1;">
+        <div class="font-bold border-b-1 mr-3" style="order:1;padding-top:3px; padding-bottom:3px;">
             <span class="cursor-pointer" @click.stop="setThread(null)">{{streamName}}</span> <span v-if="threadName !== null" class="font-normal"><span class="oi oi-chevron-right cursor-pointer" style="font-size:10px;vertical-align:top;margin-top:6px;" @click="setThread(null)"></span> {{threadName}}</span>
             <span class="inline-block" v-if="sharedCommunities">
                 <span class="flex">
                     <SideBarIcon v-for="community in sharedCommunities" :img="community[0]" :name="community[1]" :community="community" :imgCss="`avMini`" />
                 </span>
             </span>
-            <span class="float-right mr-3">
+            <span class="float-right">
                 <button class="text-sm mr-2" @click="toggleThreads" @mouseenter="tooltip($event.target, $t('Community.Threads'))">
                     <span class="oi oi-fork"></span>
                 </button>
