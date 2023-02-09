@@ -13,9 +13,10 @@
             </span>
         </div>
         <div class="flex">
-            <div class="flex fg70 shadow appearance-none border border-gray-700 rounded-xl w-[calc(100%-1rem)] leading-tight mr-1">
+            <div class="flex relative fg70 shadow appearance-none border border-gray-700 rounded-xl w-[calc(100%)] leading-tight mr-1">
                 <div v-if="canWrite"
-                  class="appearance-none w-[calc(100%-1rem)] py-2 px-3 focus:outline-none focus:shadow-outline"
+                  class="box whitespace-pre-wrap appearance-none w-[calc(100%)] py-2 px-3 focus:outline-none focus:shadow-outline"
+                  style="overflow-wrap: normal; word-break: break-word;"
                   ref="box"
                   @keyup="onChange"
                   @paste="onChange"
@@ -26,19 +27,22 @@
                   contenteditable>
                 </div>
                 <div v-else
-                    class="text-gray-700 appearance-none w-[calc(100%-1rem)] py-2 px-3 focus:outline-none focus:shadow-outline"
+                    class="text-gray-700 appearance-none w-[calc(100%)] py-2 px-3 focus:outline-none focus:shadow-outline"
                     >
                     Permission required.
                 </div>
-                <div @click="if(canWrite) enterMessage(null);" class="float-right my-2 mx-3 cursor-pointer oi oi-envelope-open envelope" 
+                <div class="absolute float-right flex gap-x-3 pr-3" style="right: 0; max-height: 38px;">
+                    <div @click="if(canWrite) enterMessage(null);" class="my-2 cursor-pointer oi oi-envelope-open envelope" 
                     @mouseenter="tooltip($event.target, $t('MessageBox.Send'))"></div>
-            </div>
-            <div class="flex gap-x-1" style="max-height: 38px;">
-                <span @click="if(canWrite) toggleAddEmoteModal();" class="cursor-pointer" style="font-size: 22px;" 
-                    @mouseenter="tooltip($event.target, $t('MessageBox.AddEmote'))">&#x263a;</span>
-                <span class="cursor-pointer oi oi-image" style="padding-top:5px;font-size: 1.125rem;"
-                    @click="if(canWrite) toggleAddImageModal();" 
-                    @mouseenter="tooltip($event.target, $t('MessageBox.AddImage'))"></span>
+                    <span @click="if(canWrite) toggleAddEmoteModal();" class="flipY my-2 cursor-pointer" 
+                        @mouseenter="tooltip($event.target, $t('MessageBox.AddEmote'))">
+                        <img class="flipYItem" src="/src/assets/images/icons/emoteicon.png" style="max-width: 21px;">
+                    </span>
+                    <span class="flipY my-2 cursor-pointer" style="font-size: 1.125rem;"
+                        @click="if(canWrite) toggleAddImageModal();" 
+                        @mouseenter="tooltip($event.target, $t('MessageBox.AddImage'))">
+                        <span class="flipYItem oi oi-image"></span></span>
+                </div>
             </div>
         </div>
     </div>
@@ -90,6 +94,7 @@ function onChange(e) {
     var text = e.target.innerText;
     var nonBlank = text && text.trim() != '';
     if(nonBlank !== lastNonBlank) {
+        e.target.style.marginTop = (nonBlank)?"20px":"0px";
         lastNonBlank = nonBlank;
         emit("fullorblank", nonBlank);
     } 
@@ -161,5 +166,8 @@ defineExpose({
     background-color: #e0e0e0;
     padding: 3px;
     max-height: 200px;
+}
+.box {
+    transition: margin 250ms ease-in-out;
 }
 </style>

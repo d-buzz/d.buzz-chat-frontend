@@ -13,6 +13,9 @@
     --appCommunityIconFontSize: 20px;
     --appCommunityIconSize: 52px;
 }
+body {
+    font-family: "Century Schoolbook L", Arial, Helvetica, sans-serif;
+}
 .appbg0 { background: var(--appbg0); }
 .appbg1 { background: var(--appbg1); }
 .appbg2 { background: var(--appbg2); }
@@ -90,7 +93,16 @@
     /*border-bottom: 5px solid #059669;*/
     border-bottom: 5px solid var(--appbgbtn1);
 }
-
+.flipY {
+    perspective: 1000px;
+}
+.flipYItem {
+    transition: transform 1.0s;
+    transform-style: preserve-3d;
+}
+.flipY:hover .flipYItem {
+    transform: rotateY(180deg);
+}
 .tooltip {
     position: fixed;
     z-index: 100;

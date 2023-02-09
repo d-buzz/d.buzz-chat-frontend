@@ -4,6 +4,7 @@ import { Theme, defaultTheme, applyTheme } from "./Theme.ts";
 import { defaultEmotes } from "./Emotes.ts";
 
 import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
+import './assets/styles/centuryschoolbookl.css';
 import './assets/styles/vue3-emoji-picker.css'
 import './assets/styles/open-iconic.css';
 import "./assets/styles/index.css";

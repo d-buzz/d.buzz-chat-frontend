@@ -146,7 +146,7 @@
                 <div class="overflow-x-hidden" style="text-overflow: ellipsis;"><span class="font-bold">{{contentMsg.msg.getUser()}}:</span> {{contentMsg.text}}</div>
             </div>
             <div class="mt-1"></div>
-            <div class="flex mr-3">
+            <div class="flex">
               <MessageBox
                 ref="messageBox"
                 class="grow"

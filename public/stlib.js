@@ -2512,17 +2512,17 @@ class MessageManager {
     }
     getCommunitiesHidden(user = this.user) {
         return __awaiter(this, void 0, void 0, function* () {
+            var tmpArray = [];
             var array = yield this.getCommunities(user);
             var hide = this.loadCommunityHiddenLocally(user);
             if (hide != null) {
-                var tmpArray = [];
                 for (var item of array) {
                     if (hide[item[0]] === true)
                         tmpArray.push(item);
                 }
                 return tmpArray;
             }
-            return array;
+            return tmpArray;
         });
     }
     getCommunitiesSorted(user = this.user, sortOrder = null, applyHide = true, prepend = null) {
