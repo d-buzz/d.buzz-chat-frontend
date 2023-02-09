@@ -66,7 +66,7 @@
                     Unsupported message type.
                 </div>
                 <div v-if="message.emotes">
-                    <span v-for="emote in message.emotes" class="border rounded-md border-gray-400 pl-1 pr-1 mr-1">
+                    <span v-for="emote in message.emotes" class="apphg2 border rounded-md border-default2 pl-1 pr-1 mr-1">
                         <span v-if="emote.users.indexOf(account) === -1">                        
                             <small class="font-bold align-text-bottom cursor-pointer" @click="emoteAction(emote.emote)">{{emote.users.length}}</small> {{emote.emote}}
                         </span>         
