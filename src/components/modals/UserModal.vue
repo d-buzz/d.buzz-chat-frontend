@@ -4,40 +4,46 @@
         <div class="flex-shrink-0 mr-5px">
             <UserIcon :name="user" imgCss="av128" size="medium"/>
         </div>
-        <div class="grow" style="margin-top:-7px;">
-            <div class="flex justify-between">
-                <b class="text-lg">{{user}}</b>
-            </div>
-            <div>
-                <small class="text-gray-700 mr-1" 
-                    style="align-self: center; padding: 1px 2px; " title="reputation">{{reputation}}
-                    <span class="oi oi-badge" style="opacity:0.5;"></span></small> 
-                <small class="text-gray-700" style="align-self: center;" title="created date">
-                    {{created}}<span class="oi oi-calendar" style="margin-left:1px; opacity:0.5;"></span></small> 
-            </div>     
-            <hr/>
-            <div v-if="communityData">
-                <div v-if="editable" class="mt-1">
-                    <PermissionSet :set="roleSet" :rolesOnly="true" :titleButtonText="' '"/>
-                    <hr/>
-                    <div>
-                    <button class="btn" @click="saveChanges">Update</button>
-                    <button class="btn2" @click="discardChanges">Reset</button>
+        <div class="flex flex-col grow" style="margin-top:-7px;min-width:210px;">
+            <div class="grow">
+                <div class="flex justify-between">
+                    <b class="text-lg">{{user}}</b>
+                </div>
+                <div>
+                    <small class="text-gray-700 mr-1" 
+                        style="align-self: center; padding: 1px 2px; " @mouseenter="tooltip($event.target, $t('UserModal.Reputation'))">{{reputation}}
+                        <span class="oi oi-badge" style="opacity:0.5;"></span></small> 
+                    <small class="text-gray-700" style="align-self: center;" @mouseenter="tooltip($event.target, $t('UserModal.CreatedDate'))">
+                        {{created}}<span class="oi oi-calendar" style="margin-left:1px; opacity:0.5;"></span></small> 
+                </div>     
+                <hr/>
+                <div v-if="communityData">
+                    <div v-if="editable" class="mt-1">
+                        <PermissionSet :set="roleSet" :rolesOnly="true" :titleButtonText="' '"/>
+                        <hr/>
+                        <div>
+                        <button class="btn" @click="saveChanges">Update</button>
+                        <button class="btn2" @click="discardChanges">Reset</button>
+                        </div>
+                    </div>
+                    <div v-else-if="isMod">
+                        <div><i>{{role}}</i><span class="cursor-pointer text-sm float-right" @click="toggleEditable" title="edit role, titles"><span class="oi oi-pencil"></span></span></div>
+                        <div><span v-for="title in titles" class="rounded-lg bg-green-700 pr-1 pl-1 mr-1 text-white font-bold text-sm">{{title}}</span></div> 
                     </div>
                 </div>
-                <div v-else-if="isMod">
-                    <div><i>{{role}}</i><span class="cursor-pointer text-sm float-right" @click="toggleEditable" title="edit role, titles"><span class="oi oi-pencil"></span></span></div>
-                    <div><span v-for="title in titles" class="rounded-lg bg-green-700 pr-1 pl-1 mr-1 text-white font-bold text-sm">{{title}}</span></div> 
-                </div>
+            </div>
+            <div>
+                <small>Visit on:
+                    <a class="font-bold" :href="`https://peakd.com/@${user}`" @mouseenter="tooltip($event.target, `https://peakd.com/@${user}`)" target="_blank" rel="noreferrer noopener">Peakd <span class="oi oi-external-link text-xm"></span></a>
+                </small>            
             </div>
         </div>
     </div>
     <div class="mt-2">
+        <router-link :to="`/p/${user}`"><span class="btn" @mouseenter="tooltip($event.target, $t('UserModal.Message.Info'))"><span class="oi oi-chat text-sm"></span> {{$t("UserModal.Message")}}</span></router-link> 
         <span v-if="relations">     
-            <button class="btn" @click="add(user, !relations.follows)"><span class="oi oi-people"></span> {{relations.follows?'Remove':'Add'}}</button>   
+            <button class="btn" @click="add(user, !relations.follows)" @mouseenter="tooltip($event.target, $t('UserModal.'+(relations.follows?'Remove.Info':'Add.Info')))"><span class="oi oi-people"></span> {{$t("UserModal."+(relations.follows?'Remove':'Add'))}}</button>   
         </span> 
-        <router-link :to="`/p/${user}`"><span class="btn" ><span class="oi oi-chat text-sm"></span> Message</span></router-link> 
-        <a class="btn" :href="`https://peakd.com/@${user}`" target="_blank" rel="noreferrer noopener"><span class="oi oi-external-link text-sm"></span> Blog</a>
     </div>
     <div class="mt-1"><small>{{updateMessage}}</small></div>
   </DefaultModal>
@@ -48,6 +54,7 @@ const props = defineProps<{
     user: String,
     community: String
 }>();
+const tooltip = ref(window.tooltip);
 var communityData = ref(null);
 var role = ref(null);
 var titles = ref(null);

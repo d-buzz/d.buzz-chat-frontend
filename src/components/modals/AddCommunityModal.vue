@@ -61,7 +61,8 @@
                 <div v-if="communitiesActive.length > 0">
                     <div class="w-100 text-sm font-bold text-right md:text-center text-gray-400 mt-1">activity measured by messages in last 7 days</div>
                     <div class="flex flex-row flex-wrap" :key="updateKey+'#3'">
-                     <CommunityIcon v-for="community in communitiesActive" :img="community.name" :name="community.title" :number="''+community.number"  />
+                     <CommunityIcon v-for="community in communitiesActive" :img="community.name" 
+                        :name="community.title" :number="''+community.number" @closeAll="emit('close')" />
                     </div>
                 </div>
             </TabPanel>
@@ -69,7 +70,8 @@
                 <div v-if="communitiesFound.length > 0">
                     <div class="w-100 text-sm font-bold text-right md:text-center text-gray-400 mt-1">found</div>
                     <div class="flex flex-row flex-wrap" :key="updateKey+'#2'">
-                     <CommunityIcon v-for="community in communitiesFound" :fade="!isActive(community.name, communitiesActive)" :img="community.name" :name="community.title" :number2="''+community.subscribers"  />
+                     <CommunityIcon v-for="community in communitiesFound" :fade="!isActive(community.name, communitiesActive)" :img="community.name"
+                         :name="community.title" :number2="''+community.subscribers" @closeAll="emit('close')" />
                         <div v-if="hasNextPage" class="btn" @click="findCommunities(searchBar, true)">
                            next<br>page
                         </div>

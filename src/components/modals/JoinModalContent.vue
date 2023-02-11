@@ -25,13 +25,13 @@
         </Transition>
     </div>
     <div class="mt-2">
-        <button v-if="showMessageButton" class="btn float-left hideButton" @click.stop="showBar()"><span class="oi oi-envelope-closed text-sm"></span> {{$t('JoinModalContent.Message')}}</button>
-        <button v-if="!hideVisitButton && !addedCommunity" class="btn" 
-            @click="addCommunity(community)"
-            @mouseenter="tooltip($event.target, $t('JoinModalContent.Add.Tooltip'))"><span class="oi oi-plus text-sm"></span> {{$t('JoinModalContent.Add')}}</button>        
         <button v-if="!hideVisitButton" class="btn" 
             @click="visitCommunity(community)"
             @mouseenter="tooltip($event.target, $t('JoinModalContent.Visit.Tooltip'))"><span class="oi oi-globe text-sm"></span> {{$t('JoinModalContent.Visit')}}</button>
+        <button v-if="showMessageButton" class="btn float-left hideButton" @click.stop="showBar()"><span class="oi oi-envelope-closed text-sm"></span> {{$t('JoinModalContent.Message')}}</button>
+        <button v-if="!hideVisitButton && !addedCommunity && !joinedCommunity" class="btn" 
+            @click="addCommunity(community)"
+            @mouseenter="tooltip($event.target, $t('JoinModalContent.Add.Tooltip'))"><span class="oi oi-plus text-sm"></span> {{$t('JoinModalContent.Add')}}</button>        
         <button class="btn" @click="join(!joinedCommunity)"
             @mouseenter="tooltip($event.target, $t(joinedCommunity?'JoinModalContent.Leave.Tooltip':'JoinModalContent.Join.Tooltip'))"><span class="oi oi-people text-sm"></span> {{$t(joinedCommunity?'JoinModalContent.Leave':'JoinModalContent.Join')}}</button>
     </div>
@@ -41,6 +41,7 @@
 <script setup lang="ts">
 const tooltip = ref(window.tooltip);
 const router = useRouter();
+const emit = defineEmits(["closeAll"]);
 const props = defineProps({
     community: String,
     hideVisitButton: Boolean,
@@ -95,6 +96,7 @@ function addCommunity(community) {
 function visitCommunity(community) {
     const manager = getManager();
     router.push(manager.getSelectedCommunityPage(community, `/i/${community}/about`));
+    emit("closeAll");
 }
 function hasJoinedCommunity(communities, community) {
     for(var item of communities)

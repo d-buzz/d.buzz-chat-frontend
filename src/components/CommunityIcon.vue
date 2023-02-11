@@ -1,6 +1,6 @@
 <template>
     <TransitionRoot :show="showJoinModal">
-        <JoinModal :community="img" @close="toggleJoinModal"></JoinModal>
+        <JoinModal :community="img" @close="toggleJoinModal" @closeAll="emit('closeAll')"></JoinModal>
     </TransitionRoot>
   <div class="flex nameParent relative items-center justify-start" 
   :class="{fade:fade}" v-if="hasImg || getImgCss() == 'avMini'">
@@ -27,6 +27,7 @@
   </div>
 </template>
 <script setup>
+const emit = defineEmits(["closeAll"]);
 const tooltip = ref(window.tooltip);
 const router = useRouter();
 const props = defineProps({

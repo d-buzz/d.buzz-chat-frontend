@@ -583,7 +583,7 @@ async function updateStatus(writing) {
     await manager.setSelectedOnlineStatus(writing);
 }
 function isAtScrollBottom(e) {
-    return e.scrollTop + e.clientHeight >= e.scrollHeight;
+    return e.scrollTop + e.clientHeight + 150 >= e.scrollHeight;
 }
 function roleCss(role) {
     var icon = {"owner":"oi-home", "admin":"oi-cog", "mod":"oi-flag"};

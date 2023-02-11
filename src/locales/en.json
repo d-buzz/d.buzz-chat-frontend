@@ -49,16 +49,20 @@
 
 "Message.Join": "Join",
 "Message.Joined": "Joined",
+"Message.AddEmote.Info": "Add emote.",
+"Message.Quote.Info": "Quote, select text to quote part of message.",
+"Message.Edit.Info": "Edit message.",
+"Message.Delete.Info": "Delete message.",
 
 "JoinModalContent.Add": "Add",
-"JoinModalContent.Add.Tooltip": "Add community to the sidebar.",
+"JoinModalContent.Add.Tooltip": "Add community to sidebar.",
 "JoinModalContent.Visit": "Visit",
 "JoinModalContent.Visit.Tooltip": "Visit community.",
 "JoinModalContent.Message": "Message",
-"JoinModalContent.Join": "Join",
-"JoinModalContent.Join.Tooltip": "Join community.",
-"JoinModalContent.Leave": "Leave",
-"JoinModalContent.Leave.Tooltip": "Leave community.",
+"JoinModalContent.Join": "Add & subscribe",
+"JoinModalContent.Join.Tooltip": "Add to sidebar and subscribe on hive.",
+"JoinModalContent.Leave": "Remove & unsubsribe",
+"JoinModalContent.Leave.Tooltip": "Remove from sidebar and unsubscribe on hive.",
 
 "AddGroupUserModal.Msg.Join": "You are invited to join new group:",
 
@@ -66,7 +70,16 @@
 "AddCommunityModal.Add": "Add",
 "AddCommunityModal.Msg.Add": "click to hide",
 "AddCommunityModal.Remove": "Remove",
-"AddCommunityModal.Msg.Remove": "click to add"
+"AddCommunityModal.Msg.Remove": "click to add",
+
+"UserModal.Reputation": "Reputation",
+"UserModal.CreatedDate": "Created date",
+"UserModal.Message": "Message",
+"UserModal.Message.Info": "Send private message.",
+"UserModal.Add": "Add & Follow",
+"UserModal.Add.Info": "Add as friend and follow on hive.",
+"UserModal.Remove": "Remove & Unfollow",
+"UserModal.Remove.Info": "Remove friend and unfollow on hive."
 }
 
 

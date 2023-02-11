@@ -31,19 +31,25 @@
             <div>
                 <small :class="roleColor?roleColor:''"><b>{{message.getUser()}}</b></small>
                 <span class="pr-2 float-right fg70">
-                    <small v-if="!displayEdits && message.edits && message.edits.length > 0" class="cursor-pointer" :title="toAbsoluteTimeString(message.edits[0].getTimestamp())" @click="toggleViewEditHistoryModal()">(edited {{toRelativeTimeString(message.edits[0].getTimestamp())}}) </small>
-                    <small :title="toRelativeTimeString(message.getTimestamp(),3)+'\n'+toAbsoluteTimeString(message.getTimestamp())">{{toRelativeTimeString(message.getTimestamp())}}</small>
+                    <small v-if="!displayOnly" class="messageButtons pr-3">
+                        <span class="oi oi-heart col0" @click="toggleAddEmoteModal" @mouseenter="tooltip($event.target, $t('Message.AddEmote.Info'))"></span>
+                        <span class="oi oi-share col1" @click="quoteAction" @mouseenter="tooltip($event.target, $t('Message.Quote.Info'))"></span>
+                        <span v-if="account===message.getUser()" class="oi oi-pencil col2" @click="editAction" @mouseenter="tooltip($event.target, $t('Message.Edit.Info'))"></span>
+                        <span v-if="account===message.getUser()" class="oi oi-trash col3" @click="deleteAction" @mouseenter="tooltip($event.target, $t('Message.Delete.Info'))"></span>
+                    </small>
+                    <small v-if="!displayEdits && message.edits && message.edits.length > 0" class="cursor-pointer" @mouseenter="tooltip($event.target, toAbsoluteTimeString(message.edits[0].getTimestamp()))" @click="toggleViewEditHistoryModal()">(edited {{toRelativeTimeString(message.edits[0].getTimestamp())}}) </small>
+                    <small @mouseenter="tooltip($event.target, toRelativeTimeString(message.getTimestamp(),3)+'\n'+toAbsoluteTimeString(message.getTimestamp()))">{{toRelativeTimeString(message.getTimestamp())}}</small>
                     <span v-if="!message.isVerified()" class="pl-1">&#10008;</span>
                 </span>
             </div>
-            <div v-if="!displayOnly" class="visibleOnHover absolute float-right" style="right: 8px;">
-                <div class="flex">
+            <!--<div v-if="!displayOnly" class="visibleOnHover absolute float-right" style="right: 8px;">
+                <div class="visibleOnHover flex">
                     <span class="btn0 bg1" @click="toggleAddEmoteModal" ><span class="oi oi-heart"></span></span>
                     <span class="btn0 bg2" @click="quoteAction" title="Quote, select text to quote part of message."><span class="oi oi-share"></span></span>
                     <span v-if="account===message.getUser()" class="btn0 bg3" @click="editAction" title="Edit message."><span class="oi oi-pencil"></span></span>
                     <span v-if="account===message.getUser()" class="btn0 bg4" @click="deleteAction" title="Delete message."><span class="oi oi-trash"></span></span>
                 </div>
-            </div>
+            </div>-->
             <div v-if="content">
                 <div v-if="content.getType() == 'x'">
                     <button class="bg-primary text-white font-bold py-1 px-2 rounded-full" v-on:click="decrypt(message)">Click to decrypt</button>
@@ -55,11 +61,11 @@
                 </div>
                 <div v-else-if="content.getType() == 'g'" class="border border-solid border-green-700 rounded p-1">
                     <small>{{content.getGroup()}}</small>
-                    <div ref="messageText" :data-id="formatText(messageText,content.getText())" class="md whitespace-pre-wrap break-normal"></div>
+                    <div ref="messageText" :data-id="formatText(messageText,content.getText())" class="md break-normal"></div>
                     <small v-if="hasJoinedGroup"><b>{{$t("Message.Joined")}}</b></small>
                     <button v-else class="btn" v-on:click="join(message)">{{$t("Message.Join")}}</button>
                 </div>
-                <div v-else-if="content.getText" class="whitespace-pre-wrap break-normal">
+                <div v-else-if="content.getText" class="break-normal">
                     <div ref="messageText" :data-id="formatText(messageText,content.getText())" class="md"></div>
                 </div>
                 <div v-else>
@@ -83,6 +89,7 @@
 import { useAccountStore } from "../stores/account";
 import { ref, nextTick } from 'vue'
 import VueSimpleContextMenu from 'vue-simple-context-menu';
+const tooltip = ref(window.tooltip);
 const accountStore = useAccountStore();
 const account = accountStore.account.name;
 const emit = defineEmits(["quote", "action"]);
@@ -290,6 +297,24 @@ async function init() {
 init();
 </script>
 <style scoped>
+.messageButtons {
+    visibility: hidden;
+}
+.messageButtons > span {
+    cursor: pointer;
+    padding: 0px 10px;
+    opacity: 0.55;
+}
+.message:hover .messageButtons {
+    visibility: visible;
+}
+.messageButtons > span:hover {
+    opacity: 1;
+}
+.messageButtons > .col0:hover { color: #9d212c; }
+.messageButtons > .col0:hover { color: #2e8336; }
+.messageButtons > .col0:hover { color: #b95914; }
+.messageButtons > .col0:hover { color: #860e18; }
 .quoteIcon {
     display: inline-block;
     position: relative;
