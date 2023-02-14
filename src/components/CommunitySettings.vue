@@ -8,95 +8,105 @@
   <TransitionRoot :show="showInfoModal">
     <AddInfoModal @oninput="addInfo" @close="toggleAddInfoModal"></AddInfoModal>
   </TransitionRoot>
-  <div class="appbg2 w-full h-full flex flex-col ml-3">
-    <div class="flex border-b-1 font-bold">Settings {{pageTitle}}</div>
-
-    <div>
-        <button class="btn" @click="toggleAddChatModal()"><span class="oi oi-chat"></span> chat</button>
-        <button class="btn" @click="toggleAddCategoryModal()"><span class="oi oi-plus"></span> category</button>
-        <button class="btn" @click="toggleAddInfoModal()"><span class="oi oi-plus"></span> info</button>
-        <button class="btn" @click="moveUp()"><span class="oi oi-chevron-top"></span></button>
-        <button class="btn" @click="moveDown()"><span class="oi oi-chevron-bottom"></span></button>
-        <button class="btn" @click="remove()"><span class="oi oi-x"></span></button>
-    </div>
-
-    <div class="grid grid-cols-2 gap-2">
+  <div class="appbg2 w-full h-full overflow-y-scroll scrollBox ml-3">
+    <div class="scrollBoxContent flex flex-col mr-3" style="margin-bottom:150px;">
+        <div class="flex border-b-1 font-bold">Settings {{pageTitle}}</div>
 
         <div>
-            <!--<label class="block text-sm font-medium text-gray-700">Streams: </label>-->
-    <Draggable v-model="streams" :key="messageKey">
-        <template v-slot:item="{item}">
-            <div class="item border rounded-md border-gray-700 my-1 p-1"
-                @mousedown="select(item)"
-                :data-selected="item.selected"
-            >
-            <span v-if="item.getPathType() == null" 
-                class="font-bold">{{item.getName()}} 
-                <span class="float-right font-normal text-sm">(category)</span>
-            </span>
-            <span v-else-if="item.getPathType() == 't'" 
-                class="pl-2"><span class="oi oi-chat"></span> {{item.getName()}} 
-                <span class="float-right text-sm">(text)</span>
-            </span>
-            <span v-else-if="item.getPathType() == 'g'" 
-                class="pl-2"><span class="oi oi-lock-locked"></span> {{item.getName()}} 
-                <span class="float-right text-sm">(private text)</span>
-            </span>
-            <span v-else-if="item.getPathType() == 'i'"><span class="oi oi-info text-center" style="width:14px;"></span> {{item.getName()}} 
-                <span class="float-right text-sm">(info)</span>
-            </span> 
-            <span v-else-if="item.getPathType() == 'u'"><span class="oi oi-globe text-center" style="width:14px;"></span> {{item.getName()}} 
-                <span class="float-right text-sm">(url)</span>
-            </span>              
-            <span v-else>{{item.getName()}}</span>
-            </div>
-        </template>
-    </Draggable>
-
+            <button class="btn" @click="toggleAddChatModal()"><span class="oi oi-chat"></span> chat</button>
+            <button class="btn" @click="toggleAddCategoryModal()"><span class="oi oi-plus"></span> category</button>
+            <button class="btn" @click="toggleAddInfoModal()"><span class="oi oi-plus"></span> info</button>
+            <button class="btn" @click="moveUp()"><span class="oi oi-chevron-top"></span></button>
+            <button class="btn" @click="moveDown()"><span class="oi oi-chevron-bottom"></span></button>
+            <button class="btn" @click="remove()"><span class="oi oi-x"></span></button>
         </div>
 
-        <div> 
-            <div>
-                <label for="streamname" class="block text-sm font-medium text gray-700">            Displayable name: 
-                </label>
-                <input id="streamname" name="streamname" type="text" class="inputText1" placeholder="Stream Name" @input="setStreamName">    
-            </div>
+        <div class="grid grid-cols-2 gap-2">
 
             <div>
-                <label for="datapath" class="block text-sm font-medium text gray-700">            Data path: 
-                </label>
-                <input id="datapath" name="datapath" type="text" class="inputText1" placeholder="Data Path" @input="setDataPath"> 
-                   
+                <!--<label class="block text-sm font-medium text-gray-700">Streams: </label>-->
+        <Draggable v-model="streams" :key="messageKey">
+            <template v-slot:item="{item}">
+                <div class="item border rounded-md border-gray-700 my-1 p-1"
+                    @mousedown="select(item)"
+                    :data-selected="item.selected"
+                >
+                <span v-if="item.getPathType() == null" 
+                    class="font-bold">{{item.getName()}} 
+                    <span class="float-right font-normal text-sm">(category)</span>
+                </span>
+                <span v-else-if="item.getPathType() == 't'" 
+                    class="pl-2"><span class="oi oi-chat"></span> {{item.getName()}} 
+                    <span class="float-right text-sm">(text)</span>
+                </span>
+                <span v-else-if="item.getPathType() == 'g'" 
+                    class="pl-2"><span class="oi oi-lock-locked"></span> {{item.getName()}} 
+                    <span class="float-right text-sm">(private text)</span>
+                </span>
+                <span v-else-if="item.getPathType() == 'i'"><span class="oi oi-info text-center" style="width:14px;"></span> {{item.getName()}} 
+                    <span class="float-right text-sm">(info)</span>
+                </span> 
+                <span v-else-if="item.getPathType() == 'u'"><span class="oi oi-globe text-center" style="width:14px;"></span> {{item.getName()}} 
+                    <span class="float-right text-sm">(url)</span>
+                </span>              
+                <span v-else>{{item.getName()}}</span>
+                </div>
+            </template>
+        </Draggable>
+
             </div>
 
-            <div v-if="selected">
-                <label class="block text-sm font-medium text gray-700">Shown for:</label>
-                <PermissionSet :set="selected.readSet" :key="selectKey"/>
-            </div>
-        
-            <div v-if="selected && selected.dataPath != null && selected.dataPath.getType() != 'i' && selected.dataPath.getType() != 'g' && selected.dataPath.getType() != 'u'">
-                <label class="block text-sm font-medium text gray-700">Write Permissions:</label>
-                <PermissionSet :set="selected.writeSet" :key="selectKey"/>
+            <div> 
+                <div>
+                    <label for="streamname" class="block text-sm font-medium text gray-700">            Displayable name: 
+                    </label>
+                    <input id="streamname" name="streamname" type="text" class="inputText1" placeholder="Stream Name" @input="setStreamName">    
+                </div>
+
+                <div>
+                    <label for="datapath" class="block text-sm font-medium text gray-700">            Data path: 
+                    </label>
+                    <input id="datapath" name="datapath" type="text" class="inputText1" placeholder="Data Path" @input="setDataPath"> 
+                       
+                </div>
+
+                <div v-if="selected">
+                    <label class="block text-sm font-medium text gray-700">Shown for:</label>
+                    <PermissionSet :set="selected.readSet" :key="selectKey"/>
+                </div>
+            
+                <div v-if="selected && selected.dataPath != null && selected.dataPath.getType() != 'i' && selected.dataPath.getType() != 'g' && selected.dataPath.getType() != 'u'">
+                    <label class="block text-sm font-medium text gray-700">Write Permissions:</label>
+                    <PermissionSet :set="selected.writeSet" :key="selectKey"/>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div><small>{{updateMessage}}</small></div>
-    <div>
-        <button class="btn" @click="updateSettings" title="Save changes">Update</button>
-        <button class="btn2" @click="resetSettings" title="Discard changes and reload existing settings"><span class="oi oi-reload"></span> Reset</button>
-    </div>
-    <hr/>
-    <div class="font-bold">Emotes</div>
-    <div class="flex gap-x-2">
-        <div><input id="emotename" name="emotename" type="text" class="inputText1" placeholder="emote name"></div>
-        <div><input id="emoteimage" name="emoteimage" type="text" class="inputText1" placeholder="emote image url"></div>
-        <button class="btn" @click="" title="Add"><span class="oi oi-plus"></span> Add</button>
-    </div>
-    <div><small>{{updateMessage}}</small></div>
-    <div>
-        <button class="btn" @click="updateSettings" title="Save changes">Update</button>
-        <button class="btn2" @click="resetSettings" title="Discard changes and reload existing settings"><span class="oi oi-reload"></span> Reset</button>
+        <div><small>{{updateMessage}}</small></div>
+        <div>
+            <button class="btn" @click="updateSettings" title="Save changes">Update</button>
+            <button class="btn2" @click="resetSettings" title="Discard changes and reload existing settings"><span class="oi oi-reload"></span> Reset</button>
+        </div>
+        <hr/>
+        <div class="font-bold">Emotes</div>
+        <table>
+            <tr v-for="link, name in emotes">
+                <td style="min-width:20px;"><img :src="`https://images.hive.blog/20x0/${link}`" width="20"></td>
+                <td class="px-1">{{name}}</td> 
+                <td class="px-1"><small>{{link}}</small></td>
+                <td><span class="oi oi-trash cursor-pointer" @click="deleteEmote(name)" @mouseenter="tooltip($event.target, $t('CommunitySettings.DeleteEmote.Info'))"></span></td>
+            </tr>
+        </table>
+        <div class="flex gap-x-2 pr-4">
+            <div style="flex-basis: 120px;"><input ref="emotename" id="emotename" name="emotename" type="text" class="inputText1" placeholder="emote name"></div>
+            <div style="flex-basis: 150px;"><input ref="emoteimage" id="emoteimage" name="emoteimage" type="text" class="inputText1" placeholder="emote image url"></div>
+            <button class="btn" @click="addEmote(emotename.value, emoteimage.value)" title="Add"><span class="oi oi-plus"></span> Add</button>
+        </div>
+        <div><small>{{updateMessage}}</small></div>
+        <div>
+            <button class="btn" @click="updateSettings" title="Save changes">Update</button>
+            <button class="btn2" @click="resetSettings" title="Discard changes and reload existing settings"><span class="oi oi-reload"></span> Reset</button>
+        </div>
     </div>
  </div>
 </template>
@@ -105,10 +115,14 @@ import Draggable from "vue3-draggable";
 import { useAccountStore } from "../stores/account";
 import { useRoute } from "vue-router";
 import { ref, nextTick } from 'vue';
+const tooltip = ref(window.tooltip);
 const router = useRouter();
 const route = useRoute();
 const accountStore = useAccountStore();
 const displayableMessages = ref([]);
+const emotename = ref();
+const emoteimage = ref();
+const emotes = ref({});
 const messageKey = ref("");
 const selectKey = ref("");
 
@@ -129,6 +143,7 @@ function updateSettings() {
     var user = accountStore.account.name;
     if(user == null) return;
     community.setStreams(streams.value);
+    community.emotes = emotes.value;
     var json = community.updateStreamsCustomJSON();
     updateMessage.value = "";
     window.hive_keychain.requestCustomJson(user, "community", "Posting",
@@ -222,7 +237,15 @@ function swap(array,x,y) {
     array[y] = tmp;
     return array;
 }
-
+function addEmote(name, link) {
+    if(name == null || link == null || link == "") return;
+    emotes.value[name] = link;
+    emotename.value.value = "";
+    emoteimage.value.value = "";
+}
+function deleteEmote(name) {
+    delete emotes.value[name];
+}
 async function initChat() {
     var user = accountStore.account.name;
     if(user == null) return; //TODO ask to login
@@ -236,6 +259,7 @@ async function initChat() {
         pageTitle.value = community.getTitle() + ` (${community.getName()})`;
         streams.value = community.getStreams();
         if(streams.value.length > 0) select(streams.value[0]);
+        emotes.value = community.emotes;
         update();
     }
 }

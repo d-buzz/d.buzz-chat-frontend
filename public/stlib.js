@@ -335,6 +335,7 @@ class Community {
         copy.streams = [];
         for (var stream of this.streams)
             copy.streams.push(data_stream_1.DataStream.fromJSON(stream.community, stream.toJSON()));
+        copy.emotes = utils_1.Utils.copy(this.emotes);
         return copy;
     }
     listJoined() {
