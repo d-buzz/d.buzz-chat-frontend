@@ -93,7 +93,7 @@
             <tr v-for="link, name in emotes">
                 <td style="min-width:20px;"><img :src="`https://images.hive.blog/20x0/${link}`" width="20"></td>
                 <td class="px-1">{{name}}</td> 
-                <td class="px-1"><small>{{link}}</small></td>
+                <td class="px-1 break-all"><small>{{link}}</small></td>
                 <td><span class="oi oi-trash cursor-pointer" @click="deleteEmote(name)" @mouseenter="tooltip($event.target, $t('CommunitySettings.DeleteEmote.Info'))"></span></td>
             </tr>
         </table>

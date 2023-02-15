@@ -1,6 +1,6 @@
 <template>
-   <DefaultModal>
-    <TabGroup :selectedIndex="_selectedTab">
+   <DefaultModal title="Emotes">
+    <!--<TabGroup :selectedIndex="_selectedTab">
     <TabList class="tab">
       <Tab>Emote</Tab>
       <Tab>Picture</Tab>
@@ -11,7 +11,7 @@
     <TabPanel>1
     </TabPanel>
 </TabPanels>
-</TabGroup>
+</TabGroup>-->
     <div class="mt-5 sm:mx-auto sm:w-full sm:max-w-md">
       <EmotePicker @oninput="oninput"/>
    </div>

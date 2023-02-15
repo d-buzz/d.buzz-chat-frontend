@@ -152,14 +152,16 @@ const data_path_1 = require("./data-path");
 const utils_1 = require("./utils");
 class Community {
     constructor() {
+        this.emotes = {};
         this.joined = null;
     }
     initialize(communityData) {
         this.communityData = communityData;
         var settings = this.getSettings();
-        if (settings.emotes === undefined) {
+        if (settings.emotes === undefined)
             this.emotes = {};
-        }
+        else
+            this.emotes = utils_1.Utils.copy(settings.emotes);
         if (settings.streams === undefined) {
             this.streams = Community.defaultStreams(this.getName());
             return;

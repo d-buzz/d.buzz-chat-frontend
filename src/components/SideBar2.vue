@@ -114,11 +114,11 @@ function toggleMenu() {
 function order() {
     if(showDirect.value && !showCommunities.value) {
         directPanel.value.style.order = "1";
-        communityPanel.style.order = "0";
+        communityPanel.value.style.order = "0";
     }
     else if(!showDirect.value && showCommunities.value) {
         directPanel.value.style.order = "0";
-        communityPanel.style.order = "1";
+        communityPanel.value.style.order = "1";
     }
 }
 function toggleDirect() {
