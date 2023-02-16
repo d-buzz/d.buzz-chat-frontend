@@ -168,16 +168,23 @@ async function initCommunities() {
     communities.value = _communities;
     updateKey.value = ''+stlib.Utils.nextId();
     var update = async () => { 
+        var plus = '';
         var _communityNumber = 0;
         for(var community of communities.value) {
             var lastReadNumber = await manager.getLastReadCommunity(community[0]);
-            if(lastReadNumber != null && lastReadNumber != '0') _communityNumber += Number(lastReadNumber);
+            if(lastReadNumber != null && lastReadNumber != '0') {
+                if(lastReadNumber.endsWith('+')) {
+                    plus = '+';
+                    _communityNumber += Number(lastReadNumber.substring(0,lastReadNumber.length-1));
+                }
+                else _communityNumber += Number(lastReadNumber);
+            }
             community.lastReadNumber = lastReadNumber;
         }
         updateKey.value = ''+stlib.Utils.nextId();
         nextTick(async ()=>{            
             number.value = ''+await manager.getLastReadTotal();
-            communityNumber.value = ''+_communityNumber;
+            communityNumber.value = _communityNumber+plus;
             updateKey.value = ''+stlib.Utils.nextId();
         });
     };
