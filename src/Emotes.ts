@@ -1,9 +1,11 @@
 export class Emotes {
     all: any[]
     categories: any[]
-    constructor(emotes, categories) { 
+    common: any[]
+    constructor(emotes, categories, common) { 
         this.all = emotes;
         this.categories = categories;
+        this.common = common;
     }
 }
 export const categories = [
@@ -17,6 +19,15 @@ export const categories = [
     ['Component', '1F9B0'],
     ['Food & Drink', '1F35E'],
     ['Animals & Nature', '1F332']
+];
+export const common = [
+    ['1F600','grinning','face'],
+    ['1F642','slightly','smiling','face'],
+    ['1F625','sad','but','relieved','face'],    
+    ['2764','red','heart'],
+    ['1F44D','thumbs','up'],
+    ['1F44B','wave','waving','hand'],
+    ['1F4AA','flexed','biceps'],
 ];
 export const emotes = {"Activities": {
   "game":[
@@ -1627,5 +1638,7 @@ export const emotes = {"Activities": {
                 emote[0] = String.fromCodePoint(parseInt(emote[0], 16)); 
         }
     }
+    for(var emote of common)
+        emote[0] = String.fromCodePoint(parseInt(emote[0], 16)); 
 })();
-export const defaultEmotes = new Emotes(emotes, categories);
+export const defaultEmotes = new Emotes(emotes, categories, common);

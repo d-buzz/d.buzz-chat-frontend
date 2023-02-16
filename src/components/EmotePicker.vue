@@ -2,12 +2,26 @@
 <div class="flex">
     <div class="grow">
         <div class="flex gap-x-2">
+            <div class="cursor-pointer" 
+                v-on:click.prevent="category0.scrollIntoView()" title="Common">
+                &#x1F44D;
+            </div>
             <div v-for="category in categories" class="cursor-pointer" 
                 v-on:click.prevent="scrollIntoView($refs[category[0]])" :title="category[0]">
                 {{category[1]}}
             </div>
         </div>
         <div style="overflow: auto; max-height:350px;">
+            <div :ref="category0">
+                <small class="text-gray-700"><b>Common</b></small>
+                <div>
+                    <div class="flex flex-wrap gap-x-2">
+                        <div v-for="emote in common" class="cursor-pointer" @mouseenter="tooltip($event.target, emote[1])" @click="action(emote[0])">
+                            {{emote[0]}}
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div v-for="community in communityList" class="py-1" ref="items">
                 <small class="text-gray-700"><b>{{community.title}}</b></small>
                 <div class="flex flex-wrap gap-x-2">
@@ -39,6 +53,7 @@
 </div>
 </template>
 <script setup>
+const category0 = ref();
 const items = ref();
 const tooltip = ref(window.tooltip);
 const emit = defineEmits(["oninput"]);
@@ -65,4 +80,5 @@ function scrollIntoView(ref) {
 }
 const categories = ref(defaultEmotes.categories);
 const emotes = ref(defaultEmotes.all);
+const common = ref(defaultEmotes.common);
 </script> 
