@@ -1,6 +1,6 @@
 <template>
 
-    <div class="min-h-full flex flex-col justify-center" style="align-items:center;">
+    <div class="min-h-full flex flex-col justify-center bg-white" style="align-items:center;">
         <div class="max-w-md w-md border border-gray-300 rounded-md p-3 bg-white">
             <div class="flex" v-if='community'>
                 <div class="flex-shrink-0 mr-5px">
@@ -38,6 +38,7 @@
                   v-model="accountName"
                   type="username"
                   class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
+                  @keyup.enter="loginKeychain(accountName)"                  
                   placeholder="pick an username"
                   :read-only="isLoading"
                   :disabled="isLoading"

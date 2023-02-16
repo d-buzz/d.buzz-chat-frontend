@@ -16,6 +16,7 @@ window.globalProperties = {
     "sidebar": 0,
     "sidebar2enableSharedView": false,
     "sidebarAddButton": 2,
+    "sidebarToggleByChannelNameOnDirectGroup": true,
     "communityChannelNameFormat": "<name>",
     "homeTabCommunities": true,
     "homeTabPreferences": true,

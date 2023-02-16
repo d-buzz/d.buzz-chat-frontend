@@ -452,7 +452,11 @@ function focusMessageBox() {
 initChat();
 function setThread(name) {
     if(name === null && threadName.value == null) {
-        if(window.showStreambar != null) window.toggleStreambar();
+        if(window.showStreambar != null &&
+            (route.name !== 'Group' && !route.name.startsWith('PrivateChat') ||
+            window.globalProperties["sidebarToggleByChannelNameOnDirectGroup"])) {
+            window.toggleStreambar();
+        }
     }
     else {
         threadName.value = name;

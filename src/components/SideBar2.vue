@@ -24,7 +24,8 @@
 
     <div class="flex flex-col">
         <div class="flex flex-col" ref="directPanel">
-            <div class="flex justify-between border-b-1 p-1 border-r-1 cursor-pointer appsg0" @click="toggleDirect">
+            <div class="flex justify-between relative border-b-1 p-1 border-r-1 cursor-pointer appsg0" @click="toggleDirect">
+                <small v-if="number && number != '0'" class="number"><b>{{number}}</b></small>
                 <b class="text-xs">{{$t("SideBar.Direct")}}</b>
                 <button v-if="addButton === 0" class="text-xs" @click.stop="toggleNewUserMessageModalOpen">
                     <span class="oi oi-plus"></span>
@@ -33,8 +34,9 @@
             </div>
         </div>
         <div class="flex flex-col" ref="communityPanel">
-           <div class="flex justify-between gap-x-1 border-b-1 border-r-1 p-1 font-bold cursor-pointer appsg0"
+           <div class="flex justify-between relative gap-x-1 border-b-1 border-r-1 p-1 font-bold cursor-pointer appsg0"
                 @click="toggleCommunities">
+                <small v-if="communityNumber && communityNumber != '0'" class="number"><b>{{communityNumber}}</b></small>
                 <b class="text-xs">C/</b>
                 <button v-if="addButton === 0" class="text-xs" @click.stop="toggleAddCommunityModal">
                     <span class="oi oi-plus"></span>
@@ -96,6 +98,7 @@ const accountName = ref("");
 const communities = ref([]);
 const updateKey = ref("");
 const number = ref('0');
+const communityNumber = ref('0');
 function canOpenBoth() { return window.globalProperties["sidebar2enableSharedView"] === true; }
 const showDirect = ref(canOpenBoth());
 const showCommunities = ref(true);
@@ -106,7 +109,7 @@ const communityPanel = ref();
 
 function logout() {
     accountStore.signOut();
-    router.push("/");
+    router.push("/join");
 }
 function toggleMenu() {
     showMenu.value = !showMenu.value;
@@ -164,19 +167,23 @@ async function initCommunities() {
     }
     communities.value = _communities;
     updateKey.value = ''+stlib.Utils.nextId();
-    var update = async () => { console.log("total");
+    var update = async () => { 
+        var _communityNumber = 0;
         for(var community of communities.value) {
             var lastReadNumber = await manager.getLastReadCommunity(community[0]);
+            if(lastReadNumber != null && lastReadNumber != '0') _communityNumber += Number(lastReadNumber);
             community.lastReadNumber = lastReadNumber;
         }
         updateKey.value = ''+stlib.Utils.nextId();
         nextTick(async ()=>{            
             number.value = ''+await manager.getLastReadTotal();
+            communityNumber.value = ''+_communityNumber;
             updateKey.value = ''+stlib.Utils.nextId();
         });
     };
     await update();
     manager.setCallback("SideBar.vue", update);
+    manager.onlastread.set("SideBar.vue", update);
 }
 initCommunities();
 
@@ -281,10 +288,10 @@ async function initConversations(route) {
             console.log("Callback message end SideBar2.vue");
         };
         await update();
-        manager.setCallback("SideBar.vue", update);
-        manager.onpreferences.set("SideBar.vue", update);
-        manager.onlastread.set("SideBar.vue", update);
-        manager.oncommunityhide.set("SideBar.vue", initCommunities);
+        manager.setCallback("SideBar.vue#2", update);
+        manager.onpreferences.set("SideBar.vue#2", update);
+        manager.onlastread.set("SideBar.vue#2", update);
+        manager.oncommunityhide.set("SideBar.vue#2", initCommunities);
     //}
 }
 initConversations(route);
@@ -305,6 +312,19 @@ window.onclickoutside.set("SideBar.vue", ()=>{showMenu.value = false;})
 }
 .menu > div:hover { 
     background-color: var(--appsg1);
+}
+.number {
+    display: block;
+    position: absolute;
+    pointer-events: none;
+    color: white;
+    z-index: 5;
+    background: rgb(0, 113, 12);
+    top: 2px;
+    right: 0px;
+    border-radius: 10px;
+    padding: 2px 4px;
+    line-height: 1;
 }
 </style>
 

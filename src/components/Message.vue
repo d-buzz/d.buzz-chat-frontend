@@ -181,7 +181,6 @@ function getQuotedText(message) {
 }
 function formatText(element, text) {
     if(element == null) return;
-    console.log("format text", element, text);
     element.innerHTML = "";
     stlib.Markdown.imgPrepend = "https://images.hive.blog/768x0/";
     stlib.Markdown.simpleMarkdown(text.trim(),element);
