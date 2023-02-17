@@ -56,21 +56,22 @@
     </div>
     <div class="h-full flex flex-col justify-between">
         <div class="font-bold border-b-1 mr-3" style="order:1;padding-top:3px; padding-bottom:3px;">
-            <span class="cursor-pointer" @click.stop="setThread(null)">{{streamName}}</span> <span v-if="threadName !== null" class="font-normal"><span class="oi oi-chevron-right cursor-pointer" style="font-size:10px;vertical-align:top;margin-top:6px;" @click="setThread(null)"></span> {{threadName}}</span>
+            <span class="cursor-pointer" @click.stop="setThread(null)">{{streamName}} <small class="streamName2">{{streamName2}}</small></span> <span v-if="threadName !== null" class="font-normal"><span class="oi oi-chevron-right cursor-pointer" style="font-size:10px;vertical-align:top;margin-top:6px;" @click="setThread(null)"></span> {{threadName}}</span>
             <span class="inline-block" v-if="sharedCommunities">
                 <span class="flex">
                     <SideBarIcon v-for="community in sharedCommunities" :img="community[0]" :name="community[1]" :community="community" :imgCss="`avMini`" />
                 </span>
             </span>
             <span class="float-right">
-                <button class="text-sm mr-2" @click="toggleThreads" @mouseenter="tooltip($event.target, $t('Community.Threads'))">
+                <button class="text-sm mr-3" @click="toggleThreads" @mouseenter="tooltip($event.target, $t('Community.Threads'))">
                     <span class="oi oi-fork"></span>
                 </button>
-                <button v-if="($route.name === 'CommunityPath' && community) || $route.name === 'Group'" class="text-sm mr-2" @click="toggleSideBar" @mouseenter="tooltip($event.target, $t('Community.ToggleSidebar'))">
+                <button v-if="($route.name === 'CommunityPath' && community) || $route.name === 'Group'" 
+                    class="text-sm mr-3" @click="toggleSideBar" @mouseenter="tooltip($event.target, $t('Community.ToggleSidebar'))">
                     <span class="oi oi-people"></span>
                 </button>
                 <span v-if="route.name === 'Group' || route.name === 'CommunityGroup'">
-                    <button class="text-sm mr-2" @click="toggleShareGroup" @mouseenter="tooltip($event.target, $t('Community.ShareGroup'))">
+                    <button class="text-sm mr-3" @click="toggleShareGroup" @mouseenter="tooltip($event.target, $t('Community.ShareGroup'))">
                         <span class="oi oi-share-boxed"></span>
                     </button>
                     <button class="text-sm" @click="toggleCloseGroup" @mouseenter="tooltip($event.target, $t('Community.CloseGroup'))">
@@ -183,6 +184,7 @@ const messageKey = ref("");
 const communityUsersKey = ref("#"+stlib.Utils.nextId());
 const sidebar = ref(null);
 const streamName = ref("");
+const streamName2 = ref("");
 const threadName = ref(null);
 const community = ref(null);
 const onlineCount = ref(null);
@@ -330,13 +332,25 @@ async function initChat() {
             var pref = await stlib.Utils.getAccountPreferences(user2);
             var groups = pref.getGroups();
             var group = groups[route.params.path];
-            streamName.value = addCommunityName(community0, ((group !== null && group.name != null)?`${group.name} ${conversation}`:conversation));
+            if(group !== null && group.name != null) {
+                streamName.value = addCommunityName(community0, group.name);
+                streamName2.value = conversation;
+            }
+            else {
+                streamName.value = addCommunityName(community0, conversation);
+            }
         }
         else if(route.name === 'Group') {
             var pref = await stlib.Utils.getAccountPreferences(user2);
             var groups = pref.getGroups();
             var group = groups[route.params.path];
-            streamName.value = (group !== null && group.name != null)?`${group.name} ${conversation}`:conversation;
+            if(group !== null && group.name != null) {
+                streamName.value = group.name;
+                streamName2.value = conversation;
+            }
+            else {
+                streamName.value = conversation;
+            }
             usersFromMessages = true;
             updateOnlineUsers = async ()=> {
                 messageUsers.value = await manager.readOnlineUsers(Object.keys(messageUsers.value));
@@ -650,6 +664,8 @@ async function loadPrevious() {
   border-top: 3px dotted #bababa;
   margin-top: 1px;
 }
+.streamName2 { opacity: 0.3;}
+.streamName2:hover { opacity: 0.7; }
 .offline {
     opacity: 0.5;
 }
