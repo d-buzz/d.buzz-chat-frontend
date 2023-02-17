@@ -25,7 +25,7 @@
     <div class="flex flex-col">
         <div class="flex flex-col" ref="directPanel">
             <div class="flex justify-between relative border-b-1 p-1 border-r-1 cursor-pointer appsg0" @click="toggleDirect">
-                <small v-if="number && number != '0'" class="number"><b>{{number}}</b></small>
+                <small v-if="number && number != '0'" class="number border-default"><b>{{number}}</b></small>
                 <b class="text-xs">{{$t("SideBar.Direct")}}</b>
                 <button v-if="addButton === 0" class="text-xs" @click.stop="toggleNewUserMessageModalOpen">
                     <span class="oi oi-plus"></span>
@@ -36,7 +36,7 @@
         <div class="flex flex-col" ref="communityPanel">
            <div class="flex justify-between relative gap-x-1 border-b-1 border-r-1 p-1 font-bold cursor-pointer appsg0"
                 @click="toggleCommunities">
-                <small v-if="communityNumber && communityNumber != '0'" class="number"><b>{{communityNumber}}</b></small>
+                <small v-if="communityNumber && communityNumber != '0'" class="number border-default"><b>{{communityNumber}}</b></small>
                 <b class="text-xs">C/</b>
                 <button v-if="addButton === 0" class="text-xs" @click.stop="toggleAddCommunityModal">
                     <span class="oi oi-plus"></span>
@@ -168,23 +168,18 @@ async function initCommunities() {
     communities.value = _communities;
     updateKey.value = ''+stlib.Utils.nextId();
     var update = async () => { 
-        var plus = '';
         var _communityNumber = 0;
         for(var community of communities.value) {
             var lastReadNumber = await manager.getLastReadCommunity(community[0]);
             if(lastReadNumber != null && lastReadNumber != '0') {
-                if(lastReadNumber.endsWith('+')) {
-                    plus = '+';
-                    _communityNumber += Number(lastReadNumber.substring(0,lastReadNumber.length-1));
-                }
-                else _communityNumber += Number(lastReadNumber);
+                _communityNumber++;
             }
             community.lastReadNumber = lastReadNumber;
         }
         updateKey.value = ''+stlib.Utils.nextId();
         nextTick(async ()=>{            
-            number.value = ''+await manager.getLastReadTotal();
-            communityNumber.value = _communityNumber+plus;
+            number.value = ''+await manager.getLastReadTotalConversations();
+            communityNumber.value = _communityNumber+'';
             updateKey.value = ''+stlib.Utils.nextId();
         });
     };
@@ -324,9 +319,9 @@ window.onclickoutside.set("SideBar.vue", ()=>{showMenu.value = false;})
     display: block;
     position: absolute;
     pointer-events: none;
-    color: white;
+    color: var(--appfg0);
     z-index: 5;
-    background: rgb(0, 113, 12);
+    background: var(--appbg0);
     top: 2px;
     right: 0px;
     border-radius: 10px;
