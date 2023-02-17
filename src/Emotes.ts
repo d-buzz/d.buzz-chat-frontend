@@ -21,9 +21,10 @@ export const categories = [
     ['Animals & Nature', '1F332']
 ];
 export const common = [
-    ['1F600','grinning','face'],
     ['1F642','slightly','smiling','face'],
-    ['1F625','sad','but','relieved','face'],    
+    ['1F600','grinning','face'],
+    ['1F625','sad','but','relieved','face'], 
+    ['1F60E','smiling','face','with','sunglasses'],   
     ['2764','red','heart'],
     ['1F44D','thumbs','up'],
     ['1F44B','wave','waving','hand'],

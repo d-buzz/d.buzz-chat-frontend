@@ -72,13 +72,8 @@
                     Unsupported message type.
                 </div>
                 <div v-if="message.emotes">
-                    <span v-for="emote in message.emotes" class="apphg2 inline-block border rounded-md border-default2 pl-1 pr-1 mr-1">
-                        <span v-if="emote.users.indexOf(account) === -1">                        
-                            <small class="font-bold align-text-bottom cursor-pointer" @click="emoteAction(emote.emote)">{{emote.users.length}}</small> <Emote :emote="emote.emote"/>
-                        </span>         
-                        <span v-else>
-                            <small class="font-bold align-text-bottom">{{emote.users.length}}</small> <Emote :emote="emote.emote"/>
-                        </span>           
+                    <span v-for="emote in message.emotes">
+                        <EmoteResponse :emote="emote.emote" :users="emote.users" @action="emoteAction"/>
                     </span>
                 </div>
             </div>
