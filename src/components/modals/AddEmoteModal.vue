@@ -1,5 +1,5 @@
 <template>
-   <DefaultModal title="Emotes">
+   <DefaultModal>
     <!--<TabGroup :selectedIndex="_selectedTab">
     <TabList class="tab">
       <Tab>Emote</Tab>
@@ -12,7 +12,7 @@
     </TabPanel>
 </TabPanels>
 </TabGroup>-->
-    <div class="mt-5 sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
       <EmotePicker @oninput="oninput"/>
    </div>
    </DefaultModal>          
