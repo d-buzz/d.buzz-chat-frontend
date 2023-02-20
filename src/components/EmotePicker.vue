@@ -17,8 +17,18 @@
                 <small class="text-gray-700"><b>Common</b></small>
                 <div>
                     <div class="flex flex-wrap gap-x-2">
-                        <div v-for="emote in common" class="cursor-pointer" @mouseenter="tooltip($event.target, emote[1])" @click="action(emote[0])">
-                            {{emote[0]}}
+                        <div v-for="emote in common" class="cursor-pointer" @mouseenter="tooltip($event.target, emote[1])" @click="action(emote[0], emote[1])">
+                            <Emote :emote="emote[0]"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <small class="text-gray-700"><b>Recently Used</b></small>
+                <div>
+                    <div class="flex flex-wrap gap-x-2">
+                        <div v-for="emote in recentlyUsed" class="cursor-pointer" @mouseenter="tooltip($event.target, emote[1])" @click="action(emote[0], emote[1])">
+                            <Emote :emote="emote[0]"/>
                         </div>
                     </div>
                 </div>
@@ -26,9 +36,9 @@
             <div v-for="community in communityList" class="py-1" ref="items">
                 <small class="text-gray-700"><b>{{community.title}}</b></small>
                 <div class="flex flex-wrap gap-x-2">
-                    <div v-for="link, name in community.data.emotes" class="cursor-pointer" @click="action(link)"
+                    <div v-for="link, name in community.data.emotes" class="cursor-pointer" @click="action(link, name)"
                         @mouseenter="tooltip($event.target, name)">
-                        <img :src="`https://images.hive.blog/20x0/${link}`" width="20">
+                        <Emote :emote="link"/>
                     </div>
                 </div>
             </div>
@@ -36,8 +46,8 @@
                 <small class="text-gray-700"><b>{{category[0]}}</b></small>
                 <div v-for="(subgroup, name2) in emotes[category[0]]">
                     <div class="flex flex-wrap gap-x-2">
-                        <div v-for="emote in subgroup" class="cursor-pointer" @mouseenter="tooltip($event.target, emote[1])" @click="action(emote[0])">
-                            {{emote[0]}}
+                        <div v-for="emote in subgroup" class="cursor-pointer" @mouseenter="tooltip($event.target, emote[1])" @click="action(emote[0], emote[1])">
+                            <Emote :emote="emote[0]"/>
                         </div>
                     </div>
                 </div>
@@ -60,7 +70,40 @@ const items = ref();
 const tooltip = ref(window.tooltip);
 const emit = defineEmits(["oninput"]);
 const communityList = ref([]);
+const recentlyUsed = ref([]);
+
+function addRecentlyUsed(emote) {
+    console.log("add emote", emote);
+    var emotes = recentlyUsed.value;
+    var i = 0;
+    for(var item of emotes) {
+        if(item[0] === emote[0]) {
+            emotes.splice(i, 1);
+            emotes.unshift(emote);
+            return;
+        }
+        i++;
+    }
+    emotes.unshift(emote);
+    if(emotes.length > 25) emotes.pop();
+} 
+function loadRecentlyUsedEmotes() {
+    try {
+        var recentlyUsed = window.localStorage.getItem("EmotePicker#recentlyUsed");
+        if(recentlyUsed != null && Array.isArray(recentlyUsed=JSON.parse(recentlyUsed)))
+            return recentlyUsed;
+    }
+    catch(e) { console.log(e); }
+    return [];
+}
+function storeRecentlyUsed() {
+    try {
+        window.localStorage.setItem("EmotePicker#recentlyUsed", JSON.stringify(recentlyUsed.value));
+    }
+    catch(e) { console.log(e); }
+}
 async function init() {
+    recentlyUsed.value = loadRecentlyUsedEmotes();
     const manager = getManager();
     var communities = await manager.getCommunitiesSorted();
     var result = [];
@@ -74,7 +117,9 @@ async function init() {
     communityList.value = result;
 }
 init();
-function action(emote) {
+function action(emote, name) {
+    addRecentlyUsed([emote, name]);
+    storeRecentlyUsed(emote);
     emit("oninput", emote);
 }
 function scrollIntoView0(ref) {
