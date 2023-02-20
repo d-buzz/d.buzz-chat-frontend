@@ -1,7 +1,7 @@
 <template>
     <div class="relative">
         <div v-if="profileLetter" class="textIcon iconborder" :class="`${imgCss}`"
-            :style="`${randomColor(name)}`">
+            :style="`${randomColor(name || profileLetter)}`">
             <span>{{profileLetter}}</span>
         </div>
         <div v-else class="">
@@ -24,13 +24,12 @@ const profileLetter = ref(null);
 const backupLetter = ref("Hi");
 async function initProfileImage() {
     var name = props.name;
-    if(!name) return true;
     var letterIcon = props.letterIcon;
     if(letterIcon !== undefined && letterIcon !== null) {
-        profileLetter.value = letterIcon?letterIcon:
-                (name.substring(0, 1).toUpperCase()+name.substring(1, 2));
+        profileLetter.value = letterIcon;
         return true;
     }
+    if(!name) return true;
     try {
         var name2 = props.name2;
         if(!name2 || name2.length < 1) name2 = name;

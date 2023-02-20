@@ -3,18 +3,15 @@
         <div v-if="compact" class="nameParent relative" :class="{selected0: $route.path == link}">
              <!--<small class="name"><b>{{users}}</b></small>-->
             <small v-if="number && number != '0'" class="number2"><b>{{number}}</b></small>
-            <div class="p-1" @mouseenter="tooltip($event.target, `${users}\n${conversation}`)">
-                <UserIcon v-if="iconUsername" :name="iconUsername" imgCss="avCommunity"/>
+            <div class="p-1 relative" @mouseenter="tooltip($event.target, `${users}\n${conversation}`)">
+                <small v-if="isGroup" class="groupIcon"><span class="oi oi-people"></span></small>
+                <UserIcon v-if="iconUsername || letterIcon" :name="iconUsername" :letterIcon="letterIcon" imgCss="avCommunity"/>
             </div>
         </div>
         <div v-else class="flex style" :class="{selected: $route.path == link}">
-            <div class="flex-shrink-0 mr-5px">
-                <!--<img
-                class="rounded-full avConversation"
-                :src="`https://images.hive.blog/u/${iconUsername}/avatar/small`"
-                alt="@"
-                />-->
-                <UserIcon v-if="iconUsername" :name="iconUsername" imgCss="avConversation"/>
+            <div class="flex-shrink-0 mr-5px relative">
+                <small v-if="isGroup" class="groupIcon"><span class="oi oi-people"></span></small>
+                <UserIcon v-if="iconUsername || letterIcon" :name="iconUsername" :letterIcon="letterIcon" imgCss="avConversation"/>
             </div>
             <div class="grow"> 
                 <div>{{users}}</div>
@@ -36,8 +33,10 @@ const props = defineProps({
     number: String,
     compact: { type: Boolean, value: false}
 });
+const isGroup = ref(false);
 const link = ref("");
 const iconUsername = ref("");
+const letterIcon = ref(null);
 const users = ref("");
 async function initConversation() {
     var username = props.username;
@@ -54,8 +53,12 @@ async function initConversation() {
         var groups = pref.getGroups();
         var group = groups[id];
 
-        iconUsername.value = props.username;
-        users.value = (group !== null && group.name != null)?`${group.name} (${id})`:conversation;
+        var groupName = (group !== null && group.name != null)?`${group.name} (${id})`:conversation;
+
+        isGroup.value = true;
+        iconUsername.value = null;
+        letterIcon.value = groupName.substring(0,Math.min(groupName.length, 3));
+        users.value = groupName;
         link.value = '/g/'+conversation.substring(1);
     }
     else {
@@ -130,5 +133,13 @@ initConversation();
     margin: 0;
     align-self: flex-start;
     border-radius: 3px;
+}
+.groupIcon {
+    @apply pr-1;
+    display: block;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 7;
 }
 </style>
