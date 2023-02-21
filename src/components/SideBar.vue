@@ -6,12 +6,12 @@
         <SideBarLoginIcon :number="number" @toggleStreambar="$emit('toggleStreambar')"/>
     </div>
     <div>
-        <button class="w-full avCommunity md:hidden border-r-1" style="padding-left: 1px;"
+        <button class="w-full avCommunity md:hidden" style="padding-left: 1px;"
              @click="$emit('toggleStreambar')"><span class="oi oi-menu" style="font-size:30px;"></span></button>
     </div>
   <div class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox"
         style="overflow-x: clip;" @dragover.prevent @drop.stop.prevent="onDrop">
-    <div class="scrollBoxContent flex flex-col border-r-1">
+    <div class="scrollBoxContent flex flex-col">
         <TextIcon v-if="addButton === 1" class="p-1 cursor-pointer" :text="'+'" @click.stop="toggleAddCommunityModal"/>
         <Draggable v-model="communities" :key="updateKey">
             <template v-slot:item="{item}">
