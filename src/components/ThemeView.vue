@@ -5,7 +5,7 @@
     <TransitionRoot :show="showDeleteModal">
         <DeleteThemeModal :name="name" @close="toggleDeleteModal"></DeleteThemeModal>
     </TransitionRoot>
-    <div class="flex flex-row justify-between">
+    <div class="flex flex-row justify-between" style="max-width: 753px;" >
         <b class="cursor-pointer"  @click="pick()">“{{name}}„</b>
         <div class="flex flex-row">    
             <button class="btn ml-1" @click="pick()">{{$t('ThemeView.Pick')}}</button> 
