@@ -14,7 +14,7 @@
     
   <div class="appbg2 appfg2 h-full break-all ml-3" v-if='messageKey'>
      <div class="appbg3 appfg3 h-full float-right w-200 overflow-y-scroll scrollBox sidebar" 
-        v-if="$route.name === 'CommunityPath' && community" ref="sidebar" :key="communityUsersKey" style="padding-bottom:150px;">
+        v-if="$route.name === 'CommunityPath' && community" ref="sidebar" :key="communityUsersKey">
         <div class="scrollBoxContent border-l-1 pr-1 pl-1 appbg3">
             <div class="text-right" @mouseenter="tooltip($event.target, $t('Community.OnlineJoined', [onlineCount]))"><small class="fg70">
                 {{onlineCount}}</small>
@@ -35,6 +35,7 @@
                     </div>
                 </div>
             </div>
+            <div style="padding-bottom:150px;"></div>
         </div>
     </div>
     <div class="appbg3 appfg3 h-full float-right w-200 overflow-y-scroll scrollBox sidebar" 

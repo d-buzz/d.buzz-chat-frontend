@@ -11,7 +11,7 @@
         </div>
         <div v-else class="flex style" :class="{selected: $route.path == link}">
             <div class="flex-shrink-0 mr-5px relative">
-                <small v-if="isGroup" class="groupIcon"><span class="oi oi-people"></span></small>
+                <small v-if="isGroup" class="groupIcon2"><span class="oi oi-people"></span></small>
                 <UserIcon v-if="iconUsername || letterIcon" :name="iconUsername" 
                     :letterIcon="letterIcon" :imgCss="'avConversation'+(isGroup?' avGroup':'')"/>
             </div>
@@ -136,12 +136,16 @@ initConversation();
     align-self: flex-start;
     border-radius: 3px;
 }
-.groupIcon {
+.groupIcon, .groupIcon2 {
     @apply pr-1;
     display: block;
     position: absolute;
     bottom: 0;
-    right: 0;
-    z-index: 7;
+    right: -3px;
+    z-index: 1;
+}
+.groupIcon2 {
+    bottom: -7px;
+    right: -10px;
 }
 </style>
