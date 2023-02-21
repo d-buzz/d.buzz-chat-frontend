@@ -1,6 +1,5 @@
 <template>
-    <small class="float-right text-gray-700">{{$t("Home.Theme.Msg.Info")}}</small>
-    <div class="mt-2"></div>
+    <small class="block w-full text-right text-gray-700">{{$t("Home.Theme.Msg.Info")}}</small>
     <div v-for="(style, name) in themeObject.defaultThemes">
         <ThemeView :name="name" :style="style" :edit="false" @update="updateThemes"></ThemeView>
     </div>

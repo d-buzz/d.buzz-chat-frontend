@@ -5,7 +5,15 @@
     <TransitionRoot :show="showDeleteModal">
         <DeleteThemeModal :name="name" @close="toggleDeleteModal"></DeleteThemeModal>
     </TransitionRoot>
-    <div class="cursor-pointer" @click="pick()"><b>“{{name}}„</b></div>
+    <div class="flex flex-row justify-between">
+        <b class="cursor-pointer"  @click="pick()">“{{name}}„</b>
+        <div class="flex flex-row">    
+            <button class="btn ml-1" @click="pick()">{{$t('ThemeView.Pick')}}</button> 
+            <button class="btn2" @click="action()">{{$t(edit?'ThemeView.Edit':'ThemeView.Clone')}}</button>
+            <button v-if="edit" class="cursor-pointer" @click=toggleDeleteModal() 
+                 @mouseenter="tooltip($event.target, $t('ThemeView.Delete'))"><span class="oi oi-x"></span></button>
+        </div>      
+    </div>
     <div ref="root"  class="flex flex-wrap row rounded cursor-pointer" style="max-width: 753px;" @click="pick()">
         <div class="appbg0 appfg0 border-default mrb1" style="width:63px;height:50px;" 
             :style="`background:${style[0]};color:`">
@@ -23,10 +31,8 @@
         </div>
         <div class="flex" style="flex-grow:10000;height:50px;">
             <div class="appbg2 appfg2 border-default grow pr-3 pl-3 mrb1" style="width:210px;height:50px;">
-                <b>Action </b> <button class="btn ml-1" @click="pick()">Pick</button> 
-                <button class="btn2" @click="action()">{{edit?'Edit':'Clone'}}</button>
-                <button v-if="edit" class="cursor-pointer" @click=toggleDeleteModal() title="Delete"><span class="oi oi-x"></span></button>
-                
+                <b>Text </b> <button class="btn ml-1">Button1</button> 
+                <button class="btn2">Button2</button>                
             </div>
             <div class="appbg3 appfg3 border-default pr-1 pl-1" style="width:100px;height:50px;">
                 <b>Users</b>
@@ -35,6 +41,7 @@
     </div>
 </template>
 <script setup>
+const tooltip = ref(window.tooltip);
 const emit = defineEmits(["update"]);
 const props = defineProps({
     name: String,

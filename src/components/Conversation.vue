@@ -5,13 +5,15 @@
             <small v-if="number && number != '0'" class="number2"><b>{{number}}</b></small>
             <div class="p-1 relative" @mouseenter="tooltip($event.target, `${users}\n${conversation}`)">
                 <small v-if="isGroup" class="groupIcon"><span class="oi oi-people"></span></small>
-                <UserIcon v-if="iconUsername || letterIcon" :name="iconUsername" :letterIcon="letterIcon" imgCss="avCommunity"/>
+                <UserIcon v-if="iconUsername || letterIcon" :name="iconUsername" 
+                    :letterIcon="letterIcon" :imgCss="'avCommunity'+(isGroup?' avGroup':'')"/>
             </div>
         </div>
         <div v-else class="flex style" :class="{selected: $route.path == link}">
             <div class="flex-shrink-0 mr-5px relative">
                 <small v-if="isGroup" class="groupIcon"><span class="oi oi-people"></span></small>
-                <UserIcon v-if="iconUsername || letterIcon" :name="iconUsername" :letterIcon="letterIcon" imgCss="avConversation"/>
+                <UserIcon v-if="iconUsername || letterIcon" :name="iconUsername" 
+                    :letterIcon="letterIcon" :imgCss="'avConversation'+(isGroup?' avGroup':'')"/>
             </div>
             <div class="grow"> 
                 <div>{{users}}</div>
@@ -57,7 +59,7 @@ async function initConversation() {
 
         isGroup.value = true;
         iconUsername.value = null;
-        letterIcon.value = groupName.substring(0,Math.min(groupName.length, 3));
+        letterIcon.value = groupName.substring(0,Math.min(groupName.length, 7));
         users.value = groupName;
         link.value = '/g/'+conversation.substring(1);
     }

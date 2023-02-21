@@ -190,6 +190,10 @@ pre > code { display: block; }
     min-width: 35px;
     min-height: 35px;
 }
+.avGroup {
+    font-size: 12px;
+    white-space: pre;
+}
 .titlebg {
     @apply bg-green-700 pr-1 pl-1 text-white font-bold;
     border-radius: 5px;

@@ -47,13 +47,15 @@ Embed the messaging app as a widget:
 const widget = ref();
 
 function initWidget() {
-    //Let widget use keychain.
-    StWidget.enableKeychainPassthrough();
-    
     //specify the url of the widget
     var stwidget = new StWidget('https://sting-message-frontend.pages.dev/home');
-    var element = stwidget.createElement()
-    stwidget.setStyle({ top: '51px', right: '32px' }); //add custom styles
+    //if you would like to not let widget to use keychain passthrough, you can disable it with:
+    //stwidget.enableKeychainPassthrough = false;
+
+    var element = stwidget.createElement();
+    stwidget.setStyle({ direction: 'rtl', top: '51px', right: '32px' }); //add custom styles
+    //add direction: 'rtl' if you would like the widget to be expandable by dragging the 
+    //bottom-left corner instead of bottom-right corner
 
     var e = widget.value;
     e.appendChild(element);

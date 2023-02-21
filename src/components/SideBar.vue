@@ -2,10 +2,10 @@
     <TransitionRoot :show="addCommunityModal">
         <AddCommunityModal @close="toggleAddCommunityModal(false)"></AddCommunityModal>
     </TransitionRoot>
-    <div class="border-r-1">
+    <div>
         <SideBarLoginIcon :number="number" @toggleStreambar="$emit('toggleStreambar')"/>
     </div>
-    <div class="border-b-1">
+    <div>
         <button class="w-full avCommunity md:hidden border-r-1" style="padding-left: 1px;"
              @click="$emit('toggleStreambar')"><span class="oi oi-menu" style="font-size:30px;"></span></button>
     </div>

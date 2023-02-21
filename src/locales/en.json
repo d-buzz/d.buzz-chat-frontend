@@ -66,6 +66,11 @@
 "JoinModalContent.Leave": "Remove & unsubscribe",
 "JoinModalContent.Leave.Tooltip": "Remove from sidebar and unsubscribe on hive.",
 
+"ThemeView.Pick": "Pick",
+"ThemeView.Edit": "Edit",
+"ThemeView.Clone": "Clone",
+"ThemeView.Delete": "Delete",
+
 "AddGroupUserModal.Msg.Join": "You are invited to join new group:",
 
 "AddCommunityModal.Title": "Add a community",

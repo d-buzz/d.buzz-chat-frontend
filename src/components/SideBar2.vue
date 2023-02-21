@@ -5,7 +5,7 @@
     <TransitionRoot :show="addCommunityModal">
         <AddCommunityModal @close="toggleAddCommunityModal(false)"></AddCommunityModal>
     </TransitionRoot>
-    <div class="border-r-1 border-b-1 relative">
+    <div class="border-b-1 relative">
         <!--<SideBarLoginIcon :number="number" @click="toggleMenu" @toggleStreambar=""/>-->
         <div @mouseenter="tooltip($event.target, '@'+accountName)">
             <UserIcon class="p-1 cursor-pointer" @click="toggleMenu" :name="accountName" :imgCss="'avCommunity'"/>
@@ -17,14 +17,14 @@
             <div class="border-t-1" @click="logout">Logout</div>
         </div>
     </div>
-    <!--<div class="border-b-1">
+    <!--<div>
         <button class="w-full avCommunity md:hidden border-r-1" style="padding-left: 1px;"
              @click="$emit('toggleStreambar')"><span class="oi oi-menu" style="font-size:30px;"></span></button>
     </div>-->
 
     <div class="flex flex-col">
         <div class="flex flex-col" ref="directPanel">
-            <div class="flex justify-between relative border-b-1 p-1 border-r-1 cursor-pointer appsg0" @click="toggleDirect">
+            <div class="flex justify-between relative border-b-1 p-1 cursor-pointer appsg0" @click="toggleDirect">
                 <small v-if="number && number != '0'" class="number border-default"><b>{{number}}</b></small>
                 <b class="text-xs">{{$t("SideBar.Direct")}}</b>
                 <button v-if="addButton === 0" class="text-xs" @click.stop="toggleNewUserMessageModalOpen">
@@ -34,7 +34,7 @@
             </div>
         </div>
         <div class="flex flex-col" ref="communityPanel">
-           <div class="flex justify-between relative gap-x-1 border-b-1 border-r-1 p-1 font-bold cursor-pointer appsg0"
+           <div class="flex justify-between relative gap-x-1 border-b-1 p-1 font-bold cursor-pointer appsg0"
                 @click="toggleCommunities">
                 <small v-if="communityNumber && communityNumber != '0'" class="number border-default"><b>{{communityNumber}}</b></small>
                 <b class="text-xs">C/</b>
@@ -69,7 +69,7 @@
         </div>
     <div v-if="showCommunities" class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox"
                 style="overflow-x: clip;" @dragover.prevent @drop.stop.prevent="onDrop">
-        <div class="scrollBoxContent flex flex-col border-r-1">
+        <div class="scrollBoxContent flex flex-col">
             <TextIcon v-if="addButton === 1" class="p-1 cursor-pointer" :text="'+'" 
                 @click.stop="toggleAddCommunityModal"
                 @mouseenter="tooltip($event.target, $t('SideBar.AddCommunity'))"/>
