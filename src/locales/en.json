@@ -53,6 +53,7 @@
 "Message.Joined": "Joined",
 "Message.AddEmote.Info": "Add emote.",
 "Message.Quote.Info": "Quote, select text to quote part of message.",
+"Message.Flag.Info": "Flag message.",
 "Message.Edit.Info": "Edit message.",
 "Message.Delete.Info": "Delete message.",
 

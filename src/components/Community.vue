@@ -5,6 +5,9 @@
     <TransitionRoot :show="showCloseGroupModal">
         <CloseGroupModal @close="toggleCloseGroup"></CloseGroupModal>
     </TransitionRoot>
+    <TransitionRoot :show="showFlagMessageModal">
+        <FlagMessageModal @close="toggleFlagMessage" :msg="flagMessageRef"></FlagMessageModal>
+    </TransitionRoot>
     <TransitionRoot :show="showDeleteMessageModal">
         <DeleteMessageModal @close="toggleDeleteMessage" :msg="deleteMessageRef"></DeleteMessageModal>
     </TransitionRoot>
@@ -203,9 +206,11 @@ const canWrite = ref(true);
 
 const showGroupUserModal = ref(false);
 const showCloseGroupModal = ref(false);
+const showFlagMessageModal = ref(false);
 const showDeleteMessageModal = ref(false);
 const showThreadsModal = ref(false);
 const showSidebar = ref(false);
+const flagMessageRef = ref();
 const deleteMessageRef = ref();
 
 function toggleShareGroup() {
@@ -213,6 +218,9 @@ function toggleShareGroup() {
 }
 function toggleCloseGroup() {
     showCloseGroupModal.value = !showCloseGroupModal.value;
+}
+function toggleFlagMessage() {
+    showFlagMessageModal.value = !showFlagMessageModal.value;
 }
 function toggleDeleteMessage() {
     showDeleteMessageModal.value = !showDeleteMessageModal.value;
@@ -492,6 +500,12 @@ async function setContentMessage(obj) {
     }
     if(obj.type === stlib.Content.Emote.TYPE) {
         await enterMessage(obj.text, obj, false);
+        return;
+    }
+    if(obj.type === 'flag') {
+        flagMessageRef.value = obj.msg;
+        toggleFlagMessage();
+        focusMessageBox();
         return;
     }
     if(obj.type === 'delete') {

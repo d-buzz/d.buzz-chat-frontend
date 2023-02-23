@@ -213,6 +213,13 @@ class Community {
         var roleIndex = Community.roleToIndex(userRole);
         return roleIndex > 5;
     }
+    getFlagNum(username) {
+        var userRole = this.getRole(username);
+        if (!userRole)
+            return 1;
+        var roleIndex = Community.roleToIndex(userRole);
+        return roleIndex >= 5 ? 3 : 1;
+    }
     getRole(username) {
         var role = this.getRoleEntry(username);
         return role == null ? null : role[1];
@@ -416,7 +423,7 @@ class Community {
 exports.Community = Community;
 Community.MAX_TEXT_STREAMS = 64;
 
-},{"./data-path":17,"./data-stream":18,"./utils":27}],3:[function(require,module,exports){
+},{"./data-path":18,"./data-stream":19,"./utils":28}],3:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -428,7 +435,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.OnlineStatus = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.Images = exports.GroupInvite = exports.Encoded = exports.Edit = exports.JSONContent = exports.decodeTextWithKeychain = exports.encodeTextWithKeychain = exports.decodeTextWithKey = exports.encodeTextWithKey = exports.decodedMessage = exports.encodedMessage = exports.onlineStatus = exports.preferences = exports.groupInvite = exports.emote = exports.edit = exports.quote = exports.thread = exports.images = exports.text = exports.fromJSON = exports.type = exports.addType = void 0;
+exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.OnlineStatus = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.Images = exports.GroupInvite = exports.Encoded = exports.Edit = exports.JSONContent = exports.decodeTextWithKeychain = exports.encodeTextWithKeychain = exports.decodeTextWithKey = exports.encodeTextWithKey = exports.decodedMessage = exports.encodedMessage = exports.onlineStatus = exports.preferences = exports.groupInvite = exports.flag = exports.emote = exports.edit = exports.quote = exports.thread = exports.images = exports.text = exports.fromJSON = exports.type = exports.addType = void 0;
 const imports_1 = require("./imports");
 Object.defineProperty(exports, "JSONContent", { enumerable: true, get: function () { return imports_1.JSONContent; } });
 Object.defineProperty(exports, "Encoded", { enumerable: true, get: function () { return imports_1.Encoded; } });
@@ -502,6 +509,12 @@ function emote(emote, parentMessage) {
     ]);
 }
 exports.emote = emote;
+function flag(reason, parentMessage) {
+    return new imports_1.Flag([imports_1.Flag.TYPE, reason,
+        parentMessage.getReference()
+    ]);
+}
+exports.flag = flag;
 function groupInvite(message, group, key) {
     return new imports_1.GroupInvite([imports_1.GroupInvite.TYPE, message, group, key]);
 }
@@ -580,7 +593,7 @@ function decodeTextWithKeychain(user, message, keychainKeyType = 'Posting') {
 }
 exports.decodeTextWithKeychain = decodeTextWithKeychain;
 
-},{"./imports":9}],4:[function(require,module,exports){
+},{"./imports":10}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Edit = void 0;
@@ -593,7 +606,7 @@ class Edit extends imports_1.WithReference {
 exports.Edit = Edit;
 Edit.TYPE = "d";
 
-},{"./imports":9}],5:[function(require,module,exports){
+},{"./imports":10}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Emote = void 0;
@@ -604,7 +617,7 @@ class Emote extends imports_1.WithReference {
 exports.Emote = Emote;
 Emote.TYPE = "e";
 
-},{"./imports":9}],6:[function(require,module,exports){
+},{"./imports":10}],6:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -668,7 +681,18 @@ class Encoded extends imports_1.JSONContent {
 exports.Encoded = Encoded;
 Encoded.TYPE = "x";
 
-},{"./imports":9}],7:[function(require,module,exports){
+},{"./imports":10}],7:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Flag = void 0;
+const imports_1 = require("./imports");
+class Flag extends imports_1.WithReference {
+    constructor(json) { super(json); }
+}
+exports.Flag = Flag;
+Flag.TYPE = "f";
+
+},{"./imports":10}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GroupInvite = void 0;
@@ -683,7 +707,7 @@ class GroupInvite extends imports_1.Text {
 exports.GroupInvite = GroupInvite;
 GroupInvite.TYPE = "g";
 
-},{"./imports":9}],8:[function(require,module,exports){
+},{"./imports":10}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Images = void 0;
@@ -709,10 +733,10 @@ class Images extends imports_1.JSONContent {
 exports.Images = Images;
 Images.TYPE = "i";
 
-},{"./imports":9}],9:[function(require,module,exports){
+},{"./imports":10}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Utils = exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.Edit = exports.Quote = exports.OnlineStatus = exports.Thread = exports.WithReference = exports.Text = exports.Images = exports.GroupInvite = exports.Encoded = exports.JSONContent = exports.Content = exports.SignableMessage = void 0;
+exports.Utils = exports.PrivatePreferences = exports.Preferences = exports.Flag = exports.Emote = exports.Edit = exports.Quote = exports.OnlineStatus = exports.Thread = exports.WithReference = exports.Text = exports.Images = exports.GroupInvite = exports.Encoded = exports.JSONContent = exports.Content = exports.SignableMessage = void 0;
 const signable_message_1 = require("../signable-message");
 Object.defineProperty(exports, "SignableMessage", { enumerable: true, get: function () { return signable_message_1.SignableMessage; } });
 const utils_1 = require("../utils");
@@ -741,6 +765,8 @@ const edit_1 = require("./edit");
 Object.defineProperty(exports, "Edit", { enumerable: true, get: function () { return edit_1.Edit; } });
 const emote_1 = require("./emote");
 Object.defineProperty(exports, "Emote", { enumerable: true, get: function () { return emote_1.Emote; } });
+const flag_1 = require("./flag");
+Object.defineProperty(exports, "Flag", { enumerable: true, get: function () { return flag_1.Flag; } });
 const preferences_1 = require("./preferences");
 Object.defineProperty(exports, "Preferences", { enumerable: true, get: function () { return preferences_1.Preferences; } });
 Object.defineProperty(exports, "PrivatePreferences", { enumerable: true, get: function () { return preferences_1.PrivatePreferences; } });
@@ -750,13 +776,14 @@ Content.addType(thread_1.Thread);
 Content.addType(quote_1.Quote);
 Content.addType(edit_1.Edit);
 Content.addType(emote_1.Emote);
+Content.addType(flag_1.Flag);
 Content.addType(images_1.Images);
 Content.addType(group_invite_1.GroupInvite);
 Content.addType(preferences_1.Preferences);
 Content.addType(encoded_1.Encoded);
 Content.addType(online_status_1.OnlineStatus);
 
-},{"../signable-message":24,"../utils":27,"./content":3,"./edit":4,"./emote":5,"./encoded":6,"./group-invite":7,"./images":8,"./jsoncontent":10,"./online-status":11,"./preferences":12,"./quote":13,"./text":14,"./thread":15,"./with-reference":16}],10:[function(require,module,exports){
+},{"../signable-message":25,"../utils":28,"./content":3,"./edit":4,"./emote":5,"./encoded":6,"./flag":7,"./group-invite":8,"./images":9,"./jsoncontent":11,"./online-status":12,"./preferences":13,"./quote":14,"./text":15,"./thread":16,"./with-reference":17}],11:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -842,7 +869,7 @@ class JSONContent {
 }
 exports.JSONContent = JSONContent;
 
-},{"./imports":9}],11:[function(require,module,exports){
+},{"./imports":10}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OnlineStatus = void 0;
@@ -859,7 +886,7 @@ class OnlineStatus extends imports_1.JSONContent {
 exports.OnlineStatus = OnlineStatus;
 OnlineStatus.TYPE = "o";
 
-},{"./imports":9}],12:[function(require,module,exports){
+},{"./imports":10}],13:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1105,7 +1132,7 @@ exports.Preferences = Preferences;
 Preferences.TYPE = "p";
 Preferences.MAX_USER_GROUPS = 64;
 
-},{"./imports":9}],13:[function(require,module,exports){
+},{"./imports":10}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Quote = void 0;
@@ -1122,7 +1149,7 @@ class Quote extends imports_1.WithReference {
 exports.Quote = Quote;
 Quote.TYPE = "q";
 
-},{"./imports":9}],14:[function(require,module,exports){
+},{"./imports":10}],15:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Text = void 0;
@@ -1135,7 +1162,7 @@ class Text extends imports_1.JSONContent {
 exports.Text = Text;
 Text.TYPE = "t";
 
-},{"./imports":9}],15:[function(require,module,exports){
+},{"./imports":10}],16:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Thread = void 0;
@@ -1160,7 +1187,7 @@ class Thread extends imports_1.Text {
 exports.Thread = Thread;
 Thread.TYPE = "h";
 
-},{"./imports":9}],16:[function(require,module,exports){
+},{"./imports":10}],17:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WithReference = void 0;
@@ -1174,7 +1201,7 @@ class WithReference extends imports_1.JSONContent {
 }
 exports.WithReference = WithReference;
 
-},{"./imports":9}],17:[function(require,module,exports){
+},{"./imports":10}],18:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DataPath = void 0;
@@ -1248,7 +1275,7 @@ DataPath.TYPE_URL = "u";
 DataPath.TYPE_TEXT = "t";
 DataPath.TYPE_GROUP = "g";
 
-},{"./utils":27}],18:[function(require,module,exports){
+},{"./utils":28}],19:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DataStream = void 0;
@@ -1295,7 +1322,7 @@ class DataStream {
 }
 exports.DataStream = DataStream;
 
-},{"./data-path":17,"./permission-set":23}],19:[function(require,module,exports){
+},{"./data-path":18,"./permission-set":24}],20:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1490,16 +1517,28 @@ class DefaultStreamDataCache extends stream_data_cache_1.StreamDataCache {
 }
 exports.DefaultStreamDataCache = DefaultStreamDataCache;
 
-},{"./community":2,"./stream-data-cache":26,"./utils":27}],20:[function(require,module,exports){
+},{"./community":2,"./stream-data-cache":27,"./utils":28}],21:[function(require,module,exports){
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DisplayableEmote = exports.DisplayableMessage = void 0;
 const imports_1 = require("./content/imports");
+const utils_1 = require("./utils");
 class DisplayableMessage {
     constructor(message) {
         this.reference = null;
         this.edits = null;
         this.emotes = null;
+        this.flags = null;
+        this.flagsNum = 0;
         this.editContent = null;
         this.isEdit = false;
         this.message = message;
@@ -1535,6 +1574,24 @@ class DisplayableMessage {
             obj = this.emotes[emoteIndex];
         obj.add(msg);
         this.emotes.sort((a, b) => b.timestamp - a.timestamp);
+    }
+    flag(msg) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var content = msg.content;
+            if (!(content instanceof imports_1.Flag))
+                return;
+            if (this.flags === null)
+                this.flags = [];
+            for (var flag of this.flags)
+                if (msg.getUser() === flag.getUser())
+                    return;
+            this.flags.push(msg);
+            var communityConversation = msg.getCommunity();
+            if (communityConversation)
+                this.flagsNum += yield utils_1.Utils.getFlagNum(communityConversation, msg.getUser());
+            else
+                this.flagsNum++;
+        });
     }
     isThread() {
         return this.getEditedContent() instanceof imports_1.Thread;
@@ -1606,7 +1663,7 @@ class DisplayableEmote {
 }
 exports.DisplayableEmote = DisplayableEmote;
 
-},{"./content/imports":9}],21:[function(require,module,exports){
+},{"./content/imports":10,"./utils":28}],22:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Markdown = void 0;
@@ -1866,7 +1923,7 @@ class Markdown {
 exports.Markdown = Markdown;
 Markdown.imgPrepend = "";
 
-},{"markdown-ast":31}],22:[function(require,module,exports){
+},{"markdown-ast":32}],23:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -3192,6 +3249,9 @@ class MessageManager {
                         else if (content instanceof imports_1.Emote) {
                             m.emote(msg);
                         }
+                        else if (content instanceof imports_1.Flag) {
+                            m.flag(msg);
+                        }
                         else
                             msg.reference = m;
                         return;
@@ -3345,7 +3405,7 @@ class MessageManager {
 }
 exports.MessageManager = MessageManager;
 
-},{"./client":1,"./community":2,"./content/imports":9,"./data-path":17,"./displayable-message":20,"./signable-message":24,"./utils":27}],23:[function(require,module,exports){
+},{"./client":1,"./community":2,"./content/imports":10,"./data-path":18,"./displayable-message":21,"./signable-message":25,"./utils":28}],24:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PermissionSet = void 0;
@@ -3430,7 +3490,7 @@ class PermissionSet {
 }
 exports.PermissionSet = PermissionSet;
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 (function (Buffer){(function (){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -3704,7 +3764,7 @@ SignableMessage.TYPE_MESSAGE = 'm';
 SignableMessage.TYPE_WRITE_MESSAGE = 'w';
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"./content/imports":9,"./utils":27,"buffer":29}],25:[function(require,module,exports){
+},{"./content/imports":10,"./utils":28,"buffer":30}],26:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("./client");
@@ -3727,7 +3787,7 @@ if (window !== undefined) {
     };
 }
 
-},{"./client":1,"./community":2,"./content/imports":9,"./data-path":17,"./data-stream":18,"./displayable-message":20,"./markdown":21,"./message-manager":22,"./permission-set":23,"./signable-message":24,"./utils":27}],26:[function(require,module,exports){
+},{"./client":1,"./community":2,"./content/imports":10,"./data-path":18,"./data-stream":19,"./displayable-message":21,"./markdown":22,"./message-manager":23,"./permission-set":24,"./signable-message":25,"./utils":28}],27:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -3836,7 +3896,7 @@ class StreamDataCache {
 }
 exports.StreamDataCache = StreamDataCache;
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -3974,6 +4034,14 @@ class Utils {
             if (!data)
                 return null;
             return data.getTitles(user);
+        });
+    }
+    static getFlagNum(community, user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var data = yield community_1.Community.load(community);
+            if (!data)
+                return null;
+            return data.getFlagNum(user);
         });
     }
     static verifyPermissions(user, conversation) {
@@ -4505,7 +4573,7 @@ const accountDataCache = new AccountDataCache();
 const communityDataCache = new AccountDataCache();
 var streamDataCache = null;
 
-},{"./community":2,"./default-stream-data-cache":19,"./signable-message":24}],28:[function(require,module,exports){
+},{"./community":2,"./default-stream-data-cache":20,"./signable-message":25}],29:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -4657,7 +4725,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 (function (Buffer){(function (){
 /*!
  * The buffer module from node.js, for the browser.
@@ -6438,7 +6506,7 @@ function numberIsNaN (obj) {
 }
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"base64-js":28,"buffer":29,"ieee754":30}],30:[function(require,module,exports){
+},{"base64-js":29,"buffer":30,"ieee754":31}],31:[function(require,module,exports){
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
@@ -6525,7 +6593,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 const returnTrue = () => true
 
 // Returns true when the given string ends with an unescaped escape.
@@ -6871,4 +6939,4 @@ const parse = (input, top = []) => {
 Object.defineProperty(parse, 'default', { value: parse })
 module.exports = parse
 
-},{}]},{},[25]);
+},{}]},{},[26]);

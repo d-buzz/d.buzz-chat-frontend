@@ -34,6 +34,7 @@
                     <small v-if="!displayOnly" class="messageButtons pr-3">
                         <span class="oi oi-heart col0" @click="toggleAddEmoteModal" @mouseenter="tooltip($event.target, $t('Message.AddEmote.Info'))"></span>
                         <span class="oi oi-share col1" @click="quoteAction" @mouseenter="tooltip($event.target, $t('Message.Quote.Info'))"></span>
+                        <span v-if="account!==message.getUser()" class="oi oi-flag col3" @click="flagAction" @mouseenter="tooltip($event.target, $t('Message.Flag.Info'))"></span>                        
                         <span v-if="account===message.getUser()" class="oi oi-pencil col2" @click="editAction" @mouseenter="tooltip($event.target, $t('Message.Edit.Info'))"></span>
                         <span v-if="account===message.getUser()" class="oi oi-trash col3" @click="deleteAction" @mouseenter="tooltip($event.target, $t('Message.Delete.Info'))"></span>
                     </small>
@@ -46,6 +47,7 @@
                 <div class="visibleOnHover flex">
                     <span class="btn0 bg1" @click="toggleAddEmoteModal" ><span class="oi oi-heart"></span></span>
                     <span class="btn0 bg2" @click="quoteAction" title="Quote, select text to quote part of message."><span class="oi oi-share"></span></span>
+                    <span v-if="account!==message.getUser()" class="btn0 bg4" @click="flagAction" title="Flag message."><span class="oi oi-flag"></span></span>                    
                     <span v-if="account===message.getUser()" class="btn0 bg3" @click="editAction" title="Edit message."><span class="oi oi-pencil"></span></span>
                     <span v-if="account===message.getUser()" class="btn0 bg4" @click="deleteAction" title="Delete message."><span class="oi oi-trash"></span></span>
                 </div>
@@ -75,6 +77,9 @@
                     <span v-for="emote in message.emotes">
                         <EmoteResponse :emote="emote.emote" :users="emote.users" @action="emoteAction"/>
                     </span>
+                </div>
+                <div v-if="message.flagsNum > 0">
+                    <div>message was flagged by {{message.flagsNum}} users. WIP</div>
                 </div>
             </div>
         </div>
@@ -203,6 +208,13 @@ function emoteAction(emote) {
         msg: props.message,
         type: stlib.Content.Emote.TYPE,
         text: emote});
+}
+function flagAction() {
+    emit("action", {
+        msg: props.message,
+        type: 'flag',
+        text: 'flag message'
+    });
 }
 const messageText = ref();
 function quoteAction() {
