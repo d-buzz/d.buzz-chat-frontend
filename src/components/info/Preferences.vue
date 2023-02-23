@@ -34,6 +34,7 @@ const preferences = ref([]);
 const updateKey = ref('#'+stlib.Utils.nextId());
 
 const defaultPreferences = [
+    {name: "memoKey:b", display: "Use Memo Key", desc: "Use memo key or 1st posting key for private messages.", value: false, newvalue: false},
     {name: "directMessage:s", display: "Direct Message", desc: "Permission to message directly is granted to:",
      value: '', newvalue:'', options:[
         ['everyone', 'Everyone'],['accounts', 'Hive users'],

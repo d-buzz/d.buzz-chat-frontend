@@ -789,10 +789,9 @@ class JSONContent {
                 }
                 var puKey = publicK;
                 if (puKey == null) {
-                    var accountData = yield imports_1.Utils.getAccountData(groupUser);
-                    if (accountData == null)
+                    puKey = yield imports_1.Utils.getPreferredKey(groupUser);
+                    if (puKey == null)
                         throw "error could not find public key of user: " + groupUser;
-                    puKey = accountData.posting.key_auths[0][0];
                 }
                 encoded.push(hive.memo.encode(privateK, puKey, "#" + string));
             }
@@ -4067,8 +4066,9 @@ class Utils {
                                 return null;
                             else {
                                 var msg = signable_message_1.SignableMessage.fromJSON(result);
-                                if (Utils.isGuest(msg.getUser())) {
-                                }
+                                /*if(Utils.isGuest(msg.getUser())) {
+    
+                                }*/
                                 var verify = yield msg.verify();
                                 if (verify) {
                                     return msg.getContent();
@@ -4112,6 +4112,23 @@ class Utils {
                     created: result.created,
                     reputation: result.reputation
                 });
+        });
+    }
+    static getPreferredKey(_user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var data = yield Utils.getAccountData(_user);
+            if (data == null)
+                return null;
+            if (Utils.isGuest(_user))
+                return data.posting.key_auths[0][0];
+            var usePostingKey = true;
+            /*try {
+                var prefs = Utils.getAccountPreferences(_user);
+                if(prefs && prefs.getValueBoolean("memoKey", false))
+                    usePostingKey = false;
+            }
+            catch(e) { console.log(e); }*/
+            return usePostingKey ? data.posting.key_auths[0][0] : data.memo_key;
         });
     }
     static getAccountData(_user) {
