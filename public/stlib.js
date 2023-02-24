@@ -1529,7 +1529,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DisplayableEmote = exports.DisplayableMessage = void 0;
+exports.DisplayableFlag = exports.DisplayableEmote = exports.DisplayableMessage = void 0;
 const imports_1 = require("./content/imports");
 const utils_1 = require("./utils");
 class DisplayableMessage {
@@ -1583,9 +1583,9 @@ class DisplayableMessage {
             if (this.flags === null)
                 this.flags = [];
             for (var flag of this.flags)
-                if (msg.getUser() === flag.getUser())
+                if (msg.getUser() === flag.user)
                     return;
-            this.flags.push(msg);
+            this.flags.push(new DisplayableFlag(msg.getUser(), content.getText(), msg));
             var communityConversation = msg.getCommunity();
             if (communityConversation)
                 this.flagsNum += yield utils_1.Utils.getFlagNum(communityConversation, msg.getUser());
@@ -1662,6 +1662,14 @@ class DisplayableEmote {
     }
 }
 exports.DisplayableEmote = DisplayableEmote;
+class DisplayableFlag {
+    constructor(user, reason, message) {
+        this.user = user;
+        this.reason = reason;
+        this.message = message;
+    }
+}
+exports.DisplayableFlag = DisplayableFlag;
 
 },{"./content/imports":10,"./utils":28}],22:[function(require,module,exports){
 "use strict";

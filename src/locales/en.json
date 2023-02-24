@@ -55,7 +55,7 @@
 "Message.Quote.Info": "Quote, select text to quote part of message.",
 "Message.Flag.Info": "Flag message.",
 "Message.Edit.Info": "Edit message.",
-"Message.Delete.Info": "Delete message.",
+"Message.Remove.Info": "Remove message.",
 
 "JoinModalContent.Add": "Add",
 "JoinModalContent.Add.Tooltip": "Add community to sidebar.",
