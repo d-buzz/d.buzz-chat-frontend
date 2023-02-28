@@ -69,7 +69,7 @@
         <div class="mt-1">
             <label class="text-sm font-medium text-gray-700 mb-1"> Group public key: </label>
             <div class="flex"><input id="grouppublickey" type="text" class="inputText1" placeholder="STM123... group public key">
-            <button class="btn py-2 ml-1 my-0" title="copy to clipboard" @click="copyToClipboard('grouppublickey')"><span class="oi oi-clipboard"></span></button>
+            <button class="btn py-2 ml-1 my-0" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.CopyToClipboard'))" @click="copyToClipboard('grouppublickey')"><span class="oi oi-clipboard"></span></button>
             </div>
         </div> 
 
@@ -97,8 +97,8 @@
             <label class="block text-sm font-medium text-gray-700 mb-1"> Group private key: </label>
             <div class="flex">
             <input id="groupprivatekey" type="password" class="inputText1 mr-1 " placeholder="optional">
-            <button class="btn py-2 my-0" title="copy to clipboard" @click="copyToClipboard('groupprivatekey')"><span class="oi oi-clipboard"></span></button>
-            <button class="btn py-2 my-0" title="show or hide" @click="showHide('groupprivatekey')"><span class="oi oi-eye"></span></button>
+            <button class="btn py-2 my-0" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.CopyToClipboard'))" @click="copyToClipboard('groupprivatekey')"><span class="oi oi-clipboard"></span></button>
+            <button class="btn py-2 my-0" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.ShowHide'))" @click="showHide('groupprivatekey')"><span class="oi oi-eye"></span></button>
             </div>
         </div> 
 
@@ -138,8 +138,8 @@
             <label class="block text-sm font-medium text-gray-700 mb-1"> Group private key: </label>
             <div class="flex">
             <input id="groupprivatekey2" type="password" class="inputText1 mr-1 " placeholder="">
-            <button class="btn py-2 my-0" title="copy to clipboard" @click="copyToClipboard('groupprivatekey2')"><span class="oi oi-clipboard"></span></button>
-            <button class="btn py-2 my-0" title="show or hide" @click="showHide('groupprivatekey2')"><span class="oi oi-eye"></span></button>
+            <button class="btn py-2 my-0" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.CopyToClipboard'))" @click="copyToClipboard('groupprivatekey2')"><span class="oi oi-clipboard"></span></button>
+            <button class="btn py-2 my-0" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.ShowHide'))" @click="showHide('groupprivatekey2')"><span class="oi oi-eye"></span></button>
             </div>
         </div> 
 
