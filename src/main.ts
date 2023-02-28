@@ -124,7 +124,7 @@ window.tmpProperties = {};
             }
         }
     });
-    window.tooltip = function(element, text) {
+    window.tooltip = function(element, text, ms=5000) {
         var el = document.getElementById("tooltip");  
         if(el == null) return;
         el.innerText = text; 
@@ -147,7 +147,7 @@ window.tmpProperties = {};
             if(el.currentElement == element) {
                 listener();
             }
-        }, 5000);
+        }, ms);
     };
 })();
 async function initMain() {

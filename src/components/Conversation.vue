@@ -1,21 +1,22 @@
 <template>
     <router-link :to="`${link}`">
-        <div v-if="compact" class="nameParent relative" :class="{selected0: $route.path == link}">
+        <div v-if="compact" class="nameParent style relative" :class="{selected0: $route.path == link}">
              <!--<small class="name"><b>{{users}}</b></small>-->
             <small v-if="number && number != '0'" class="number2"><b>{{number}}</b></small>
-            <div class="p-1 relative" @mouseenter="tooltip($event.target, `${users}\n${conversation}`)">
-                <small v-if="isGroup" class="groupIcon"><span class="oi oi-people"></span></small>
-                <UserIcon v-if="iconUsername || letterIcon" :name="iconUsername" 
+            <div class="relative" style="padding: 4px;" @mouseenter="tooltip($event.target, `${users}\n${conversation}`)">
+                <!--<small v-if="isGroup" class="groupIcon"><span class="oi oi-people"></span></small>-->
+                <UserIcon v-if="iconUsername || letterIcon" :name="iconUsername" :group="isGroup"
                     :letterIcon="letterIcon" :imgCss="'avCommunity'+(isGroup?' avGroup':'')"/>
             </div>
         </div>
-        <div v-else class="flex style" :class="{selected: $route.path == link}">
+        <div v-else class="flex style p3" :class="{selected: $route.path == link}"
+            @mouseenter="tooltip($event.target, `${users}\n${conversation}`)">
             <div class="flex-shrink-0 mr-5px relative">
-                <small v-if="isGroup" class="groupIcon2"><span class="oi oi-people"></span></small>
-                <UserIcon v-if="iconUsername || letterIcon" :name="iconUsername" 
+                <UserIcon v-if="iconUsername || letterIcon" :name="iconUsername"
                     :letterIcon="letterIcon" :imgCss="'avConversation'+(isGroup?' avGroup':'')"/>
             </div>
-            <div class="grow"> 
+            <div class="grow flex items-center" :class="isGroup?'font-bold':''"> 
+                <small v-if="isGroup" class="pr-1"><span class="oi oi-people"></span></small>
                 <div>{{users}}</div>
             </div>
             <div v-if="number && number != '0'"> 
@@ -55,7 +56,7 @@ async function initConversation() {
         var groups = pref.getGroups();
         var group = groups[id];
 
-        var groupName = (group !== null && group.name != null)?`${group.name} (${id})`:conversation;
+        var groupName = (group !== null && group.name != null)?`${group.name}`:conversation;
 
         isGroup.value = true;
         iconUsername.value = null;
@@ -81,8 +82,8 @@ initConversation();
 <style scoped>
 .style {
     border: 1px solid transparent;
-    padding:3px;
 }
+.p3 { padding:3px; }
 .selected, .selected0 { 
     @apply rounded;
     /*background: linear-gradient(rgba(255,255,255,0.25), rgba(0,0,0,0.1));*/

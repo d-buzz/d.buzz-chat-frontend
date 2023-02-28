@@ -80,6 +80,8 @@
 "AddCommunityModal.Remove": "Remove",
 "AddCommunityModal.Msg.Remove": "click to add",
 
+"NewUserMessageModal.DirectMessage.Info": "Unlike groups users can't be added or removed later\nA separate encryption action for each user required\nLimit of 4 accounts (Usually just two)",      
+
 "UserModal.Reputation": "Reputation",
 "UserModal.CreatedDate": "Created date",
 "UserModal.Message": "Message",

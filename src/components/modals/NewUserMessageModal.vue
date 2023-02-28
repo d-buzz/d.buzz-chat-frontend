@@ -3,14 +3,19 @@
 <TabGroup :selectedIndex="_selectedTab">
     <TabList class="tab">
       <Tab>Direct Message</Tab>
-      <Tab>Group</Tab>
+      <Tab>Create Group</Tab>
       <Tab>Join Group</Tab>
     </TabList>
 <TabPanels>
     <TabPanel>
         <div class="mt-1">
+        <!--<div class="flex justify-between">
           <label for="username" class="block text-sm font-medium text-gray-700"> Account name/s (add 1-3 users): </label>
-          <div class="mt-1">
+            <small class="oi oi-info infoIcon" 
+        @mouseenter="tooltip($event.target, $t('NewUserMessageModal.DirectMessage.Info'), 15000)"></small>
+          
+         </div>--> 
+         <div class="mt-2">
             <input
               id="username"
               name="username"
@@ -19,7 +24,7 @@
               type="username"
               autocomplete="username"
               class="inputText1"
-              placeholder="Account name"
+              placeholder="Account name/s (1-3)"
               :read-only="isLoading"
               :disabled="isLoading"
             />
@@ -28,7 +33,7 @@
 
         <div><small>{{errorMessage}}</small></div>
 
-        <div>
+        <div class="mt-1">
           <button
             @click="authenticate(accountName)"
             class="w-full btn"
@@ -48,7 +53,7 @@
             <span v-else>Direct Message</span>
           </button>
         </div>
-
+        <label class="block text-sm font-medium text-gray-700 whitespace-pre">{{$t('NewUserMessageModal.DirectMessage.Info')}}</label>
 
     </TabPanel>
     <TabPanel>
@@ -151,6 +156,7 @@
 <script setup lang="ts">
 import { useAccountStore } from "../../stores/account";
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
+const tooltip = ref(window.tooltip);
 const accountStore = useAccountStore();
 const router = useRouter();
 const emit = defineEmits();

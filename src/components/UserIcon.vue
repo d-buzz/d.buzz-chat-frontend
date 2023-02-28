@@ -9,6 +9,7 @@
             <img class="iconborder" :class="`${imgCss}`" :src="`https://images.hive.blog/u/${name}/avatar/small`" @error="imgLoadError()" alt="" />     
         </div>
         <div v-if="online" class="onlineIcon"></div>
+        <div v-if="group" class="groupIcon"><span class="oi oi-people"></span></div>
     </div>
 </template>
 <script setup>
@@ -18,7 +19,8 @@ const props = defineProps({
     letterIcon: {type: String, default: null},
     name2: {type: String, default: null},
     size: {type: String, default: 'small'},
-    online: {type: Boolean, default: null}
+    online: {type: Boolean, default: null},
+    group: {type: Boolean, default: false}
 });
 const profileLetter = ref(null);
 const backupLetter = ref("Hi");
@@ -91,5 +93,15 @@ function randomColor(text) {
     background-color: green;
     left: 0;
     bottom: 0;
+}
+.groupIcon {
+    display: block;
+    position: absolute;
+    font-size: 12px;
+    bottom: -2px;
+    right: 3px;
+    z-index: 1;
+    mix-blend-mode: difference;
+    color: #aaaaaa;
 }
 </style>

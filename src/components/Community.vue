@@ -15,50 +15,57 @@
         <ThreadModal @oninput="setThread" @close="toggleThreads"></ThreadModal>
     </TransitionRoot>
     
-  <div class="appbg2 appfg2 h-full break-all ml-3" v-if='messageKey'>
-     <div class="appbg3 appfg3 h-full float-right w-200 overflow-y-scroll scrollBox sidebar" 
-        v-if="$route.name === 'CommunityPath' && community" ref="sidebar" :key="communityUsersKey">
-        <div class="scrollBoxContent border-l-1 pr-1 pl-1 appbg3">
-            <div class="text-right" @mouseenter="tooltip($event.target, $t('Community.OnlineJoined', [onlineCount]))"><small class="fg70">
-                {{onlineCount}}</small>
-            </div>        
-            <div v-for="roleUsers in communityUsers">
-                <div v-if="roleUsers[0] != 'muted'">
-                    <small :class="roleCss(roleUsers[0])"><b>{{roleUsers[0]}}</b></small>
-                    <div class="p-1 flex" v-for="team in roleUsers[1]" :class="(team[3] == true)?'':'offline'">
-                        <div class="flex-shrink-0 mr-5px">
-                            <UserCommunityIcon :name="team[0]" :community="community.getName()" 
-                            :imgCss="`avConversation`" :displayOnlineStatus="team[3] == true"/>
-                        </div>
-                        <div class="grow relative" style="margin-top:-7px;">
-                            <small :class="roleCss(team[1])"><b>{{team[0]}}</b></small>
-                            <div class="flex" v-if="team[2]"><small v-for="title in team[2]" 
-                                class="titlebg">{{title}}</small></div>
+  <div class="appbg3 appfg3 h-full break-all ml-3" v-if='messageKey'>
+     <div class="border-l-1 h-full float-right" v-if="$route.name === 'CommunityPath' && community" ref="sidebar" :key="communityUsersKey">
+         <div class="appbg3 appfg3 h-full w-200 overflow-y-scroll scrollBox sidebar">
+            <div class="scrollBoxContent">
+                <div class="pr-1 pl-1 appbg3">
+                    <div class="text-right" @mouseenter="tooltip($event.target, $t('Community.OnlineJoined', [onlineCount]))"><small class="fg70">
+                        {{onlineCount}}</small>
+                    </div>        
+                    <div v-for="roleUsers in communityUsers">
+                        <div v-if="roleUsers[0] != 'muted'">
+                            <small :class="roleCss(roleUsers[0])"><b>{{roleUsers[0]}}</b></small>
+                            <div class="p-1 flex" v-for="team in roleUsers[1]" :class="(team[3] == true)?'':'offline'">
+                                <div class="flex-shrink-0 mr-5px">
+                                    <UserCommunityIcon :name="team[0]" :community="community.getName()" 
+                                    :imgCss="`avConversation`" :displayOnlineStatus="team[3] == true"/>
+                                </div>
+                                <div class="grow relative" style="margin-top:-7px;">
+                                    <small :class="roleCss(team[1])"><b>{{team[0]}}</b></small>
+                                    <div class="flex" v-if="team[2]"><small v-for="title in team[2]" 
+                                        class="titlebg">{{title}}</small></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div style="padding-bottom:150px;"></div>
-        </div>
-    </div>
-    <div class="appbg3 appfg3 h-full float-right w-200 overflow-y-scroll scrollBox sidebar" 
-        v-else-if="$route.name === 'Group'" ref="sidebar" :key="communityUsersKey" style="padding-bottom:150px;">
-        <div class="scrollBoxContent border-l-1 pr-1 pl-1 appbg3">
-            <div class="text-right" @mouseenter="tooltip($event.target, $t('Community.OnlineJoined', [onlineCount]))"><small class="fg70">
-                {{onlineCount}}</small>
-            </div>   
-            <div class="p-1 flex" v-for="(online, user) in messageUsers" :class="online?'':'offline'">
-                <div class="flex-shrink-0 mr-5px">
-                    <UserIcon :name="user" 
-                    :imgCss="`avConversation`" :online="online"/>
-                </div>
-                <div class="grow relative" style="margin-top:-7px;">
-                    <small :class="roleCss('')"><b>{{user}}</b></small>
+                    <div style="padding-bottom:150px;"></div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="h-full flex flex-col justify-between">
+    <div class="border-l-1 h-full float-right" v-else-if="$route.name === 'Group'" ref="sidebar" :key="communityUsersKey">
+        <div class="appbg3 appfg3 h-full w-200 overflow-y-scroll scrollBox sidebar">
+            <div class="scrollBoxContent">
+                <div class="pr-1 pl-1 appbg3">
+                    <div class="text-right" @mouseenter="tooltip($event.target, $t('Community.OnlineJoined', [onlineCount]))"><small class="fg70">
+                        {{onlineCount}}</small>
+                    </div>   
+                    <div class="p-1 flex" v-for="(online, user) in messageUsers" :class="online?'':'offline'">
+                        <div class="flex-shrink-0 mr-5px">
+                            <UserIcon :name="user" 
+                            :imgCss="`avConversation`" :online="online"/>
+                        </div>
+                        <div class="grow relative" style="margin-top:-7px;">
+                            <small :class="roleCss('')"><b>{{user}}</b></small>
+                        </div>
+                    </div>
+                    <div style="padding-bottom:150px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="appbg2 appfg2 h-full flex flex-col justify-between">
         <div class="font-bold border-b-1 mr-3" style="order:1;padding-top:3px; padding-bottom:3px;">
             <span class="cursor-pointer" @click.stop="setThread(null)">{{streamName}} <small class="streamName2">{{streamName2}}</small></span> <span v-if="threadName !== null" class="font-normal"><span class="oi oi-chevron-right cursor-pointer" style="font-size:10px;vertical-align:top;margin-top:6px;" @click="setThread(null)"></span> {{threadName}}</span>
             <span class="inline-block" v-if="sharedCommunities">
@@ -91,8 +98,8 @@
 
         <div ref="messages" :key="messageKey" class="grow overflow-y-scroll scrollBox" style="order:5;">
             <div class="scrollBoxContent flex flex-col pr-3">
-                <button v-if="canLoadPreviousMessages" class="btn" @click="loadPrevious()">{{loadingPreviousMessages?'loading':'load previous messages'}}</button>
                 <div v-if="threadName !== null" :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
+                    <button v-if="canLoadPreviousMessages" class="btn" @click="loadPrevious()">{{loadingPreviousMessages?'loading':'load previous messages'}}</button>
                     <div v-for="messageArray in displayableMessages" >
                         <div v-if="messageArray.type === 'h'" :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
                             <div v-for="message in messageArray">
@@ -105,6 +112,7 @@
                     </div>
                 </div>
                 <div v-else :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
+                    <button v-if="canLoadPreviousMessages" class="btn" @click="loadPrevious()">{{loadingPreviousMessages?'loading':'load previous messages'}}</button>
                     <div v-for="messageArray in displayableMessages" >
                         <div v-if="messageArray.type === 'h'">
                             <small class="flex text-gray-700 cursor-pointer" style="margin-top: 0.5rem;" @click="toggleFold(messageArray)">
