@@ -256,7 +256,7 @@ function setMessages(messages) {
     var result = [];
     var array = null;
     for(var msg of messages) {
-        if(!msg || msg.isEdit || msg.isEmote() || msg.getContent() == null) continue;
+        if(!msg || msg.isEdit || msg.isEmote() || msg.isFlag() || msg.getContent() == null) continue;
         var type = msg.isThread()?'h':'t';
         if(array === null || array.type !== type) {
             array = [];
@@ -271,7 +271,7 @@ async function setMessageUsers(messages) {
     const manager = getManager();
     var users = {};
     for(var msg of messages) {
-        if(!msg || msg.isEdit || msg.isEmote() || msg.getContent() == null) continue;
+        if(!msg || msg.isEdit || msg.isEmote() || msg.isFlag() || msg.getContent() == null) continue;
         if(msg.isVerified()) { users[msg.getUser()] = true; }
     }
     users = await manager.readOnlineUsers(Object.keys(users));

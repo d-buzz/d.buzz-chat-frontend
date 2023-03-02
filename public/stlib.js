@@ -1603,6 +1603,9 @@ class DisplayableMessage {
     isEmote() {
         return this.content instanceof imports_1.Emote;
     }
+    isFlag() {
+        return this.content instanceof imports_1.Flag;
+    }
     edit(msg) {
         if (this.edits === null)
             this.edits = [msg];

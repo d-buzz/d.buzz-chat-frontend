@@ -80,9 +80,18 @@
 "AddCommunityModal.Remove": "Remove",
 "AddCommunityModal.Msg.Remove": "click to add",
 
+"NewUserMessageModal.Generate": "Generate",
+"NewUserMessageModal.Generate.Info": "generate random group key, using keychain for entropy",
 "NewUserMessageModal.CopyToClipboard": "copy to clipboard",
 "NewUserMessageModal.DirectMessage.Info": "Unlike groups users can't be added or removed later\nA separate encryption action for each user required\nLimit of 4 accounts (Usually just two)",      
+"NewUserMessageModal.CreateGroup.Info": "Inviting a user to a group gives them the Secret Group Key\nThis key is used to encrypt/decrypt all messages.",
 "NewUserMessageModal.ShowHide": "show or hide",
+"NewUserMessageModal.DoNotStore.Info": "Group key will not be stored. You will be requested to enter it before accessing the group.",
+"NewUserMessageModal.StoreLocal.Info": "The group key will be stored in this browser on this device encrypted by keychain.\n On another browser or device you will be requested to enter the group key again.",
+"NewUserMessageModal.StorePreferences.Info": "Store group private key in public user preferences encrypted by kechain.",
+"NewUserMessageModal.IconKey.Info": "Valid group private key.",
+"NewUserMessageModal.IconOpenLock.Info": "Enter at least 16 characters or a new private key.", 
+"NewUserMessageModal.IconLock.Info": "The hashed contents will be used to create a group public and private keys.",
 
 "UserModal.Reputation": "Reputation",
 "UserModal.CreatedDate": "Created date",

@@ -53,59 +53,72 @@
             <span v-else>Direct Message</span>
           </button>
         </div>
-        <label class="block text-sm font-medium text-gray-700 whitespace-pre">{{$t('NewUserMessageModal.DirectMessage.Info')}}</label>
+        <label class="block text-sm font-medium text-gray-700 whitespace-pre-line">{{$t('NewUserMessageModal.DirectMessage.Info')}}</label>
 
     </TabPanel>
     <TabPanel>
         <div class="mt-1">
+            <label class="text-sm font-medium text-gray-700 mb-1 flex justify-between">
+                <span>Group id: <b>{{groupId}}</b></span>
+                <u class="font-bold cursor-pointer" @click="toggleAdvanced">{{advancedMode?'Simplified':'Advanced'}}</u>
+            </label>
+        </div> 
+        <div class="mt-1">
             <label class="text-sm font-medium text-gray-700 mb-1"> Group name: </label>
-            <div class="flex"><input id="groupname" type="text" class="inputText1" placeholder="group name" value="Group">
-            </div>
-        </div> 
-        <div>
-            <button class="btn float-right" @click="generateKey()">Generate</button>
-            <small>Enter or generate a public key.</small>
-        </div>
-        <div class="mt-1">
-            <label class="text-sm font-medium text-gray-700 mb-1"> Group public key: </label>
-            <div class="flex"><input id="grouppublickey" type="text" class="inputText1" placeholder="STM123... group public key">
-            <button class="btn py-2 ml-1 my-0" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.CopyToClipboard'))" @click="copyToClipboard('grouppublickey')"><span class="oi oi-clipboard"></span></button>
+            <div class="flex"><input id="groupname" type="text" class="inputText1" placeholder="group name" value="">
             </div>
         </div> 
 
-        <hr class="mt-3">
+        <div class="mt-1">
+            <div class="flex justify-between">
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Secret Group Key/Password:
+                    <span v-if="keyIcon == 'key'" class="oi oi-key text-green-700" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.IconKey.Info'))"></span>
+                    <span v-else-if="keyIcon != null && keyIcon < 16" class="oi oi-lock-unlocked" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.IconOpenLock.Info'))"></span>
+                    <span v-else-if="keyIcon != null && keyIcon >= 16" class="oi oi-lock-locked text-green-700" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.IconLock.Info'))"></span>
+                </label>
+                <button class="btn px-1 py-0 my-0" @click="generateKey()" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.Generate.Info'))">{{$t('NewUserMessageModal.Generate')}}</button>
+            </div>
+            <div class="flex">
+                <input id="groupprivatekey" @keyup="onChange"
+                      @paste="onChange"
+                      @copy="onChange"
+                      @cut="onChange" type="password" class="inputText1 mr-1 " placeholder="" minlength="16">
+                <button class="btn py-1 my-1" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.CopyToClipboard'))" @click="copyToClipboard('groupprivatekey')"><span class="oi oi-clipboard"></span></button>
+                <button class="btn py-1 my-1" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.ShowHide'))" @click="showHide('groupprivatekey')"><span class="oi oi-eye"></span></button>
+            </div>
+        </div> 
+
+        <div class="mt-1" :class="{hidden: !advancedMode}">
+            <label class="text-sm font-medium text-gray-700 mb-1"> Public Group key: </label>
+            <div class="flex"><input id="grouppublickey" type="text" class="inputText1" placeholder="G123... group public key">
+            <button class="btn py-1 my-1 ml-1" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.CopyToClipboard'))" @click="copyToClipboard('grouppublickey')"><span class="oi oi-clipboard"></span></button>
+            </div>
+        </div> 
 
         <div class="mt-1">
-            <small>Select how you would like to store the private key:</small>
+            <small>How to store the Secret Group Key:</small>
             <div class="flex flex-col">
-                <div>
+                <div :class="{hidden: !advancedMode}" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.DoNotStore.Info'), 15000)">
                     <input type="radio" id="store_none" name="store_type" value="none">
                     <label for="store_none"> Do not store.</label>
                 </div>
-                <div>
+                <div @mouseenter="tooltip($event.target, $t('NewUserMessageModal.StoreLocal.Info'), 15000)">
                     <input type="radio" id="store_local" name="store_type" value="local">
-                    <label for="store_local"> Encrypted locally in browser.</label>
+                    <label for="store_local"> In browser (encrypted)</label>
                 </div>
-                <div>
+                <div @mouseenter="tooltip($event.target, $t('NewUserMessageModal.StorePreferences.Info'), 15000)">
                     <input type="radio" id="store_preferences" name="store_type" value="preferences" checked>
-                    <label for="store_preferences"> Encrypted in public user prefernces.</label>      
+                    <label for="store_preferences"> On public database (encrypted)</label>      
                 </div>
             </div>
         </div>
-
-        <div class="mt-1">
-            <label class="block text-sm font-medium text-gray-700 mb-1"> Group private key: </label>
-            <div class="flex">
-            <input id="groupprivatekey" type="password" class="inputText1 mr-1 " placeholder="optional">
-            <button class="btn py-2 my-0" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.CopyToClipboard'))" @click="copyToClipboard('groupprivatekey')"><span class="oi oi-clipboard"></span></button>
-            <button class="btn py-2 my-0" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.ShowHide'))" @click="showHide('groupprivatekey')"><span class="oi oi-eye"></span></button>
-            </div>
-        </div> 
 
         <div><small>{{errorMessage}}</small></div>
         <div class="mt-1">
             <button class="w-full btn" @click="createGroup()">Create Group</button>
         </div>
+        <label class="block text-sm font-medium text-gray-700 whitespace-pre-line">{{$t('NewUserMessageModal.CreateGroup.Info')}}</label>
     </TabPanel>
     <TabPanel>
         <div class="mt-1">
@@ -117,7 +130,7 @@
         <hr class="mt-3">
 
         <div class="mt-1">
-            <small>Select how you would like to store the private key:</small>
+            <small>How to store the Secret Group Key:</small>
             <div class="flex flex-col">
                 <div>
                     <input type="radio" id="store_none2" name="store_type2" value="none">
@@ -165,9 +178,15 @@ const props = defineProps<{
     data: Object
 }>();
 const _selectedTab = props.selectedTab || 0;
+const groupId = ref("");
+const keyIcon = ref(null);
 const isLoading = ref(false);
 const accountName = ref("");
 const errorMessage = ref("");
+const advancedMode = ref(false);
+function toggleAdvanced() {
+    advancedMode.value = !advancedMode.value;
+}
 
 const authenticate = async (account: string) => {
   if (isLoading.value) return;
@@ -237,7 +256,15 @@ async function createGroup() {
     var puKey = document.getElementById("grouppublickey").value.trim(); 
     var piKey = document.getElementById("groupprivatekey").value.trim();
 
-    if(puKey.length === 0) return;
+    if(groupname.length === 0) {
+        errorMessage.value = "Enter group name.";    
+        return;
+    }
+
+    if(puKey.length === 0) {
+        errorMessage.value = "Enter group key.";    
+        return;
+    }
 
     const manager = getManager();
     var pref = await manager.getPreferences();
@@ -254,6 +281,7 @@ async function createGroup() {
     
     var group = pref.setGroup(groupId, puKey);
     group['name'] = groupname;
+    group['time'] = stlib.Utils.uctTime();
     if(piKey.length > 0 && storeType !== 'none') {
         var conversation = "#"+manager.user+"/"+groupId;
         switch(storeType) {
@@ -291,8 +319,9 @@ async function generateKey() {
     });
     var signature = await p;    
     var piKey = dhive.PrivateKey.fromSeed(signature+(""+Math.random()));
-    document.getElementById("grouppublickey").value = piKey.createPublic("STM").toString(); 
+    document.getElementById("grouppublickey").value = piKey.createPublic("G").toString(); 
     document.getElementById("groupprivatekey").value = piKey.toString();
+    keyIcon.value = "key";
 }
 function copyToClipboard(id: string) {
     if(navigator.clipboard) {
@@ -308,4 +337,37 @@ function showHide(id: string) {
     var key = "#"+manager.user+"/"+groupId);
     window.localStorage.setItem(key, piKey);
 }*/
+function textToPublicKey(text) {
+    if(text == null || text === "") { keyIcon.value = null; return ""; } 
+    if(text.length < 16) { keyIcon.value = text.length; return ""; }
+    if(text.length === 51 && text[0] === '5') {
+        try {
+            var key = dhive.PrivateKey.fromString(text);
+            keyIcon.value = "key";
+            return piKey.createPublic("G").toString();
+        }
+        catch(e) {}
+    }
+    keyIcon.value = text.length;
+    return dhive.PrivateKey.fromSeed(text).createPublic("G").toString();
+}
+function onChange(e) {
+    var text = e.target.value.trim(); console.log("change", text);
+    var nonBlank = text != '';
+    var pu = "";
+    document.getElementById("grouppublickey").value = textToPublicKey(text); 
+}
+async function init() {
+    const manager = getManager();
+    var pref = await manager.getPreferences();
+    
+    if(pref === null) return;
+    var id = pref.findFreeGroupId(); 
+    if(groupId === -1) { 
+        groupId.value = "Limit reached. Delete groups to create new ones.";
+        return;
+    }
+    groupId.value = "#"+manager.user+"/"+id;
+}
+init();
 </script>
