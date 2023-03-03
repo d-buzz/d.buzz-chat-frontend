@@ -122,39 +122,44 @@
     </TabPanel>
     <TabPanel>
         <div class="mt-1">
-            <label class="text-sm font-medium text-gray-700 mb-1"> Group: </label>
-            <div class="flex"><input id="group" type="text" class="inputText1" placeholder="group id, eg: #username/0" value="Group">
+            <label class="text-sm font-medium text-gray-700 mb-1 flex justify-between"> 
+                <span>Group id: </span> 
+                <u class="font-bold cursor-pointer" @click="toggleAdvanced">{{advancedMode?'Simplified':'Advanced'}}</u>
+            </label>
+            <div class="flex"><input id="group" type="text" class="inputText1" placeholder="eg: #username/0" value="">
             </div>
         </div>
         
         <hr class="mt-3">
 
         <div class="mt-1">
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+                Secret Group Key/Password:
+            </label>
+            <div class="flex">
+                <input id="groupprivatekey2" type="password" class="inputText1 mr-1 " placeholder="">
+                <button class="btn py-1 my-1" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.CopyToClipboard'))" @click="copyToClipboard('groupprivatekey2')"><span class="oi oi-clipboard"></span></button>
+                <button class="btn py-1 my-1" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.ShowHide'))" @click="showHide('groupprivatekey2')"><span class="oi oi-eye"></span></button>
+            </div>
+        </div> 
+
+        <div class="mt-1">
             <small>How to store the Secret Group Key:</small>
             <div class="flex flex-col">
-                <div>
+                <div :class="{hidden: !advancedMode}" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.DoNotStore.Info'), 15000)">
                     <input type="radio" id="store_none2" name="store_type2" value="none">
-                    <label for="store_none"> Do not store.</label>
+                    <label for="store_none2"> Do not store.</label>
                 </div>
-                <div>
+                <div @mouseenter="tooltip($event.target, $t('NewUserMessageModal.StoreLocal.Info'), 15000)">
                     <input type="radio" id="store_local2" name="store_type2" value="local">
-                    <label for="store_local"> Encrypted locally in browser.</label>
+                    <label for="store_local2"> In browser (encrypted)</label>
                 </div>
-                <div>
+                <div @mouseenter="tooltip($event.target, $t('NewUserMessageModal.StorePreferences.Info'), 15000)">
                     <input type="radio" id="store_preferences2" name="store_type2" value="preferences" checked>
-                    <label for="store_preferences"> Encrypted in public user prefernces.</label>      
+                    <label for="store_preferences2"> On public database (encrypted)</label>      
                 </div>
             </div>
         </div>
-
-        <div class="mt-1">
-            <label class="block text-sm font-medium text-gray-700 mb-1"> Group private key: </label>
-            <div class="flex">
-            <input id="groupprivatekey2" type="password" class="inputText1 mr-1 " placeholder="">
-            <button class="btn py-2 my-0" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.CopyToClipboard'))" @click="copyToClipboard('groupprivatekey2')"><span class="oi oi-clipboard"></span></button>
-            <button class="btn py-2 my-0" @mouseenter="tooltip($event.target, $t('NewUserMessageModal.ShowHide'))" @click="showHide('groupprivatekey2')"><span class="oi oi-eye"></span></button>
-            </div>
-        </div> 
 
         <div><small>{{errorMessage}}</small></div>
         <div class="mt-1">
@@ -221,13 +226,26 @@ async function joinGroup() {
     var conversation = document.getElementById("group").value.trim(); 
     var piKey = document.getElementById("groupprivatekey2").value.trim();
     if(group.length === 0 || piKey.length === 0) return;
+    var groupPu = await stlib.Utils.getGroupKey(conversation);
+    if(groupPu == null) {
+        errorMessage.value = `Group '${conversation}' not found.`;
+        return;
+    }
+    piKey = textToPrivateKey(piKey);
+    if(piKey === null) {
+        errorMessage.value = `Incorrect group password.`;
+        return;
+    }
+    if(groupPu !== dhive.PrivateKey.fromString(piKey).createPublic("STM").toString()) {
+        errorMessage.value = `Incorrect group password.`;
+        return;
+    }
 
     const manager = getManager();
     var pref = await manager.getPreferences();
     if(pref === null) return;
 
     var storeType = document.querySelector("input[type='radio'][name=store_type2]:checked").value; 
-
 
     switch(storeType) {
         case "local":
@@ -281,8 +299,14 @@ async function createGroup() {
     
     var group = pref.setGroup(groupId, puKey);
     group['name'] = groupname;
-    group['time'] = stlib.Utils.uctTime();
+    group['time'] = stlib.Utils.utcTime();
     if(piKey.length > 0 && storeType !== 'none') {
+        piKey = textToPrivateKey(piKey);
+        if(piKey == null) {
+            pref.setGroup(groupId, null);
+            errorMessage.value = "Failed to store private key.";
+            return;
+        }
         var conversation = "#"+manager.user+"/"+groupId;
         switch(storeType) {
             case "local":
@@ -319,7 +343,7 @@ async function generateKey() {
     });
     var signature = await p;    
     var piKey = dhive.PrivateKey.fromSeed(signature+(""+Math.random()));
-    document.getElementById("grouppublickey").value = piKey.createPublic("G").toString(); 
+    document.getElementById("grouppublickey").value = piKey.createPublic("STM").toString(); 
     document.getElementById("groupprivatekey").value = piKey.toString();
     keyIcon.value = "key";
 }
@@ -337,6 +361,18 @@ function showHide(id: string) {
     var key = "#"+manager.user+"/"+groupId);
     window.localStorage.setItem(key, piKey);
 }*/
+function textToPrivateKey(text) {
+    if(text == null || text === "") return null; 
+    if(text.length < 16) return null; 
+    if(text.length === 51 && text[0] === '5') {
+        try {
+            dhive.PrivateKey.fromString(text);
+            return text;
+        }
+        catch(e) {}
+    }
+    return dhive.PrivateKey.fromSeed(text).toString();
+}
 function textToPublicKey(text) {
     if(text == null || text === "") { keyIcon.value = null; return ""; } 
     if(text.length < 16) { keyIcon.value = text.length; return ""; }
@@ -344,12 +380,12 @@ function textToPublicKey(text) {
         try {
             var key = dhive.PrivateKey.fromString(text);
             keyIcon.value = "key";
-            return piKey.createPublic("G").toString();
+            return piKey.createPublic("STM").toString();
         }
         catch(e) {}
     }
     keyIcon.value = text.length;
-    return dhive.PrivateKey.fromSeed(text).createPublic("G").toString();
+    return dhive.PrivateKey.fromSeed(text).createPublic("STM").toString();
 }
 function onChange(e) {
     var text = e.target.value.trim(); console.log("change", text);

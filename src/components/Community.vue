@@ -621,6 +621,8 @@ const enterMessage = async (message, contentMessage=null, block=true, clearBox=t
 async function updateStatus(writing) {
     console.log("update status ", writing);
     var manager = getManager();
+    var conversation = manager.selectedConversation;
+    if(conversation != null && conversation.length > 0 && conversation[0] === '#') return;
     await manager.setSelectedOnlineStatus(writing);
 }
 function isAtScrollBottom(e) {

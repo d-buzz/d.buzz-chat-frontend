@@ -2906,7 +2906,10 @@ class MessageManager {
                     return data;
                 }
                 else {
-                    var result = yield client.read(conversation, 0, maxTime);
+                    var minTime = 0;
+                    if (utils_1.Utils.isJoinableGroupConversation(conversation))
+                        minTime = yield utils_1.Utils.getGroupTimestamp(conversation);
+                    var result = yield client.read(conversation, minTime, maxTime);
                     if (!result.isSuccess())
                         throw result.getError();
                     var messages = yield this.toDisplayable(result);
@@ -2964,7 +2967,11 @@ class MessageManager {
                     });
                 }
                 else {
-                    promise = client.read(conversation, 0, /*timeNow-_this.defaultReadHistoryMS; */ maxTime).then((result) => {
+                    var readFrom = utils_1.Utils.isJoinableGroupConversation(conversation) ?
+                        utils_1.Utils.getGroupTimestamp(conversation) : Promise.resolve(0);
+                    promise = readFrom.then((minTime) => {
+                        return client.read(conversation, minTime, /*timeNow-_this.defaultReadHistoryMS; */ maxTime);
+                    }).then((result) => {
                         if (!result.isSuccess())
                             throw result.getError();
                         return _this.toDisplayable(result);
@@ -4029,6 +4036,42 @@ class Utils {
             var groups = pref.getGroups();
             var group = groups[path];
             return (group !== null && group.name != null) ? group.name : conversation;
+        });
+    }
+    static getGroupKey(conversation) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (!conversation.startsWith('#'))
+                    return conversation;
+                var username = Utils.getConversationUsername(conversation);
+                var path = Utils.getConversationPath(conversation);
+                var pref = yield Utils.getAccountPreferences(username);
+                var groups = pref.getGroups();
+                var group = groups[path];
+                return (group !== null && group.key != null) ? group.key : null;
+            }
+            catch (e) {
+                console.log(e);
+            }
+            return null;
+        });
+    }
+    static getGroupTimestamp(conversation) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (!conversation.startsWith('#'))
+                    return 0;
+                var username = Utils.getConversationUsername(conversation);
+                var path = Utils.getConversationPath(conversation);
+                var pref = yield Utils.getAccountPreferences(username);
+                var groups = pref.getGroups();
+                var group = groups[path];
+                return (group !== null && group.time != null) ? group.time : 0;
+            }
+            catch (e) {
+                console.log(e);
+            }
+            return 0;
         });
     }
     static getRole(community, user) {
