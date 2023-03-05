@@ -1,12 +1,12 @@
 <template>
     <router-link :to="`${link}`">
-        <div v-if="compact" class="nameParent style relative" :class="{selected0: $route.path == link}">
+        <div v-if="compact" @click.right.prevent.stop="clickOnMsg" class="nameParent style relative" :class="{selected0: $route.path == link}">
              <!--<small class="name"><b>{{users}}</b></small>-->
             <small v-if="number && number != '0'" class="number2"><b>{{number}}</b></small>
             <div class="relative" style="padding: 4px;" @mouseenter="tooltip($event.target, `${users}\n${conversation}`)">
                 <!--<small v-if="isGroup" class="groupIcon"><span class="oi oi-people"></span></small>-->
                 <UserIcon v-if="iconUsername || letterIcon" :name="iconUsername" :group="isGroup"
-                    :letterIcon="letterIcon" :imgCss="'avCommunity'+(isGroup?' avGroup':'')"/>
+                    :letterIcon="letterIcon" :imgCss="'avCommunity'+(isGroup?' avGroup':'')"/>           
             </div>
         </div>
         <div v-else class="flex style p3" :class="{selected: $route.path == link}"

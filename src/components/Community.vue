@@ -67,7 +67,7 @@
     </div>
     <div class="appbg2 appfg2 h-full flex flex-col justify-between">
         <div class="font-bold border-b-1 mr-3" style="order:1;padding-top:3px; padding-bottom:3px;">
-            <span class="cursor-pointer" @click.stop="setThread(null)">{{streamName}} <small class="streamName2">{{streamName2}}</small></span> <span v-if="threadName !== null" class="font-normal"><span class="oi oi-chevron-right cursor-pointer" style="font-size:10px;vertical-align:top;margin-top:6px;" @click="setThread(null)"></span> {{threadName}}</span>
+            <span class="cursor-pointer" @click.stop="setThread(null, $event.target)">{{streamName}} <small class="streamName2">{{streamName2}}</small></span> <span v-if="threadName !== null" class="font-normal"><span class="oi oi-chevron-right cursor-pointer" style="font-size:10px;vertical-align:top;margin-top:6px;" @click="setThread(null)"></span> {{threadName}}</span>
             <span class="inline-block" v-if="sharedCommunities">
                 <span class="flex">
                     <SideBarIcon v-for="community in sharedCommunities" :img="community[0]" :name="community[1]" :community="community" :imgCss="`avMini`" />
@@ -288,6 +288,8 @@ function addCommunityName(community, streamName) {
     prepend = prepend.replaceAll("<title>", community.getTitle());
     return prepend;
 }
+var isGroupOwner = false;
+var groupId = null;
 async function initChat() {
     var user = accountStore.account.name;
     if(user == null) return; //TODO ask to login
@@ -351,7 +353,7 @@ async function initChat() {
             var group = groups[route.params.path];
             if(group !== null && group.name != null) {
                 streamName.value = addCommunityName(community0, group.name);
-                streamName2.value = conversation;
+                //streamName2.value = conversation;
             }
             else {
                 streamName.value = addCommunityName(community0, conversation);
@@ -363,11 +365,13 @@ async function initChat() {
             var group = groups[route.params.path];
             if(group !== null && group.name != null) {
                 streamName.value = group.name;
-                streamName2.value = conversation;
+                //streamName2.value = conversation;
             }
             else {
                 streamName.value = conversation;
             }
+            isGroupOwner = user === user2;
+            groupId = conversation;
             usersFromMessages = true;
             updateOnlineUsers = async ()=> {
                 messageUsers.value = await manager.readOnlineUsers(Object.keys(messageUsers.value));
@@ -481,12 +485,22 @@ function focusMessageBox() {
         messageBox.value.focus();
 }
 initChat();
-function setThread(name) {
+function setThread(name, element) {
     if(name === null && threadName.value == null) {
         if(window.showStreambar != null &&
             (route.name !== 'Group' && !route.name.startsWith('PrivateChat') ||
             window.globalProperties["sidebarToggleByChannelNameOnDirectGroup"])) {
             window.toggleStreambar();
+        }
+        else if(route.name === 'Group' && element && groupId != null) {
+            var options = [
+                ["Add Group Member", toggleShareGroup],
+                [isGroupOwner?"Close Group":"Leave Group", toggleCloseGroup],
+            ];
+            if(isGroupOwner) options.unshift(["Edit Group Name (WIP)", ()=>{
+
+            }]);
+            window.menu(element, options, groupId);
         }
     }
     else {

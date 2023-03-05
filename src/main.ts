@@ -124,6 +124,9 @@ window.tmpProperties = {};
             }
         }
     });
+    //TODO refactor tooltip, menu
+    window.onclickoutside = new stlib.EventQueue();
+    document.getElementById("app").addEventListener("click", ()=>{ window.onclickoutside.post(); }); 
     window.tooltip = function(element, text, ms=5000) {
         var el = document.getElementById("tooltip");  
         if(el == null) return;
@@ -149,6 +152,49 @@ window.tmpProperties = {};
             }
         }, ms);
     };
+    window.menu = function(element, items, name=null) {
+        var el = document.getElementById("menu");  
+        if(el == null) return;
+        el.innerHTML = ""; 
+        if(name) {
+            var div = document.createElement("div");
+            div.setAttribute("class", "font-bold border-b-1");
+            div.innerText = name;
+            el.appendChild(div);
+        }
+        for(let item of items) {
+            var div = document.createElement("div");
+            if(item.length > 2 && item[2]) {
+                var icon = document.createElement("span");
+                icon.setAttribute("class", "oi "+item[2]);
+                div.appendChild(icon);
+                
+            } 
+            var text = document.createElement("span");
+            text.innerText = item[0];
+            div.appendChild(text);
+            div.addEventListener("click", ()=>{
+                try {
+                    item[1]();
+                }
+                catch(e) { console.log(e); }
+                el.hidden = true;
+            });
+            el.appendChild(div);
+        }
+        var pos = element.getBoundingClientRect();
+        
+        el.hidden = false;
+        var x = Math.min(pos.left+20, window.innerWidth-el.offsetWidth-10); 
+        var y = 0.5*(pos.top+pos.bottom); 
+
+        el.setAttribute('style','left:'+x+'px;'+'top:'+y+'px;');
+    };
+    window.onclickoutside.set("main.ts", ()=>{ 
+        var el = document.getElementById("menu");  
+        if(el == null || el.hidden) return;
+        el.hidden = true;
+    });
 })();
 async function initMain() {
     if(NETWORK_NAME == null) {

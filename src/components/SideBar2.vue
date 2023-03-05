@@ -8,7 +8,7 @@
     <div class="border-b-1 relative">
         <!--<SideBarLoginIcon :number="number" @click="toggleMenu" @toggleStreambar=""/>-->
         <div @mouseenter="tooltip($event.target, '@'+accountName)">
-            <UserIcon class="p-1 cursor-pointer" @click="toggleMenu" :name="accountName" :imgCss="'avCommunity'"/>
+            <UserIcon class="p-1 cursor-pointer" @click.stop.prevent="toggleMenu" :name="accountName" :imgCss="'avCommunity'"/>
         </div>
         <div v-if="showMenu" class="menu appbg1 border-default flex flex-col">
             <div><b class="border-b-1"><a :href="`https://peakd.com/@${accountName}`" target="_blank" rel="noreferrer noopener">@{{accountName}}</a></b></div>

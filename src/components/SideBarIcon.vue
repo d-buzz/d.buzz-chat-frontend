@@ -1,6 +1,12 @@
 <template>
+    <TransitionRoot :show="showJoinModal">
+        <JoinModal :community="img" @close="toggleJoinModal" @closeAll="emit('closeAll')"></JoinModal>
+    </TransitionRoot>
   <div class="flex nameParent relative items-center justify-start" 
-    v-if="hasImg || getImgCss() == 'avMini'" @mouseenter="tooltip($event.target, `C/${name} (@${img})`)">
+    v-if="hasImg || getImgCss() == 'avMini'" 
+    @mouseenter="tooltip($event.target, `C/${name} (@${img})`)"
+    @click.right.prevent.stop="rightClickMenu($event.target)"
+    >
     <!--<small class="name"><b>{{name}}</b></small>-->
     <small v-if="number && number != '0'" class="number"><b>{{number}}</b></small>
     <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" >
@@ -13,7 +19,11 @@
         </span>
     </div>
   </div>
-  <div class="flex relative items-center justify-start" v-else @mouseenter="tooltip($el, `C/${name} (@${img})`)">
+  <div class="flex relative items-center justify-start" 
+    v-else 
+    @mouseenter="tooltip($el, `C/${name} (@${img})`)"
+    @click.right.prevent.stop="rightClickMenu($event.target)"
+    >
     <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" >
          <!--<small class="name2"><b>{{name}}</b></small>-->
         <router-link :to="`/i/${img}/about`">
@@ -34,6 +44,10 @@ const props = defineProps({
     number: String
 });
 const hasImg = ref(hasProfileImage(props.community));
+const showJoinModal = ref(false);
+function toggleJoinModal() {
+    showJoinModal.value = !showJoinModal.value;
+}
 async function onClick(community) {
     const manager = getManager();
     var defLink = `/i/${community}/about`;
@@ -46,6 +60,17 @@ async function onClick(community) {
     var link = manager.getSelectedCommunityPage(community, defLink);
     if(link === router.currentRoute._value.fullPath) emit('toggleStreambar');
     else router.push(link);
+}
+function rightClickMenu(event) {
+    window.menu(event, [
+        ["hide", ()=>{ 
+            var manager = getManager();
+            manager.hideCommunity(props.img, true);
+        }, "oi-volume-low"],
+        ["info", ()=>{ 
+            toggleJoinModal();
+        }, "oi-info"]
+    ]);
 }
 function getPath(stream) {
     var path = stream.getPath();

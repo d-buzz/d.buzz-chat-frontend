@@ -107,6 +107,31 @@ body {
 .flipY:hover .flipYItem {
     transform: rotateY(180deg);
 }
+.menu {
+    position: fixed;
+    z-index: 70;
+    color: var(--appfg1);
+    background-color: var(--appbg1);
+    border: 1px solid #0000002e;
+    border-radius:5px;
+    font-size: 14px;
+    padding: 2px 2px;
+    min-width: 100px;
+    max-width: 350px;
+}
+.menu > div { 
+    @apply mx-0 px-2 cursor-pointer;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.menu > div:hover { 
+    background-color: var(--appsg1);
+}
+.menu .oi { 
+    width: 15px;
+    margin-left: -2px;
+    padding-right: 2px;
+}
 .tooltip {
     position: fixed;
     z-index: 100;
@@ -115,6 +140,8 @@ body {
     border-radius:5px;
     font-size: 14px;
     padding: 2px 7px;
+    min-width: 100px;
+    max-width: 350px;
 }
 .md { }
 .md p, .md h1, .md h2, .md h3, .md h4, .md h5, .md h6 {
