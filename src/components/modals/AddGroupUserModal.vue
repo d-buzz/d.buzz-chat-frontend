@@ -1,6 +1,11 @@
 <template>
   <DefaultModal title="Add Group User">
         <div class="mt-1">
+            <label class="text-sm font-medium text-gray-700 mb-1">
+                <span>Group id: <b>{{conversation}}</b></span>
+            </label>
+        </div> 
+        <div class="mt-1">
           <label for="message" class="block text-sm font-medium text-gray-700">Group Invite Message: </label>
           <div class="mt-1">
             <input
@@ -66,16 +71,18 @@ const { t } = useI18n();
 const accountStore = useAccountStore();
 const router = useRouter();
 const emit = defineEmits();
-//
+const props = defineProps({
+    conversation: {type: String, default: null}
+});
 const isLoading = ref(false);
 const accountName = ref("");
 const message = ref(t("AddGroupUserModal.Msg.Join"));
 const errorMessage = ref("");
 
 async function init() {
-    var groupInfo = await stlib.Utils.findGroupInfo("#borislavzlatanov/0");
+    var groupInfo = await stlib.Utils.findGroupInfo(props.conversation);
     if(groupInfo != null && groupInfo.name != null)
-    message.value = t("AddGroupUserModal.Msg.Join") + ' ' + groupInfo.name;
+        message.value = t("AddGroupUserModal.Msg.Join") + ' ' + groupInfo.name;
 }
 init();
 
@@ -90,7 +97,7 @@ const action = async (account: string) => {
     isLoading.value = true;
     var users = account.split(/[ ,]+/);
     const manager = getManager();
-    var group = manager.selectedConversation;
+    var group = props.conversation;
     var groupKey = await manager.getKeyFor(group);
     if(groupKey == null) {
         errorMessage.value = "Group key not found.";

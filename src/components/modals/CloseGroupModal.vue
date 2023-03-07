@@ -1,9 +1,10 @@
 <template>
-  <DefaultModal title="Close Group?">
+  <DefaultModal :title="name+'?'">
         <div class="mt-1">
-          <label class="block text-sm font-medium text-gray-700"></label>          
-        </div>
-
+            <label class="text-sm font-medium text-gray-700 mb-1">
+                <span>Group id: <b>{{conversation}}</b></span>
+            </label>
+        </div> 
         <div><small>{{errorMessage}}</small></div>
 
         <div>
@@ -23,7 +24,7 @@
               </svg>
               Loading...</span
             >
-            <span v-else>Close Group</span>
+            <span v-else>{{name}}</span>
           </button>
         </div>
     </DefaultModal>
@@ -34,18 +35,27 @@ import { useAccountStore } from "../../stores/account";
 const accountStore = useAccountStore();
 const router = useRouter();
 const emit = defineEmits();
-//const props = defineProps<{
-//}>();
+const props = defineProps({
+    conversation: {type: String, default: null}
+});
+const name = ref(isGroupOwner()?'Close Group':'Leave Group');
 const isLoading = ref(false);
 const accountName = ref("");
 const errorMessage = ref("");
+
+function isGroupOwner() {
+    var array = stlib.Utils.parseGroupConversation(props.conversation);
+    if(array === null) return false;
+    var user = accountStore.account.name;
+    return user === array[1];
+}
 
 const action = async () => {
   if (isLoading.value) return;
   try {
     isLoading.value = true;
     const manager = getManager();
-    await manager.closeGroup(manager.selectedConversation);
+    await manager.closeGroup(props.conversation);
     console.log("close group");
     emit("close");
   } finally {

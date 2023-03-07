@@ -1,9 +1,12 @@
 <template>
+    <TransitionRoot :show="showRenameGroupModal">
+        <RenameGroupModal :conversation="groupId" @close="toggleRenameGroup"></RenameGroupModal>
+    </TransitionRoot>
     <TransitionRoot :show="showGroupUserModal">
-        <AddGroupUserModal @close="toggleShareGroup"></AddGroupUserModal>
+        <AddGroupUserModal :conversation="groupId" @close="toggleShareGroup"></AddGroupUserModal>
     </TransitionRoot>
     <TransitionRoot :show="showCloseGroupModal">
-        <CloseGroupModal @close="toggleCloseGroup"></CloseGroupModal>
+        <CloseGroupModal :conversation="groupId" @close="toggleCloseGroup"></CloseGroupModal>
     </TransitionRoot>
     <TransitionRoot :show="showFlagMessageModal">
         <FlagMessageModal @close="toggleFlagMessage" :msg="flagMessageRef"></FlagMessageModal>
@@ -211,7 +214,7 @@ const valueAutoDecode = ref(false);
 const canLoadPreviousMessages = ref(true);
 const loadingPreviousMessages = ref(false);
 const canWrite = ref(true);
-
+const showRenameGroupModal = ref(false);
 const showGroupUserModal = ref(false);
 const showCloseGroupModal = ref(false);
 const showFlagMessageModal = ref(false);
@@ -221,6 +224,9 @@ const showSidebar = ref(false);
 const flagMessageRef = ref();
 const deleteMessageRef = ref();
 
+function toggleRenameGroup() {
+    showRenameGroupModal.value = !showRenameGroupModal.value;
+}
 function toggleShareGroup() {
     showGroupUserModal.value = !showGroupUserModal.value;
 }
@@ -289,7 +295,7 @@ function addCommunityName(community, streamName) {
     return prepend;
 }
 var isGroupOwner = false;
-var groupId = null;
+var groupId = ref(null);
 async function initChat() {
     var user = accountStore.account.name;
     if(user == null) return; //TODO ask to login
@@ -371,7 +377,7 @@ async function initChat() {
                 streamName.value = conversation;
             }
             isGroupOwner = user === user2;
-            groupId = conversation;
+            groupId.value = conversation;
             usersFromMessages = true;
             updateOnlineUsers = async ()=> {
                 messageUsers.value = await manager.readOnlineUsers(Object.keys(messageUsers.value));
@@ -492,15 +498,13 @@ function setThread(name, element) {
             window.globalProperties["sidebarToggleByChannelNameOnDirectGroup"])) {
             window.toggleStreambar();
         }
-        else if(route.name === 'Group' && element && groupId != null) {
+        else if(route.name === 'Group' && element && groupId.value != null) {
             var options = [
                 ["Add Group Member", toggleShareGroup],
                 [isGroupOwner?"Close Group":"Leave Group", toggleCloseGroup],
             ];
-            if(isGroupOwner) options.unshift(["Edit Group Name (WIP)", ()=>{
-
-            }]);
-            window.menu(element, options, groupId);
+            if(isGroupOwner) options.unshift(["Edit Group Name", toggleRenameGroup]);
+            window.menu(element, options, groupId.value, true);
         }
     }
     else {

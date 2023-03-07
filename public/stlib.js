@@ -2424,6 +2424,22 @@ class MessageManager {
             return key;
         });
     }
+    renameGroup(group, name) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var array = utils_1.Utils.parseGroupConversation(group);
+            if (array == null)
+                return false;
+            var pref = yield this.getPreferences();
+            var groupData = pref.getGroup(array[2]);
+            if (groupData == null)
+                return false;
+            if (groupData['name'] !== name) {
+                groupData['name'] = name;
+                yield this.updatePreferences(pref);
+            }
+            return true;
+        });
+    }
     closeGroup(group) {
         return __awaiter(this, void 0, void 0, function* () {
             var pref = yield this.getPreferences();
@@ -2651,6 +2667,9 @@ class MessageManager {
             for (var item of tmpArray)
                 if (item != null)
                     sortedArray.push(item);
+            for (var item of array)
+                if (item.account == null)
+                    item.account = yield utils_1.Utils.getAccountData(item[0]);
             return sortedArray;
         });
     }
@@ -4383,7 +4402,12 @@ class Utils {
         var array = Utils.parseConversation(conversation);
         if (array.length !== 3 || array[0] !== '#' || !Utils.isWholeNumber(array[2]))
             return null;
-        array[2] = Number.parseInt(array[2]);
+        try {
+            array[2] = Number.parseInt(array[2]);
+        }
+        catch (e) {
+            return null;
+        }
         return array;
     }
     static parseConversation(conversation) {

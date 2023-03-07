@@ -1,23 +1,52 @@
 <template>
+    <TransitionRoot :show="showRenameGroupModal">
+        <RenameGroupModal :conversation="conversation" @close="toggleRenameGroup"></RenameGroupModal>
+    </TransitionRoot>
+    <TransitionRoot :show="showGroupUserModal">
+        <AddGroupUserModal :conversation="conversation" @close="toggleShareGroup"></AddGroupUserModal>
+    </TransitionRoot>
+    <TransitionRoot :show="showCloseGroupModal">
+        <CloseGroupModal :conversation="conversation" @close="toggleCloseGroup"></CloseGroupModal>
+    </TransitionRoot>
     <router-link :to="`${link}`">
-        <div v-if="compact" @click.right.prevent.stop="clickOnMsg" class="nameParent style relative" :class="{selected0: $route.path == link}">
+        <div v-if="compact" @click.right.prevent.stop="clickOnMsg($event.target)" class="nameParent style relative" :class="{selected0: $route.path == link}">
              <!--<small class="name"><b>{{users}}</b></small>-->
             <small v-if="number && number != '0'" class="number2"><b>{{number}}</b></small>
             <div class="relative" style="padding: 4px;" @mouseenter="tooltip($event.target, `${users}\n${conversation}`)">
                 <!--<small v-if="isGroup" class="groupIcon"><span class="oi oi-people"></span></small>-->
-                <UserIcon v-if="iconUsername || letterIcon" :name="iconUsername" :group="isGroup"
+                <div v-if="usersArray" class="groupIcon3" style="max-width: 42px;padding-left:1px">
+                    <div>
+                        <UserIcon :name="usersArray[0]" imgCss="avMini"/>   
+                        <UserIcon :name="usersArray[1]" imgCss="avMini"/>       
+                    </div>                
+                    <div>
+                        <UserIcon :name="usersArray[2]" imgCss="avMini"/>   
+                        <UserIcon v-if="usersArray.length > 3" :name="usersArray[3]" imgCss="avMini"/>       
+                    </div> 
+                </div>
+                <UserIcon v-else-if="iconUsername || letterIcon" :name="iconUsername" :group="isGroup"
                     :letterIcon="letterIcon" :imgCss="'avCommunity'+(isGroup?' avGroup':'')"/>           
             </div>
         </div>
         <div v-else class="flex style p3" :class="{selected: $route.path == link}"
             @mouseenter="tooltip($event.target, `${users}\n${conversation}`)">
-            <div class="flex-shrink-0 mr-5px relative">
+            <div v-if="usersArray" class="groupIcon3 mr-5px" style="max-width: 42px;padding-left:1px">
+                <div>
+                    <UserIcon :name="usersArray[0]" imgCss="avMini"/>   
+                    <UserIcon :name="usersArray[1]" imgCss="avMini"/>       
+                </div>                
+                <div>
+                    <UserIcon :name="usersArray[2]" imgCss="avMini"/>   
+                    <UserIcon v-if="usersArray.length > 3" :name="usersArray[3]" imgCss="avMini"/>       
+                </div> 
+            </div>
+            <div v-else class="flex-shrink-0 mr-5px relative">
                 <UserIcon v-if="iconUsername || letterIcon" :name="iconUsername"
                     :letterIcon="letterIcon" :imgCss="'avConversation'+(isGroup?' avGroup':'')"/>
             </div>
             <div class="grow flex items-center" :class="isGroup?'font-bold':''"> 
                 <small v-if="isGroup" class="pr-1"><span class="oi oi-people"></span></small>
-                <div>{{users}}</div>
+                <div :class="usersArray?'text-sm':''">{{users}}</div>
             </div>
             <div v-if="number && number != '0'"> 
                 <small class="number"><b>{{number}}</b></small>
@@ -36,11 +65,36 @@ const props = defineProps({
     number: String,
     compact: { type: Boolean, value: false}
 });
+const showRenameGroupModal = ref(false);
+const showGroupUserModal = ref(false);
+const showCloseGroupModal = ref(false);
+
+function toggleRenameGroup() {
+    showRenameGroupModal.value = !showRenameGroupModal.value;
+}
+function toggleShareGroup() {
+    showGroupUserModal.value = !showGroupUserModal.value;
+}
+function toggleCloseGroup() {
+    showCloseGroupModal.value = !showCloseGroupModal.value;
+}
+function clickOnMsg(event) {
+    if(!stlib.Utils.isJoinableGroupConversation(props.conversation)) return;
+    var user = accountStore.account.name;
+    var isGroupOwner = user === props.username;
+    var options = [
+        ["Add Group Member", toggleShareGroup, "oi-people"],
+        [isGroupOwner?"Close Group":"Leave Group", toggleCloseGroup, "oi-x"],
+    ];
+    if(isGroupOwner) options.unshift(["Edit Group Name", toggleRenameGroup, "oi-pencil"]);
+    window.menu(event, options);
+}
 const isGroup = ref(false);
 const link = ref("");
 const iconUsername = ref("");
 const letterIcon = ref(null);
 const users = ref("");
+const usersArray = ref(null);
 async function initConversation() {
     var username = props.username;
     var conversation = props.conversation;
@@ -74,6 +128,7 @@ async function initConversation() {
             link.value += (link.value.length>0?'/':'')+list[j];
         }
         users.value = link.value.replaceAll('/', ', ');
+        if(list.length > 2) usersArray.value = list; 
         link.value = '/p/'+link.value;
     }
 }
@@ -148,5 +203,12 @@ initConversation();
 .groupIcon2 {
     bottom: -7px;
     right: -10px;
+}
+.groupIcon3 {
+
+}
+.groupIcon3 > div {
+    display: flex;
+    gap:3px;padding-bottom:3px;
 }
 </style>

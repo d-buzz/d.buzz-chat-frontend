@@ -155,7 +155,9 @@ async function initCommunities() {
     var _communities = await manager.getCommunitiesSorted();
     {
         var tmp = {};
-        for(var community of _communities) tmp[community[0]] = true;
+        for(var community of _communities) {
+            tmp[community[0]] = true;
+        }
         var prepend = globalProperties.prependCommunities;
         if(prepend && prepend.length > 0) {
             for(var name of prepend) {

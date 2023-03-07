@@ -3,7 +3,6 @@
         <JoinModal :community="img" @close="toggleJoinModal" @closeAll="emit('closeAll')"></JoinModal>
     </TransitionRoot>
   <div class="flex nameParent relative items-center justify-start" 
-    v-if="hasImg || getImgCss() == 'avMini'" 
     @mouseenter="tooltip($event.target, `C/${name} (@${img})`)"
     @click.right.prevent.stop="rightClickMenu($event.target)"
     >
@@ -11,24 +10,13 @@
     <small v-if="number && number != '0'" class="number"><b>{{number}}</b></small>
     <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" >
         <span class="cursor-pointer" @click="onClick(img)">
-            <img
+            <!--<img
             :class="`rounded-full ${getImgCss()} border border-solid borderColor`"
             :src="`https://images.hive.blog/u/${img}/avatar/small`"
             alt=""
-            />
-        </span>
-    </div>
-  </div>
-  <div class="flex relative items-center justify-start" 
-    v-else 
-    @mouseenter="tooltip($el, `C/${name} (@${img})`)"
-    @click.right.prevent.stop="rightClickMenu($event.target)"
-    >
-    <div class="flex-shrink-0" :class="{selected: $route.params.user == img, 'p-1': getImgCss() !== 'avMini'}" >
-         <!--<small class="name2"><b>{{name}}</b></small>-->
-        <router-link :to="`/i/${img}/about`">
+            />-->
             <UserIcon :name="img" :imgCss="getImgCss()" :letterIcon="getLetterIcon()"/>
-        </router-link>
+        </span>
     </div>
   </div>
 </template>
