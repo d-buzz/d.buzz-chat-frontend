@@ -130,7 +130,7 @@
                 <hr/>
                 <div>
                     <small><b>How does it work?</b></small>
-                    <p class="text-xs text-gray-700">Keychain is used to sign, encode messages and user preferences and stored on decentralized backend.</p>
+                    <p class="text-xs text-gray-700">Keychain is used to sign, encode messages and user preferences, which are stored on decentralized backend.</p>
                     <small><b>Tip</b></small>
                     <p class="text-xs text-gray-700">You can select the 'Do not prompt' again option on keychain for convenience or sign each message for more control.</p>
                 </div>
