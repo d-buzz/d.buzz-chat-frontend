@@ -28,7 +28,7 @@
                     :letterIcon="letterIcon" :imgCss="'avCommunity'+(isGroup?' avGroup':'')"/>           
             </div>
         </div>
-        <div v-else class="flex style p3" :class="{selected: $route.path == link}"
+        <div v-else class="flex style p3" @click.right.prevent.stop="clickOnMsg($event.target)" :class="{selected: $route.path == link}"
             @mouseenter="tooltip($event.target, `${users}\n${conversation}`)">
             <div v-if="usersArray" class="groupIcon3 mr-5px" style="max-width: 42px;padding-left:1px">
                 <div>

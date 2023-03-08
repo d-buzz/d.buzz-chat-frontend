@@ -16,7 +16,7 @@
          :data-verified="message.isVerified()">
         <small style="margin-left:46px;opacity:0.5;" :class="roleColor?roleColor:''"><b>{{message.getUser()}}</b></small>
         <span class="pr-2 float-right fg70">
-            <small class="cursor-pointer fg70" @click="toggleViewEditHistoryModal()" @mouseenter="tooltip($event.target, 'Reason:\n'+getFlagReasons(message))">(flagged) </small>
+            <small class="cursor-pointer fg70" @click="toggleViewEditHistoryModal()" @mouseenter="tooltip($event.target, 'Reason:\n'+getFlagReasons(message))">(hidden) </small>
             <small v-if="message.edits && message.edits.length > 0" class="cursor-pointer" @mouseenter="tooltip($event.target, toAbsoluteTimeString(message.edits[0].getTimestamp()))" @click="toggleViewEditHistoryModal()">(edited {{toRelativeTimeString(message.edits[0].getTimestamp())}}) </small>
             <small @mouseenter="tooltip($event.target, toRelativeTimeString(message.getTimestamp(),3)+'\n'+toAbsoluteTimeString(message.getTimestamp()))">{{toRelativeTimeString(message.getTimestamp())}}</small>
             <span v-if="!message.isVerified()" class="pl-1">&#10008;</span>

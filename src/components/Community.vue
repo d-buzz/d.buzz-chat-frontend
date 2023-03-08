@@ -19,8 +19,8 @@
     </TransitionRoot>
     
   <div class="appbg3 appfg3 h-full break-all ml-3" v-if='messageKey'>
-     <div class="border-l-1 h-full float-right" v-if="$route.name === 'CommunityPath' && community" ref="sidebar" :key="communityUsersKey">
-         <div class="appbg3 appfg3 h-full w-200 overflow-y-scroll scrollBox sidebar">
+     <div class="border-l-1 h-full float-right sidebar" v-if="$route.name === 'CommunityPath' && community" ref="sidebar" :key="communityUsersKey">
+         <div class="appbg3 appfg3 h-full w-200 overflow-y-scroll scrollBox">
             <div class="scrollBoxContent">
                 <div class="pr-1 pl-1 appbg3">
                     <div class="text-right" @mouseenter="tooltip($event.target, $t('Community.OnlineJoined', [onlineCount]))"><small class="fg70">

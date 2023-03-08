@@ -1,26 +1,7 @@
 <template>
     <div class="mt-2"></div>
     <div class="flex flex-row" v-for="item in preferences" :key="updateKey">
-        <div v-if="item.options">
-            <div>
-                <div><b>{{item.display}}</b></div>
-                <div><small>{{item.desc}}</small></div>
-            </div>
-            <div>
-                <select v-model="item.newvalue" class="inputSelect1">
-                    <option v-for="option in item.options" :value="option[0]">{{option[1]}}</option>
-                </select>
-            </div>
-        </div>
-        <div v-else>
-            <div>
-                <div><b>{{item.display}}</b></div>
-                <div><small>{{item.desc}}</small></div>
-            </div>
-            <div>
-                <input type="checkbox" v-model="item.newvalue">
-            </div>
-        </div>
+        <Preference :item="item"></Preference>
     </div>
     <div><small>{{updateMessage}}</small></div>
     <button class="btn" @click="updatePreferences" title="Update settings.">Update</button>
@@ -34,7 +15,7 @@ const preferences = ref([]);
 const updateKey = ref('#'+stlib.Utils.nextId());
 
 const defaultPreferences = [
-    {name: "memoKey:b", display: "Use Memo Key", desc: "Use memo key or 1st posting key for private messages.", value: false, newvalue: false},
+    //{name: "memoKey:b", display: "Use Memo Key", desc: "Use memo key or 1st posting key for private messages.", value: false, newvalue: false},
     {name: "directMessage:s", display: "Direct Message", desc: "Permission to message directly is granted to:",
      value: '', newvalue:'', options:[
         ['everyone', 'Everyone'],['accounts', 'Hive users'],

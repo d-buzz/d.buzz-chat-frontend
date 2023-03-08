@@ -64,6 +64,7 @@
                     <TextIcon v-if="addButton === 2" class="p-1 cursor-pointer" :text="'+'"
                         @click.stop="toggleNewUserMessageModalOpen"
                         @mouseenter="tooltip($event.target, $t('SideBar.NewConversation'))"/>
+                    <div style="height:50px;"></div>
                 </div>
             </div>
         </div>
@@ -82,6 +83,7 @@
             <TextIcon v-if="addButton === 2" class="p-1 cursor-pointer" :text="'+'" 
                 @click.stop="toggleAddCommunityModal"
                 @mouseenter="tooltip($event.target, $t('SideBar.AddCommunity'))"/>
+            <div style="height:50px;"></div>
         </div>
       </div>
 </template>

@@ -5,7 +5,7 @@
             <div class="grow" style="margin-top:-7px;">
                 <div class="flex gap-x-1"><b class="text-3xl">@{{accountStore.account.name}}</b>
                 <span class="oi oi-info infocircle" 
-                    @mouseenter="tooltip($event.target, `$t('Home.Reputation'): ${reputation}\n$t('Home.CreatedDate'): ${created}`)"></span>
+                    @mouseenter="tooltip($event.target, `${$t('Home.Reputation')}: ${reputation}\n${$t('Home.CreatedDate')}: ${created}`)"></span>
                 </div>
             </div>
             <div style="margin-top:-7px;">

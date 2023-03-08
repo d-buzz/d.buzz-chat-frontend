@@ -2158,14 +2158,16 @@ class MessageManager {
                         window.localStorage.setItem(_this.user + "#lastReadData", JSON.stringify(_this.conversationsLastReadData));
                     }
                     var data = _this.conversations.lookupValue(displayableMessage.getConversation());
-                    if (data == null && conversation.indexOf('|') !== -1) {
-                        data = yield _this.getSelectedConversations(conversation);
+                    if (conversation.indexOf('|') !== -1) {
                         if (_this.cachedUserConversations != null &&
                             _this.cachedUserConversations.indexOf(conversation) === -1)
                             _this.cachedUserConversations.unshift(conversation);
-                        if (data != null && (_this.hasMessage(data.encoded, displayableMessage) ||
-                            _this.hasMessage(data.messages, displayableMessage)))
-                            data = null;
+                        if (data == null) {
+                            data = yield _this.getSelectedConversations(conversation);
+                            if (data != null && (_this.hasMessage(data.encoded, displayableMessage) ||
+                                _this.hasMessage(data.messages, displayableMessage)))
+                                data = null;
+                        }
                     }
                     if (data != null) {
                         if (data.encoded != null && displayableMessage.isEncoded()) {
@@ -2385,11 +2387,24 @@ class MessageManager {
     getPrivatePreferences() {
         return __awaiter(this, void 0, void 0, function* () {
             var p = yield this.getPreferences();
-            if (this.keychainPromise != null)
-                yield this.keychainPromise;
+            if (this.keychainPromise != null) {
+                try {
+                    return yield this.keychainPromise;
+                }
+                catch (e) {
+                    console.log(e);
+                }
+            }
             var promise = this.loginmethod.decodePrivatePreferences(p);
             this.keychainPromise = promise;
-            return yield promise;
+            try {
+                var preferences = yield promise;
+            }
+            catch (e) {
+                console.log(e);
+                this.keychainPromise = null;
+            }
+            return preferences;
         });
     }
     storeKeyLocallyEncrypted(group, key) {
