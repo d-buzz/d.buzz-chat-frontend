@@ -18,6 +18,7 @@ window.globalProperties = {
     "sidebarAddButton": 2,
     "sidebarToggleByChannelNameOnDirectGroup": true,
     "streambarExpand": true,
+    "streambarMode": 1,
     "communityChannelNameFormat": "<name>",
     "homeTabCommunities": true,
     "homeTabPreferences": true,

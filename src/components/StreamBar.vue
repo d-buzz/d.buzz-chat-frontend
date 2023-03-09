@@ -5,12 +5,14 @@
     <TransitionRoot :show="newUserMessageModalOpen">
         <NewUserMessageModal @close="toggleNewUserMessageModalOpen(false)"></NewUserMessageModal>
     </TransitionRoot>
-
+    <TransitionRoot :show="showConfirmModal!=null">
+        <ConfirmModal :title="showConfirmModal.title" @close="showConfirmModal=null"></ConfirmModal>
+    </TransitionRoot>
   <div class="m-0 overflow-y-scroll scrollBox pl-1 w-200" :key="updateKey">
     <div class="scrollBoxContent flex flex-col pr-1">
         <div v-if="isCommunity">
             <div class="flex justify-between">
-                <b class="border-b-1">C/{{title}}</b>
+                <b class="border-b-1 cursor-pointer" @click.stop.prevent="showMenu($event.target)">C/{{title}}</b>
                 <router-link v-if="isAdmin" :to="`/s/${route.params.user}`">
                    <span class="oi oi-cog"></span>
                 </router-link>
@@ -41,6 +43,7 @@ import { useAccountStore } from "../stores/account";
 import { useRoute } from "vue-router";
 import { ref } from 'vue'
 const route = useRoute();
+const router = useRouter();
 const accountStore = useAccountStore();
 const username = accountStore.account.name;
 const streams = ref([]);
@@ -59,7 +62,45 @@ const showJoinModal = ref(false);
 function toggleJoinModal() {
     showJoinModal.value = !showJoinModal.value;
 }
+const showConfirmModal = ref(null);
+function toggleConfirmModal(title) {
+    showConfirmModal.value = {title};
+}
+function filterStreams(streams) {
+    var streambarMode = window.globalProperties["streambarMode"];
+    var result = [];    
+    if(streambarMode === 1 || streambarMode === 2) {
+        var other = [];
+        for(var stream of streams) {
+            var type = stream.getPathType();
+            if(type == null || type === 't' || type === 'g')
+                result.push(stream);
+            else other.push(stream);
+        }
+        if(streambarMode === 1 && other.length > 0) {
+            result.push(stlib.DataStream.fromJSON(communityName.value, ["Links"]));
+            for(var stream of other)
+                result.push(stream);
+        }
+    }
+    else for(var stream of streams)
+        result.push(stream);
+    return result;
+}
+function showMenu(element) {
+    var community = communityName.value;
+    console.log("menu", element);
+    var options = [
+        ["About", ()=>{ router.push(`/i/${community}/about`); }, "oi-info"],
+        ["Posts", ()=>{ window.open('https://peakd.com/c/'+community+'/created', '_blank', 'noopener=true'); }, "oi-external-link"]
+    ];
+    if(isAdmin.value) options.push(["Settings", ()=>{ router.push(`/s/${community}`); }, "oi-cog"]);
+    /*options.push(["", ()=>{ 
+        toggleConfirmModal("");
+    }, ""]);*/
 
+    window.menu(element, options, null, true);
+}
 async function initConversations(route) {
     console.log(route);
     console.log("load community " + route.name);
@@ -79,7 +120,7 @@ async function initConversations(route) {
         var titles = community.getTitles(username);
 
         title.value = community.getTitle();
-        streams.value = community.getStreams();
+        streams.value = filterStreams(community.getStreams());
         isAdmin.value = community.canUpdateSettings(username);
 
         for(var stream of streams.value) 

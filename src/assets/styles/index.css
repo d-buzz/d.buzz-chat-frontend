@@ -246,6 +246,13 @@ pre > code { display: block; }
     scrollbar-color: #00000077 #00000000;
     transition: scrollbar-color 200ms linear;
 }
+.monoIcon {
+    @apply font-mono;
+    font-weight: bold;
+    font-size: 20px;
+    display: inline-block;
+    line-height: 1;
+}
 .infoIcon {
     border-radius: 50px;
     background-color: var(--apphg2);

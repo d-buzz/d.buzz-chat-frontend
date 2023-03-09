@@ -6,7 +6,7 @@
         <div class="grow" v-else-if="stream.getPathType() === 't'">
             <router-link :to="`${path}`">
                 <div class="flex">
-                    <div class="pl-2 font-bold grow"><span class="oi oi-chat"></span> {{stream.getName()}}</div>
+                    <div class="pl-2 font-bold grow"><span class="monoIcon">#</span> {{stream.getName()}}</div>
                     <div v-if="number && number != '0'"> 
                         <small class="number"><b>{{number}}</b></small>
                     </div>   
@@ -26,19 +26,19 @@
         <div v-else-if="stream.getPathType() === 'u'">
             <a :href="path" target="_blank" rel="noreferrer noopener">
                 <div @mouseenter="tooltip($event.target, path)">
-                    <div class="font-bold"><span class="oi oi-globe text-sm"></span> {{stream.getName()}}</div>
+                    <div class="fg70"><span class="oi oi-globe text-sm"></span> <span class="">{{stream.getName()}}</span></div>
                 </div>
             </a>
         </div>
         <div v-else-if="stream.getPathType() === 'i'">
             <a v-if="path.startsWith('https://')" :href="path" target="_blank" rel="noreferrer noopener">
                 <div @mouseenter="tooltip($event.target, path)">
-                    <div class="font-bold"><span class="oi oi-external-link text-sm"></span> {{stream.getName()}}</div>
+                    <div class="fg70"><span class="oi oi-external-link text-sm"></span> <span class="">{{stream.getName()}}</span></div>
                 </div>
             </a>
             <router-link v-else :to="`${path}`">
                 <div>
-                    <div class="font-bold"><span class="oi oi-info text-center" style="width:14px;"></span> {{stream.getName()}}</div>
+                    <div class="fg70"><span class="oi oi-info text-center" style="width:14px;"></span> <span class="">{{stream.getName()}}</span></div>
                 </div>
             </router-link>
         </div>

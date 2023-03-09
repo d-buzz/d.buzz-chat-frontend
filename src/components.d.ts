@@ -21,6 +21,7 @@ declare module '@vue/runtime-core' {
     CommunityAbout: typeof import('./components/info/CommunityAbout.vue')['default']
     CommunityIcon: typeof import('./components/CommunityIcon.vue')['default']
     CommunitySettings: typeof import('./components/CommunitySettings.vue')['default']
+    ConfirmModal: typeof import('./components/modals/ConfirmModal.vue')['default']
     Conversation: typeof import('./components/Conversation.vue')['default']
     DefaultModal: typeof import('./components/modals/DefaultModal.vue')['default']
     DeleteMessageModal: typeof import('./components/modals/DeleteMessageModal.vue')['default']

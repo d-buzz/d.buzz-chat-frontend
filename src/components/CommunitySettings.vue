@@ -142,6 +142,19 @@ const updateMessage = ref("");
 function updateSettings() {
     var user = accountStore.account.name;
     if(user == null) return;
+    var duplicateCheck = {};
+    for(var stream of streams.value) {
+        var type = stream.getPathType();
+        if(type === 't' || type === 'g') {
+            var name = stream.getName();
+            if(duplicateCheck[name]) {
+                updateMessage.value = "Error: Duplicate name '"+name+"'.";
+                return;
+            }
+            duplicateCheck[name] = true;
+        }
+    }
+
     community.setStreams(streams.value);
     community.emotes = emotes.value;
     var json = community.updateStreamsCustomJSON();
