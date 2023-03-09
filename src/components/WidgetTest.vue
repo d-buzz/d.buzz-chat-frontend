@@ -91,6 +91,12 @@ const defaultPreferences = [
     {name: "sidebar2enableSharedView", display: "Sidebar (2):", desc: "Enable to open Direct Messages, communities be open at same time", value: false, newvalue:false},
     {name: "sidebarToggleByChannelNameOnDirectGroup", display: "Sidebar Toggle By:", desc: "Open sidebar by clicking on channel name of direct message/group message.", value: false, newvalue:false},    
     {name: "streambarExpand", display: "Streambar show on expanding.", desc: "Show the second sidebar if there is space.", value: true, newvalue:true},    
+    {name: "streambarMode", display: "Streambar mode", desc: "",
+     value: 1, newvalue:1, options:[
+        [0, 'Allow non-chats anywhere (0)'],[1, 'Chat on top, other items on bottom (1)'], [2, 'Only chats, folders visible. (2)']]}, 
+
+
+
     {name: "sidebarAddButton", display: "Sidebar: add button type", desc: "",
      value: 1, newvalue:1, options:[
         [0, "'+' icon next to 'Direct', 'C/' [Sidebar (2)] (0)"],[1, "'+' bubble as first scrollable item (1)"], [2, "'+' bubble as last scrollable item (2)"]]}, 
