@@ -35,7 +35,7 @@
                       type="username"
                       class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
                       @keyup.enter="loginKeychain(accountName)"                  
-                      placeholder="pick an username"
+                      placeholder="hive username"
                       :read-only="isLoading"
                       :disabled="isLoading"
                     />
@@ -43,6 +43,9 @@
                 </div>
                 <div class="mt-2 mb-2 flex flex-row justify-evenly text-center">
                     <button class="btn grow" @click="loginKeychain(accountName)" :read-only="isLoading" :disabled="isLoading">Login with Keychain</button>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-700">Recommended to use the Keychain "do not prompt" for best experience.</p>
                 </div>
                 <!--<div class="mt-2">
                     <div class="relative">
@@ -87,7 +90,7 @@
                     </div>
                   </div>
                 -->
-                    <hr/>
+                    <hr class="mt-3"/>
                     <div class="mt-1">
                         <b>Login as guest</b>
                     </div>
@@ -130,9 +133,9 @@
                 <hr/>
                 <div>
                     <small><b>How does it work?</b></small>
-                    <p class="text-xs text-gray-700">Keychain is used to sign, encode messages and user preferences, which are stored on decentralized backend.</p>
-                    <small><b>Tip</b></small>
-                    <p class="text-xs text-gray-700">You can select the 'Do not prompt' again option on keychain for convenience or sign each message for more control.</p>
+                    <p class="text-xs text-gray-700">Keychain uses Hive keys to encrypt and decrypt messages as well as user preferences.</p>
+                    <small><b>Decrypting</b></small>
+                    <p class="text-xs text-gray-700">Use the Keychain "do not prompt" option to easily and quickly read encrypted messages.</p>
                 </div>
             </div>
    
