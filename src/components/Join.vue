@@ -1,7 +1,7 @@
 <template>
 
-    <div class="min-h-full flex flex-col justify-center bg-white" style="align-items:center;">
-        <div class="max-w-md w-md border border-gray-300 rounded-md p-3 bg-white">
+    <div class="min-h-full flex flex-col justify-center appfg0 appbg0" style="align-items:center;">
+        <div class="max-w-md w-md border border-gray-300 rounded-md p-3 appfg1 appbg1">
             <div class="flex" v-if='community'>
                 <div class="flex-shrink-0 mr-5px">
                     <img
@@ -33,7 +33,7 @@
                       name="username"
                       v-model="accountName"
                       type="username"
-                      class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
+                      class="inputText1"
                       @keyup.enter="loginKeychain(accountName)"                  
                       placeholder="hive username"
                       :read-only="isLoading"
@@ -100,7 +100,7 @@
                       name="username"
                       v-model="accountName"
                       type="username"
-                      class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
+                      class="inputText1"
                       @keyup.enter="loginGuest(accountName)"                  
                       placeholder="pick an username"
                       :read-only="isLoading"

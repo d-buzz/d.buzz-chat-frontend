@@ -56,6 +56,7 @@ export const defaultThemes = {
 };
 
 export class Theme {
+    themeName: string = ''
     colorGroup: any = {}
     map: any = {}
     addGroup(name: string, colors: ThemeColor[]) {
@@ -207,9 +208,10 @@ export function findThemeByName(name: string) {
 }
 export const defaultTheme = initializeTheme();
 export function applyTheme(obj: any) {
-    var theme = findThemeByName(obj);
+    var theme = (typeof obj === 'string')?findThemeByName(obj):obj;
     if(theme) {
         defaultTheme.set(theme);
+        if(typeof obj === 'string') defaultTheme.themeName = obj;
         defaultTheme.applyTheme();
     }
 }
