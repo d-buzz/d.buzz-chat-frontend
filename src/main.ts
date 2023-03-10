@@ -92,7 +92,35 @@ window.tmpProperties = {};
         });
         window.parent.postMessage(["stlib", -1, "initialize"], "*");
     }
-     
+    try {
+        const isIframe = window.top !== window.self;
+        if(!isIframe) {
+            //A/B UI testing
+            console.log("testtttttttttttttttttttttttttttttt");
+            if(window.localStorage.getItem("apptype") === 'b') {
+                var B = {
+                "sidebar": 2,
+                "sidebar2enableSharedView": false,
+                "sidebarToggleByChannelNameOnDirectGroup": false,
+                "streambarExpand": true,
+                "streambarMode": 1,
+                "sidebarAddButton": 1,
+                "communityChannelNameFormat": "C/<title>/<name>",
+                "--appCommunityIconFontSize": "18px",
+                "--appCommunityIconSize": "42px",
+                "homeTabCommunities": false,
+                "homeTabPreferences": true,
+                "homeTabThemes": true,
+                "prependCommunities": [
+                    "hive-163399"
+                ],
+                "defaultTheme": "Light"
+                };
+                for(var prop in B) window.globalProperties[prop] = B[prop];
+            }
+        }
+     }
+    catch(e) {console.log(e);}
     var currentManager = null;
     window.getManager = function () {
       if (currentManager == null) {

@@ -4,7 +4,7 @@
     <nav class="navbar navbar-expand-lg shadow-md py-2 appbg0 relative flex items-center w-full justify-between">
       <div class="px-6 w-full flex flex-wrap items-center justify-between">
         <div class="flex items-center">
-          <a class="navbar-brand" href="#!">
+          <a class="navbar-brand" href="/">
             <span class="oi oi-menu"></span>
           </a>
         </div>
