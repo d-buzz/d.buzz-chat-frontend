@@ -96,7 +96,6 @@ window.tmpProperties = {};
         const isIframe = window.top !== window.self;
         if(!isIframe) {
             //A/B UI testing
-            console.log("testtttttttttttttttttttttttttttttt");
             if(window.localStorage.getItem("apptype") === 'b') {
                 var B = {
                 "sidebar": 2,

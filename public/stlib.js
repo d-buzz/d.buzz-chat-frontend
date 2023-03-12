@@ -2293,6 +2293,7 @@ class MessageManager {
                 var privatePref = preferences.getPrivatePreferencesWithKey(storePrivateKeyLocally);
                 preferences.createGuestAccount(message);
                 MessageManager.setupOnlineStatusGenerateOnlineKey(username, preferences, privatePref);
+                preferences.encodePrivatePreferencesWithKey(storePrivateKeyLocally, publicPostingKey);
                 var signableMessage = preferences.forUser(guestUsername);
                 signableMessage.signWithKey(storePrivateKeyLocally, '@');
                 var finalResult = yield client.write(signableMessage);
