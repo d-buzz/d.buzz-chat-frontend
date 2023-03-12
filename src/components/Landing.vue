@@ -24,7 +24,7 @@
 
     <div class="appbg1 appfg1 px-6 py-12 md:px-12 text-center lg:text-left">
       <div class="container mx-auto xl:px-32">
-        <div class="grid lg:grid-cols-2 gap-12 flex items-center">
+        <div class="grid lg:grid-cols-2 gap-12 flex">
           <div class="mt-12 lg:mt-0">
             <h1 class="text-5xl md:text-6xl xl:text-7xl font-bold mb-12"><span class="">A place </span><br /><span class="text-green-600">for your community</span></h1>
             <div>
@@ -35,6 +35,20 @@
                 </div>
                 <div><small class="fg70">Widget test page:</small></div>          
                 <a class="inline-block px-7 py-3 mr-2 font-medium text-sm leading-snug uppercase rounded shadow-md hover:appsg0 hover:shadow-lg focus:appsg0 focus:shadow-lg focus:outline-none focus:ring-0 active:appsg0 active:shadow-lg transition duration-150 ease-in-out appsg0 appfg0" data-mdb-ripple="true" data-mdb-ripple-color="light" href="/widgettest" role="button">Widget test page</a>
+            
+                <div class="mt-20 fg70"><small>Frequently Asked Questions:</small></div> 
+                <div class="mt-1"><b>What is the app about?</b></div>
+                <div>This app brings decentralized messaging for hive users, guests and hive communities.</div>
+                <div class="mt-1"><b>Is hive keychain required?</b></div>
+                <div>Currently, hive keychain is used for signing, encoding and decoding messages. It is not required for guests.</div>             
+                <div class="mt-1"><b>What are the core features?</b></div>
+                <div>Direct and group encrypted messaging, public community messaging. Each hive community's admin can customize their chat space including the use of roles, titles and visibility/write permissions.</div>             
+                <div class="mt-1"><b>Where are the message stored?</b></div> 
+                <div>The messages are stored on decentralized messaging backend nodes.</div> 
+                <div class="mt-1"><b>Does messaging use Hive RC?</b></div> 
+                <div>Messaging does not use RC, however some activities such as setting up community channels, setting roles and titles uses hive and RC.</div>         
+                <div class="mt-1"><b>How are messages authenticated?</b></div>
+                <div>Each message is signed by a posting key and verified both by the backend nodes and by the frontend UI.</div>             
             </div>
           </div>
           <div class="mb-12 lg:mb-0">
@@ -53,6 +67,7 @@
 </template>
 <script setup>
 import { applyTheme } from "../Theme"
+import { nextTick } from 'vue';
 const router = useRouter();
 function toggleTheme() {
     var name = defaultTheme.themeName === 'Light'?'Dark':'Light';
@@ -61,6 +76,8 @@ function toggleTheme() {
 }
 function setAppAB(type) {
     window.localStorage.setItem("apptype", type);
-    router.push('/home');
+    nextTick(async () => {
+        window.location = '/home';    
+    });
 }
 </script>

@@ -96,7 +96,9 @@ window.tmpProperties = {};
         const isIframe = window.top !== window.self;
         if(!isIframe) {
             //A/B UI testing
-            if(window.localStorage.getItem("apptype") === 'b') {
+            var apptype = window.localStorage.getItem("apptype");
+            console.log("apptype", apptype);
+            if(apptype === 'b') {
                 var B = {
                 "sidebar": 2,
                 "sidebar2enableSharedView": false,
