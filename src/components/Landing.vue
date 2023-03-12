@@ -16,7 +16,7 @@
           </ul>
         </div>
         <div class="flex items-center gap-5 lg:ml-auto">
-          <span class="cursor-pointer oi oi-contrast" @click="toggleTheme"></span>
+          <span class="cursor-pointer oi oi-contrast" @click="toggleTheme" @mouseenter="tooltip($event.target, 'Switch between Light/Dark themes.')"></span>
           <button class="inline-block px-6 py-2 mr-2 bg-green-600 font-medium text-xs leading-snug uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out btn" data-mdb-ripple="true" data-mdb-ripple-color="light" @click="setAppAB('a')" role="button">{{$t("Landing.openApp")}}</button>
         </div>
       </div>
@@ -68,6 +68,7 @@
 <script setup>
 import { applyTheme } from "../Theme"
 import { nextTick } from 'vue';
+const tooltip = ref(window.tooltip);
 const router = useRouter();
 function toggleTheme() {
     var name = defaultTheme.themeName === 'Light'?'Dark':'Light';
