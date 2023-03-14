@@ -81,6 +81,7 @@ async function initCommunities() {
     };
     await update();
     manager.setCallback("SideBar.vue", update);
+    manager.onlastread.set("SideBar.vue", update);
 }
 async function init() {
     await initCommunities();
