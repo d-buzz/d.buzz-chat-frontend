@@ -67,7 +67,7 @@
                                 <div v-if="communitiesActive.length > 0">
                                     <div class="w-100 text-sm font-bold text-right md:text-center text-gray-400 mt-1">activity measured by messages in last 7 days</div>
                                     <div class="flex flex-row flex-wrap" :key="updateKey+'#2'">
-                                     <CommunityIcon v-for="community in communitiesActive" :img="community.name" :name="community.name" :number="''+community.number"  />
+                                     <CommunityIcon v-for="community in communitiesActive" :img="community.name" :name="community.title" :number="''+community.number"  />
                                     </div>
                                 </div>
                             </TabPanel>
@@ -284,7 +284,15 @@ async function initActiveCommunities() {
             }
         }
         var sorted = [];
-        for(var community in obj) sorted.push({name:community,number:obj[community]});
+        for(var community in obj) {
+            var title = "";            
+            try { 
+                var community0 = await stlib.Community.load(community);
+                title = community0.getTitle();
+            }
+            catch(e) { console.log(e); }
+            sorted.push({name:community,title,number:obj[community]});
+        }
         sorted.sort((a,b)=>b.number-a.number);
         defaultActiveCommunities = sorted;
         communitiesActive.value = defaultActiveCommunities;

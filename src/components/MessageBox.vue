@@ -36,7 +36,7 @@
                     @mouseenter="tooltip($event.target, $t('MessageBox.Send'))"></div>
                     <span @click="if(canWrite) toggleAddEmoteModal();" class="flipY my-2 cursor-pointer" 
                         @mouseenter="tooltip($event.target, $t('MessageBox.AddEmote'))">
-                        <img class="flipYItem" src="/src/assets/images/icons/emoteicon.png" style="max-width: 21px;">
+                        <img class="flipYItem" src="/src/assets/images/icons/emoteicon.svg" style="max-width: 21px;">
                     </span>
                     <span class="flipY my-2 cursor-pointer" style="font-size: 1.125rem;"
                         @click="if(canWrite) toggleAddImageModal();" 

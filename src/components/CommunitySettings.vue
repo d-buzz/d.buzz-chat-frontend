@@ -13,7 +13,7 @@
         <div class="flex border-b-1 font-bold">Settings {{pageTitle}}</div>
 
         <div>
-            <button class="btn" @click="toggleAddChatModal()"><span class="oi oi-chat"></span> chat</button>
+            <button class="btn" @click="toggleAddChatModal()"><span class="oi oi-plus"></span> chat</button>
             <button class="btn" @click="toggleAddCategoryModal()"><span class="oi oi-plus"></span> category</button>
             <button class="btn" @click="toggleAddInfoModal()"><span class="oi oi-plus"></span> info</button>
             <button class="btn" @click="moveUp()"><span class="oi oi-chevron-top"></span></button>
@@ -36,7 +36,7 @@
                     <span class="float-right font-normal text-sm">(category)</span>
                 </span>
                 <span v-else-if="item.getPathType() == 't'" 
-                    class="pl-2"><span class="oi oi-chat"></span> {{item.getName()}} 
+                    class="pl-2"><span class="monoIcon">#</span> {{item.getName()}} 
                     <span class="float-right text-sm">(text)</span>
                 </span>
                 <span v-else-if="item.getPathType() == 'g'" 
