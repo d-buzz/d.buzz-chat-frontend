@@ -15,7 +15,7 @@ const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_
 window.globalProperties = {
     "sidebar": 0,
     "sidebar2enableSharedView": false,
-    "sidebarAddButton": 2,
+    "sidebarAddButton": 1,
     "sidebarToggleByChannelNameOnDirectGroup": true,
     "streambarExpand": true,
     "streambarMode": 1,
