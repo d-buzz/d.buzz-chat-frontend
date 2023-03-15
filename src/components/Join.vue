@@ -185,6 +185,7 @@ async function loginGuest(username) {
         errorMessage.value = "enter username";
         return;
     }    
+    if(username.startsWith('@')) username = username.substring(1);
     try {
         isLoading.value = true;
         console.log("login guest", username);
@@ -205,6 +206,7 @@ async function loginKeychain(username) {
         errorMessage.value = "enter username";
         return;
     }
+    if(username.startsWith('@')) username = username.substring(1);
     try {
         isLoading.value = true;
         console.log("authenticate" , username);

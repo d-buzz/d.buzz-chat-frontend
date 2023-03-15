@@ -20,6 +20,7 @@
             </template>
         </Draggable>
         <TextIcon v-if="addButton === 2" class="p-1 cursor-pointer" :text="'+'" @click.stop="toggleAddCommunityModal"/>
+        <div style="height:60px;"></div>    
     </div>
   </div>
 </template>

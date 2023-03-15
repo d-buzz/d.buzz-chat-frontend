@@ -76,7 +76,7 @@
                                     <div class="w-100 text-sm font-bold text-right md:text-center text-gray-400 mt-1">found</div>
                                     <div class="flex flex-row flex-wrap" :key="updateKey+'#3'">
                                      <CommunityIcon v-for="community in communitiesFound" :fade="!isActive(community.name, communitiesActive)" :img="community.name" :name="community.title" :number2="''+community.subscribers"  />
-                                        <div v-if="hasNextPage" class="btn" @click="findCommunities(searchBar, true)">
+                                        <div v-if="hasNextPage" class="btn cursor-pointer mt-3" @click="findCommunities(searchBar, true)">
                                            next<br>page
                                         </div>
                                     </div>
@@ -128,7 +128,8 @@
                 </TabPanel>
             </TabPanels>
             </TabGroup>
-        </div>  
+        </div> 
+        <div style="height:72px;"></div> 
     </div>
 </template>
 <script setup>
@@ -311,7 +312,7 @@ async function initUserData() {
     var data = await stlib.Utils.getAccountData(user);
     if(data) { 
         created.value = formatDate(data.created);
-        reputation.value = data.reputation===0?25:hive.formatter.reputation(data.reputation); 
+        reputation.value = stlib.Utils.reputation(data.reputation); 
         var postingJsonStr = data.posting_json_metadata;
         try { 
             if(postingJsonStr != null && postingJsonStr != "") {

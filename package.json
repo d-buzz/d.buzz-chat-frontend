@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@headlessui/vue": "^1.6.5",
+    "@hiveio/dhive": "^1.2.5",
     "@vueuse/core": "^8.6.0",
     "@vueuse/head": "^0.7.6",
     "pinia": "^2.0.14",
