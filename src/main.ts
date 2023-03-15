@@ -130,13 +130,13 @@ window.tmpProperties = {};
       }
       return currentManager;
     };
-    var idFn = stlib.Utils.nextId;
+    /*var idFn = stlib.Utils.nextId;
     stlib.Utils.nextId = ()=>{
         var id = idFn();
         console.log("id", id);
         //console.trace();
         return id;
-    };
+    };*/
     window.defaultTheme = defaultTheme;
     defaultTheme.loadTheme(window.globalProperties.defaultTheme);
     console.log("Theme", Theme);
@@ -166,7 +166,7 @@ window.tmpProperties = {};
         el.hidden = false;
         el.currentElement = element;
         var x = Math.min(0.5*(pos.left+pos.right), window.innerWidth-el.offsetWidth-10); 
-        var y = pos.bottom; 
+        var y = Math.max(0, Math.min(pos.bottom, window.innerHeight-el.offsetHeight)); 
 
         el.setAttribute('style','left:'+x+'px;'+'top:'+y+'px;');
 
@@ -221,6 +221,7 @@ window.tmpProperties = {};
         el.hidden = false;
         var x = Math.min(dropdown?pos.left:(pos.left+20), window.innerWidth-el.offsetWidth-10); 
         var y = dropdown?pos.bottom:0.5*(pos.top+pos.bottom); 
+        y = Math.max(0, Math.min(y, window.innerHeight-el.offsetHeight)); 
         el.setAttribute('style','left:'+x+'px;'+'top:'+y+'px;');
     };
     window.onclickoutside.set("main.ts", ()=>{ 

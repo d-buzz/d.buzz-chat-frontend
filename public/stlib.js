@@ -3319,14 +3319,31 @@ class MessageManager {
     }
     toDisplayable(result) {
         return __awaiter(this, void 0, void 0, function* () {
+            var list0 = [];
             var list = [];
             var array = result.getResult();
             try {
                 var batchLoad = {};
-                for (msgJSON of array) {
-                    var user = msgJSON[1];
-                    if (!utils_1.Utils.isGuest(user))
-                        batchLoad[user] = true;
+                for (var msgJSON of array) {
+                    try {
+                        var msg = signable_message_1.SignableMessage.fromJSON(msgJSON);
+                        if (msg.isSignedWithGroupKey()) {
+                            var key = yield this.getKeyFor(msg.getConversation());
+                            if (key === null) {
+                                console.log("key not found.");
+                                continue;
+                            }
+                            msg.decodeWithKey(key);
+                        }
+                        list0.push(msg);
+                        var user = msg.getUser();
+                        if (!utils_1.Utils.isGuest(user))
+                            batchLoad[user] = true;
+                    }
+                    catch (e) {
+                        console.log("Error parsing message: ", msgJSON);
+                        console.log(e);
+                    }
                 }
                 var batchArray = Object.keys(batchLoad);
                 if (batchArray.length > 0)
@@ -3336,9 +3353,9 @@ class MessageManager {
                 console.log("error preloading account data");
                 console.log(e);
             }
-            for (var msgJSON of array) {
+            for (var msg of list0) {
                 try {
-                    list.push(yield this.jsonToDisplayable(msgJSON));
+                    list.push(yield this.signableToDisplayable(msg));
                 }
                 catch (e) {
                     console.log("Error reading message: ", msgJSON);
@@ -4332,7 +4349,7 @@ class Utils {
                     }
                     return result;
                 });
-            }, 25);
+            }, 100);
         });
     }
     static delay(ms) {

@@ -1,25 +1,17 @@
 <template>
-  <LoginModal :show="loginModalOpen" @close="toggleLoginModal(false)"></LoginModal>
-
   <div class="relative flex items-center justify-start pt-1 pr-1 pl-1 pb-1" :class="{selected: $route.name == 'Home'}">
     <small v-if="number && number != '0'" class="number"><b>{{number}}</b></small>
     <div class="flex-shrink-0" style="width:54px;height:54px;">
-      <div v-if="accountStore.account.authenticated" class="nameParent" :title="accountStore.account.name">
+      <div v-if="accountStore.account.authenticated" class="nameParent">
         <!--<small class="name"><b>{{accountStore.account.name}}</b></small>-->
         <span class="cursor-pointer" @click="onClick()" @mouseenter="tooltip($event.target, accountStore.account.name)">
             <UserIcon :name="accountStore.account.name" imgCss="avCommunity"/>
         </span>
       </div>
-      <div v-else>
-        
-            <img class="rounded-full w-16" :src="Login" alt="+" @click="toggleLoginModal" />
-        
-      </div>
     </div>
   </div>
 </template>
 <script setup>
-import Login from "../assets/images/icons/login.svg";
 import { useAccountStore } from "../stores/account";
 const emit = defineEmits(["toggleStreambar"]);
 const router = useRouter();
