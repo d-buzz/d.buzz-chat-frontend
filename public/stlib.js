@@ -4023,7 +4023,7 @@ class Utils {
         if (value == null || value === 0)
             return 25;
         var neg = value < 0;
-        var rep = Math.abs(rep);
+        var rep = Math.abs(value);
         var v = Math.log10((rep > 0 ? rep : -rep) - 10) - 9;
         v = neg ? -v : v;
         return v * 9 + 25;
@@ -4052,10 +4052,12 @@ class Utils {
         return key;
     }
     static encodeTextWithKey(text, privateK, publicK) {
-        return Utils.dhive().Memo.encode(privateK, publicK, '#' + text);
+        //return Utils.dhive().Memo.encode(privateK, publicK, '#'+text);
+        return hive.memo.encode(privateK.toString(), publicK.toString(), '#' + text);
     }
     static decodeTextWithKey(text, privateK) {
-        var decoded = Utils.dhive().Memo.decode(privateK, text);
+        //var decoded = Utils.dhive().Memo.decode(privateK, text);
+        var decoded = hive.memo.decode(privateK.toString(), text);
         if (decoded.startsWith("#"))
             decoded = decoded.substring(1);
         return decoded;

@@ -48,7 +48,7 @@
                     
                     <div class="display-block flex mt-3 mr-auto ml-auto" style="max-width:350px;">
                         <input class="inputText1 mr-1" type="text" v-model="searchBar"
-                            placeholder="find communties"
+                            placeholder="find communities"
                             @keyup.enter="findCommunities(searchBar)"/>
                         <button @mouseenter="tooltip($event.target, $t('Home.FindCommunities'))" class="btn1 mr-1" @click="findCommunities(searchBar)">
                             <span class="oi oi-magnifying-glass"></span>
