@@ -174,7 +174,6 @@
 <script setup lang="ts">
 import { useAccountStore } from "../../stores/account";
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
-import { cryptoUtils, PrivateKey, PublicKey } from "@hiveio/dhive";
 const tooltip = ref(window.tooltip);
 const accountStore = useAccountStore();
 const router = useRouter();
@@ -241,7 +240,7 @@ async function joinGroup() {
         errorMessage.value = `Incorrect group password.`;
         return;
     }
-    if(groupPu !== PrivateKey.fromString(piKey).createPublic("STM").toString()) {
+    if(groupPu !== dhive.PrivateKey.fromString(piKey).createPublic("STM").toString()) {
         errorMessage.value = `Incorrect group password.`;
         return;
     }
@@ -341,13 +340,13 @@ async function generateKey() {
         hive_keychain.requestSignBuffer(user,
              "generateKey " + timestamp + " " + Math.random(), 'Posting', (result)=>{
 		    if(result.success) {
-			    resolve(cryptoUtils.sha256(result.result));
+			    resolve(dhive.cryptoUtils.sha256(result.result));
 		    }
 		    else error(result);
 	    });
     });
     var signature = await p;    
-    var piKey = PrivateKey.fromSeed(signature+(""+Math.random()));
+    var piKey = dhive.PrivateKey.fromSeed(signature+(""+Math.random()));
     document.getElementById("grouppublickey").value = piKey.createPublic("STM").toString(); 
     document.getElementById("groupprivatekey").value = piKey.toString();
     keyIcon.value = "key";
@@ -371,26 +370,26 @@ function textToPrivateKey(text) {
     if(text.length < 16) return null; 
     if(text.length === 51 && text[0] === '5') {
         try {
-            PrivateKey.fromString(text);
+            dhive.PrivateKey.fromString(text);
             return text;
         }
         catch(e) {}
     }
-    return PrivateKey.fromSeed(text).toString();
+    return dhive.PrivateKey.fromSeed(text).toString();
 }
 function textToPublicKey(text) {
     if(text == null || text === "") { keyIcon.value = null; return ""; } 
     if(text.length < 16) { keyIcon.value = text.length; return ""; }
     if(text.length === 51 && text[0] === '5') {
         try {
-            var key = PrivateKey.fromString(text);
+            var key = dhive.PrivateKey.fromString(text);
             keyIcon.value = "key";
             return piKey.createPublic("STM").toString();
         }
         catch(e) {}
     }
     keyIcon.value = text.length;
-    return PrivateKey.fromSeed(text).createPublic("STM").toString();
+    return dhive.PrivateKey.fromSeed(text).createPublic("STM").toString();
 }
 function onChange(e) {
     var text = e.target.value.trim(); console.log("change", text);
