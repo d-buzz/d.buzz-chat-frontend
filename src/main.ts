@@ -8,6 +8,7 @@ import './assets/styles/centuryschoolbookl.css';
 import './assets/styles/vue3-emoji-picker.css'
 import './assets/styles/open-iconic.css';
 import "./assets/styles/index.css";
+import * as dhive from "@hiveio/dhive";
 
 const NETWORK_NAME = import.meta.env.NETWORK_NAME?import.meta.env.NETWORK_NAME:null;
 const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_APP_STING_NODES.split(",") : ["http://localhost:3001"];
@@ -32,6 +33,7 @@ window.globalProperties = {
     "prependCommunities": ["hive-163399"]*/
 };
 window.tmpProperties = {};
+window.dhive = dhive;
 (()=>{
     /*if(window.hive_keychain === undefined && window.parent != null && 
         window.parent.hive_keychain !== undefined) {
