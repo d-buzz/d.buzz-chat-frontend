@@ -1930,7 +1930,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MessageManager = exports.UserOnlineStatus = exports.EventQueue = exports.LoginWithKeychain = exports.LoginKey = void 0;
 const client_1 = require("./client");
 const community_1 = require("./community");
-const data_path_1 = require("./data-path");
 const utils_1 = require("./utils");
 const signable_message_1 = require("./signable-message");
 const displayable_message_1 = require("./displayable-message");
@@ -2312,30 +2311,18 @@ class MessageManager {
                 this.join(conversation);
         });
     }
-    joinCommunities() {
+    joinCommunities(communities = null) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.user == null)
                 return;
-            var communities = yield this.getCommunities(this.user);
+            if (communities === null)
+                communities = yield this.getCommunities(this.user);
             var chanMap = {};
             for (var community of communities) {
                 try {
-                    var data = yield community_1.Community.load(community[0]);
-                    var streams = data.getStreams();
-                    if (streams != null) {
-                        for (var stream of streams) {
-                            if (stream.hasPath()) {
-                                var path = stream.getPath();
-                                if (path.getType() === data_path_1.DataPath.TYPE_TEXT) {
-                                    var chan = path.getUser() + '/' + path.getPath();
-                                    if (chanMap[chan] === undefined) {
-                                        chanMap[chan] = true;
-                                        this.join(chan);
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    var chan = community[0] + '/*';
+                    this.join(chan);
+                    chanMap[chan] = true;
                 }
                 catch (e) {
                     console.log(e);
@@ -2350,6 +2337,7 @@ class MessageManager {
                 }
                 this.postCallbackEvent(null);
             }
+            console.log("join communities ", chanList);
         });
     }
     getPreferences() {
@@ -3456,7 +3444,7 @@ class MessageManager {
 }
 exports.MessageManager = MessageManager;
 
-},{"./client":1,"./community":2,"./content/imports":10,"./data-path":18,"./displayable-message":21,"./signable-message":25,"./utils":28}],24:[function(require,module,exports){
+},{"./client":1,"./community":2,"./content/imports":10,"./displayable-message":21,"./signable-message":25,"./utils":28}],24:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PermissionSet = void 0;

@@ -48,6 +48,17 @@ function onDrop() {
         getManager().storeCommunitySortOrderLocally(list);
     }, 1000);
 }
+function setTitle(communityMessages, directGroupMessages) {
+    var str = "";
+    if(communityMessages !== 0 || directGroupMessages !== 0) {
+        str += "(";
+        if(communityMessages !== 0) str += communityMessages; 
+        if(directGroupMessages !== 0) str += ":"+directGroupMessages; 
+        str += "} "
+    }
+    str += "App"
+    document.title = str;
+}
 async function initCommunities() {
     var user = accountStore.account.name;
     if(user == null) return;
@@ -67,16 +78,23 @@ async function initCommunities() {
             }
         }
     }
+    manager.joinCommunities(_communities);
     communities.value = _communities;
     updateKey.value = ''+stlib.Utils.nextId();
-    var update = async () => { console.log("total");
+    var update = async () => {
+        var totalCommunities = 0;
         for(var community of communities.value) {
             var lastReadNumber = await manager.getLastReadCommunity(community[0]);
+            if(lastReadNumber != null && lastReadNumber != '0') {
+                totalCommunities += Number(lastReadNumber.endsWith('+')?lastReadNumber.substring(0,lastReadNumber.length-1):lastReadNumber);
+            }
             community.lastReadNumber = lastReadNumber;
         }
         updateKey.value = ''+stlib.Utils.nextId();
         nextTick(async ()=>{            
-            number.value = ''+await manager.getLastReadTotal();
+            var directGroupTotal = await manager.getLastReadTotal();
+            setTitle(totalCommunities, directGroupTotal);
+            number.value = ''+directGroupTotal;
             updateKey.value = ''+stlib.Utils.nextId();
         });
     };
