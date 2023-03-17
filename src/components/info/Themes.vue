@@ -1,11 +1,13 @@
 <template>
     <small class="block w-full text-right text-gray-700">{{$t("Home.Theme.Msg.Info")}}</small>
-    <div v-for="(style, name) in themeObject.defaultThemes">
-        <ThemeView :name="name" :style="style" :edit="false" @update="updateThemes"></ThemeView>
-    </div>
-    <div v-for="(style, name) in themeObject.userThemes">
-        <ThemeView :name="name" :style="style" :edit="true" @update="updateThemes"></ThemeView>
-    </div>         
+    <div :key="updateThemesKey">
+        <div v-for="(style, name) in themeObject.defaultThemes">
+            <ThemeView :name="name" :style="style" :edit="false" @update="updateThemes"></ThemeView>
+        </div>
+        <div v-for="(style, name) in themeObject.userThemes">
+            <ThemeView :name="name" :style="style" :edit="true" @update="updateThemes"></ThemeView>
+        </div> 
+    </div>        
 </template>
 <script setup>
 import { useAccountStore } from "../../stores/account";

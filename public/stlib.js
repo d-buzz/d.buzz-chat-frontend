@@ -4014,7 +4014,7 @@ class Utils {
         var rep = Math.abs(value);
         var v = Math.log10((rep > 0 ? rep : -rep) - 10) - 9;
         v = neg ? -v : v;
-        return v * 9 + 25;
+        return (v * 9 + 25).toFixed(2);
     }
     static Buffer() { return Utils.dhive().NETWORK_ID.constructor; }
     static setSecureRandom(fn) {
@@ -4040,12 +4040,12 @@ class Utils {
         return key;
     }
     static encodeTextWithKey(text, privateK, publicK) {
-        //return Utils.dhive().Memo.encode(privateK, publicK, '#'+text);
-        return hive.memo.encode(privateK.toString(), publicK.toString(), '#' + text);
+        return Utils.dhive().Memo.encode(privateK, publicK, '#' + text);
+        //return hive.memo.encode(privateK.toString(), publicK.toString(), '#'+text);
     }
     static decodeTextWithKey(text, privateK) {
-        //var decoded = Utils.dhive().Memo.decode(privateK, text);
-        var decoded = hive.memo.decode(privateK.toString(), text);
+        var decoded = Utils.dhive().Memo.decode(privateK, text);
+        //var decoded = hive.memo.decode(privateK.toString(), text);
         if (decoded.startsWith("#"))
             decoded = decoded.substring(1);
         return decoded;
@@ -4274,8 +4274,11 @@ class Utils {
                                 if (verify) {
                                     return msg.getContent();
                                 }
-                                else
-                                    throw "preferences did not verify";
+                                else {
+                                    //for updated private key, TODO check
+                                    return null;
+                                    //throw "preferences did not verify";
+                                }
                             }
                         }
                         else

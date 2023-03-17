@@ -54,7 +54,7 @@ function setTitle(communityMessages, directGroupMessages) {
         str += "(";
         if(communityMessages !== 0) str += communityMessages; 
         if(directGroupMessages !== 0) str += ":"+directGroupMessages; 
-        str += "} "
+        str += ") ";
     }
     str += "App"
     document.title = str;

@@ -4,12 +4,7 @@
             <div v-if='communityData'>
                 <div class="flex">
                     <div class="flex-shrink-0 mr-5px">
-                        <!--<img
-                        class="rounded-full" style="width:128px; height: 128px; "
-                        :src="`https://images.hive.blog/u/${communityData.getName()}/avatar/medium`"
-                        alt="@"
-                        />-->
-                        <UserIcon :name="communityData.getName()" imgCss="av128" size="medium"/>
+                        <UserIcon :name="communityData.getName()" :name2="communityData.getTitle()" imgCss="av128" size="medium"/>
                     </div>
                     <div class="grow" style="margin-top:-7px;">
                         <div class="flex gap-x-2 justify-between">

@@ -48,8 +48,9 @@ export const useAccountStore = defineStore("account", () => {
     const manager = getManager();
     manager.setUser(user);
     manager.setUseKeychain();
-    await manager.joinGroups();
     var pref = await manager.getPreferences();
+    console.log("login pref" , pref);
+    await manager.joinGroups();
     var pref0 = await stlib.Utils.getAccountPreferences(user);
     if(pref0 == null) return await new Promise(function (resolve, reject) {
         window.hive_keychain.requestSignBuffer(

@@ -30,9 +30,9 @@
 
 <script setup lang="ts">
 const emit = defineEmits();
-const props = defineProps<{
+const props = defineProps({
     name: String
-}>();
+});
 const isLoading = ref(false);
 const accountName = ref("");
 const errorMessage = ref("");
@@ -42,6 +42,7 @@ const action = async () => {
   try {
     isLoading.value = true;
     delete defaultTheme.userThemes[props.name];
+    defaultTheme.saveUserThemes();
     emit("close");
   } finally {
     isLoading.value = false;

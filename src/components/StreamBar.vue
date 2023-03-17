@@ -11,8 +11,8 @@
   <div class="m-0 overflow-y-scroll scrollBox pl-1 w-200" :key="updateKey">
     <div class="scrollBoxContent flex flex-col pr-1">
         <div v-if="isCommunity">
-            <div class="flex justify-between">
-                <b class="border-b-1 cursor-pointer" @click.stop.prevent="showMenu($event.target)">C/{{title}}</b>
+            <div class="flex justify-between mb-1">
+                <b class="border-b-1 cursor-pointer p3033" @click.stop.prevent="showMenu($event.target)">C/{{title}}</b>
                 <router-link v-if="isAdmin" :to="`/s/${route.params.user}`">
                    <span class="oi oi-cog"></span>
                 </router-link>
@@ -23,8 +23,8 @@
             </div>
         </div>
         <div v-else>
-            <div class="flex justify-between">
-                <b class="border-b-1">{{$t("StreamBar.DirectMessages")}}</b>
+            <div class="flex justify-between mb-1">
+                <b class="border-b-1 p3033">{{$t("StreamBar.DirectMessages")}}</b>
                 <button class="text-sm" @click="toggleNewUserMessageModalOpen">
                     <span class="oi oi-plus"></span>
                 </button>
@@ -190,3 +190,8 @@ initConversations(route);
     next();
 });*/
 </script>
+<style scoped>
+.p3033 {
+    padding: 3px 0px 3px 3px;
+}
+</style>
