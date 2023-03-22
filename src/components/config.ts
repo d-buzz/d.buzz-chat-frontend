@@ -18,6 +18,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("./WidgetTest.vue"),
   },
   {
+    path: "/signbuffertestpage",
+    name: "@SignBufferTestPage",
+    component: () => import("./SignBufferTestPage.vue"),
+  },
+  {
     path: "/join",
     name: "@Join0",
     component: () => import("./Join.vue"),
