@@ -17,7 +17,9 @@
     <TransitionRoot :show="showThreadsModal">
         <ThreadModal @oninput="setThread" @close="toggleThreads"></ThreadModal>
     </TransitionRoot>
-    
+    <TransitionRoot :show="showErrorModal != null">
+        <ErrorModal title="Error sending message." :text="showErrorModal" @close="toggleErrorModal"></ErrorModal>
+    </TransitionRoot>
   <div class="appbg3 appfg3 h-full break-all ml-3" v-if='messageKey'>
      <div class="border-l-1 h-full float-right sidebar" v-if="$route.name === 'CommunityPath' && community" ref="sidebar" :key="communityUsersKey">
          <div class="appbg3 appfg3 h-full w-200 overflow-y-scroll scrollBox">
@@ -220,6 +222,7 @@ const showCloseGroupModal = ref(false);
 const showFlagMessageModal = ref(false);
 const showDeleteMessageModal = ref(false);
 const showThreadsModal = ref(false);
+const showErrorModal = ref(null);
 const showSidebar = ref(false);
 const flagMessageRef = ref();
 const deleteMessageRef = ref();
@@ -247,6 +250,9 @@ function toggleFold(messages, value=null) {
     var key = messages[0].message.getReference();
     if(value) displayableMessagesFold.value[key] = true;
     else delete displayableMessagesFold.value[key];
+}
+function toggleErrorModal(error=null) {
+    showErrorModal.value = error;
 }
 function showFold(messages) {
     var key = messages[0].message.getReference();
@@ -629,7 +635,18 @@ const enterMessage = async (message, contentMessage=null, block=true, clearBox=t
         }
         else { 
             console.log(result);
+            toggleErrorModal(result.getError());
         }
+    }
+    catch(e) {
+        console.log("error sending message: ", e);
+        var errMsg = e + "\n";
+        if(e.stack != null) {
+            var stackMsg = e.stack+"";
+            if(stackMsg.length > 500) stackMsg = stackMsg.substring(0, 500);
+            errMsg += stackMsg;
+        }
+        toggleErrorModal(errMsg);
     }
     finally { 
         if(block) sendingMessage = false;
