@@ -4131,6 +4131,7 @@ class Utils {
             var hiveOffset = null;
             try {
                 hiveOffset = yield Utils.utcTimeHive();
+                hiveOffset -= start;
             }
             catch (e) {
                 console.log(e);
@@ -4140,6 +4141,7 @@ class Utils {
             var nodeOffset = null;
             try {
                 nodeOffset = yield Utils.utcNodeTime();
+                nodeOffset -= start;
             }
             catch (e) {
                 console.log(e);
@@ -4161,7 +4163,9 @@ class Utils {
     }
     static synchronizeTimeWithHive(minOffset = 3000) {
         return __awaiter(this, void 0, void 0, function* () {
+            var start = new Date().getTime();
             var offset = yield Utils.utcTimeHive();
+            offset -= start;
             if (Math.abs(offset) > minOffset)
                 Utils.setLocalTimeOffset(offset);
             return offset;
