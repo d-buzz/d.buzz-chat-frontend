@@ -246,6 +246,15 @@ async function initMain() {
     }
     else stlib.Utils.setNetworkname(NETWORK_NAME);
 
+    try {
+        await stlib.Utils.synchronizeTime();
+        console.log("local time ", new Date());
+        console.log("utc time ", new Date(stlib.utcTime()));
+    }
+    catch(e) {
+        console.log(e);
+    }
+
     const app = createApp(App);
     //app.config.globalProperties.$testvar = 'testvar';
     app.directive('focus', {

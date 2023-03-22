@@ -3982,7 +3982,7 @@ class Utils {
     }
     static getNetworkname() { return netname; }
     static getGuestAccountValidators() { return guestAccountValidators; }
-    static getVersion() { return 3; }
+    static getVersion() { return 5; }
     static getClient() {
         return client;
     }
@@ -4100,7 +4100,73 @@ class Utils {
     static copy(object) {
         return JSON.parse(JSON.stringify(object));
     }
-    static utcTime() { return new Date().getTime(); }
+    static setLocalTimeOffset(offset) {
+        Utils.localTimeOffset = offset;
+        return offset;
+    }
+    static utcTime() { return Utils.localTimeOffset + (new Date().getTime()); }
+    static utcNodeTime() {
+        return __awaiter(this, void 0, void 0, function* () {
+            var now = new Date().getTime();
+            var result = yield Utils.getClient().readInfo();
+            var offset = 0.5 * Math.min(500, new Date().getTime() - now);
+            if (result.isSuccess()) {
+                var info = result.getResult();
+                return info.time;
+            }
+            return null;
+        });
+    }
+    static utcTimeHive() {
+        return __awaiter(this, void 0, void 0, function* () {
+            var now = new Date().getTime();
+            var props = yield Utils.getDhiveClient().database.getDynamicGlobalProperties();
+            var offset = 0.5 * Math.min(500, new Date().getTime() - now);
+            return new Date(props.time + "Z").getTime();
+        });
+    }
+    static synchronizeTime(minOffset = 3000) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var start = new Date().getTime();
+            var hiveOffset = null;
+            try {
+                hiveOffset = yield Utils.utcTimeHive();
+            }
+            catch (e) {
+                console.log(e);
+            }
+            var roundTripHive = new Date().getTime() - start;
+            start = new Date().getTime();
+            var nodeOffset = null;
+            try {
+                nodeOffset = yield Utils.utcNodeTime();
+            }
+            catch (e) {
+                console.log(e);
+            }
+            var roundTripNode = new Date().getTime() - start;
+            if (hiveOffset == null && nodeOffset == null)
+                return;
+            if ((hiveOffset == null || hiveOffset < minOffset) &&
+                (nodeOffset == null || nodeOffset < minOffset))
+                return Utils.setLocalTimeOffset(0);
+            if (hiveOffset == null || nodeOffset == null)
+                return Utils.setLocalTimeOffset((hiveOffset == null) ? nodeOffset : hiveOffset);
+            if (Math.abs(hiveOffset - nodeOffset) < 3000)
+                return Utils.setLocalTimeOffset(Math.min(hiveOffset, nodeOffset));
+            if (roundTripHive < roundTripNode)
+                return Utils.setLocalTimeOffset(hiveOffset);
+            return Utils.setLocalTimeOffset(roundTripNode);
+        });
+    }
+    static synchronizeTimeWithHive(minOffset = 3000) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var offset = yield Utils.utcTimeHive();
+            if (Math.abs(offset) > minOffset)
+                Utils.setLocalTimeOffset(offset);
+            return offset;
+        });
+    }
     static getConversationPath(conversation) {
         var i = conversation.indexOf('/');
         return i === -1 ? '' : conversation.substring(i + 1);
@@ -4540,6 +4606,7 @@ class Utils {
     }
 }
 exports.Utils = Utils;
+Utils.localTimeOffset = 0;
 Utils.GUEST_CHAR = '@';
 class TransientCache {
     constructor(duration, binDuration, newBinInstanceFn) {
