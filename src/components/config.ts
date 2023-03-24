@@ -9,17 +9,17 @@ redirect to login page if user is not logged in.
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "@Landing",
+    name: "@!Landing",
     component: () => import("./Landing.vue"),
   },
   {
     path: "/widgettest",
-    name: "@WidgetTest",
+    name: "@!WidgetTest",
     component: () => import("./WidgetTest.vue"),
   },
   {
     path: "/signbuffertestpage",
-    name: "@SignBufferTestPage",
+    name: "@!SignBufferTestPage",
     component: () => import("./SignBufferTestPage.vue"),
   },
   {

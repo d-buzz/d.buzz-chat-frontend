@@ -124,14 +124,6 @@ window.tmpProperties = {};
         }
      }
     catch(e) {console.log(e);}
-    var currentManager = null;
-    window.getManager = function () {
-      if (currentManager == null) {
-        currentManager = new stlib.MessageManager();
-        currentManager.setNodes(STING_NODES);
-      }
-      return currentManager;
-    };
     /*var idFn = stlib.Utils.nextId;
     stlib.Utils.nextId = ()=>{
         var id = idFn();
@@ -143,19 +135,7 @@ window.tmpProperties = {};
     defaultTheme.loadTheme(window.globalProperties.defaultTheme);
     console.log("Theme", Theme);
     window.defaultEmotes = defaultEmotes;
-    document.addEventListener('visibilitychange', async function (event) {
-        var manager = getManager();
-        if (document.hidden) {
-            manager.pauseAutoDecode = true;
-        } else {
-            manager.pauseAutoDecode = false;
-            var prefs = await manager.getPreferences();
-            if(prefs !== null) {
-                var isAutoDecode = prefs.getValueBoolean("autoDecode", false);
-                if(isAutoDecode) await manager.decodeSelectedConversations();
-            }
-        }
-    });
+    
     //TODO refactor tooltip, menu
     window.onclickoutside = new stlib.EventQueue();
     document.getElementById("app").addEventListener("click", ()=>{ window.onclickoutside.post(); }); 
@@ -231,30 +211,16 @@ window.tmpProperties = {};
         if(el == null || el.hidden) return;
         el.hidden = true;
     });
+    var currentManager = null;
+    window.getManager = function () {
+      if (currentManager == null) {
+        currentManager = new stlib.MessageManager();
+        currentManager.setNodes(STING_NODES);
+      }
+      return currentManager;
+    };
 })();
 async function initMain() {
-    if(NETWORK_NAME == null) {
-        try {
-            const manager = getManager();
-            var result = await manager.getClient().readInfo();
-            if(result.isSuccess()) 
-                stlib.Utils.setNetworkname(result.getResult().name);
-        }
-        catch(e) {
-            console.log(e);
-        }
-    }
-    else stlib.Utils.setNetworkname(NETWORK_NAME);
-
-    try {
-        await stlib.Utils.synchronizeTime();
-        console.log("local time ", new Date());
-        console.log("utc time ", new Date(stlib.utcTime()));
-    }
-    catch(e) {
-        console.log(e);
-    }
-
     const app = createApp(App);
     //app.config.globalProperties.$testvar = 'testvar';
     app.directive('focus', {

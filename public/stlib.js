@@ -3244,8 +3244,12 @@ class MessageManager {
             }
             var signableMessage = msg.forUser(user, conversation);
             yield this.loginmethod.signMessage(signableMessage, keychainKeyType);
-            if (encodeKey !== null)
+            if (encodeKey !== null) {
+                var verified = yield signableMessage.verify();
+                if (!verified)
+                    throw "message did not verify";
                 signableMessage.encodeWithKey(encodeKey);
+            }
             return yield client.write(signableMessage);
         });
     }
