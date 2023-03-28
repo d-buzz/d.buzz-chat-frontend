@@ -41,12 +41,11 @@
                 </div> 
             </div>
             <div v-else class="flex-shrink-0 mr-5px relative">
-                <UserIcon v-if="iconUsername || letterIcon" :name="iconUsername"
+                <UserIcon v-if="iconUsername || letterIcon" :name="iconUsername" :group="isGroup"
                     :letterIcon="letterIcon" :imgCss="'avConversation'+(isGroup?' avGroup':'')"/>
             </div>
-            <div class="grow flex items-center" :class="isGroup?'font-bold':''"> 
-                <small v-if="isGroup" class="pr-1"><span class="oi oi-people"></span></small>
-                <div :class="usersArray?'text-sm':''">{{users}}</div>
+            <div class="grow flex items-center"> 
+                <div :class="(usersArray || isGroup)?'text-sm':''">{{users}}</div>
             </div>
             <div v-if="number && number != '0'"> 
                 <small class="number"><b>{{number}}</b></small>

@@ -27,9 +27,9 @@
                   contenteditable>
                 </div>
                 <div v-else
-                    class="text-gray-700 appearance-none w-[calc(100%)] py-2 px-3 focus:outline-none focus:shadow-outline"
+                    class="text-gray-400 appearance-none w-[calc(100%)] py-2 px-3 focus:outline-none focus:shadow-outline"
                     >
-                    Permission required.
+                    Permission required
                 </div>
                 <div class="absolute float-right flex gap-x-3 pr-3" style="right: 0; max-height: 38px;">
                     <div @click="if(canWrite) enterMessage(null);" class="my-2 cursor-pointer oi oi-envelope-open envelope" 

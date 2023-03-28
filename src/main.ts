@@ -11,7 +11,8 @@ import "./assets/styles/index.css";
 //import * as dhive from "@hiveio/dhive";
 
 const NETWORK_NAME = import.meta.env.NETWORK_NAME?import.meta.env.NETWORK_NAME:null;
-const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_APP_STING_NODES.split(",") : ["http://localhost:3001"];
+//const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_APP_STING_NODES.split(",") : ["http://localhost:3001"];
+const STING_NODES = ["https://chat-api.peakd.com"]; //tmp TODO revert
 
 window.globalProperties = {
     "sidebar": 0,

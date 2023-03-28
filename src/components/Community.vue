@@ -531,7 +531,7 @@ async function setContentMessage(obj) {
         return;
     }
     if(obj.type === stlib.Content.Emote.TYPE) {
-        await enterMessage(obj.text, obj, false);
+        await enterMessage(obj.text, obj, false, false);
         return;
     }
     if(obj.type === 'flag') {
@@ -622,16 +622,18 @@ const enterMessage = async (message, contentMessage=null, block=true, clearBox=t
                 break;
             }
         }
+        //var mentions = null;
+       // message.isCommunityConversation()
+
         if(textMsg === null) textMsg = stlib.Content.text(message);
         if(thread !== null) textMsg = stlib.Content.thread(thread, textMsg);
 
         console.log(textMsg);
         
-        result = await manager.sendMessage(textMsg, conversation);
+        result = await manager.sendMessage(textMsg, conversation, null);
         if(result.isSuccess()) {
             if(clearBox) messageBox.value.setText("");
             if(contentMsg.value !== null) contentMsg.value = null;
-            
         }
         else { 
             console.log(result);

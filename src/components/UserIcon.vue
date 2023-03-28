@@ -98,10 +98,10 @@ function randomColor(text) {
     display: block;
     position: absolute;
     font-size: 12px;
-    bottom: -2px;
-    right: 3px;
+    bottom: -3px;
+    right: 0px;
     z-index: 1;
     mix-blend-mode: difference;
-    color: #aaaaaa;
+    color: #aaaaaaaa;
 }
 </style>
