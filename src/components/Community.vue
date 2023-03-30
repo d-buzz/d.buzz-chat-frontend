@@ -589,6 +589,19 @@ const autoDecode = async ()=>{
         valueAutoDecode.value = value;
     if(value) await decode();
 };
+function addMentions(mentions, text, community) {
+    if(text == null || typeof text !== 'string') return;    
+    var words = text.trim().split(/[ ]+/);
+    for(var word of words) {
+        if(word === '@*' || word === '@everyone') { 
+            if(community) mentions[community] = true;
+        }
+        else if(word.startsWith('@')) {
+            var username = word.substring(1);
+            if(stlib.Utils.isValidGuestName(username)) mentions[username] = true;
+        }
+    }
+}
 const decode = async ()=>{ await getManager().decodeSelectedConversations(); };
 var sendingMessage = false;
 const enterMessage = async (message, contentMessage=null, block=true, clearBox=true, onsuccess=null) => {
@@ -601,6 +614,10 @@ const enterMessage = async (message, contentMessage=null, block=true, clearBox=t
         if(conversation == null) return;
         var thread = threadName.value;
 
+        var mentions = {};
+        var communityUsername = stlib.Utils.isCommunityConversation(conversation)?
+            stlib.Utils.getConversationUsername(conversation):null;
+        
         const manager = getManager();
         var textMsg = null;
         if(contentMessage === null) contentMessage = contentMsg.value;
@@ -611,11 +628,14 @@ const enterMessage = async (message, contentMessage=null, block=true, clearBox=t
                 break;
                 case stlib.Content.Quote.TYPE:
                     textMsg = stlib.Content.quote(message, contentMessage.msg.message, contentMessage.from, contentMessage.to);
+                    mentions[contentMessage.msg.message.getUser()] = true;             
+                    addMentions(mentions, message, communityUsername);                
                 break;
                 case stlib.Content.Edit.TYPE:
                     var editContent = contentMessage.msg.getContent().copy();
                     editContent.setText(message);
                     textMsg = stlib.Content.edit(editContent, contentMessage.msg.message);
+                    addMentions(mentions, message, communityUsername);
                 break;
                 case stlib.Content.Images.TYPE:
                     textMsg = stlib.Content.images(...contentMessage.images);
@@ -625,12 +645,17 @@ const enterMessage = async (message, contentMessage=null, block=true, clearBox=t
         //var mentions = null;
        // message.isCommunityConversation()
 
-        if(textMsg === null) textMsg = stlib.Content.text(message);
+        if(textMsg === null) { 
+            textMsg = stlib.Content.text(message);
+            addMentions(mentions, message, communityUsername);
+        }
         if(thread !== null) textMsg = stlib.Content.thread(thread, textMsg);
 
-        console.log(textMsg);
+        var mentionsArray = Object.keys(mentions);
+        if(mentionsArray.length === 0) mentionsArray = null;
+        console.log(textMsg, mentionsArray);
         
-        result = await manager.sendMessage(textMsg, conversation, null);
+        result = await manager.sendMessage(textMsg, conversation, mentionsArray);
         if(result.isSuccess()) {
             if(clearBox) messageBox.value.setText("");
             if(contentMsg.value !== null) contentMsg.value = null;

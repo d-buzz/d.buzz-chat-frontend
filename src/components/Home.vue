@@ -36,6 +36,7 @@
             <TabGroup>
                 <TabList class="tab">
                   <Tab v-if="tabCommunities">{{$t("Home.Communities")}}</Tab>
+                  <Tab v-if="tabMentions">{{$t("Home.Mentions")}}</Tab>
                   <Tab v-if="tabPreferences">{{$t("Home.Preferences")}}</Tab>
                   <Tab v-if="tabThemes">{{$t("Home.Themes")}}</Tab>
                 </TabList>
@@ -85,46 +86,14 @@
                         </TabPanels>
                     </TabGroup>
                 </TabPanel>
+                <TabPanel v-if="tabMentions">
+                    <Mentions/>
+                </TabPanel>
                 <TabPanel v-if="tabPreferences">
                     <Preferences/>
-                    <!--<div class="mt-2"></div>
-                    <div class="flex flex-row" v-for="item in preferences" :key="updateKey+'#4'">
-                        <div v-if="item.options">
-                            <div>
-                                <div><b>{{item.display}}</b></div>
-                                <div><small>{{item.desc}}</small></div>
-                            </div>
-                            <div>
-                                <select v-model="item.newvalue" class="inputSelect1">
-                                    <option v-for="option in item.options" :value="option[0]">{{option[1]}}</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div v-else>
-                            <div>
-                                <div><b>{{item.display}}</b></div>
-                                <div><small>{{item.desc}}</small></div>
-                            </div>
-                            <div>
-                                <input type="checkbox" v-model="item.newvalue">
-                            </div>
-                        </div>
-                    </div>
-                    <div><small>{{updateMessage}}</small></div>
-                    <button class="btn" @click="updatePreferences" @mouseenter="tooltip($event.target, $t('Home.UpdateSettings'))">Update</button>
-                    <button class="btn2" @click="resetChanges" @mouseenter="tooltip($event.target, $t('Home.DiscardChanges'))">Reset changes</button>
-                    -->
                 </TabPanel>
                 <TabPanel v-if="tabThemes" :key="updateThemesKey">
                     <Themes/>
-                    <!--<small class="float-right text-gray-700">{{$t("Home.Theme.Msg.Info")}}</small>
-                    <div class="mt-2"></div>
-                    <div v-for="(style, name) in themeObject.defaultThemes">
-                        <ThemeView :name="name" :style="style" :edit="false" @update="updateThemes"></ThemeView>
-                    </div>
-                    <div v-for="(style, name) in themeObject.userThemes">
-                        <ThemeView :name="name" :style="style" :edit="true" @update="updateThemes"></ThemeView>
-                    </div>-->
                 </TabPanel>
             </TabPanels>
             </TabGroup>
@@ -136,6 +105,7 @@
 import { useAccountStore } from "../stores/account";
 const tooltip = ref(window.tooltip);
 const tabCommunities = ref(globalProperties.homeTabCommunities);
+const tabMentions = ref(globalProperties.homeTabMentions);
 const tabPreferences = ref(globalProperties.homeTabPreferences);
 const tabThemes = ref(globalProperties.homeTabThemes);
 const accountStore = useAccountStore();

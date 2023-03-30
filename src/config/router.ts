@@ -10,7 +10,7 @@ async function initApp() {
     if(initStarted) return;
     initStarted = true;
     console.log("init app");
-    const NETWORK_NAME = import.meta.env.NETWORK_NAME?import.meta.env.NETWORK_NAME:null;
+    const NETWORK_NAME = import.meta.env.VITE_APP_NETWORK_NAME?import.meta.env.VITE_APP_NETWORK_NAME:null;
     //const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_APP_STING_NODES.split(",") : ["http://localhost:3001"];
     /*var currentManager = null;
     window.getManager = function () {
