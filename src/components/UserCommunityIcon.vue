@@ -2,7 +2,7 @@
     <TransitionRoot :show="showUserModal">
         <UserModal @close="toggleUserModal(null)" :user="userRef" :community="community"></UserModal>
     </TransitionRoot>
-    <div @click="toggleUserModal(name)"
+    <div @click.prevent.stop="toggleUserModal(name)"
         @click.right.prevent.stop="clickOnIcon($event)"
         class="cursor-pointer relative">
         <UserIcon :name="name" :imgCss="imgCss"/>

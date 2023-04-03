@@ -11,7 +11,8 @@
             <UserIcon class="p-1 cursor-pointer" @click.stop.prevent="toggleMenu" :name="accountName" :imgCss="'avCommunity'"/>
         </div>
         <div v-if="showMenu" class="menu appbg1 border-default flex flex-col">
-            <div><b class="border-b-1"><a :href="`https://peakd.com/@${accountName}`" target="_blank" rel="noreferrer noopener">@{{accountName}}</a></b></div>
+            <!--<div><b class="border-b-1"><a :href="`https://peakd.com/@${accountName}`" target="_blank" rel="noreferrer noopener">@{{accountName}}</a></b></div>-->
+            <div><b class="border-b-1"><router-link to="/mentions">@{{accountName}}</router-link></b></div>
             <div><router-link to="/preferences">Preferences</router-link></div>
             <div><router-link to="/themes">Themes</router-link></div>
             <div class="border-t-1" @click="logout">Logout</div>

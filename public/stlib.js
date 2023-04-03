@@ -2226,6 +2226,16 @@ class MessageManager {
                             _this.onstatusmessage.post([displayableMessage.getUser(), displayableMessage.getConversation(), null, 0]);
                         }
                     }
+                    var mentions = signableMessage.getMentions();
+                    if (mentions != null && mentions.indexOf(_this.user) !== -1) {
+                        data = _this.conversations.lookupValue('&' + _this.user);
+                        if (data != null) {
+                            if (data.encoded != null && displayableMessage.isEncoded()) { }
+                            else {
+                                data.messages.push(displayableMessage);
+                            }
+                        }
+                    }
                     _this.postCallbackEvent(displayableMessage);
                 });
             };
@@ -2259,7 +2269,7 @@ class MessageManager {
         }
     }
     getClient() { return this.client; }
-    setUser(user) {
+    setUser(user, joinRooms = true) {
         if (this.user == user)
             return;
         if (this.user != null) {
@@ -2275,8 +2285,11 @@ class MessageManager {
         catch (e) {
             console.log(e);
         }
-        this.join(user);
-        this.join('$online');
+        if (joinRooms) {
+            this.join(user);
+            this.join('&' + user);
+            this.join('$online');
+        }
     }
     readGuest(username) {
         var guests = this.readGuests();
@@ -3880,7 +3893,7 @@ class SignableMessage {
     }
     verifyPermissions() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield utils_1.Utils.verifyPermissions(this.getUser(), this.getConversation());
+            return yield utils_1.Utils.verifyPermissions(this.getUser(), this.getMentions(), this.getConversation());
         });
     }
 }
@@ -4038,6 +4051,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AccountDataCache = exports.TransientCache = exports.Utils = void 0;
 const community_1 = require("./community");
 const signable_message_1 = require("./signable-message");
+const permission_set_1 = require("./permission-set");
 const default_stream_data_cache_1 = require("./default-stream-data-cache");
 var netname = null;
 var guestAccountValidators = [];
@@ -4335,7 +4349,7 @@ class Utils {
             return data.getFlagNum(user);
         });
     }
-    static verifyPermissions(user, conversation) {
+    static verifyPermissions(user, mentions, conversation) {
         return __awaiter(this, void 0, void 0, function* () {
             if (Utils.isCommunityConversation(conversation)) {
                 var communityName = Utils.getConversationUsername(conversation);
@@ -4360,6 +4374,16 @@ class Utils {
                         }
                         if (!writePermissions.validate(role, titles))
                             return false;
+                    }
+                }
+                if (mentions != null) {
+                    for (var mention of mentions) {
+                        if (mention.endsWith('/*')) {
+                            if (mention !== communityName + '/*')
+                                return false;
+                            if (permission_set_1.PermissionSet.roleToIndex(community.getRole(user)) < 5)
+                                return false;
+                        }
                     }
                 }
             }
@@ -4870,7 +4894,7 @@ const accountDataCache = new AccountDataCache();
 const communityDataCache = new AccountDataCache();
 var streamDataCache = null;
 
-},{"./community":2,"./default-stream-data-cache":21,"./signable-message":26}],30:[function(require,module,exports){
+},{"./community":2,"./default-stream-data-cache":21,"./permission-set":25,"./signable-message":26}],30:[function(require,module,exports){
 const returnTrue = () => true
 
 // Returns true when the given string ends with an unescaped escape.

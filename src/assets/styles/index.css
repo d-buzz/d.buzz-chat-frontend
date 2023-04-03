@@ -28,7 +28,8 @@ body {
 
 .appsg0 { background: var(--appsg0); }
 .appsg1 { background: var(--appsg1); }
-
+.appsg2 { background: var(--appsg1); }
+.appsg3 { background: var(--appsg1); }
 .apphg2 { background: var(--apphg2); }
 
 .appbgbtn1 { background: var(--appbgbtn1); }

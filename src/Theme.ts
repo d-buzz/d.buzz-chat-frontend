@@ -263,7 +263,7 @@ function calcSg(rgb) {
 }
 function calcHg(rgb) {
     var sg = calcFg(rgb,200);
-    sg.push((sg[0] === 0)?23:25);
+    sg.push((sg[0] === 0)?42:25);
     return sg;
 }
 

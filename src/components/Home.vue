@@ -35,15 +35,18 @@
         <div class="ml-3 mt-2 mr-3">
             <TabGroup>
                 <TabList class="tab">
-                  <Tab v-if="tabCommunities">{{$t("Home.Communities")}}</Tab>
+                  <Tab v-if="tabCommunities">Home</Tab>
                   <Tab v-if="tabMentions">{{$t("Home.Mentions")}}</Tab>
                   <Tab v-if="tabPreferences">{{$t("Home.Preferences")}}</Tab>
                   <Tab v-if="tabThemes">{{$t("Home.Themes")}}</Tab>
                 </TabList>
             <TabPanels class="mt-1">
                 <TabPanel v-if="tabCommunities">
+                    <div class="flex border-t-1 border-b-1 rounded px-3" style="height:233px;">
+                        <Mentions/>
+                    </div>
                     <!--<div class="text-sm font-bold text-right md:text-center text-gray-400 mt-1">joined</div>-->
-                    <div class="flex flex-row flex-wrap" :key="updateKey">
+                    <div class="flex flex-row flex-wrap mt-3" :key="updateKey">
                        <CommunityIcon v-for="community in communities" :img="community[0]" :name="community[1]" :number="''" />
                     </div>
                     

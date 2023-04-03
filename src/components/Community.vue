@@ -97,10 +97,6 @@
             </span>
         </div>
 
-
-        
-
-
         <div ref="messages" :key="messageKey" class="grow overflow-y-scroll scrollBox" style="order:5;">
             <div class="scrollBoxContent flex flex-col pr-3">
                 <div v-if="threadName !== null" :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
@@ -109,8 +105,10 @@
                         <div v-if="messageArray.type === 'h'" :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
                             <div v-for="message in messageArray">
                                 <div v-if="message.getThreadName() === threadName">
-                                    <hr style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
-                                    <Message :message="message" @action="setContentMessage" />
+                                    <hr style="margin:1px 0px;">
+                                    <div :class="{'apphg2': highlight(message)}" style="padding-top: 0.5rem;padding-bottom: 0.25rem;">
+                                        <Message :message="message" @action="setContentMessage" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -130,19 +128,23 @@
                             </small>
                             <div v-if="showFold(messageArray)" :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col', 'fold']">
                                 <div v-for="(message, i) in messageArray">
-                                    <div v-if="(!valueFlipMessageBox && i !== 0) || (valueFlipMessageBox && i !== messageArray.length-1)" class="flex text-gray-700" style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
+                                    <div v-if="(!valueFlipMessageBox && i !== 0) || (valueFlipMessageBox && i !== messageArray.length-1)" class="flex text-gray-700" style="margin:1px 0px;">
                                         <span class="hr grow"></span>
                                         <small class="cursor-pointer" @click="setThread(message.getThreadName())">{{message.getThreadName()}}</small>
                                         <span class="hr grow"></span>
                                     </div>
-                                    <Message :message="message" @action="setContentMessage" />
+                                    <div :class="{'apphg2': highlight(message)}" style="padding-top: 0.5rem;padding-bottom: 0.25rem;">
+                                        <Message :message="message" @action="setContentMessage" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div v-else :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
                             <div v-for="(message, i) in messageArray" >
-                                <hr v-if="(!valueFlipMessageBox && i !== 0) || (valueFlipMessageBox && i !== messageArray.length-1)" style="margin-top: 0.5rem;margin-bottom: 0.25rem;">
-                                <Message :message="message" @action="setContentMessage" />
+                                <hr v-if="(!valueFlipMessageBox && i !== 0) || (valueFlipMessageBox && i !== messageArray.length-1)" style="margin:1px 0px;">
+                                <div :class="{'apphg2': highlight(message)}" style="padding-top: 0.5rem;padding-bottom: 0.25rem;">
+                                    <Message :message="message" @action="setContentMessage" />
+                                </div>
                             </div>
                         </div>
                    </div>
@@ -301,7 +303,14 @@ function addCommunityName(community, streamName) {
     return prepend;
 }
 var isGroupOwner = false;
+var lastRead0 = 0;
 var groupId = ref(null);
+function highlight(message) {
+    var user = accountStore.account.name;
+    if(user == null || message.getTimestamp() <= lastRead0) return false;
+    var mentions = message.message.getMentions();
+    return mentions && mentions.indexOf(user) !== -1;
+} 
 async function initChat() {
     var user = accountStore.account.name;
     if(user == null) return; //TODO ask to login
@@ -318,9 +327,11 @@ async function initChat() {
     if(conversation != null) {
         manager.setConversation(conversation);
         try {
-            canWrite.value = await stlib.Utils.verifyPermissions(user, conversation);
+            canWrite.value = await stlib.Utils.verifyPermissions(user, null, conversation);
         }
         catch(e) { console.log(e); }
+        var _lastRead = manager.getLastRead(conversation);
+        if(_lastRead) lastRead0 = _lastRead.timestamp;
         if(route.name === 'CommunityPath') {
             manager.setSelectedCommunityPage(user2, route.path);
 
@@ -589,12 +600,15 @@ const autoDecode = async ()=>{
         valueAutoDecode.value = value;
     if(value) await decode();
 };
-function addMentions(mentions, text, community) {
+async function addMentions(mentions, text, community) {
+    if(community == null) return;
     if(text == null || typeof text !== 'string') return;    
     var words = text.trim().split(/[ ]+/);
     for(var word of words) {
-        if(word === '@*' || word === '@everyone') { 
-            if(community) mentions[community] = true;
+        if(word === '@*' || word === '@everyone') {
+            var role = await stlib.Utils.getRole(community, getManager().user);
+            if(stlib.PermissionSet.roleToIndex(role) >= 5) 
+                mentions[community+'/*'] = true;
         }
         else if(word.startsWith('@')) {
             var username = word.substring(1);
@@ -629,13 +643,13 @@ const enterMessage = async (message, contentMessage=null, block=true, clearBox=t
                 case stlib.Content.Quote.TYPE:
                     textMsg = stlib.Content.quote(message, contentMessage.msg.message, contentMessage.from, contentMessage.to);
                     mentions[contentMessage.msg.message.getUser()] = true;             
-                    addMentions(mentions, message, communityUsername);                
+                    await addMentions(mentions, message, communityUsername);                
                 break;
                 case stlib.Content.Edit.TYPE:
                     var editContent = contentMessage.msg.getContent().copy();
                     editContent.setText(message);
                     textMsg = stlib.Content.edit(editContent, contentMessage.msg.message);
-                    addMentions(mentions, message, communityUsername);
+                    await addMentions(mentions, message, communityUsername);
                 break;
                 case stlib.Content.Images.TYPE:
                     textMsg = stlib.Content.images(...contentMessage.images);
@@ -647,7 +661,7 @@ const enterMessage = async (message, contentMessage=null, block=true, clearBox=t
 
         if(textMsg === null) { 
             textMsg = stlib.Content.text(message);
-            addMentions(mentions, message, communityUsername);
+            await addMentions(mentions, message, communityUsername);
         }
         if(thread !== null) textMsg = stlib.Content.thread(thread, textMsg);
 
