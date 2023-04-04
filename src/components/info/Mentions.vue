@@ -51,47 +51,34 @@ function setMessages(list) {
         let highlight = lastRead == null || lastRead.timestamp < msg.getTimestamp();
         result.push({msg, highlight});
     }
-    //for(var i = 0; i < 100; i++) result.push(list[0]);
     messages.value = result;
 }
 async function init() {
     var user = accountStore.account.name;
     if(user == null) return;
     var manager = getManager();
-    
+    var prepend = globalProperties.prependCommunities || null;
+    var communities = await manager.getCommunitiesSorted(manager.user, null, true, prepend);
     var updateMessages = async () => {
-        /*var container = messages.value;
-        var scrollToBottom = !valueFlipMessageBox.value;
-        var scrollTop = 0;
-        if(container) { 
-            scrollToBottom = isAtScrollBottom(container); 
-            scrollTop = container.scrollTop;
-        }*/
+        var messages = [];
         var data = await manager.getSelectedConversations('&'+user);
-        data.messages.sort((a,b)=>b.getTimestamp()-a.getTimestamp());
-        setMessages(data.messages);
+        messages = messages.concat(data.messages);
+        for(var community of communities) {
+            data = await manager.getSelectedConversations('&'+community[0]+'/*');
+            messages = messages.concat(data.messages);
+        }
+        messages.sort((a,b)=>b.getTimestamp()-a.getTimestamp());
+        setMessages(messages);
         
         updateKey.value = ""+stlib.Utils.nextId();
-        /*if(data.messages.length > 0) {
-            manager.setLastRead(conversation,
-                 data.messages[data.messages.length-1].getTimestamp());
-        }*/
-        /*nextTick(async () => {
-            var container = messages.value;
-            if(container) container.scrollTop = scrollToBottom?
-                          container.scrollHeight:scrollTop;
-        });*/
+        
         return data;
     };
-    //var prefs = await manager.getPreferences();
-    //valueFlipMessageBox.value = prefs.getValueBoolean("flipMessageBox", false);
-    //var isAutoDecode = prefs.getValueBoolean("autoDecode", false);
-    //valueAutoDecode.value = isAutoDecode;
+    
     var data = await updateMessages();
     if(data) canLoadPreviousMessages.value = data.maxTime > 0;
 
     manager.setCallback("Mentions.vue", updateMessages);
-
 }
 init();
 </script>
