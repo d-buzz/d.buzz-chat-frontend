@@ -5,7 +5,7 @@
     --appbg3: #ffffff;        --appfg3: black;
     --appbgbtn1: #2e8336;     --appfgbtn1: white;
     --appbgbtn2: #eab308;     --appfgbtn2: white;
-
+    
     --appbgowner: #007b00;
     --appbgadmin: #2368D5;
     --appbgmod: #2e8336;
@@ -159,8 +159,9 @@ body {
 	padding: 3px 5px;
 	background-color: var(--apphg2);
 }
-.md pre { white-space: pre-wrap; }
-pre > code { display: block; }
+.md a:hover { opacity: 0.75; }
+.md pre { display: grid; }
+.md pre > code { overflow: scroll; max-height: 270px; }
 .md-list {
 	
 }
