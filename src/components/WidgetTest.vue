@@ -26,7 +26,12 @@
 
     <div class="appbg1 appfg1 px-5 pt-5 pb-2 md:px-12 text-left">
       <h1 class="font-bold text-3xl pb-1">Widget test page.</h1>
+        <p>Customize the options and scroll down to see how to embed the widget into a website.</p>
         <div>
+            <div class="mt-3 mb-3">
+                Width: <input type="text" class="inputText inline" v-model="width" @change="onResize">
+                Height: <input type="text" class="inputText inline" v-model="height" @change="onResize">
+            </div>
             <div class="flex flex-row" v-for="item in preferences" :key="updateKey+'#3'">
                 <div v-if="item.options">
                     <div>
@@ -60,12 +65,15 @@
             </div>
         </div>
         <hr class="my-3" />
-        <h2 class="font-bold text-2xl pb-1">Widget code</h2>
+        <h2 class="font-bold text-2xl pb-1">Add widget to website:</h2>
+        <b>Step 1. stwidget.js lib</b>
+        <p>Download and host (preferred) or add script: https://chat.peakd.com/stwidget.js</p>
+        <b>Step 2. code: </b>
+        <p>Customize the widget options and copy the setup script. Add the element to your dom.</p>
         <div style="margin-bottom:250px;">
             <textarea style="font-family: monospace;" class="inputText" rows="15" cols="80" type="text" v-model="widgetcode"></textarea>
             <button class="btn" @click="copyToClipboard($event.target, widgetcode)"><span class="oi oi-clipboard"></span> Copy</button>        
         </div>
-
     </div>
     
      
@@ -79,10 +87,14 @@
 </template>
 <script setup>
 import { nextTick } from 'vue';
+import { useRoute } from "vue-router";
+const route = useRoute();
 const widget = ref();
 const widgetcode = ref("");
 const preferences = ref([]);
 const updateKey = ref('#'+stlib.Utils.nextId());
+const width = ref("450");
+const height = ref("556");
 
 const defaultPreferences = [
     {name: "sidebar", display: "Left sidebar style", desc: "",
@@ -106,6 +118,7 @@ const defaultPreferences = [
     {name: "homeTabCommunities", display: "HomeTab: Communities", desc: "", value: false, newvalue:false},
     {name: "homeTabPreferences", display: "HomeTab: Preferences", desc: "", value: true, newvalue:true},
     {name: "homeTabThemes", display: "HomeTab: Themes", desc: "", value: true, newvalue:true}, 
+    {name: "onlyPrependCommunities", display: "Only prepended communities", desc: "Show only communities specified in prependCommunties field.", value: false, newvalue:false},       
     {name: "prependCommunities", display: "Prepend Communities", desc: "", value: ["hive-163399"], newvalue:"hive-163399"},
     {name: "defaultTheme", display: "Default Theme.", desc: "Eg.: Light, Ignite, Dark.", value: 'Light', newvalue:'Light'},
 ];
@@ -125,6 +138,26 @@ window.globalProperties = {
     "prependCommunities": ["hive-163399"]
 };
 */
+function updateCode() {
+    var obj = {};
+    var items = preferences.value;
+    for(var item of items) {
+        var v = item.newvalue;
+        if(Array.isArray(item.value)) v = v.trim().split(/[ ,]+/);
+        obj[item.name] = v;
+    }
+    var code = 
+`
+var stwidget = new StWidget('https://chat.peakd.com/t/hive-163399/0'); /*customize. eg.: 'https://chat.peakd.com/home'*/
+stwidget.properties = ${JSON.stringify(obj, null, 4)};
+var element = stwidget.createElement('${width.value.trim()+'px'}', '${height.value.trim()+'px'}');
+//optionally add style/positioning
+//stwidget.setStyle({ direction: 'rtl', top: '51px', right: '32px' });
+//Add the element to webpage
+//e.appendChild(element);
+`
+    widgetcode.value = code;
+}
 function onChange() {
     var obj = {};
     var items = preferences.value;
@@ -136,14 +169,26 @@ function onChange() {
     console.log(obj);
     currentProperties = obj;
     if(stwidget) stwidget.setProperties(obj);
-
-    var code = 
-`var stwidget = new StWidget('...'); /*eg. '/t/hive-163399/0'*/
-stwidget.properties = ${JSON.stringify(obj, null, 4)};`
-    widgetcode.value = code;
+    updateCode();
 }
-
+function onResize() {
+    if(stwidget) stwidget.resize(width.value.trim()+'px', height.value.trim()+'px');
+    updateCode();
+}
 function initPropertyEditor() {
+    var query = route.query;
+    for(var pref of defaultPreferences) {
+        var value = query[pref.name];
+        if(value != null) {
+            if(typeof pref.value === 'string') {
+                pref.value = pref.newvalue = value;
+            }
+            else if(typeof pref.value === 'boolean') {
+                pref.value = pref.newvalue = value === 'true';
+            }
+        }
+    }
+
     var values = {};
     var array = [];
     for(var pref of defaultPreferences) {
@@ -176,7 +221,7 @@ function initWidget() {
         "homeTabCommunities": false,
         "prependCommunities": ["hive-163399"]
     };*/
-    var element = stwidget.createElement()
+    var element = stwidget.createElement(width.value.trim()+'px', height.value.trim()+'px');
     stwidget.setStyle({ direction: 'rtl', top: '51px', right: '32px' });
 
     var e = widget.value;

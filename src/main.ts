@@ -27,6 +27,7 @@ window.globalProperties = {
     "homeTabThemes": true,
     "prependCommunities": [],
     "defaultTheme": "Light",
+    "onlyPrependCommunities": false,
     "--appCommunityIconFontSize": "20px",
     "--appCommunityIconSize": "52px"
 

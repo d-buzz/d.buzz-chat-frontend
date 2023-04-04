@@ -105,7 +105,7 @@ const communityNumber = ref('0');
 function canOpenBoth() { return window.globalProperties["sidebar2enableSharedView"] === true; }
 const showDirect = ref(canOpenBoth());
 const showCommunities = ref(true);
-const addButton = ref(window.globalProperties["sidebarAddButton"]);
+const addButton = ref((globalProperties.onlyPrependCommunities)?0:window.globalProperties["sidebarAddButton"]);
 const showMenu = ref(false);
 const directPanel = ref();
 const communityPanel = ref();
@@ -166,7 +166,7 @@ async function initCommunities() {
     var manager = getManager();
     manager.setUser(user);
     manager.joinGroups();
-    var _communities = await manager.getCommunitiesSorted();
+    var _communities = (globalProperties.onlyPrependCommunities)?[]:await manager.getCommunitiesSorted();
     {
         var tmp = {};
         for(var community of _communities) {

@@ -33,7 +33,7 @@ const accountStore = useAccountStore();
 const communities = ref([]);
 const updateKey = ref("");
 const number = ref('0');
-const addButton = ref(window.globalProperties["sidebarAddButton"]);
+const addButton = ref((globalProperties.onlyPrependCommunities)?0:window.globalProperties["sidebarAddButton"]);
 
 const addCommunityModal = ref(false);
 const toggleAddCommunityModal = () => {
@@ -65,7 +65,7 @@ async function initCommunities() {
     var manager = getManager();
     manager.setUser(user);
     manager.joinGroups();
-    var _communities = await manager.getCommunitiesSorted();
+    var _communities = (globalProperties.onlyPrependCommunities)?[]:await manager.getCommunitiesSorted();
     {
         var tmp = {};
         for(var community of _communities) tmp[community[0]] = true;
