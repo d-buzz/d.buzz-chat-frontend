@@ -12,9 +12,12 @@
 
     --appCommunityIconFontSize: 20px;
     --appCommunityIconSize: 52px;
+    --appFontFamily: "Century Schoolbook L", Arial, Helvetica, sans-serif;
+    --appFontSize: 16px;
 }
 body {
-    font-family: "Century Schoolbook L", Arial, Helvetica, sans-serif;
+    font-family: var(--appFontFamily);
+    font-size: var(--appFontSize);
 }
 .appbg0 { background: var(--appbg0); }
 .appbg1 { background: var(--appbg1); }

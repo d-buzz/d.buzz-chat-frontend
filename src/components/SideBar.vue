@@ -33,7 +33,7 @@ const accountStore = useAccountStore();
 const communities = ref([]);
 const updateKey = ref("");
 const number = ref('0');
-const addButton = ref((globalProperties.onlyPrependCommunities)?0:window.globalProperties["sidebarAddButton"]);
+const addButton = ref((globalProperties.onlyPrependCommunities)?-1:window.globalProperties["sidebarAddButton"]);
 
 const addCommunityModal = ref(false);
 const toggleAddCommunityModal = () => {
