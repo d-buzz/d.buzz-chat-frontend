@@ -83,8 +83,11 @@ export const install: ViteSetupModule = ({ app }) => {
         if(to.name && !to.name.startsWith('@')) {
             if(accountStore.account.authenticated === null) await accountStore.initStore();
             if(accountStore.account.authenticated === null || accountStore.account.authenticated === false) {
-                next('/join');
-                return;
+                var requireLogin = window.globalProperties["requireLogin"];
+                if(requireLogin) {
+                    next('/join');
+                    return;
+                }
             }
         }
         next();

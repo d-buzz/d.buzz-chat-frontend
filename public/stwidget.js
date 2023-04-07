@@ -1,6 +1,4 @@
-
 class StWidget {
-
     constructor(url) { 
         this.url = url;
         this.element = null;
@@ -10,16 +8,15 @@ class StWidget {
         this.enableKeychainPassthrough = true;
         this.messageListener = null;
     }
-    createElement(width=450, height=556, resizable=true) {
+    createElement(width=450, height=556, overlay=true, resizable=true) {
         this.initialize();
         var div = document.createElement('div');
         this.element = div;
-        var style = {
-            position: 'absolute',
-            'z-index': 10000,
-            border: '1px solid gray'
-        };
-
+        var style = { border: '1px solid gray' };
+        if(overlay) {
+            style['position'] = 'absolute';
+            style['z-index'] = '10000';
+        }
         if(resizable) {
             style['resize'] = 'both';
             style['overflow'] = 'hidden';
@@ -113,8 +110,3 @@ class StWidget {
         }
     }
 }
-
-
-
-
-

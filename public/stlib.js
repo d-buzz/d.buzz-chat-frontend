@@ -4367,6 +4367,8 @@ class Utils {
     }
     static verifyPermissions(user, mentions, conversation) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (user == null || conversation == null)
+                return false;
             if (Utils.isCommunityConversation(conversation)) {
                 var communityName = Utils.getConversationUsername(conversation);
                 var communityStreamId = conversation.substring(communityName.length + 1);

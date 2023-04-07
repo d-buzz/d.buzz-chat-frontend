@@ -313,7 +313,7 @@ function highlight(message) {
 } 
 async function initChat() {
     var user = accountStore.account.name;
-    if(user == null) return; //TODO ask to login
+    //if(user == null) return; //TODO ask to login
     var user2 = route.params.user;
     if(user2 == null || user2 == "") return;
 
@@ -433,7 +433,7 @@ async function initChat() {
             });
             return data;
         };
-        var prefs = await manager.getPreferences();
+        var prefs = await manager.getPreferences() || stlib.Content.preferences();
         valueFlipMessageBox.value = prefs.getValueBoolean("flipMessageBox", false);
         var isAutoDecode = prefs.getValueBoolean("autoDecode", false);
         valueAutoDecode.value = isAutoDecode;
@@ -471,9 +471,7 @@ async function initChat() {
         manager.onstatusmessage.set("Community.vue", updateStatus);
 
         if(isAutoDecode === true)
-            await decode();  
-
-              
+            await decode();      
     }
 }
 async function findSharedCommunities(conversation) {
@@ -567,7 +565,7 @@ function getConversation() {
     var user = accountStore.account.name;
     var user2 = route.params.user;
 
-    if(user == null) return null; //TODO ask to login
+    //if(user == null) return null; //TODO ask to login
     if(user2 == null || user2 == "") return null;
     var conversation = null;
     if(route.name === 'CommunityPath') {
@@ -580,6 +578,7 @@ function getConversation() {
         conversation = '#'+user2+'/'+route.params.path;
     }
     else if(route.name.startsWith('PrivateChat')) {
+        if(user == null) return null; //TODO ask to login
         conversation = [user, user2];
         if(route.params.user2) {
             conversation.push(route.params.user2);

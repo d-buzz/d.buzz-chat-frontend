@@ -25,6 +25,7 @@ window.globalProperties = {
     "homeTabMentions": false,
     "homeTabPreferences": true,
     "homeTabThemes": true,
+    "requireLogin": true,
     "prependCommunities": [],
     "defaultTheme": "Light",
     "onlyPrependCommunities": false,
