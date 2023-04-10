@@ -14,6 +14,7 @@ const NETWORK_NAME = import.meta.env.VITE_APP_NETWORK_NAME?import.meta.env.VITE_
 const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_APP_STING_NODES.split(",") : ["http://localhost:3001"];
 
 window.globalProperties = {
+    "showSidebar": true,
     "sidebar": 0,
     "sidebar2enableSharedView": false,
     "sidebarAddButton": 1,

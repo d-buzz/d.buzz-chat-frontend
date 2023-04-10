@@ -144,10 +144,14 @@
 </template>
 <script setup>
 import PeakdLogo from "../assets/images/icons/peakd.svg";
-import EcencyLogo from "../assets/images/icons//ecency.svg";
+import EcencyLogo from "../assets/images/icons/ecency.svg";
 import HiveBlogLogo from "../assets/images/icons/hive-blog.svg";
 import { useAccountStore } from "../stores/account";
 import { useRoute } from "vue-router";
+const props = defineProps({
+    showCommunity: {type: Boolean, default: true }
+});
+const emit = defineEmits(["onjoin"]);
 const accountStore = useAccountStore();
 const route = useRoute();
 const router = useRouter();
@@ -174,7 +178,7 @@ function init() {
 }
 async function initInfo() {
     var user2 = route.params.user;
-    if(user2 == null || user2 == "") return;
+    if(user2 == null || user2 == "" || !props.showCommunity) return;
     community.value = await stlib.Community.load(user2);
     console.log(community.value);
 }
@@ -190,7 +194,10 @@ async function loginGuest(username) {
         isLoading.value = true;
         console.log("login guest", username);
         var result = await accountStore.loginGuest(username);
-        if(result[0]) router.push((community.value == null)?'/home':`/i/${community.value.getName()}/about`);
+        if(result[0]) {
+            router.push((community.value == null)?'/home':`/i/${community.value.getName()}/about`);
+            emit("onjoin");
+        }
         else errorMessage.value = "login failed";
     }
     catch(e) {
@@ -249,5 +256,6 @@ async function updatePreferences() {
 }
 function skip() {
     router.push((community.value == null)?'/home':`/i/${community.value.getName()}/about`);
+    emit("onjoin");
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div class="flex min-h-full h-screen appbg2 appfg2" :key="updateKey">
-    <div class="h-screen flex flex-col appbg0 appfg0 border-r-1">
+    <div class="h-screen flex flex-col appbg0 appfg0 border-r-1 sidebar" :data-show="globalProperties.showSidebar">
         <SideBar2 v-if="globalProperties.sidebar === 2" @toggleStreambar="toggleStreambar()"></SideBar2>
         <SideBar v-else @toggleStreambar="toggleStreambar()"></SideBar>
     </div>
@@ -36,6 +36,9 @@ window.toggleStreambar = toggleStreambar;
 window.refreshApp = ()=>{ updateKey.value = '#'+stlib.Utils.nextId(); }; //debug purpose
 </script>
 <style scoped>
+.sidebar[data-show="false"] {
+    display: none;
+}
 @media (max-width: 767px) {
     .streambar {
         display: none;

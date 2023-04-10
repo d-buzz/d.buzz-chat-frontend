@@ -1,15 +1,19 @@
 <template>
+    <TransitionRoot :show="loginModalOpen">
+        <LoginModal @close="toggleLoginModal()"></LoginModal>
+    </TransitionRoot>
     <TransitionRoot :show="newUserMessageModalOpen">
-        <NewUserMessageModal @close="toggleNewUserMessageModalOpen(false)"></NewUserMessageModal>
+        <NewUserMessageModal @close="toggleNewUserMessageModalOpen()"></NewUserMessageModal>
     </TransitionRoot>
     <TransitionRoot :show="addCommunityModal">
-        <AddCommunityModal @close="toggleAddCommunityModal(false)"></AddCommunityModal>
+        <AddCommunityModal @close="toggleAddCommunityModal()"></AddCommunityModal>
     </TransitionRoot>
     <div class="border-b-1 relative">
         <!--<SideBarLoginIcon :number="number" @click="toggleMenu" @toggleStreambar=""/>-->
-        <div @mouseenter="tooltip($event.target, '@'+accountName)">
+        <div v-if="accountName" @mouseenter="tooltip($event.target, '@'+accountName)">
             <UserIcon class="p-1 cursor-pointer" @click.stop.prevent="toggleMenu" :name="accountName" :imgCss="'avCommunity'"/>
         </div>
+        <button v-else class="btn" style="padding:2px 4px; margin-left:3px;" @click="toggleLoginModal">Login</button>
         <div v-if="showMenu" class="menu appbg1 border-default flex flex-col">
             <!--<div><b class="border-b-1"><a :href="`https://peakd.com/@${accountName}`" target="_blank" rel="noreferrer noopener">@{{accountName}}</a></b></div>-->
             <div><b class="border-b-1"><router-link to="/mentions">@{{accountName}}</router-link></b></div>
@@ -112,7 +116,7 @@ const communityPanel = ref();
 
 function logout() {
     accountStore.signOut();
-    router.push("/join");
+    window.location = "/join";
 }
 function toggleMenu() {
     showMenu.value = !showMenu.value;
@@ -228,6 +232,10 @@ const addCommunityModal = ref(false);
 const toggleAddCommunityModal = () => {
     addCommunityModal.value = !addCommunityModal.value;
 };
+const loginModalOpen = ref(false);
+function toggleLoginModal() {
+    loginModalOpen.value = !loginModalOpen.value;
+}
 /*const showJoinModal = ref(false);
 function toggleJoinModal() {
     showJoinModal.value = !showJoinModal.value;

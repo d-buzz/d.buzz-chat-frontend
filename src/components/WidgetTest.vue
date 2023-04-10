@@ -98,6 +98,7 @@ const height = ref("556");
 
 const defaultPreferences = [
     {name: "requireLogin", display: "Require Login:", desc: "If true, start on login page, otherwise show specified chat.", value: true, newvalue: true},
+    {name: "showSidebar", display: "Show sidebar:", desc: "If true, shows left sidebar.", value: true, newvalue: true},
     {name: "sidebar", display: "Left sidebar style", desc: "",
      value: 2, newvalue:2, options:[
         [0, 'Communities only (0)'],[2, 'Dual: Direct Messages & Communities (2)']]}, 
