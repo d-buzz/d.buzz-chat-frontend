@@ -48,7 +48,7 @@ const widget = ref();
 
 function initWidget() {
     //specify the url of the widget
-    var stwidget = new StWidget('https://sting-message-frontend.pages.dev/home');
+    var stwidget = new StWidget('https://chat.peakd.com/t/hive-163399/0');
     //if you would like to not let widget to use keychain passthrough, you can disable it with:
     //stwidget.enableKeychainPassthrough = false;
 
@@ -69,6 +69,7 @@ function toggleWidget() {
 </script>
 ```
 
+Check out the examples folder for examples of embedding and overlaying the widget in javascript and vue.
 
 
 

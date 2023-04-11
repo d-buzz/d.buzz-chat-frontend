@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="stwidget.js"></script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Widget Embed Example</title>
+  </head>
+  <body> 
+    <p>Widget Embed example</p>
+    <div id="customDiv"></div>
+    <p>You can further customize by tweaking properties. Check out the 
+        <a href="https://chat.peakd.com/widgettest">property editor</a>, send feedback and 
+        feature requests in the chat window above or 
+        <a href="https://chat.peakd.com/t/hive-163399/0">open in new window.</a></p>
+    <script>
+        var stwidget = new StWidget('https://chat.peakd.com/t/hive-163399/0');
+        stwidget.properties = { "requireLogin": false, "sidebar": 2};    
+        var element = stwidget.createElement('450px', '556px', false/*overlay*/, true /*resizable*/);
+
+        document.getElementById("customDiv").appendChild(element);
+    </script>
+  </body>
+</html>

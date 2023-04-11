@@ -25,45 +25,88 @@
     </nav>
 
     <div class="appbg1 appfg1 px-5 pt-5 pb-2 md:px-12 text-left">
-      <h1 class="font-bold text-3xl pb-1">Widget test page.</h1>
+      <h1 class="font-bold text-3xl pb-1">Widget Editor.</h1>
         <p>Customize the options and scroll down to see how to embed the widget into a website.</p>
-        <div>
-            <div class="mt-3 mb-3">
-                Width: <input type="text" class="inputText inline" v-model="width" @change="onResize">
-                Height: <input type="text" class="inputText inline" v-model="height" @change="onResize">
+        
+        <div class="flex flex-row gap-x-5">
+            <div>
+                <div class="mt-3 mb-3">
+                    Width: <input type="text" class="inputText inline" v-model="width" @change="onResize">
+                    Height: <input type="text" class="inputText inline" v-model="height" @change="onResize">
+                    <br>
+                    Resizable: <input type="checkbox" v-model="resizable" class="mr-1" @change="onModeChange">
+                    Resize Corner: <select v-model="resizeCorner" class="inputSelect1" @change="onModeChange">
+                        <option value="lb">Left-bottom</option>
+                        <option value="rb">Right-bottom</option>
+                    </select>
+                </div>
+                <div>
+                    <div><b>Embed Mode</b></div>
+
+                    <select v-model="mode" class="inputSelect1" @change="onModeChange">
+                        <option value="embed">Embed</option>
+                        <option value="overlay">Overlay</option>
+                    </select>
+
+                    <div class="flex flex-row gap-x-5 mt-3">
+                        <div class="cursor-pointer border-default p-3 flex flex-row gap-x-1" :class="{'highlight':mode==='embed'}" style="width:150px;height:150px;" @click="setMode('embed')">
+                            <div style="width:50px;font-size:7px;">
+                                <div v-for="i in 7">
+                                    <hr> page text
+                                </div>
+                            </div>                                                         
+                            <div class="border-default appbg2 text-center" style="width:70px;height:90px;opacity:0.7;"> widget</div>
+                        </div>
+                        <div class="cursor-pointer border-default p-3 relative" :class="{'highlight':mode==='overlay'}" style="width:150px;height:150px;" @click="setMode('overlay')">
+                            <div style="font-size:7px;">
+                                <div v-for="i in 7">
+                                    <hr> page text
+                                </div>
+                            </div>                                                         
+                            <div class="absolute border-default appbg2 text-center" 
+                                style="top:10px;right:20px;width:70px;height:90px;opacity:0.7;"> widget</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div><b>Start Page</b></div>
+                    <div><small>The page to show on load.</small></div>
+                    <div><input type="text" class="inputText" v-model="startPage" @change="onChange"></div>
+                </div>
+                <div class="flex flex-row mt-1" v-for="item in preferences" :key="updateKey+'#3'">
+                    <div v-if="item.options">
+                        <div>
+                            <div><b>{{item.display}}</b></div>
+                            <div><small>{{item.desc}}</small></div>
+                        </div>
+                        <div>
+                            <select v-model="item.newvalue" class="inputSelect1" @change="onChange">
+                                <option v-for="option in item.options" :value="option[0]">{{option[1]}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div v-else-if="Array.isArray(item.value) || typeof item.value === 'string'">
+                        <div>
+                            <div><b>{{item.display}}</b></div>
+                            <div><small>{{item.desc}}</small></div>
+                        </div>
+                        <div>
+                            <textarea class="inputText" type="text" rows="1" v-model="item.newvalue" @change="onChange"></textarea>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <div>
+                            <div><b>{{item.display}}</b></div>
+                            <div><input type="checkbox" v-model="item.newvalue" @change="onChange"> <small>{{item.desc}}</small></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="flex flex-row" v-for="item in preferences" :key="updateKey+'#3'">
-                <div v-if="item.options">
-                    <div>
-                        <div><b>{{item.display}}</b></div>
-                        <div><small>{{item.desc}}</small></div>
-                    </div>
-                    <div>
-                        <select v-model="item.newvalue" class="inputSelect1" @change="onChange">
-                            <option v-for="option in item.options" :value="option[0]">{{option[1]}}</option>
-                        </select>
-                    </div>
-                </div>
-                <div v-else-if="Array.isArray(item.value) || typeof item.value === 'string'">
-                    <div>
-                        <div><b>{{item.display}}</b></div>
-                        <div><small>{{item.desc}}</small></div>
-                    </div>
-                    <div>
-                        <textarea class="inputText" type="text" rows="1" v-model="item.newvalue" @change="onChange"></textarea>
-                    </div>
-                </div>
-                <div v-else>
-                    <div>
-                        <div><b>{{item.display}}</b></div>
-                        <div><small>{{item.desc}}</small></div>
-                    </div>
-                    <div>
-                        <input type="checkbox" v-model="item.newvalue" @change="onChange">
-                    </div>
-                </div>
+            <div> 
+               <div ref="widget"></div>
             </div>
         </div>
+
         <hr class="my-3" />
         <h2 class="font-bold text-2xl pb-1">Add widget to website:</h2>
         <b>Step 1. stwidget.js lib</b>
@@ -79,11 +122,6 @@
      
   </section>
 </div>
-    
-    
-
-
-    <div ref="widget" hidden></div>
 </template>
 <script setup>
 import { nextTick } from 'vue';
@@ -95,9 +133,14 @@ const preferences = ref([]);
 const updateKey = ref('#'+stlib.Utils.nextId());
 const width = ref("450");
 const height = ref("556");
+const mode = ref("overlay");
+const overlay = ref(true);
+const resizable = ref(true);
+const resizeCorner = ref("lb");
+const startPage = ref('/t/hive-163399/0');
 
 const defaultPreferences = [
-    {name: "requireLogin", display: "Require Login:", desc: "If true, start on login page, otherwise show specified chat.", value: true, newvalue: true},
+    {name: "requireLogin", display: "Require Login:", desc: "If true, start on login page, otherwise show specified chat.", value: false, newvalue: false},
     {name: "showSidebar", display: "Show sidebar:", desc: "If true, shows left sidebar.", value: true, newvalue: true},
     {name: "sidebar", display: "Left sidebar style", desc: "",
      value: 2, newvalue:2, options:[
@@ -147,15 +190,33 @@ function updateCode() {
     }
     var code = 
 `
-var stwidget = new StWidget('https://chat.peakd.com/t/hive-163399/0'); /*customize. eg.: 'https://chat.peakd.com/home'*/
+var stwidget = new StWidget('https://chat.peakd.com${startPage.value.trim()}'); 
 stwidget.properties = ${JSON.stringify(obj, null, 4)};
-var element = stwidget.createElement('${width.value.trim()+'px'}', '${height.value.trim()+'px'}');
+var element = stwidget.createElement('${width.value.trim()+'px'}', '${height.value.trim()+'px'}', ${overlay.value}, ${resizable.value});
+`;
+    if(resizable.value) {
+        if(resizeCorner.value === 'lb') {
+           code += 
+`stwidget.setStyle({ direction: 'rtl' });
+`;
+        }
+    }
+code += `
 //optionally add style/positioning
 //stwidget.setStyle({ direction: 'rtl', top: '51px', right: '32px' });
 //Add the element to webpage
 //e.appendChild(element);
 `
     widgetcode.value = code;
+}
+function onModeChange() {
+    overlay.value = mode.value === "overlay";
+    updateCode();
+    initWidget();
+}
+function setMode(value) {
+    mode.value = value;
+    onModeChange();
 }
 function onChange() {
     var obj = {};
@@ -213,17 +274,28 @@ script.setAttribute("type", 'text/javascript');
 document.head.appendChild(script); 
 
 function initWidget() {
-    stwidget = new StWidget('/t/hive-163399/0');
+    stwidget = new StWidget(startPage.value);
     stwidget.properties = currentProperties;
     /*stwidget.properties = {
         "sidebar": 2,
         "homeTabCommunities": false,
         "prependCommunities": ["hive-163399"]
     };*/
-    var element = stwidget.createElement(width.value.trim()+'px', height.value.trim()+'px');
-    stwidget.setStyle({ direction: 'rtl', top: '51px', right: '32px' });
+    var element = stwidget.createElement(width.value.trim()+'px', height.value.trim()+'px', overlay.value, resizable.value);
+    var obj = { };
+    if(resizable.value) {
+        if(resizeCorner.value === 'lb') {
+            obj.direction = 'rtl';
+        }
+    }
+    if(overlay.value) {
+        obj.top = '51px';
+        obj.right = '32px';
+    }
+    stwidget.setStyle(obj);
 
     var e = widget.value;
+    e.innerHTML = "";
     e.appendChild(element);
 }
 var init = true;
@@ -243,8 +315,9 @@ function copyToClipboard(target, text) {
         window.tooltip(target, "Copied to clipboard!");
     }
 }
+setTimeout(initWidget, 250);
 </script>
 <style scoped>
-
+.highlight { border-color: var(--appbgbtn1); border-width: 5px; }
 </style>
 
