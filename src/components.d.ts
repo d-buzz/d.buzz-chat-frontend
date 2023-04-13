@@ -76,6 +76,7 @@ declare module '@vue/runtime-core' {
     ThreadModal: typeof import('./components/modals/ThreadModal.vue')['default']
     TransitionChild: typeof import('@headlessui/vue')['TransitionChild']
     TransitionRoot: typeof import('@headlessui/vue')['TransitionRoot']
+    Upload: typeof import('./components/Upload.vue')['default']
     UserCommunityIcon: typeof import('./components/UserCommunityIcon.vue')['default']
     UserIcon: typeof import('./components/UserIcon.vue')['default']
     UserModal: typeof import('./components/modals/UserModal.vue')['default']

@@ -103,7 +103,7 @@
                 </div>
             </div>
             <div> 
-               <div ref="widget"></div>
+               <div ref="widget" hidden></div>
             </div>
         </div>
 
@@ -315,7 +315,6 @@ function copyToClipboard(target, text) {
         window.tooltip(target, "Copied to clipboard!");
     }
 }
-setTimeout(initWidget, 250);
 </script>
 <style scoped>
 .highlight { border-color: var(--appbgbtn1); border-width: 5px; }
