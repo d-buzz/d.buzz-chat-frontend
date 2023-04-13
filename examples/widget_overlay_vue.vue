@@ -2,7 +2,7 @@
     <p>Widget Overlay example <button @click="toggleWidget()"> Click to hide/show widget</button></p>
     <div ref="widget" hidden></div>
     <p>You can further customize by tweaking properties. Check out the 
-        <a href="https://chat.peakd.com/widgettest">property editor</a>, send feedback and 
+        <a href="https://chat.peakd.com/widgeteditor">property editor</a>, send feedback and 
         feature requests in the chat window above or 
         <a href="https://chat.peakd.com/t/hive-163399/0">open in new window.</a></p>
 </template>

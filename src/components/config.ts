@@ -15,7 +15,12 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/widgettest",
     name: "@!WidgetTest",
-    component: () => import("./WidgetTest.vue"),
+    component: () => import("./WidgetEditor.vue"),
+  },
+  {
+    path: "/widgeteditor",
+    name: "@!WidgetEditor",
+    component: () => import("./WidgetEditor.vue"),
   },
   {
     path: "/signbuffertestpage",

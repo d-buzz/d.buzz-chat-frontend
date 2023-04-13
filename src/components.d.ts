@@ -81,6 +81,7 @@ declare module '@vue/runtime-core' {
     UserModal: typeof import('./components/modals/UserModal.vue')['default']
     UserPopover: typeof import('./components/modals/UserPopover.vue')['default']
     ViewEditHistoryModal: typeof import('./components/modals/ViewEditHistoryModal.vue')['default']
+    WidgetEditor: typeof import('./components/WidgetEditor.vue')['default']
     WidgetTest: typeof import('./components/WidgetTest.vue')['default']
   }
 }
