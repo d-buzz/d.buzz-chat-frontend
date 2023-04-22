@@ -33,9 +33,9 @@ async function initApp() {
             }
         }
     });
+    const manager = getManager();
     if(NETWORK_NAME == null) {
         try {
-            const manager = getManager();
             var result = await manager.getClient().readInfo();
             if(result.isSuccess()) 
                 stlib.Utils.setNetworkname(result.getResult().name);
