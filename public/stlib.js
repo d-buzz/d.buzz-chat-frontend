@@ -559,7 +559,7 @@ function decodeTextWithKey(text, privateK) {
 }
 exports.decodeTextWithKey = decodeTextWithKey;
 function encodedMessage(msg, privateK, publicK) {
-    var string = JSON.stringify([msg.getUser(), msg.getJSONString(), msg.keytype, msg.getSignature().toString('hex')]);
+    var string = JSON.stringify([msg.getUserMentionsString(), msg.getJSONString(), msg.keytype, msg.getSignature().toString('hex')]);
     var encoded = [imports_1.Encoded.TYPE, 'g', imports_1.Utils.encodeTextWithKey(string, privateK, publicK)];
     return new imports_1.Encoded(encoded);
 }
