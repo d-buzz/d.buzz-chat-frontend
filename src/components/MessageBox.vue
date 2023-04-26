@@ -6,7 +6,12 @@
         <TransitionRoot :show="showAddEmoteModal">
             <AddEmoteModal @oninput="addEmote" @close="toggleAddEmoteModal"></AddEmoteModal>
         </TransitionRoot>
-        <div v-if="images.length > 0" class="p-1 flex gap-x-1">
+        <div v-if="uploads.length + images.length > 0" class="p-1 flex gap-x-1">
+            <span v-for="(upload,i) in uploads" class="imgPreview">
+                <span class="oi oi-x closeButton" @click="delUpload(i)"></span>
+                {{upload.name}}
+                <img v-if="upload.image" :src="upload.image" class="imgBorder">
+            </span>
             <span v-for="(image,i) in images" class="imgPreview">
                 <span class="oi oi-x closeButton" @click="delImage(i)"></span>
                 <img :src="image" class="imgBorder">
@@ -57,7 +62,21 @@ const images = ref([]);
 const emit = defineEmits(["entermessage", "fullorblank"]);
 const showAddImageModal = ref(false);
 const showAddEmoteModal = ref(false);
+const uploads = ref([]);
 
+window.ondropfile.set("MessageBox.vue", (file)=>{
+    console.log("drop file", file);
+    var obj = { file, name: file.name, image: null };
+    obj.image = URL.createObjectURL(file);
+    setTimeout(() => {
+        URL.revokeObjectURL(obj.image);
+    }, 1000);
+    uploads.value.push(obj);
+});
+function delUpload(i) {
+    if(i >= 0 && i < uploads.value.length)
+        uploads.value.splice(i, 1);
+}
 function toggleAddImageModal() {
     showAddImageModal.value = !showAddImageModal.value;
 }

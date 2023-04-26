@@ -142,7 +142,29 @@ window.tmpProperties = {};
     
     //TODO refactor tooltip, menu
     window.onclickoutside = new stlib.EventQueue();
-    document.getElementById("app").addEventListener("click", ()=>{ window.onclickoutside.post(); }); 
+    window.ondropfile = new stlib.EventQueue();
+    const app = document.getElementById("app");
+    app.addEventListener('dragenter', (e)=>{
+        e.stopPropagation();
+        e.preventDefault();
+    }, false);
+    app.addEventListener('dragover', (e)=>{
+        e.stopPropagation();
+        e.preventDefault();
+    }, false);
+    app.addEventListener('dragleave', (e)=>{
+        e.stopPropagation();
+        e.preventDefault();
+    }, false);
+    app.addEventListener('drop', (e)=>{
+        e.stopPropagation();
+        e.preventDefault();
+        var files = e.dataTransfer.files;
+        for(var file of files)
+            window.ondropfile.post(file);
+        return false;
+    }, false);
+    app.addEventListener("click", ()=>{ window.onclickoutside.post(); }); 
     window.tooltip = function(element, text, ms=5000) {
         var el = document.getElementById("tooltip");  
         if(el == null) return;
