@@ -9,8 +9,9 @@
         <div v-if="uploads.length + images.length > 0" class="p-1 flex gap-x-1">
             <span v-for="(upload,i) in uploads" class="imgPreview">
                 <span class="oi oi-x closeButton" @click="delUpload(i)"></span>
-                {{upload.name}}
-                <img v-if="upload.image" :src="upload.image" class="imgBorder">
+                <div><div>{{upload.name}}</div>
+                <div><img v-if="upload.image" :src="upload.image" class="imgBorder"></div>
+                </div>
             </span>
             <span v-for="(image,i) in images" class="imgPreview">
                 <span class="oi oi-x closeButton" @click="delImage(i)"></span>
@@ -65,6 +66,8 @@ const showAddEmoteModal = ref(false);
 const uploads = ref([]);
 
 window.ondropfile.set("MessageBox.vue", (file)=>{
+    if(stlib.Utils.isGuest(getManager().user)) return;
+    if(!file.type.startsWith("image/")) return;
     console.log("drop file", file);
     var obj = { file, name: file.name, image: null };
     obj.image = URL.createObjectURL(file);
@@ -120,8 +123,23 @@ function onChange(e) {
         emit("fullorblank", nonBlank);
     } 
 }
-function enterMessage(e) {
+async function enterMessage(e) {
     var target = box.value;
+    if(uploads.value.length > 0) {
+        const manager = getManager();
+        var user = manager.user;
+        if(!stlib.Utils.isGuest(user)) 
+            for(var upload of uploads.value) {
+                var file = upload.file;
+                var name = upload.name;
+                var upload = await stuploader.uploadImage(user, file, name);
+                var signature = await upload.signWithKeychain();
+                if(signature == null) return;
+                upload = await upload.upload();
+                if(upload) images.value.push(upload.link);
+            }
+        uploads.value = [];
+    }
     if(images.value.length > 0) {
         var msg = { type: stlib.Content.Images.TYPE, images: images.value};
         emit("entermessage", null, msg, true, false, ()=>{

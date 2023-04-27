@@ -12,6 +12,7 @@ import "./assets/styles/index.css";
 
 const NETWORK_NAME = import.meta.env.VITE_APP_NETWORK_NAME?import.meta.env.VITE_APP_NETWORK_NAME:null;
 const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_APP_STING_NODES.split(",") : ["http://localhost:3001"];
+const UPLOADER_DOMAIN = import.meta.env.VITE_APP_UPLOADER_DOMAIN?import.meta.env.VITE_APP_UPLOADER_DOMAIN:"";
 
 window.globalProperties = {
     "showSidebar": true,
@@ -37,6 +38,7 @@ window.globalProperties = {
     "prependCommunities": ["hive-163399"]*/
 };
 window.tmpProperties = {};
+stuploader.Uploader.uploaderDomain = UPLOADER_DOMAIN;
 //window.dhive = dhive;
 (()=>{
     /*if(window.hive_keychain === undefined && window.parent != null && 
