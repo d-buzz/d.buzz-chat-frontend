@@ -133,7 +133,12 @@ class Uploader {
                 throw "data is null";
             if (upload.signature == null)
                 throw "signature is null";
-            const response = yield fetch(Uploader.uploaderDomain + '/upload/' + upload.user + '/' + upload.signature, {
+            const response = yield fetch(Uploader.uploaderDomain +
+                '/upload?user=' + encodeURIComponent(upload.user) +
+                '&name=' + encodeURIComponent(upload.name) +
+                '&mime=' + encodeURIComponent(upload.mime) +
+                '&shared=' + encodeURIComponent(upload.shared == null ? '' : upload.shared) +
+                '&signature=' + upload.signature, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/octet-stream",
