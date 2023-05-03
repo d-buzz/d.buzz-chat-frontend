@@ -1783,7 +1783,7 @@ class Markdown {
                     var u = Markdown.simpleFilteredURL(word);
                     if (u.image) {
                         var linkImg = document.createElement("img");
-                        linkImg.setAttribute("src", Markdown.imgPrepend + u.url);
+                        linkImg.setAttribute("src", Markdown.imageProxy(u.url));
                         linkImg.innerText = word;
                         result.appendChild(linkImg);
                     }
@@ -1820,7 +1820,7 @@ class Markdown {
                 case "image":
                     item = document.createElement("img");
                     item.setAttribute("alt", a.alt);
-                    item.setAttribute("src", Markdown.imgPrepend + a.url);
+                    item.setAttribute("src", Markdown.imageProxy(a.url));
                     break;
                 case "italic":
                     item = document.createElement("i");
@@ -1965,7 +1965,7 @@ class Markdown {
     }
 }
 exports.Markdown = Markdown;
-Markdown.imgPrepend = "";
+Markdown.imageProxy = (link) => { return link; };
 
 },{"markdown-ast":30}],24:[function(require,module,exports){
 "use strict";
