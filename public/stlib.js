@@ -2166,6 +2166,11 @@ class MessageManager {
                 console.log("disconnected ");
             });
             this.client = new client_1.Client(socket);
+            socket.on("connect", function () {
+                console.log("connect");
+                for (var room in _this.joined)
+                    _this.client.join(room);
+            });
             this.client.onupdate = function (data) {
                 console.log("update", data);
             };
