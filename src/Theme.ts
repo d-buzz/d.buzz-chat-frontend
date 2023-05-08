@@ -1,17 +1,17 @@
 declare var window: any;
 
 export const defaultColors = [
-    ["0", "Background 0", "Sidebar Background"],
-    ["1", "Background 1", "Left Bar Background"],
-    ["2", "Background 2", "Main Background"],
-    ["3", "Background 3", "Right Bar Background"],
-    ["btn1", "Button 1", "Default button"],
-    ["btn2", "Button 2", "Secondary button"],
-    ["owner", "Owner Role", "Color of owner role"],
-    ["admin", "Admin Role", "Color of admin role"],
-    ["mod", "Mod Role", "Color of mod role"],
-    ["conote", "Community Notification", ""],
-    ["unote", "User Notification", ""]
+    ["0", "Left Sidebar",  "Background of left sidebar (bg0)"],
+    ["1", "Middle Sidebar", "Background of middle sidebar (bg1)"],
+    ["2", "Background", "Background of content (bg2)"],
+    ["3", "Right Sidebar", "Background of right sidebar (bg3)"],
+    ["btn1", "Default Button", "Confirmation button (btn1)"],
+    ["btn2", "Secondary Button", "Edit, reset button (bt2)"],
+    ["owner", "Community Owner", "Color of owner role (owner)"],
+    ["admin", "Community Admin", "Color of admin role (admin)"],
+    ["mod", "Community Moderator", "Color of moderator role (mod)"],
+    ["conote", "Community Notification", "Color of community notifications (conote)"],
+    ["unote", "User Notification", "Color of user notifications (unote)"]
 ];
 
 export const colorTypes = [
@@ -32,8 +32,8 @@ export const defaultThemes = {
         "bgowner": "#007b00",
         "bgadmin": "#2368D5",
         "bgmod": "#2e8336",
-        "conote": "#00710c",
-        "unote": "#00710c"
+        "bgconote": "#00710c",
+        "bgunote": "#00710c"
     },
     "Ignite": {
         "bg0": "#860e18", 
@@ -45,8 +45,8 @@ export const defaultThemes = {
         "bgowner": "#007b00",
         "bgadmin": "#2368D5",
         "bgmod": "#2e8336",
-        "conote": "#00710c",
-        "unote": "#00710c"
+        "bgconote": "#00710c",
+        "bgunote": "#00710c"
     },
     "Dark": {
         "bg0": "#353535", 
@@ -58,8 +58,8 @@ export const defaultThemes = {
         "bgowner": "#5aff5a",
         "bgadmin": "#BBCEEC",
         "bgmod": "#7ee688",
-        "conote": "#00710c",
-        "unote": "#00710c"
+        "bgconote": "#00710c",
+        "bgunote": "#00710c"
     }
 };
 
