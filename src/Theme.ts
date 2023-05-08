@@ -9,7 +9,9 @@ export const defaultColors = [
     ["btn2", "Button 2", "Secondary button"],
     ["owner", "Owner Role", "Color of owner role"],
     ["admin", "Admin Role", "Color of admin role"],
-    ["mod", "Mod Role", "Color of mod role"]
+    ["mod", "Mod Role", "Color of mod role"],
+    ["conote", "Community Notification", ""],
+    ["unote", "User Notification", ""]
 ];
 
 export const colorTypes = [
@@ -29,7 +31,9 @@ export const defaultThemes = {
         "bgbtn2": "#eab308",
         "bgowner": "#007b00",
         "bgadmin": "#2368D5",
-        "bgmod": "#2e8336"
+        "bgmod": "#2e8336",
+        "conote": "#00710c",
+        "unote": "#00710c"
     },
     "Ignite": {
         "bg0": "#860e18", 
@@ -40,7 +44,9 @@ export const defaultThemes = {
         "bgbtn2": "#eab308",
         "bgowner": "#007b00",
         "bgadmin": "#2368D5",
-        "bgmod": "#2e8336"
+        "bgmod": "#2e8336",
+        "conote": "#00710c",
+        "unote": "#00710c"
     },
     "Dark": {
         "bg0": "#353535", 
@@ -51,7 +57,9 @@ export const defaultThemes = {
         "bgbtn2": "#eab308",
         "bgowner": "#5aff5a",
         "bgadmin": "#BBCEEC",
-        "bgmod": "#7ee688"
+        "bgmod": "#7ee688",
+        "conote": "#00710c",
+        "unote": "#00710c"
     }
 };
 

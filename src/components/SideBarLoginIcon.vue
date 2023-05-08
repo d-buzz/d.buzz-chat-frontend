@@ -63,7 +63,7 @@ const toggleLoginModal = () => {
     pointer-events: none;
     color: white;
     z-index: 5;
-    background: rgb(0, 113, 12);
+    background:  var(--appbgunote);
     top: 0;
     right: 0;
     margin-right: 3px;

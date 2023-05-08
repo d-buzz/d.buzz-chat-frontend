@@ -10,6 +10,9 @@
     --appbgadmin: #2368D5;
     --appbgmod: #2e8336;
 
+    --appbgconote: #00710c;
+    --appbgunote: #00710c;
+
     --appCommunityIconFontSize: 20px;
     --appCommunityIconSize: 52px;
     --appFontFamily: "Century Schoolbook L", Arial, Helvetica, sans-serif;
@@ -48,6 +51,8 @@ body {
 .colorowner { color:var(--appbgowner); } 
 .coloradmin { color:var(--appbgadmin); } 
 .colormod { color:var(--appbgmod); } 
+.colorconote { color:var(--appbgconote); } 
+.colorunote { color:var(--appbgunote); } 
 
 .btn {
     @apply appbgbtn1 appfgbtn1 relative mr-1 my-1 py-1 px-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white disabled:opacity-75 font-bold;  
