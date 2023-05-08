@@ -1,17 +1,31 @@
 <template>
-    <small class="block w-full text-right text-gray-700">{{$t("Home.Theme.Msg.Info")}}</small>
+    <div class="mt-3">
+        <small class="inner-block float-right text-right text-gray-700">{{$t("Home.Theme.Msg.Info")}}</small>
+        <div class="text-xl font-bold">Themes</div>
+    </div>
+    <hr/>
     <div :key="updateThemesKey">
         <div v-for="(style, name) in themeObject.defaultThemes">
-            <div class="mb-3">
+            <div class="mt-3">
                 <ThemeView :name="name" :style="style" :edit="false" @update="updateThemes"></ThemeView>
             </div>
         </div>
         <div v-for="(style, name) in themeObject.userThemes">
-            <div class="mb-3">
+            <div class="mt-3">
                 <ThemeView :name="name" :style="style" :edit="true" @update="updateThemes"></ThemeView>
             </div>
         </div> 
-    </div>        
+    </div>      
+
+    <!-- <div class="mt-3">
+        <div class="text-xl font-bold">Fonts</div>
+        <hr/>
+        <div>
+            <div>Default Text</div>
+            Sample text
+            
+        </div>
+    </div> --> 
 </template>
 <script setup>
 import { useAccountStore } from "../../stores/account";
@@ -86,34 +100,5 @@ function calcFg(rgb) {
     return (sum > 128) ? 'black' : 'white';
 
 }
-
-/*var defaultCommunities = [];
-async function initCommunities() {
-    var user = accountStore.account.name;
-    if(user == null) return;
-    var manager = getManager();
-    communities.value = await manager.getCommunitiesSorted(user);
-    var prefs = await manager.getPreferences();
-    var values = prefs.getValues();
-    var array = [];
-    for(var pref of defaultPreferences) {
-        try {
-            var name = pref.name;
-            var value = values[name];
-            if(value != null) array.push({name, display:pref.display, desc:pref.desc, value, newvalue:value, options:pref.options});
-            else array.push(pref);
-        }
-        catch(e) {
-            console.log(e);
-        }
-    }
-    //var showDetailedProfile = prefs.getValueBoolean("showDetailedProfile", false);
-    //homeheader.value = showDetailedProfile?1:0;
-    preferences.value = array;
-    await findCommunities();
-    defaultCommunities = communitiesFound.value;
-    updateKey.value = '#'+stlib.Utils.nextId(); 
-}
-initCommunities();*/
 </script>
 
