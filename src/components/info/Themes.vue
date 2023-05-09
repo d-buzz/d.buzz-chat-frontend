@@ -17,20 +17,36 @@
         </div> 
     </div>      
 
-    <!-- <div class="mt-3">
+    <div class="mt-3">
         <div class="text-xl font-bold">Fonts</div>
         <hr/>
-        <div>
-            <div>Default Text</div>
-            Sample text
+        <div class="mt-1">
+            <div class="font-bold">
+                Default Text
+                <div>
+                    <input class="inputText inline-block p-1 mr-3" v-model="fontFamily" />
+                    <select class="inputSelect1 inline-block">
+                        <option value="Century Schoolbook L">Century Schoolbook L</option>
+                        <option value="Arial">Arial</option>
+                    </select>
+                </div>
+                <div class="flex flex-row mt-3">
+                    <input class="mr-3" v-model="fontSize" type="range" min="1" max="77" /> 
+                    Size <input class="inputText text-center" v-model="fontSize" style="width:30px;margin:0px 3px;"/>px
+                </div>
+            </div>
+            <small class="font-bold fg70">preview</small>
+            <div class="border-default p-3 rounded">The quick brown fox jumps over the lazy dog.</div>
             
         </div>
-    </div> --> 
+    </div>
 </template>
 <script setup>
 import { useAccountStore } from "../../stores/account";
 const accountStore = useAccountStore();
 const router = useRouter();
+const fontFamily = ref("Century Schoolbook L");
+const fontSize = ref(14);
 const searchBar = ref("");
 const updateThemesKey = ref('#'+stlib.Utils.nextId());
 const updateMessage = ref("");

@@ -6,7 +6,7 @@ export const defaultColors = [
     ["2", "Background", "Background of content (bg2)"],
     ["3", "Right Sidebar", "Background of right sidebar (bg3)"],
     ["btn1", "Default Button", "Confirmation button (btn1)"],
-    ["btn2", "Secondary Button", "Edit, reset button (bt2)"],
+    ["btn2", "Secondary Button", "Edit, reset button (btn2)"],
     ["owner", "Community Owner", "Color of owner role (owner)"],
     ["admin", "Community Admin", "Color of admin role (admin)"],
     ["mod", "Community Moderator", "Color of moderator role (mod)"],
