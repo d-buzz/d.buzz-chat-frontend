@@ -15,8 +15,10 @@
 
     --appCommunityIconFontSize: 20px;
     --appCommunityIconSize: 52px;
-    --appFontFamily: "Century Schoolbook L", Arial, Helvetica, sans-serif;
+    --appFontFamily: "Century Schoolbook L", Arial, sans-serif;
     --appFontSize: 16px;
+    --appMessageFontFamily: "Century Schoolbook L", Arial, sans-serif;
+    --appMessageFontSize: 16px;
 }
 body {
     font-family: var(--appFontFamily);
@@ -53,6 +55,10 @@ body {
 .colormod { color:var(--appbgmod); } 
 .colorconote { color:var(--appbgconote); } 
 .colorunote { color:var(--appbgunote); } 
+.mesageFont {
+    font-family: var(--appMessageFontFamily);
+    font-size: var(--appMessageFontSize);
+}
 
 .btn {
     @apply appbgbtn1 appfgbtn1 relative mr-1 my-1 py-1 px-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white disabled:opacity-75 font-bold;  

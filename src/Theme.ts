@@ -161,6 +161,27 @@ export class ThemeColor {
         return new ThemeColor(this.name, this.type, this.color, this.defaultFn);
     }
 }
+export function loadCssOverrides() {
+    try {
+        var css = window.localStorage.getItem("css");
+        if(css != null) {
+            return JSON.parse(css);
+        }
+    }
+    catch(e) { console.log(e); }
+    return {};
+}
+export function saveCssOverrides(css, append=false) {
+    try {
+        if(append) {
+            var obj = loadCssOverrides();
+            for(var item in css) obj[item] = css[item];
+            css = obj; 
+        }
+        window.localStorage.setItem("css", JSON.stringify(css));
+    }
+    catch(e) { console.log(e); }
+}
 function loadThemes() {
     try {
         var themes = window.localStorage.getItem("themes");
@@ -198,6 +219,8 @@ export function initializeTheme() {
     theme.setTheme = setTheme;
     theme.findThemeByName = findThemeByName;
     theme.colorHexString = colorHexString;
+    theme.loadCssOverrides = loadCssOverrides;
+    theme.saveCssOverrides = saveCssOverrides;
     for(var array in defaultColors) {
         var name = defaultColors[array][0];      
         var themeColors = [];

@@ -12,7 +12,7 @@
         <AddEmoteModal @oninput="emoteAction" @close="toggleAddEmoteModal"></AddEmoteModal>
     </TransitionRoot>
 
-    <div v-if="!displayEdits && message && message.flagsNum >= 3" class="message" style="margin-top:-5px;margin-bottom:-25px;"
+    <div v-if="!displayEdits && message && message.flagsNum >= 3" class="message mesageFont" style="margin-top:-5px;margin-bottom:-25px;"
          :data-verified="message.isVerified()">
         <small style="margin-left:46px;opacity:0.5;" :class="roleColor?roleColor:''"><b>{{message.getUser()}}</b></small>
         <span class="pr-2 float-right fg70">
@@ -22,7 +22,7 @@
             <span v-if="!message.isVerified()" class="pl-1">&#10008;</span>
         </span>
     </div>
-    <div v-else>
+    <div v-else class="mesageFont">
         <div v-if="hasQuotedText(message)" class="flex mb-1" style="margin-left:23px;">
             <div class="quoteIcon"></div>
             <small class="break-normal"><div class="float-left inline-block" style="padding-right:3px;"><UserCommunityIcon :name="message.reference.getUser()" :community="message.getCommunity()" 

@@ -8,16 +8,8 @@
         <UserIcon :name="name" :imgCss="imgCss"/>
         <div v-if="displayOnlineStatus" class="onlineIcon"></div>
     </div>
-    <vue-simple-context-menu
-                v-if="!displayOnly"
-              element-id="iconMenuId"
-              :options="iconMenuOptions"
-              ref="iconMenu"
-              @option-clicked="clickOnIconOption"
-            />
 </template>
 <script setup>
-import VueSimpleContextMenu from 'vue-simple-context-menu';
 const props = defineProps({
     name: String,
     community: String,

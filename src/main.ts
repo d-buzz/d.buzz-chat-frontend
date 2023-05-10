@@ -39,6 +39,12 @@ window.globalProperties = {
 };
 window.tmpProperties = {};
 stuploader.Uploader.uploaderDomain = UPLOADER_DOMAIN;
+function applyCssOverrides(properties) {
+    var root = root = document.querySelector(':root');
+    for(var name in properties)
+        if(name.startsWith("--")) 
+            root.style.setProperty(name, properties[name]);
+}
 //window.dhive = dhive;
 (()=>{
     /*if(window.hive_keychain === undefined && window.parent != null && 
@@ -57,10 +63,7 @@ stuploader.Uploader.uploaderDomain = UPLOADER_DOMAIN;
                 if(window.refreshApp) window.refreshApp();
                 if(properties['defaultTheme'] != null && window.localStorage.getItem("theme") == null)
                     applyTheme(properties['defaultTheme']);
-                var root = root = document.querySelector(':root');
-                for(var name in properties)
-                    if(name.startsWith("--")) 
-                        root.style.setProperty(name, properties[name]);
+                applyCssOverrides(properties);
             }
         } };
         window.addEventListener("message", (event) => {
@@ -140,6 +143,7 @@ stuploader.Uploader.uploaderDomain = UPLOADER_DOMAIN;
     window.defaultTheme = defaultTheme;
     defaultTheme.loadTheme(window.globalProperties.defaultTheme);
     console.log("Theme", Theme);
+    applyCssOverrides(defaultTheme.loadCssOverrides());
     window.defaultEmotes = defaultEmotes;
     
     //TODO refactor tooltip, menu

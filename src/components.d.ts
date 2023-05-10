@@ -31,6 +31,7 @@ declare module '@vue/runtime-core' {
     ErrorModal: typeof import('./components/modals/ErrorModal.vue')['default']
     FlagMessageModal: typeof import('./components/modals/FlagMessageModal.vue')['default']
     FlagResponse: typeof import('./components/FlagResponse.vue')['default']
+    FontView: typeof import('./components/FontView.vue')['default']
     Home: typeof import('./components/Home.vue')['default']
     IconCommunity: typeof import('./components/icons/IconCommunity.vue')['default']
     IconDocumentation: typeof import('./components/icons/IconDocumentation.vue')['default']
