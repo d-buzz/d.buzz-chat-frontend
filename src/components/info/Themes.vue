@@ -22,22 +22,32 @@
         <hr/>
         <div class="mt-1">
             <div class="font-bold">
-                Default Text
+                Default Font
                 <div>
                     <input class="inputText inline-block p-1 mr-3" v-model="fontFamily" />
-                    <select class="inputSelect1 inline-block">
-                        <option value="Century Schoolbook L">Century Schoolbook L</option>
-                        <option value="Arial">Arial</option>
+                    <select class="inputSelect1 inline-block" @change="setFontFamily">
+                        <option style="font-family:'Arial';" value="Arial">Arial</option>
+                        <option value="Century Schoolbook L" selected>Century Schoolbook L</option>
+                        <option style="font-family:'New Heterodox Mono';" value="New Heterodox Mono,mono">New Heterodox Mono</option>
                     </select>
                 </div>
                 <div class="flex flex-row mt-3">
                     <input class="mr-3" v-model="fontSize" type="range" min="1" max="77" /> 
                     Size <input class="inputText text-center" v-model="fontSize" style="width:30px;margin:0px 3px;"/>px
+                    <!--. Weight <input class="inputText text-center" v-model="fontWeight" style="width:45px;margin:0px 3px;"/>
+                     bold <input class="inputText text-center" v-model="fontWeightBold" style="width:45px;margin:0px 3px;"/>
+                    -->                
                 </div>
             </div>
             <small class="font-bold fg70">preview</small>
-            <div class="border-default p-3 rounded">The quick brown fox jumps over the lazy dog.</div>
-            
+            <div ref="fontPreview" class="border-default p-3 rounded">
+                <div>The quick dog jumps over the lazy brown fox.</div>
+                <div class="font-bold">The quick dog jumps over the lazy brown fox.</div>
+            </div>
+            <div class="mt-1">
+                <button class="btn" @click="applyFont">Apply</button>
+                <button class="btn2" @click="applyFontDefault">Reset to Default</button>
+            </div>
         </div>
     </div>
 </template>
@@ -45,13 +55,36 @@
 import { useAccountStore } from "../../stores/account";
 const accountStore = useAccountStore();
 const router = useRouter();
+const fontPreview = ref(null);
 const fontFamily = ref("Century Schoolbook L");
-const fontSize = ref(14);
+const fontSize = ref(16);
+//const fontWeight = ref(400);
+//const fontWeightBold = ref(800);
 const searchBar = ref("");
 const updateThemesKey = ref('#'+stlib.Utils.nextId());
 const updateMessage = ref("");
 const themeObject = ref(defaultTheme);
 
+watch(() => fontFamily.value, (family) => {
+   fontPreview.value.style.setProperty('font-family', family);
+});
+watch(() => fontSize.value, (size) => {
+    fontPreview.value.style.setProperty('font-size', size+'px');
+});
+function setFontFamily(e) {
+    fontFamily.value = e.target.value;
+}
+function applyFont() {
+    var root = document.querySelector(':root');
+    var family = fontFamily.value+',"Century Schoolbook L",Arial,sans-serif';
+    root.style.setProperty('--appFontFamily', family);
+    root.style.setProperty('--appFontSize', fontSize.value+'px');
+}
+function applyFontDefault() {
+    fontFamily.value = "Century Schoolbook L";
+    fontSize.value = 16;
+    applyFont();
+}
 const defaultColors = [
     ["bg0", "Background 0", "Sidebar Background"],
     ["bg1", "Background 1", "Left Bar Background"],
