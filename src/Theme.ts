@@ -16,6 +16,7 @@ export const defaultColors = [
 
 export const colorTypes = [
     ["bg", "Background", null],
+    ["hv", "Hover", (x)=>calcHv(x)],
     ["fg", "Foreground", (x)=>calcFg(x)],
     ["sg", "Selection", (x)=>calcSg(x)],
     ["hg", "Highlight", (x)=>calcHg(x)]
@@ -28,7 +29,7 @@ export const defaultThemes = {
         "bg2": "#ffffff", 
         "bg3": "#eeeeec",
         "bgbtn1": "#2e8336", 
-        "bgbtn2": "#eab308",
+        "bgbtn2": "#d9d9d7",
         "bgowner": "#007b00",
         "bgadmin": "#2368D5",
         "bgmod": "#2e8336",
@@ -41,7 +42,7 @@ export const defaultThemes = {
         "bg2": "#ffffff", 
         "bg3": "#ffffff",
         "bgbtn1": "#2e8336", 
-        "bgbtn2": "#eab308",
+        "bgbtn2": "#d9d9d7",
         "bgowner": "#007b00",
         "bgadmin": "#2368D5",
         "bgmod": "#2e8336",
@@ -54,7 +55,7 @@ export const defaultThemes = {
         "bg2": "#555753", 
         "bg3": "#424242",
         "bgbtn1": "#2e8336", 
-        "bgbtn2": "#eab308",
+        "bgbtn2": "#d9d9d7",
         "bgowner": "#5aff5a",
         "bgadmin": "#BBCEEC",
         "bgmod": "#7ee688",
@@ -286,6 +287,9 @@ function parseRGB(color): number[] {
 function calcFg(rgb,compare=128) {
     var sum = ((rgb[0]*299) + (rgb[1] * 587) + (rgb[2] * 114)) * 0.001;
     return (sum > compare) ? [0,0,0] : [255,255,255];
+}
+function calcHv(rgb) {
+    return [rgb[0], rgb[1], rgb[2], 215]
 }
 function calcSg(rgb) {
     var sg = calcFg(rgb,200);

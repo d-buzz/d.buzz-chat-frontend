@@ -17,7 +17,7 @@
         </div>
         <div class="flex items-center gap-5 lg:ml-auto">
           <span class="cursor-pointer oi oi-contrast" @click="toggleTheme" @mouseenter="tooltip($event.target, 'Switch between Light/Dark themes.')"></span>
-          <button class="inline-block px-6 py-2 mr-2 bg-green-600 font-medium text-xs leading-snug uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out btn" data-mdb-ripple="true" data-mdb-ripple-color="light" @click="setAppAB('a')" role="button">{{$t("Landing.openApp")}}</button>
+          <button class="btn" data-mdb-ripple="true" data-mdb-ripple-color="light" @click="setAppAB('a')" role="button">{{$t("Landing.openApp")}}</button>
         </div>
       </div>
     </nav>
@@ -30,11 +30,11 @@
             <div>
                 <div><small class="fg70">Alpha release: A/B testing two interfaces</small>  </div>          
                 <div>
-                    <button class="inline-block px-7 py-3 mr-2 bg-green-600 font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out btn" data-mdb-ripple="true" data-mdb-ripple-color="light" @click="setAppAB('a')" role="button">{{$t("Landing.openApp")}}</button>
-                    <button class="inline-block px-7 py-3 mr-2 bg-green-600 font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out btn" data-mdb-ripple="true" data-mdb-ripple-color="light" @click="setAppAB('b')" role="button">Open with different UI</button>
+                    <button class="btn" data-mdb-ripple="true" data-mdb-ripple-color="light" @click="setAppAB('a')" role="button">{{$t("Landing.openApp")}}</button>
+                    <button class="btn" data-mdb-ripple="true" data-mdb-ripple-color="light" @click="setAppAB('b')" role="button">Open with different UI</button>
                 </div>
                 <div><small class="fg70">Widget test page:</small></div>          
-                <a class="inline-block px-7 py-3 mr-2 font-medium text-sm leading-snug uppercase rounded shadow-md hover:appsg0 hover:shadow-lg focus:appsg0 focus:shadow-lg focus:outline-none focus:ring-0 active:appsg0 active:shadow-lg transition duration-150 ease-in-out appsg0 appfg0" data-mdb-ripple="true" data-mdb-ripple-color="light" href="/widgettest" role="button">Widget test page</a>
+                <a class="btn2" data-mdb-ripple="true" data-mdb-ripple-color="light" href="/widgettest" role="button">Widget test page</a>
             
                 <div class="mt-20 fg70"><small>Frequently Asked Questions:</small></div> 
                 <div class="mt-1"><b>What is the app about?</b></div>
