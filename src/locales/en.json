@@ -29,6 +29,7 @@
 "Home.DiscardChanges": "Discard changes and show currently set values.",
 
 "Home.Theme.Msg.Info": "Pick a theme or edit cloned one.",
+"Home.Theme.Font.Info": "Pick a font or enter font name.",
 
 "Community.OnlineJoined": "online/joined: {0}",
 "Community.Threads": "Threads",

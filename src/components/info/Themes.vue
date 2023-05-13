@@ -18,6 +18,7 @@
     </div>      
 
     <div class="mt-3">
+        <small class="inner-block float-right text-right text-gray-700">{{$t("Home.Theme.Font.Info")}}</small>
         <div class="text-xl font-bold">Fonts</div>
         <hr/>
         <FontView name="Default Font" css="appFont"/>

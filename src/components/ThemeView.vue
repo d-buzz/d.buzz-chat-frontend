@@ -30,7 +30,8 @@
             </div>
         </div>
         <div class="flex" style="flex-grow:10000;height:50px;">
-            <div class="appbg2 appfg2 border-default grow pr-3 pl-3 mrb1 pt-1" style="width:210px;height:50px;">
+            <div class="appbg2 appfg2 border-default grow pr-3 pl-3 mrb1 pt-1" 
+                style="width:210px;height:50px;overflow:clip;white-space:nowrap;">
                 <b>Text </b> <button class="btn ml-1">Button1</button> 
                 <button class="btn2">Button2</button>                
             </div>

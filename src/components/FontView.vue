@@ -5,6 +5,7 @@
             <div>
                 <input class="inputText inline-block p-1 mr-3" v-model="fontFamily" />
                 <select class="inputSelect1 inline-block" @change="setFontFamily">
+                    <option disabled selected value="">Select Font</option>
                     <option style="font-family:'Arial';" value="Arial">Arial</option>
                     <option value="Century Schoolbook L" selected>Century Schoolbook L</option>
                     <option style="font-family:'New Heterodox Mono';" value="New Heterodox Mono,mono">New Heterodox Mono</option>
