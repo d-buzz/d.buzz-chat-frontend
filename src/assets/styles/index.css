@@ -154,6 +154,10 @@ body {
     min-width: 100px;
     max-width: 350px;
 }
+.break-word {
+    overflow-wrap: normal;
+    word-break: break-word;
+}
 .md { }
 .md p, .md h1, .md h2, .md h3, .md h4, .md h5, .md h6 {
 	margin: 0px;

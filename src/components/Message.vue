@@ -25,7 +25,7 @@
     <div v-else class="mesageFont">
         <div v-if="hasQuotedText(message)" class="flex mb-1" style="margin-left:23px;">
             <div class="quoteIcon"></div>
-            <small class="break-normal"><div class="float-left inline-block" style="padding-right:3px;"><UserCommunityIcon :name="message.reference.getUser()" :community="message.getCommunity()" 
+            <small class="break-word"><div class="float-left inline-block" style="padding-right:3px;"><UserCommunityIcon :name="message.reference.getUser()" :community="message.getCommunity()" 
                       :imgCss="`avMini`"/></div><b :class="roleReferenceColor?roleReferenceColor:''" style="opacity:0.5;">{{message.reference.getUser()}}</b> <span>{{getQuotedText(message)}}</span></small>
         </div>
         <div class="message flex" :data-verified="message.isVerified()">
@@ -75,11 +75,11 @@
                     </div>
                     <div v-else-if="content.getType() == 'g'" class="border border-solid border-green-700 rounded p-1">
                         <small>{{content.getGroup()}}</small>
-                        <div ref="messageText" :data-id="formatText(messageText,content.getText())" class="md break-normal"></div>
+                        <div ref="messageText" :data-id="formatText(messageText,content.getText())" class="md break-word"></div>
                         <small v-if="hasJoinedGroup"><b>{{$t("Message.Joined")}}</b></small>
                         <button v-else class="btn" v-on:click="join(message)">{{$t("Message.Join")}}</button>
                     </div>
-                    <div v-else-if="content.getText" class="break-normal">
+                    <div v-else-if="content.getText" class="break-word">
                         <div ref="messageText" :data-id="formatText(messageText,content.getText())" class="md"></div>
                     </div>
                     <div v-else>
