@@ -43,6 +43,13 @@ const props = defineProps<{
     title: {type: String, default: ''},
     dialogPanelCss: {type: String, default: ''}
 }>();
+var closed = false;
+function close() {
+    if(closed) return;
+    closed = true;
+    emit("close");
+}
+defineExpose({close});
 </script>
 <style scoped>
 .closeButton {

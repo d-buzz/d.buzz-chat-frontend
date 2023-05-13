@@ -150,19 +150,20 @@ function applyCssOverrides(properties) {
     window.onclickoutside = new stlib.EventQueue();
     window.ondropfile = new stlib.EventQueue();
     const app = document.getElementById("app");
-    app.addEventListener('dragenter', (e)=>{
+    const body = document.getElementById("body");
+    body.addEventListener('dragenter', (e)=>{
         e.stopPropagation();
         e.preventDefault();
     }, false);
-    app.addEventListener('dragover', (e)=>{
+    body.addEventListener('dragover', (e)=>{
         e.stopPropagation();
         e.preventDefault();
     }, false);
-    app.addEventListener('dragleave', (e)=>{
+    body.addEventListener('dragleave', (e)=>{
         e.stopPropagation();
         e.preventDefault();
     }, false);
-    app.addEventListener('drop', (e)=>{
+    body.addEventListener('drop', (e)=>{
         e.stopPropagation();
         e.preventDefault();
         var files = e.dataTransfer.files;
