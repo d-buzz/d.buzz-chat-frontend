@@ -1,15 +1,17 @@
 <template>
-    <div class="mt-1">
+    <div class="mt-1" style="max-width: 753px;">
         <div class="font-bold">
-            {{name}}
-            <div>
-                <input class="inputText inline-block p-1 mr-3" v-model="fontFamily" />
-                <select class="inputSelect1 inline-block" @change="setFontFamily">
-                    <option disabled selected value="">Select Font</option>
-                    <option style="font-family:'Arial';" value="Arial">Arial</option>
-                    <option value="Century Schoolbook L" selected>Century Schoolbook L</option>
-                    <option style="font-family:'New Heterodox Mono';" value="New Heterodox Mono,mono">New Heterodox Mono</option>
-                </select>
+            {{name}}  
+            <div class="grid grid-cols-2 gap-2">
+                <div><input class="inputText inline-block p-1 mr-3 w-full" v-model="fontFamily" /></div>
+                <div>
+                    <select class="inputSelect1 inline-block w-full" @change="setFontFamily">
+                        <option disabled selected value="">Select Font</option>
+                        <option style="font-family:'Arial';" value="Arial">Arial</option>
+                        <option value="Century Schoolbook L">Century Schoolbook L</option>
+                        <option style="font-family:'New Heterodox Mono';" value="New Heterodox Mono,mono">New Heterodox Mono</option>
+                    </select>
+                </div>
             </div>
             <div class="flex flex-row mt-3">
                 <input class="mr-3" v-model="fontSize" type="range" min="1" max="77" /> 

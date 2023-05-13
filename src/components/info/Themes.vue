@@ -1,9 +1,9 @@
 <template>
-    <div class="mt-3">
+    <div class="mt-3" style="max-width: 753px;">
         <small class="inner-block float-right text-right text-gray-700">{{$t("Home.Theme.Msg.Info")}}</small>
         <div class="text-xl font-bold">Themes</div>
+        <hr/>
     </div>
-    <hr/>
     <div :key="updateThemesKey">
         <div v-for="(style, name) in themeObject.defaultThemes">
             <div class="mt-3">
@@ -17,7 +17,7 @@
         </div> 
     </div>      
 
-    <div class="mt-3">
+    <div class="mt-3" style="max-width: 753px;">
         <small class="inner-block float-right text-right text-gray-700">{{$t("Home.Theme.Font.Info")}}</small>
         <div class="text-xl font-bold">Fonts</div>
         <hr/>
