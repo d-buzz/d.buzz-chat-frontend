@@ -40,6 +40,7 @@
 "Community.ClickToDecodeN": "Click to decode a message. | Click to decode {n} messages.",
 "Community.ManualDecode": "Manual decode",
 "Community.AutoDecode": "Auto decode",
+"Community.MessagesLock": "Messages are protected by private key",
 
 "CommunityAbout.Description": "Description",
 "CommunityAbout.Rules": "Rules",
