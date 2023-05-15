@@ -2119,6 +2119,7 @@ class MessageManager {
         this.communities = new utils_1.AccountDataCache();
         this.onlineStatusTimer = null;
         this.cachedGuestData = null;
+        this.cachedHiddenUsers = null;
         this.keys = {};
         this.keychainPromise = null;
         this.pauseAutoDecode = false;
@@ -2368,6 +2369,20 @@ class MessageManager {
             this.join('&' + user);
             this.join('$online');
         }
+    }
+    readHiddenUsers() {
+        if (this.cachedHiddenUsers != null)
+            return this.cachedHiddenUsers;
+        var hideusers = window.localStorage.getItem("#hideusers");
+        var obj = (hideusers == null) ? {} : JSON.parse(hideusers);
+        this.cachedHiddenUsers = obj;
+        return obj;
+    }
+    hideUsers(users, add = true) {
+        var hideusers = add ? this.readHiddenUsers() : {};
+        for (var user of users)
+            hideusers[user] = true;
+        window.localStorage.setItem("#hideusers", JSON.stringify(hideusers));
     }
     readGuest(username) {
         var guests = this.readGuests();

@@ -11,8 +11,11 @@
     <TransitionRoot :show="showAddEmoteModal">
         <AddEmoteModal @oninput="emoteAction" @close="toggleAddEmoteModal"></AddEmoteModal>
     </TransitionRoot>
-
-    <div v-if="!displayEdits && message && message.flagsNum >= 3" class="message mesageFont" style="margin-top:-5px;margin-bottom:-25px;"
+    <TransitionRoot :show="showHideMessagesModal">
+        <HideMessagesModal :user="message.getUser()" @close="toggleHideMessagesModal"></HideMessagesModal>
+    </TransitionRoot>
+    <div v-if="!displayEdits && message && (message.flagsNum >= 3 || hideMessage())" class="message mesageFont" 
+            style="margin-top:-5px;margin-bottom:-25px;" @click.right.prevent.stop="clickOnMsg($event)"
          :data-verified="message.isVerified()">
         <small style="margin-left:46px;opacity:0.5;" :class="roleColor?roleColor:''"><b>{{message.getUser()}}</b></small>
         <span class="pr-2 float-right fg70">
@@ -31,13 +34,6 @@
         <div class="message flex" :data-verified="message.isVerified()">
             <div class="flex-shrink-0 mr-5px">
                 <UserCommunityIcon :name="message.getUser()" :community="message.getCommunity()"/>
-                <vue-simple-context-menu
-                  :element-id="msgMenuId"
-                  v-if="!displayOnly"
-                  :options="msgMenuOptions"
-                  ref="msgMenu"
-                  @option-clicked="clickOnMsgOption"
-                />
             </div>
             <div class="grow relative" style="margin-top:-7px;" @click.right.prevent.stop="clickOnMsg($event)"> 
                 <div>
@@ -109,7 +105,6 @@
 <script setup type="ts">
 import { useAccountStore } from "../stores/account";
 import { ref, nextTick } from 'vue'
-import VueSimpleContextMenu from 'vue-simple-context-menu';
 const tooltip = ref(window.tooltip);
 const accountStore = useAccountStore();
 const account = accountStore.account.name;
@@ -117,7 +112,7 @@ const emit = defineEmits(["quote", "action"]);
 const msgMenuId = 'msgMenuId'+stlib.Utils.nextId();
 const props = defineProps({
   message: Object,
-  displayOnly: Boolean,
+  displayOnly: { type: Boolean, default: false },
   displayEdits: Boolean
 });
 const roleColor = ref(null);
@@ -147,12 +142,16 @@ function initContent() {
     }
     return content;
 }
+function hideMessage() {
+    return props.message && getManager().readHiddenUsers()[props.message.getUser()] === true;
+}
 const content = ref(initContent());
 const joinData = ref(null);
 const newUserMessageModalOpen = ref(false);
 const newViewEditHistoryModalOpen = ref(false);
 const showImageViewModal = ref(false);
 const showAddEmoteModal = ref(false);
+const showHideMessagesModal = ref(false);
 const imageViewSrc = ref("");
 const showUserModal = ref(false);
 const userRef = ref();
@@ -164,6 +163,9 @@ const toggleViewEditHistoryModal = () => {
 };
 const toggleAddEmoteModal = () => {
   showAddEmoteModal.value = !showAddEmoteModal.value;
+};
+const toggleHideMessagesModal = () => {
+  showHideMessagesModal.value = !showHideMessagesModal.value;
 };
 const toggleImageViewModal = (src) => {
     showImageViewModal.value = !showImageViewModal.value;
@@ -224,19 +226,22 @@ function formatText(element, text) {
 const msgMenuOptions = ref([/*{name:"emote"},*/{name:"quote"},{name:"edit"},{name:"delete"}]);
 const msgMenuOptions2 = ref([/*{name:"emote"},*/{name:"quote"}]);
 const msgMenu = ref(null);
-function clickOnMsg(event) { msgMenu.value.showMenu(event, "item"); }
-function clickOnMsgOption(item) {
-    switch(item.option.name) {
-        case "quote":
-            quoteAction();
-            break;
-        case "edit":
-            editAction();
-            break;
-        case "delete":
-            deleteAction();
-            break;
+function clickOnMsg(event) {
+    console.log(props.message);
+    if(props.displayOnly.value) return;
+    var element = event.target;
+    console.log("event ", event);
+    var options = [
+        ["quote", quoteAction]
+    ];
+    if(props.message && props.message.getUser() === getManager().user) {
+        options.push(["edit", editAction]);
+        options.push(["delete", deleteAction]);
     }
+    else {
+        options.push(["hide messages from user", toggleHideMessagesModal]);
+    }
+    window.menu(event, options);
 }
 function emoteAction(emote) {
     emit("action", {

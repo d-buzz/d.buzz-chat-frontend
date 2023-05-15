@@ -197,7 +197,14 @@ function applyCssOverrides(properties) {
             }
         }, ms);
     };
-    window.menu = function(element, items, name=null, dropdown=false) {
+    window.menu = function(element0, items, name=null, dropdown=false) {
+        var x = null, y = null;
+        var element = element0;
+        if(element.target !== undefined && element.clientX !== undefined) {
+            x = element.clientX;
+            y = element.clientY;
+            element = element.target;
+        }        
         var el = document.getElementById("menu");  
         if(el == null) return;
         if(!el.hidden && el.currentElement === element) {
@@ -234,8 +241,9 @@ function applyCssOverrides(properties) {
         var pos = element.getBoundingClientRect();
         el.currentElement = element;
         el.hidden = false;
-        var x = Math.min(dropdown?pos.left:(pos.left+20), window.innerWidth-el.offsetWidth-10); 
-        var y = dropdown?pos.bottom:0.5*(pos.top+pos.bottom); 
+        if(x === null) x = dropdown?pos.left:(pos.left+20);
+        if(y === null) y = dropdown?pos.bottom:0.5*(pos.top+pos.bottom); 
+        x = Math.min(x, window.innerWidth-el.offsetWidth-10); 
         y = Math.max(0, Math.min(y, window.innerHeight-el.offsetHeight)); 
         el.setAttribute('style','left:'+x+'px;'+'top:'+y+'px;');
     };
