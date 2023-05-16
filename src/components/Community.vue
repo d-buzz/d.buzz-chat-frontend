@@ -776,5 +776,7 @@ async function loadPrevious() {
 }
 .lockColor {
     color: var(--appbgbtn1);
+    vertical-align: top;
+    margin-top: 1px;
 }
 </style>

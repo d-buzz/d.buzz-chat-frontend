@@ -13,6 +13,7 @@ declare module '@vue/runtime-core' {
     AddImageModal: typeof import('./components/modals/AddImageModal.vue')['default']
     AddInfoModal: typeof import('./components/modals/AddInfoModal.vue')['default']
     AddTitleModal: typeof import('./components/modals/AddTitleModal.vue')['default']
+    ApiDocs: typeof import('./components/ApiDocs.vue')['default']
     CloseGroupModal: typeof import('./components/modals/CloseGroupModal.vue')['default']
     Community: typeof import('./components/Community.vue')['default']
     CommunityAbout: typeof import('./components/info/CommunityAbout.vue')['default']
@@ -85,6 +86,7 @@ declare module '@vue/runtime-core' {
     UserPopover: typeof import('./components/modals/UserPopover.vue')['default']
     ViewEditHistoryModal: typeof import('./components/modals/ViewEditHistoryModal.vue')['default']
     WidgetEditor: typeof import('./components/WidgetEditor.vue')['default']
+    'WidgetEditor (copy)': typeof import('./components/WidgetEditor (copy).vue')['default']
   }
 }
 

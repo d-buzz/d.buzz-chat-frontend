@@ -227,10 +227,8 @@ const msgMenuOptions = ref([/*{name:"emote"},*/{name:"quote"},{name:"edit"},{nam
 const msgMenuOptions2 = ref([/*{name:"emote"},*/{name:"quote"}]);
 const msgMenu = ref(null);
 function clickOnMsg(event) {
-    console.log(props.message);
     if(props.displayOnly.value) return;
     var element = event.target;
-    console.log("event ", event);
     var options = [
         ["quote", quoteAction]
     ];

@@ -23,6 +23,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("./WidgetEditor.vue"),
   },
   {
+    path: "/docs",
+    name: "@!ApiDocs",
+    component: () => import("./ApiDocs.vue"),
+  },
+  {
     path: "/signbuffertestpage",
     name: "@!SignBufferTestPage",
     component: () => import("./SignBufferTestPage.vue"),
