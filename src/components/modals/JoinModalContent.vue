@@ -94,8 +94,9 @@ function visitCommunity(community) {
     emit("closeAll");
 }
 function hasJoinedCommunity(communities, community) {
-    for(var item of communities)
-        if(item[0] === community) return true;
+    if(communities)
+        for(var item of communities)
+            if(item[0] === community) return true;
     return false;
 }
 async function init() {

@@ -104,7 +104,7 @@ function showMenu(element) {
 async function initConversations(route) {
     console.log(route);
     console.log("load community " + route.name);
-    if(username == null || route.name == null) return;
+    if(route.name == null) return;
     isCommunity.value = route.name.startsWith('Community');
     const manager = getManager();
 
@@ -126,6 +126,7 @@ async function initConversations(route) {
         for(var stream of streams.value) 
             stream.visible = stream.readSet.validate(role, titles);
 
+        
         var update = async() => {
             console.log("Callback message update StreamBar.vue Community");
             for(var stream of streams.value) {
@@ -138,9 +139,10 @@ async function initConversations(route) {
         await update();
         manager.setCallback("StreamBar.vue", update);
         manager.onlastread.set("StreamBar.vue", update);
-        //var streams = temp0.getStreams;
+        
     }
     else {
+        if(username == null) return;
         var update = async() => {
             console.log("Callback message update StreamBar.vue");
 

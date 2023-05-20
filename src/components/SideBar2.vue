@@ -13,7 +13,7 @@
         <div v-if="accountName" @mouseenter="tooltip($event.target, '@'+accountName)">
             <UserIcon class="p-1 cursor-pointer" @click.stop.prevent="toggleMenu" :name="accountName" :imgCss="'avCommunity'"/>
         </div>
-        <button v-else class="btn" style="padding:2px 4px; margin-left:3px;" @click="toggleLoginModal">Login</button>
+        <button v-else class="btn mt-2" style="padding:2px 4px; margin-left:3px;" @click="toggleLoginModal">Login</button>
         <div v-if="showMenu" class="menu appbg1 border-default flex flex-col">
             <!--<div><b class="border-b-1"><a :href="`https://peakd.com/@${accountName}`" target="_blank" rel="noreferrer noopener">@{{accountName}}</a></b></div>-->
             <div><b class="border-b-1"><router-link to="/mentions">@{{accountName}}</router-link></b></div>
@@ -32,7 +32,7 @@
             <div class="flex justify-between relative border-b-1 p-1 cursor-pointer appsg0" @click="toggleDirect">
                 <small v-if="number && number != '0'" class="number border-default"><b>{{number}}</b></small>
                 <b class="text-xs">{{$t("SideBar.Direct")}}</b>
-                <button v-if="addButton === 0" class="text-xs" @click.stop="toggleNewUserMessageModalOpen">
+                <button v-if="addButton === 0" class="text-xs" @click.stop="IfLoggedIn(toggleNewUserMessageModalOpen)">
                     <span class="oi oi-plus"></span>
                 </button>
                 <span v-else class="oi oi-elevator iconSize"></span>
@@ -43,7 +43,7 @@
                 @click="toggleCommunities">
                 <small v-if="communityNumber && communityNumber != '0'" class="number border-default"><b>{{communityNumber}}</b></small>
                 <b class="text-xs">C/</b>
-                <button v-if="addButton === 0" class="text-xs" @click.stop="toggleAddCommunityModal">
+                <button v-if="addButton === 0" class="text-xs" @click.stop="IfLoggedIn(toggleAddCommunityModal)">
                     <span class="oi oi-plus"></span>
                 </button>
                 <span v-else class="oi oi-elevator iconSize"></span>
@@ -56,7 +56,7 @@
             <div class="scrollBoxContent flex flex-col">
                 <div :key="updateKey2">
                     <TextIcon v-if="addButton === 1" class="p-1 cursor-pointer" :text="'+'" 
-                        @click.stop="toggleNewUserMessageModalOpen"
+                        @click.stop="IfLoggedIn(toggleNewUserMessageModalOpen)"
                         @mouseenter="tooltip($event.target, $t('SideBar.NewConversation'))"                
                     />
                     <div v-for="conversation in conversations">
@@ -67,7 +67,7 @@
                          :username="username" :number="''+conversation.lastReadNumber" :compact="true"/>
                     </div>
                     <TextIcon v-if="addButton === 2" class="p-1 cursor-pointer" :text="'+'"
-                        @click.stop="toggleNewUserMessageModalOpen"
+                        @click.stop="IfLoggedIn(toggleNewUserMessageModalOpen)"
                         @mouseenter="tooltip($event.target, $t('SideBar.NewConversation'))"/>
                     <div style="height:50px;"></div>
                 </div>
@@ -77,7 +77,7 @@
                 style="overflow-x: clip;" @dragover.prevent @drop.stop.prevent="onDrop">
         <div class="scrollBoxContent flex flex-col">
             <TextIcon v-if="addButton === 1" class="p-1 cursor-pointer" :text="'+'" 
-                @click.stop="toggleAddCommunityModal"
+                @click.stop="IfLoggedIn(toggleAddCommunityModal)"
                 @mouseenter="tooltip($event.target, $t('SideBar.AddCommunity'))"/>
             <Draggable v-model="communities" :key="updateKey">
                 <template v-slot:item="{item}">
@@ -86,7 +86,7 @@
                 </template>
             </Draggable>
             <TextIcon v-if="addButton === 2" class="p-1 cursor-pointer" :text="'+'" 
-                @click.stop="toggleAddCommunityModal"
+                @click.stop="IfLoggedIn(toggleAddCommunityModal)"
                 @mouseenter="tooltip($event.target, $t('SideBar.AddCommunity'))"/>
             <div style="height:50px;"></div>
         </div>
@@ -165,12 +165,12 @@ function setTitle(communityMessages, directGroupMessages) {
 }
 async function initCommunities() {
     var user = accountStore.account.name;
-    if(user == null) return;
-    accountName.value = user;
     var manager = getManager();
-    manager.setUser(user);
-    manager.joinGroups();
-    var _communities = (globalProperties.onlyPrependCommunities)?[]:await manager.getCommunitiesSorted();
+    if(user != null) { 
+        manager.setUser(user);
+        manager.joinGroups();
+    }
+    var _communities = (globalProperties.onlyPrependCommunities || user == null)?[]:await manager.getCommunitiesSorted();
     {
         var tmp = {};
         for(var community of _communities) {
@@ -185,9 +185,11 @@ async function initCommunities() {
             }
         }
     }
-    manager.joinCommunities(_communities);
+    if(user != null) manager.joinCommunities(_communities);
     communities.value = _communities;
     updateKey.value = ''+stlib.Utils.nextId();
+    if(user == null) return;
+    accountName.value = user;
     var update = async () => { 
         var totalCommunities = 0;
         var _communityNumber = 0;
@@ -235,6 +237,11 @@ const toggleAddCommunityModal = () => {
 const loginModalOpen = ref(false);
 function toggleLoginModal() {
     loginModalOpen.value = !loginModalOpen.value;
+}
+function IfLoggedIn() {
+    var user = accountStore.account.name;
+    if(user == null) toggleLoginModal();
+    else fn();
 }
 /*const showJoinModal = ref(false);
 function toggleJoinModal() {

@@ -1,5 +1,8 @@
 <template>
     <div>
+        <TransitionRoot :show="loginModalOpen">
+            <LoginModal @close="toggleLoginModal()"></LoginModal>
+        </TransitionRoot>
         <TransitionRoot :show="showAddImageModal">
             <AddImageModal @oninput="addImage" @close="toggleAddImageModal"></AddImageModal>
         </TransitionRoot>
@@ -32,20 +35,26 @@
                   role="textbox"
                   contenteditable>
                 </div>
+                <div v-else-if="!isLoggedIn"
+                    class="text-gray-400 appearance-none w-[calc(100%)] py-2 px-3 focus:outline-none focus:shadow-outline"
+                    @click="toggleLoginModal"
+                >
+                    login to messsage
+                </div>
                 <div v-else
                     class="text-gray-400 appearance-none w-[calc(100%)] py-2 px-3 focus:outline-none focus:shadow-outline"
                     >
                     Permission required
                 </div>
                 <div class="absolute float-right flex gap-x-3 pr-3" style="right: 0; max-height: 38px;">
-                    <div @click="if(canWrite) enterMessage(null);" class="my-2 cursor-pointer oi oi-envelope-open envelope" 
+                    <div @click="IfCanWrite(()=>enterMessage(null))" class="my-2 cursor-pointer oi oi-envelope-open envelope" 
                     @mouseenter="tooltip($event.target, $t('MessageBox.Send'))"></div>
-                    <span @click="if(canWrite) toggleAddEmoteModal();" class="flipY my-2 cursor-pointer" 
+                    <span @click="IfCanWrite(toggleAddEmoteModal)" class="flipY my-2 cursor-pointer" 
                         @mouseenter="tooltip($event.target, $t('MessageBox.AddEmote'))">
                         <img class="flipYItem" src="/src/assets/images/icons/emoteicon.svg" style="max-width: 21px;">
                     </span>
                     <span class="flipY my-2 cursor-pointer" style="font-size: 1.125rem;"
-                        @click="if(canWrite) toggleAddImageModal();" 
+                        @click="IfCanWrite(toggleAddImageModal)" 
                         @mouseenter="tooltip($event.target, $t('MessageBox.AddImage'))">
                         <span class="flipYItem oi oi-image"></span></span>
                 </div>
@@ -56,7 +65,8 @@
 <script setup type="ts">
 const tooltip = ref(window.tooltip);
 const props = defineProps({
-    canWrite: {type: Boolean, default: true}
+    canWrite: {type: Boolean, default: true},
+    isLoggedIn: {type: Boolean, default: true}
 });
 const box = ref(null);
 const images = ref([]);
@@ -65,6 +75,19 @@ const showAddImageModal = ref(false);
 const showAddEmoteModal = ref(false);
 const uploads = ref([]);
 
+const loginModalOpen = ref(false);
+function toggleLoginModal() {
+    loginModalOpen.value = !loginModalOpen.value;
+}
+function IfLoggedIn(fn) {
+    if(!props.isLoggedIn) toggleLoginModal();
+    else fn();
+}
+function IfCanWrite(fn) {
+    IfLoggedIn(()=>{
+        if(props.canWrite) fn();
+    });
+}
 window.ondropfile.set("MessageBox.vue", (file)=>{
     if(stlib.Utils.isGuest(getManager().user)) return;
     if(!file.type.startsWith("image/")) return;

@@ -2356,18 +2356,20 @@ class MessageManager {
             this.cachedUserConversations = null;
         }
         this.user = user;
-        try {
-            var lastReadData = window.localStorage.getItem(user + "#lastReadData");
-            if (lastReadData != null)
-                this.conversationsLastReadData = JSON.parse(lastReadData);
-        }
-        catch (e) {
-            console.log(e);
-        }
-        if (joinRooms) {
-            this.join(user);
-            this.join('&' + user);
-            this.join('$online');
+        if (user !== null) {
+            try {
+                var lastReadData = window.localStorage.getItem(user + "#lastReadData");
+                if (lastReadData != null)
+                    this.conversationsLastReadData = JSON.parse(lastReadData);
+            }
+            catch (e) {
+                console.log(e);
+            }
+            if (joinRooms) {
+                this.join(user);
+                this.join('&' + user);
+                this.join('$online');
+            }
         }
     }
     readHiddenUsers() {

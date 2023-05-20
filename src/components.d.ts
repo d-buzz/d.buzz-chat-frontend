@@ -76,7 +76,6 @@ declare module '@vue/runtime-core' {
     Themes: typeof import('./components/info/Themes.vue')['default']
     ThemeView: typeof import('./components/ThemeView.vue')['default']
     ThreadModal: typeof import('./components/modals/ThreadModal.vue')['default']
-    'ThreadModal (copy)': typeof import('./components/modals/ThreadModal (copy).vue')['default']
     TransitionChild: typeof import('@headlessui/vue')['TransitionChild']
     TransitionRoot: typeof import('@headlessui/vue')['TransitionRoot']
     Upload: typeof import('./components/Upload.vue')['default']
@@ -86,7 +85,6 @@ declare module '@vue/runtime-core' {
     UserPopover: typeof import('./components/modals/UserPopover.vue')['default']
     ViewEditHistoryModal: typeof import('./components/modals/ViewEditHistoryModal.vue')['default']
     WidgetEditor: typeof import('./components/WidgetEditor.vue')['default']
-    'WidgetEditor (copy)': typeof import('./components/WidgetEditor (copy).vue')['default']
   }
 }
 

@@ -176,6 +176,7 @@
                 ref="messageBox"
                 class="grow"
                 :canWrite="canWrite"
+                :isLoggedIn="isLoggedIn"
                 @fullorblank="updateStatus"
                 @entermessage="enterMessage"
                 v-focus
@@ -223,6 +224,7 @@ const valueAutoDecode = ref(false);
 const canLoadPreviousMessages = ref(true);
 const loadingPreviousMessages = ref(false);
 const canWrite = ref(true);
+const isLoggedIn = ref(true);
 const showRenameGroupModal = ref(false);
 const showGroupUserModal = ref(false);
 const showCloseGroupModal = ref(false);
@@ -318,12 +320,12 @@ function highlight(message) {
 } 
 async function initChat() {
     var user = accountStore.account.name;
-    //if(user == null) return; //TODO ask to login
     var user2 = route.params.user;
     if(user2 == null || user2 == "") return;
 
     const manager = getManager();
     manager.setUser(user);
+    if(user == null) isLoggedIn.value = false;
 
     var community0 = null;
     var conversation = getConversation(); 
