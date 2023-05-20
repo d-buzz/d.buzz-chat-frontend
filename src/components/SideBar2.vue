@@ -238,7 +238,7 @@ const loginModalOpen = ref(false);
 function toggleLoginModal() {
     loginModalOpen.value = !loginModalOpen.value;
 }
-function IfLoggedIn() {
+function IfLoggedIn(fn) {
     var user = accountStore.account.name;
     if(user == null) toggleLoginModal();
     else fn();
