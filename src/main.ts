@@ -54,7 +54,18 @@ function applyCssOverrides(properties) {
     if(window.hive_keychain === undefined && window.parent != null && window.parent.postMessage) {
         var proxy = { id: 0, callbacks: {}, methods: {
             setUser: function (username) {
-                
+                console.log("set user", username);
+                //if(window.setLogin) { 
+                    //window.setLogin(username);
+                    //getManager().setUser(username);
+                    //window.refreshApp();                    
+                //    window.location.reload();
+                //}
+                //else {
+                    if(getManager().user === username) return;
+                    window.localStorage.setItem("_user", JSON.stringify({name:username,authenticated:true}));
+                    window.location.reload();     
+                //}
             },
             pause: function (paused) {
                 console.log("widget pause ", paused);

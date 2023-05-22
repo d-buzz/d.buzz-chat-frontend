@@ -2372,6 +2372,10 @@ class MessageManager {
         if (this.user == user)
             return;
         if (this.user != null) {
+            if (joinRooms) {
+                for (var room in this.joined)
+                    this.leave(room);
+            }
             this.userPreferences = null;
             this.cachedUserConversations = null;
         }
@@ -2655,6 +2659,17 @@ class MessageManager {
         this.joined[room] = true;
         var client = this.getClient();
         client.join(room);
+    }
+    leave(room) {
+        if (room == null)
+            return;
+        if (room.indexOf('|') != -1)
+            return;
+        if (!this.joined[room])
+            return;
+        delete this.joined[room];
+        var client = this.getClient();
+        client.leave(room);
     }
     setLogin(login) { this.loginmethod = login; }
     setLoginKey(postingkey) { this.loginmethod = new LoginKey(this.user, postingkey); }

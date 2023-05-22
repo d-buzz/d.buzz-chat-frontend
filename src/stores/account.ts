@@ -116,11 +116,18 @@ export const useAccountStore = defineStore("account", () => {
     account.value.authenticated = false;
     updateStore();
   };
+  const setLogin = (user) => {
+    account.value.name = user;
+    account.value.authenticated = true;
+    updateStore();
+  };
+  window.setLogin = setLogin;
   return {
     initStore,
     authenticate, loginGuest, 
     signOut,
     account,
+    setLogin
   };
 });
 

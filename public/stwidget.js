@@ -3,6 +3,7 @@ class StWidget {
         this.url = url;
         this.element = null;
         this.iframe = null;
+        this.postOnInit = null;
         this.properties = null;
         this.initialized = false;
         this.enableKeychainPassthrough = true;
@@ -61,14 +62,12 @@ class StWidget {
         this.postMessage(["stlib", "setProperties", JSON.stringify(this.properties)]);
     }
     pause(value) { return this.postMessage(["stlib", "pause", JSON.stringify(value)]); }
-    /*setUser(username) {
-        var iframe = this.iframe;
-        if(iframe.contentWindow != null)
-            iframe.contentWindow.postMessage(JSON.stringify(["stlib", "setUser", username]), '*');
-        else iframe.addEventListener( "load", ()=>{
-            iframe.contentWindow.postMessage(JSON.stringify(["stlib", "setUser", username]), '*');
-        });
-    }*/
+    setUser(user) { 
+        this.user = user;
+        if(!this.postMessage(["stlib", "setUser", JSON.stringify(user)])) {
+            this.postOnInit = ["stlib", "setUser", JSON.stringify(user)];
+        }
+    }
 
     initialize() {
         if(this.messageListener != null) return;
@@ -93,6 +92,8 @@ class StWidget {
                 this.frameOrigin = event.origin; 
                 if(this.properties != null) 
                     event.source.postMessage(["stlib", "setProperties", JSON.stringify(this.properties)], event.origin);
+                if(this.postOnInit != null)
+                    event.source.postMessage(this.postOnInit, event.origin);
                 break;
             case "requestVerifyKey":
                 if(this.enableKeychainPassthrough) window.hive_keychain.requestVerifyKey(args[0], args[1], args[2], (r)=>{
