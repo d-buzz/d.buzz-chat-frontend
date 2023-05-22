@@ -7,6 +7,7 @@ class StWidget {
         this.initialized = false;
         this.enableKeychainPassthrough = true;
         this.messageListener = null;
+        this.frameOrigin = '*';
     }
     createElement(width=450, height=556, overlay=true, resizable=true) {
         this.initialize();
@@ -43,17 +44,23 @@ class StWidget {
     setStyle(style) {
         for(var name in style) this.element.style.setProperty(name, style[name]);
     }
-    setProperties(properties) {
-        this.properties = properties;
+    postMessage(message) {
         if(this.initialized) {
             var _this = this;
             if(this.iframe.contentWindow != null)
-                this.iframe.contentWindow.postMessage(["stlib", "setProperties", JSON.stringify(this.properties)], '*');
+                this.iframe.contentWindow.postMessage(message, this.frameOrigin);
             else this.iframe.addEventListener( "load", ()=>{
-                _this.iframe.contentWindow.postMessage(["stlib", "setProperties", JSON.stringify(this.properties)], '*');
+                _this.iframe.contentWindow.postMessage(message, this.frameOrigin);
             });
+            return true;
         }
+        return false;
+    } 
+    setProperties(properties) {
+        this.properties = properties;
+        this.postMessage(["stlib", "setProperties", JSON.stringify(this.properties)]);
     }
+    pause(value) { return this.postMessage(["stlib", "pause", JSON.stringify(value)]); }
     /*setUser(username) {
         var iframe = this.iframe;
         if(iframe.contentWindow != null)
@@ -83,6 +90,7 @@ class StWidget {
         switch(name) {
             case "initialize":
                 this.initialized = true;
+                this.frameOrigin = event.origin; 
                 if(this.properties != null) 
                     event.source.postMessage(["stlib", "setProperties", JSON.stringify(this.properties)], event.origin);
                 break;

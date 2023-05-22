@@ -56,6 +56,10 @@ function applyCssOverrides(properties) {
             setUser: function (username) {
                 
             },
+            pause: function (paused) {
+                console.log("widget pause ", paused);
+                getManager().pause(paused);
+            },
             setProperties: function(properties) {
                 console.log("setting properties ", properties);
                 for(var name in properties)

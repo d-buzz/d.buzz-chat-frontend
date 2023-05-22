@@ -2118,6 +2118,7 @@ class MessageManager {
         this.conversations = new utils_1.AccountDataCache();
         this.communities = new utils_1.AccountDataCache();
         this.onlineStatusTimer = null;
+        this.paused = false;
         this.cachedGuestData = null;
         this.cachedHiddenUsers = null;
         this.keys = {};
@@ -2189,6 +2190,12 @@ class MessageManager {
     }
     reload() {
         return __awaiter(this, void 0, void 0, function* () {
+            try {
+                this.conversations.clearPending();
+            }
+            catch (e) {
+                console.log(e);
+            }
             var client = this.getClient();
             var timeNow = utils_1.Utils.utcTime();
             var maxTime = timeNow + 600000;
@@ -2223,6 +2230,19 @@ class MessageManager {
                 console.log(e);
             }
             this.postCallbackEvent(null);
+        });
+    }
+    pause(yes = true) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.paused === yes)
+                return;
+            this.paused = yes;
+            if (yes) {
+                this.client.close();
+            }
+            else {
+                this.connect();
+            }
         });
     }
     handleJSONMessage(json, update = true) {
@@ -2451,8 +2471,11 @@ class MessageManager {
         if (enabled) {
             if (this.onlineStatusTimer != null)
                 return;
+            var _this = this;
             this.onlineStatusTimer = setInterval(() => {
-                this.sendOnlineStatus("true");
+                if (_this.paused)
+                    return;
+                _this.sendOnlineStatus("true");
             }, 5 * 60 * 1000);
         }
         else {
@@ -4901,6 +4924,13 @@ class AccountDataCache {
         var cachedData = this.lookup(user);
         if (cachedData !== undefined) {
             if (cachedData.value !== undefined)
+                delete this.data[user];
+        }
+    }
+    clearPending() {
+        for (var user in this.data) {
+            var cachedData = this.data[user];
+            if (cachedData.promise != null)
                 delete this.data[user];
         }
     }

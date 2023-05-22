@@ -297,6 +297,8 @@ function initWidget() {
     var e = widget.value;
     e.innerHTML = "";
     e.appendChild(element);
+
+    window.stwidget = stwidget; //for debugging
 }
 var init = true;
 function toggleWidget() {
