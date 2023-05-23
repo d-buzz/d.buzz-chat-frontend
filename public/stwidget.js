@@ -1,6 +1,6 @@
 class StWidget {
     constructor(url) { 
-        this.url = url;
+        this.url = url.indexOf('?')===-1?(url+'?embed'):(url+'&embed');
         this.element = null;
         this.iframe = null;
         this.postOnInit = null;
@@ -68,6 +68,10 @@ class StWidget {
             this.postOnInit = ["stlib", "setUser", JSON.stringify(user)];
         }
     }
+    navigate(url) {
+        this.url = url.indexOf('?')===-1?(url+'?embed'):(url+'&embed');
+        this.postMessage(["stlib", "navigate", JSON.stringify(this.url)]);
+    }
 
     initialize() {
         if(this.messageListener != null) return;
@@ -94,6 +98,7 @@ class StWidget {
                     event.source.postMessage(["stlib", "setProperties", JSON.stringify(this.properties)], event.origin);
                 if(this.postOnInit != null)
                     event.source.postMessage(this.postOnInit, event.origin);
+                event.source.postMessage(["stlib", "initMain", JSON.stringify("")], event.origin);
                 break;
             case "requestVerifyKey":
                 if(this.enableKeychainPassthrough) window.hive_keychain.requestVerifyKey(args[0], args[1], args[2], (r)=>{

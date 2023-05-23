@@ -1,7 +1,7 @@
 <template>
 
-    <div class="min-h-full flex flex-col justify-center appfg0 appbg0" style="align-items:center;">
-        <div class="max-w-md w-md border border-gray-300 rounded-md p-3 appfg1 appbg1">
+    <div class="min-h-full flex flex-col justify-center appfg2 appbg2" style="align-items:center;">
+        <div class="max-w-md w-md border border-gray-300 rounded-md p-3 appfg2 appbg2">
             <div class="flex" v-if='community'>
                 <div class="flex-shrink-0 mr-5px">
                     <img

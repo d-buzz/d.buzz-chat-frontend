@@ -1,5 +1,5 @@
 <template>
-<div class="appbg1 appfg1" style="height:100%;">
+<div class="appbg2 appfg2" style="height:100%;">
   <section>
     <nav class="navbar navbar-expand-lg shadow-md py-2 appbg0 relative flex items-center w-full justify-between">
       <div class="px-6 w-full flex flex-wrap items-center justify-between">
@@ -24,7 +24,7 @@
       </div>
     </nav>
 
-    <div class="appbg1 appfg1 px-5 pt-5 pb-2 md:px-12 text-left">
+    <div class="appbg2 appfg2 px-5 pt-5 pb-2 md:px-12 text-left">
       <h1 class="font-bold text-3xl pb-1">Widget Editor.</h1>
         <p>Customize the options and scroll down to see how to embed the widget into a website.</p>
         
@@ -281,6 +281,7 @@ function initWidget() {
         "homeTabCommunities": false,
         "prependCommunities": ["hive-163399"]
     };*/
+    //stwidget.setUser("username");
     var element = stwidget.createElement(width.value.trim()+'px', height.value.trim()+'px', overlay.value, resizable.value);
     var obj = { };
     if(resizable.value) {

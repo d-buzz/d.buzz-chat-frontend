@@ -14,6 +14,7 @@
   </div>
 </template>
 <script setup>
+const router = useRouter();
 const updateKey = ref('#'+stlib.Utils.nextId());
 const globalProperties = ref(window.globalProperties);
 const streamBar = ref(null);
@@ -31,6 +32,10 @@ function showStreambar(visible=true) {
 function hideStreambar() {
     streamBar.value.dataset.show = false;
 }
+function navigate(url) {
+    router.push(url);
+}
+window.navigate = navigate;
 window.showStreambar = showStreambar;
 window.toggleStreambar = toggleStreambar;
 window.refreshApp = ()=>{ updateKey.value = '#'+stlib.Utils.nextId(); }; //debug purpose

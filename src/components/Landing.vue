@@ -1,5 +1,5 @@
 <template>
-<div class="appbg1 appfg1" style="height:100%;">
+<div class="appbg2 appfg2" style="height:100%;">
   <section class="b-40">
     <nav class="navbar navbar-expand-lg shadow-md py-2 appbg0 appfg0 relative flex items-center w-full justify-between">
       <div class="px-6 w-full flex flex-wrap items-center justify-between">
@@ -22,7 +22,7 @@
       </div>
     </nav>
 
-    <div class="appbg1 appfg1 px-6 py-12 md:px-12 text-center lg:text-left">
+    <div class="appbg2 appfg2 px-6 py-12 md:px-12 text-center lg:text-left">
       <div class="container mx-auto xl:px-32">
         <div class="grid lg:grid-cols-2 gap-12 flex">
           <div class="mt-12 lg:mt-0">

@@ -45,13 +45,15 @@ function applyCssOverrides(properties) {
         if(name.startsWith("--")) 
             root.style.setProperty(name, properties[name]);
 }
+const isEmbed = new URLSearchParams(location.search).has("embed");
+var inited = false;
 //window.dhive = dhive;
 (()=>{
     /*if(window.hive_keychain === undefined && window.parent != null && 
         window.parent.hive_keychain !== undefined) {
         window.hive_keychain = window.parent.hive_keychain;
     }*/
-    if(window.hive_keychain === undefined && window.parent != null && window.parent.postMessage) {
+    if((isEmbed || window.hive_keychain === undefined) && window.parent != null && window.parent.postMessage) {
         var proxy = { id: 0, callbacks: {}, methods: {
             setUser: function (username) {
                 console.log("set user", username);
@@ -64,8 +66,14 @@ function applyCssOverrides(properties) {
                 //else {
                     if(getManager().user === username) return;
                     window.localStorage.setItem("_user", JSON.stringify({name:username,authenticated:true}));
-                    window.location.reload();     
+                    if(inited) window.location.reload();     
                 //}
+            },
+            initMain: function() {
+                initMain();
+            },
+            navigate: function(url) {
+                if(window.navigate) window.navigate(url); 
             },
             pause: function (paused) {
                 console.log("widget pause ", paused);
@@ -119,7 +127,7 @@ function applyCssOverrides(properties) {
         window.parent.postMessage(["stlib", -1, "initialize"], "*");
     }
     try {
-        const isIframe = window.top !== window.self;
+        const isIframe = isEmbed || window.top !== window.self;
         if(!isIframe) {
             //A/B UI testing
             var apptype = window.localStorage.getItem("apptype");
@@ -277,6 +285,8 @@ function applyCssOverrides(properties) {
     };
 })();
 async function initMain() {
+    if(inited) return;
+    inited = true;
     const app = createApp(App);
     //app.config.globalProperties.$testvar = 'testvar';
     app.directive('focus', {
@@ -292,6 +302,6 @@ async function initMain() {
 
     app.mount("#app");
 }
-initMain();
+if(!isEmbed) initMain();
 
 
