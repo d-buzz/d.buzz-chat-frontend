@@ -2,10 +2,7 @@
 
 ## Messaging Backend Nodes
 
-Applications that require loading and broadcasting messages will need to connect to the messaging backend nodes.
-The messaging backend nodes serve as verifies, storage spaces and relays for messages. 
-In this way messages do not use hive RC yet still use hive posting key for signing and verification. 
-Programmers can connect to a public node or start a new node and connect to it.
+Applications that require loading and broadcasting messages will need to connect to the messaging backend nodes. The messaging backend nodes serve as verifies, storage spaces and relays for messages. In this way messages do not use hive RC yet still use hive posting key for signing and verification. Programmers can connect to a public node or start a new node and connect to it.
 
 ## Public Nodes
 
@@ -23,8 +20,7 @@ yarn
 ```
 
 ### Setup the Database:
-Configure database connection with src/data-source.ts file,
-which uses the following environemental variables for setup:
+Configure database connection with src/data-source.ts file, which uses the following environemental variables for setup:
 
 ```
 BASE_URL  default: 'http://localhost'
@@ -38,13 +34,7 @@ NODE_HOST default: 'localhost' example: '0.0.0.0'
 
 ```
 
-NETNAME use 'main' as default or any other for testing purposes or for creating a node network
-that will be separate from the main one. The NETNAME can also constain a comma separated list
-of accounts or public keys which are used for validation of guest account creation requests.
-NODES is a list of semicolon separated urls of seed nodes. To successfully connect, their netname
-is to match the netname provided. To find a netname of a backend node you can retrieve the info via
-`/api/info` endpoint, eg.: https://chat-api.peakd.com/api/info
-ACCOUNT is hive account this node will authenticate as.
+NETNAME use 'main' as default or any other for testing purposes or for creating a node network that will be separate from the main one. The NETNAME can also constain a comma separated list of accounts or public keys which are used for validation of guest account creation requests. NODES is a list of semicolon separated urls of seed nodes. To successfully connect, their netname is to match the netname provided. To find a netname of a backend node you can retrieve the info via `/api/info` endpoint, eg.: https://chat-api.peakd.com/api/info ACCOUNT is hive account this node will authenticate as.
 
 ### Build the shared messaging library with:
 ```
@@ -52,8 +42,7 @@ yarn buildlib
 ```
 
 ### Postgres
-Install postgress and set the DATABASE_URL,
-The BASE_URL, PORT are to be set to the public website this api will be accessible from.
+Install postgress and set the DATABASE_URL, The BASE_URL, PORT are to be set to the public website this api will be accessible from.
 
 ### SQLite [experimental]
 Set DB_TYPE to 'sqlite' and DATABASE_URL to ':memory:' or file path, eg: 'dbfile.db'.

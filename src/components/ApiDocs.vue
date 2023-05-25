@@ -19,15 +19,44 @@
       </div>
     </nav>
 
-    <div class="appbg2 appfg2 px-5 pt-5 pb-2 md:px-12 text-left">
-        
-       
+    <div class="flex min-h-full h-screen flex-row appbg2 appfg2 text-left">
+        <div class="appbg1 appfg1 px-3 pt-5 pb-2 border-r-1 font-lg" style="min-width: 150px ">
+            <b>Contents</b>
+            <hr class="mb-1"/>
+            <div v-for="section in sections" class="cursor-pointer mt-1 mb-1 fg70 hover:opacity-100" @click="visit(section[1])">
+                {{section[0]}}
+            </div>
+        </div>
+        <div class="grow overflow-y-scroll scrollBox">
+            <div class="scrollBoxContent">
+                <div class="px-5 pt-2 pb-10 mb-10 md mdh" ref="page"></div>
+            </div>
+        </div>
     </div>   
   </section>
 </div>
 </template>
 <script setup>
-
+import intro from '../../docs/introduction-welcome.md?raw'
+import quickstart from '../../docs/quickstart.md?raw'
+var page = ref(null);
+var sections = [
+    ["Introduction", intro],
+    ["Quickstart", quickstart],
+    ["Tutorial", "*to be added*"],
+    ["API", "*to be added*"],
+    ["Image Uploader", "*to be added*"],
+    ["Widget", "*to be added*"]
+];
+function visit(text) {
+    var element = page.value;
+    element.innerHTML = "";
+    stlib.Markdown.simpleMarkdown(text, element);
+}
+function init() { 
+    visit(intro);
+}
+nextTick(init);
 </script>
 <style scoped>
 

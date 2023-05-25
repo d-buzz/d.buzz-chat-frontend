@@ -8,6 +8,7 @@ class StWidget {
         this.initialized = false;
         this.enableKeychainPassthrough = true;
         this.messageListener = null;
+        this.onLastRead = null;
         this.frameOrigin = '*';
     }
     createElement(width=450, height=556, overlay=true, resizable=true) {
@@ -45,6 +46,9 @@ class StWidget {
     setStyle(style) {
         for(var name in style) this.element.style.setProperty(name, style[name]);
     }
+    setLastReadCallback(fn) {
+        this.onLastRead = fn;
+    } 
     postMessage(message) {
         if(this.initialized) {
             var _this = this;
@@ -99,6 +103,9 @@ class StWidget {
                 if(this.postOnInit != null)
                     event.source.postMessage(this.postOnInit, event.origin);
                 event.source.postMessage(["stlib", "initMain", JSON.stringify("")], event.origin);
+                break;
+            case "lastRead":
+                this.onLastRead(args[0]);
                 break;
             case "requestVerifyKey":
                 if(this.enableKeychainPassthrough) window.hive_keychain.requestVerifyKey(args[0], args[1], args[2], (r)=>{

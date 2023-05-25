@@ -165,9 +165,17 @@ body {
     word-break: break-word;
 }
 .md { }
+.mdh {}
+.mdh h1 { font-size: 1.5rem }
+.mdh h2 { font-size: 1.25rem }
+.mdh h3 { font-size: 1.15rem }
 .md p, .md h1, .md h2, .md h3, .md h4, .md h5, .md h6 {
 	margin: 0px;
 	/*margin: 0 0 .7em 0;*/
+}
+.mdh h1, .mdh h2, .mdh h3, .mdh h4, .mdh h5, .mdh h6 {
+    font-weight: bold;
+    margin: .7em 0 .7em 0;
 }
 .md img {
 	max-width: 100%;

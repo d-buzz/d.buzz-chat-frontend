@@ -98,16 +98,16 @@
                   <div class="mt-1">
                     <input
                       name="username"
-                      v-model="accountName"
+                      v-model="accountName2"
                       type="username"
                       class="inputText1"
-                      @keyup.enter="loginGuest(accountName)"                  
+                      @keyup.enter="loginGuest(accountName2)"                  
                       placeholder="pick an username"
                       :read-only="isLoading"
                       :disabled="isLoading"
                     />
                   </div>
-                  <button class="btn grow" @click="loginGuest(accountName)" :read-only="isLoading" :disabled="isLoading">Open as Guest</button>
+                  <button class="btn grow" @click="loginGuest(accountName2)" :read-only="isLoading" :disabled="isLoading">Open as Guest</button>
                   <div v-if="guestAccounts.length>0">
                     <div><b>Recent Logins</b></div>
                     <div class="flex">
@@ -156,6 +156,7 @@ const accountStore = useAccountStore();
 const route = useRoute();
 const router = useRouter();
 const accountName = ref("");
+const accountName2 = ref("");
 const community = ref(null);
 const isLoading = ref(false);
 const showWelcomeMessage = ref(false);
