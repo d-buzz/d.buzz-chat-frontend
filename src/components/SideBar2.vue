@@ -96,7 +96,13 @@
       </div>
     </div>
   </div>
-  <div v-if="showCommunities" class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox" style="overflow-x: clip" @dragover.prevent @drop.stop.prevent="onDrop">
+  <div
+    v-if="showCommunities"
+    class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox hideScrollbar"
+    style="overflow-x: clip"
+    @dragover.prevent
+    @drop.stop.prevent="onDrop"
+  >
     <div class="scrollBoxContent flex flex-col">
       <TextIcon
         v-if="addButton === 1"
