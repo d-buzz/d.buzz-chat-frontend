@@ -6,7 +6,7 @@
     --appbgbtn1: #2e8336;     --appfgbtn1: white;
     --appbgbtn2: #d9d9d7;     --appfgbtn2: white;
     /*#eab308; */
-    
+
     --appbgowner: #007b00;
     --appbgadmin: #2368D5;
     --appbgmod: #2e8336;
@@ -57,11 +57,11 @@ body {
 .appfg3 .fg70, .appfg3 .text-gray-700 { color: var(--appfg3); opacity: 0.7; }
 .appfg2 .border-gray-700 { border-color: var(--appfg2) / 0.7; }
 
-.colorowner { color:var(--appbgowner); } 
-.coloradmin { color:var(--appbgadmin); } 
-.colormod { color:var(--appbgmod); } 
-.colorconote { color:var(--appbgconote); } 
-.colorunote { color:var(--appbgunote); } 
+.colorowner { color:var(--appbgowner); }
+.coloradmin { color:var(--appbgadmin); }
+.colormod { color:var(--appbgmod); }
+.colorconote { color:var(--appbgconote); }
+.colorunote { color:var(--appbgunote); }
 .mesageFont {
     font-family: var(--appMessageFontFamily);
     font-size: var(--appMessageFontSize);
@@ -69,22 +69,22 @@ body {
 .btn {
     @apply inline-block font-medium text-sm
         mr-1 mb-2 py-2 px-5
-        rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none 
-        focus:ring-0 active:shadow-lg 
+        rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none
+        focus:ring-0 active:shadow-lg
         transition duration-150 ease-in-out
-        !shadow-[#0000003F] 
-        appbgbtn1 appfgbtn1 relative disabled:opacity-75 font-bold;  
-   
+        !shadow-[#0000003F]
+        appbgbtn1 appfgbtn1 relative disabled:opacity-75 font-bold;
+
 }
 .btn:hover { background-color: var(--apphvbtn1); }
 .btn2 {
     @apply inline-block font-medium text-sm
         mr-1 mb-2 py-2 px-5
-        rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none 
-        focus:ring-0 active:shadow-lg 
+        rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none
+        focus:ring-0 active:shadow-lg
         transition duration-150 ease-in-out
-        !shadow-[#0000003F] 
-        appbgbtn2 appfgbtn2 relative disabled:opacity-75 font-bold; 
+        !shadow-[#0000003F]
+        appbgbtn2 appfgbtn2 relative disabled:opacity-75 font-bold;
 }
 .btn2:hover { background-color: var(--apphvbtn2); }
 .inputText {
@@ -136,15 +136,15 @@ body {
     min-width: 100px;
     max-width: 350px;
 }
-.menu > div { 
+.menu > div {
     @apply mx-0 px-2 cursor-pointer;
     padding-top: 2px;
     padding-bottom: 2px;
 }
-.menu > div:hover { 
+.menu > div:hover {
     background-color: var(--appsg1);
 }
-.menu .oi { 
+.menu .oi {
     width: 17px;
     margin-left: -2px;
     padding-right: 2px;
@@ -191,7 +191,7 @@ body {
 .md pre { display: grid; }
 .md pre > code { overflow: scroll; max-height: 270px; }
 .md-list {
-	
+
 }
 .md-list > span { margin-left: 5px; }
 .border-default {
@@ -325,3 +325,23 @@ hr {
   color: #fff;
 }
 
+.hideScrollbar{
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hideScrollbar::-webkit-scrollbar {
+  display: none;
+}
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+::-webkit-scrollbar-track {
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 10px;
+}
