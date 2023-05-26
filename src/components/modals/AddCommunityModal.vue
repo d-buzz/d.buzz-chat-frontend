@@ -16,29 +16,6 @@
             </span>
         </div>
     </div>
-
-    <!--<TabGroup>
-        <TabList class="tab">
-            <Tab>{{$t("AddCommunityModal.Add")}}</Tab>
-            <Tab>{{$t("AddCommunityModal.Remove")}}</Tab>
-        </TabList>
-        <TabPanels class="mt-1">
-            <TabPanel>
-                <div class="flex flex-row flex-wrap" :key="updateKey">
-                    <span v-for="community in shown" @click.prevent.stop="hideCommunity(community[0], true)">
-                        <CommunityIcon :fade="false" :img="community[0]" :name="community[1]" :number="''" />
-                    </span>
-                </div>
-            </TabPanel>
-            <TabPanel>
-                <div class="flex flex-row flex-wrap" :key="updateKey">
-                    <span v-for="community in hidden" @click.prevent.stop="hideCommunity(community[0], false)">
-                        <CommunityIcon :fade="true" :img="community[0]" :name="community[1]" :number="''" />
-                    </span>
-                </div>
-            </TabPanel>
-        </TabPanels>
-    </TabGroup>-->
     
     <div class="display-block flex mt-3 mr-auto ml-auto" style="max-width:350px;">
         <input class="inputText1 mr-1" type="text" v-model="searchBar"
@@ -105,8 +82,6 @@ const updateKey = ref('#'+stlib.Utils.nextId());
 async function hideCommunity(community, hide) {
     var manager = getManager();
     manager.hideCommunity(community, hide);
-    shown.value = await manager.getCommunitiesSorted();
-    hidden.value = await manager.getCommunitiesHidden();
 }
 
 function isActive(name, communities) {
@@ -133,6 +108,7 @@ async function initCommunities() {
     var update = async () => {
         shown.value = await manager.getCommunitiesSorted();
         hidden.value = await manager.getCommunitiesHidden();
+        updateKey.value = '#'+stlib.Utils.nextId(); 
     };
     await update();
     manager.oncommunityhide.set("AddCommunityModal.vue", update);
