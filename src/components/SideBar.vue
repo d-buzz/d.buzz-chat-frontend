@@ -28,6 +28,7 @@
 import Draggable from "vue3-draggable";
 import { nextTick } from "vue";
 import { useAccountStore } from "../stores/account";
+const $t = app.config.globalProperties.$t;
 const emit = defineEmits(["toggleStreambar"]);
 const accountStore = useAccountStore();
 const communities = ref([]);
@@ -55,7 +56,7 @@ function setTitle(communityMessages, directGroupMessages) {
     if (directGroupMessages !== 0) str += ":" + directGroupMessages;
     str += ") ";
   }
-  str += "App";
+  str += $t("App.Title");
   document.title = str;
 }
 async function initCommunities() {

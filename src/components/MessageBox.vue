@@ -151,16 +151,18 @@ async function enterMessage(e) {
     if(uploads.value.length > 0) {
         const manager = getManager();
         var user = manager.user;
-        if(!stlib.Utils.isGuest(user)) 
+        if(!stlib.Utils.isGuest(user)) {
+            var onlineKey = null;//await getManager().getKeyFor("$");
             for(var upload of uploads.value) {
                 var file = upload.file;
                 var name = upload.name;
                 var upload = await stuploader.uploadImage(user, file, name);
-                var signature = await upload.signWithKeychain();
+                var signature = (onlineKey != null)?(await upload.signWithKey(onlineKey)):(await upload.signWithKeychain());
                 if(signature == null) return;
                 upload = await upload.upload();
                 if(upload) images.value.push(upload.link);
             }
+        }
         uploads.value = [];
     }
     if(images.value.length > 0) {
