@@ -55,19 +55,19 @@
 }
 
 
-.oi.oi-flip-horizontal:before {
+.oi-flip-horizontal {
   -webkit-transform: scale(-1, 1);
   -ms-transform: scale(-1, 1);
   transform: scale(-1, 1);
 }
 
-.oi.oi-flip-vertical:before {
+.oi-flip-vertical {
   -webkit-transform: scale(1, -1);
   -ms-transform: scale(-1, 1);
   transform: scale(1, -1);
 }
 
-.oi.oi-flip-horizontal-vertical:before {
+.oi-flip-horizontal-vertical {
   -webkit-transform: scale(-1, -1);
   -ms-transform: scale(-1, 1);
   transform: scale(-1, -1);

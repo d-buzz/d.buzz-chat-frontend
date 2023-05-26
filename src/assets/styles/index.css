@@ -68,7 +68,7 @@ body {
 }
 .btn {
     @apply inline-block font-medium text-sm
-        mr-1 mb-2 py-2 px-5
+        mr-1 mb-2 py-2 px-4
         rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none
         focus:ring-0 active:shadow-lg
         transition duration-150 ease-in-out
@@ -79,7 +79,7 @@ body {
 .btn:hover { background-color: var(--apphvbtn1); }
 .btn2 {
     @apply inline-block font-medium text-sm
-        mr-1 mb-2 py-2 px-5
+        mr-1 mb-2 py-2 px-4
         rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none
         focus:ring-0 active:shadow-lg
         transition duration-150 ease-in-out
@@ -218,6 +218,15 @@ body {
     height: 128px;
     min-width: 128px;
     min-height: 128px;
+}
+@media (max-width: 640px) {
+  .av128 {
+    font-size: 24px;
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+    min-height: 64px;
+  }
 }
 .avCommunity {
     font-size: var(--appCommunityIconFontSize);

@@ -3,13 +3,16 @@
 <!--HomeHeaderA-->
         <div v-if="!showDetailedProfile()" class="flex pt-3 pl-3 pr-3">
             <div class="grow" style="margin-top:-7px;">
-                <div class="flex gap-x-1"><b class="text-3xl">@{{accountStore.account.name}}</b>
+                <div class="flex gap-x-1"><b class="text-lg sm:text-2xl">@{{accountStore.account.name}}</b>
                 <span class="oi oi-info infocircle" 
                     @mouseenter="tooltip($event.target, `${$t('Home.Reputation')}: ${reputation}\n${$t('Home.CreatedDate')}: ${created}`)"></span>
                 </div>
             </div>
             <div style="margin-top:-7px;">
-                <button class="btn" @click="logout()">{{$t("Home.Logout")}}</button>
+                <button class="btn" @click="logout()" @mouseenter="tooltip($event.target, $t('Home.Logout'))">
+                    <span class="block sm:hidden"><span class="oi oi-flip-horizontal oi-account-logout"></span></span>
+                    <span class="hidden sm:block">{{$t("Home.Logout")}}</span>
+                </button>
             </div>
         </div>
 <!--HomeHeaderB-->
@@ -28,7 +31,10 @@
                 </span>
             </div>
             <div style="margin-top:-7px;">
-                <button class="btn" @click="logout()">logout</button>
+                <button class="btn px-3 sm:px-4" @click="logout()" @mouseenter="tooltip($event.target, $t('Home.Logout'))">
+                    <span class="block sm:hidden"><span class="oi oi-flip-horizontal oi-account-logout"></span></span>
+                    <span class="hidden sm:block">{{$t("Home.Logout")}}</span>
+                </button>
             </div>
         </div>
 <!--HomeHeader End-->
