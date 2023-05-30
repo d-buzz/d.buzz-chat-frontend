@@ -17,6 +17,9 @@
             />-->
             <UserIcon :name="img" :imgCss="getImgCss()" :letterIcon="getLetterIcon()"/>
         </span>
+        <div class="text-center font-sm lineIcon md:hidden" v-if="$route.params.user == img">
+            <span class="oi oi-menu"></span>
+        </div>
     </div>
   </div>
 </template>
@@ -161,5 +164,9 @@ function getLetterIcon() {
 }
 .borderColor {
     border-color: #0003;
+}
+.lineIcon {
+    line-height:1.15;
+    font-size:13px;
 }
 </style>

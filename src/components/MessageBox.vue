@@ -175,7 +175,7 @@ async function enterMessage(e) {
     }
     else {
         var text = target.innerText;
-        if(text && text.length > 0) {
+        if(text && text.trim().length > 0) {
             emit("entermessage", text);
         }
     }
