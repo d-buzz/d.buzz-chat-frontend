@@ -7,6 +7,7 @@ class StWidget {
         this.properties = null;
         this.initialized = false;
         this.enableKeychainPassthrough = true;
+        this.allowedCustomJson = ["community", "follow"];
         this.messageListener = null;
         this.onLastRead = null;
         this.frameOrigin = '*';
@@ -107,20 +108,31 @@ class StWidget {
             case "lastRead":
                 this.onLastRead(args[0]);
                 break;
+            case "requestCustomJson":
+                if(this.enableKeychainPassthrough && 
+                    this.allowedCustomJson.indexOf(args[1]) !== -1 &&
+                    args[2] === 'Posting') 
+                    window.hive_keychain.requestCustomJson(args[0], args[1], 'Posting', args[3], args[4], (r)=>{
+                        event.source.postMessage(["stlib", msgId, JSON.stringify(r)], event.origin);
+                    });
+            break;
             case "requestVerifyKey":
-                if(this.enableKeychainPassthrough) window.hive_keychain.requestVerifyKey(args[0], args[1], args[2], (r)=>{
-                    event.source.postMessage(["stlib", msgId, JSON.stringify(r)], event.origin);
-                });
+                if(this.enableKeychainPassthrough && args[2] === 'Posting') 
+                    window.hive_keychain.requestVerifyKey(args[0], args[1], 'Posting', (r)=>{
+                        event.source.postMessage(["stlib", msgId, JSON.stringify(r)], event.origin);
+                    });
             break;
             case "requestSignBuffer":
-                if(this.enableKeychainPassthrough) window.hive_keychain.requestSignBuffer(args[0], args[1], args[2], (r)=>{
-                    event.source.postMessage(["stlib", msgId, JSON.stringify(r)], event.origin);
-                });
+                if(this.enableKeychainPassthrough && args[2] === 'Posting') 
+                    window.hive_keychain.requestSignBuffer(args[0], args[1], 'Posting', (r)=>{
+                        event.source.postMessage(["stlib", msgId, JSON.stringify(r)], event.origin);
+                    });
             break;
             case "requestEncodeMessage":
-                if(this.enableKeychainPassthrough) window.hive_keychain.requestEncodeMessage(args[0], args[1], args[2], args[3], (r)=>{
-                    event.source.postMessage(["stlib", msgId, JSON.stringify(r)], event.origin);
-                });
+                if(this.enableKeychainPassthrough && args[3] === 'Posting') 
+                    window.hive_keychain.requestEncodeMessage(args[0], args[1], args[2], 'Posting', (r)=>{
+                        event.source.postMessage(["stlib", msgId, JSON.stringify(r)], event.origin);
+                    });
             break;
         }
     }

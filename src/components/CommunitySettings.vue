@@ -159,10 +159,18 @@ function updateSettings() {
     community.emotes = emotes.value;
     var json = community.updateStreamsCustomJSON();
     updateMessage.value = "";
-    window.hive_keychain.requestCustomJson(user, "community", "Posting",
-         JSON.stringify(json), "Update Community Data", (result)=>{
-        if(result.success) updateMessage.value="Succesfully updated settings."
-        else updateMessage.value="Error: " + result.error;
+    stlib.Utils.queueKeychain((keychain, resolve, error)=>{
+        keychain.requestCustomJson(user, "community", "Posting",
+             JSON.stringify(json), "Update Community Data", (result)=>{
+            if(result.success) { 
+                updateMessage.value="Succesfully updated settings."; 
+                resolve(true); 
+            }
+            else {
+                updateMessage.value="Error: " + result.error;
+                error(result.error);
+            }
+        });
     });
 }
 function resetSettings() {
