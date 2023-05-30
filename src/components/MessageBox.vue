@@ -136,6 +136,7 @@ function setText(text) {
     setCaretAtEnd(box.value);
     var nonBlank = text && text.trim() != '';
     box.value.style.marginTop = (nonBlank)?"20px":"0px";
+    lastNonBlank = nonBlank;
 }
 function onChange(e) {
     var text = e.target.innerText;
