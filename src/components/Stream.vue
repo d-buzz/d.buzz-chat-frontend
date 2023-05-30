@@ -1,12 +1,12 @@
 <template>
     <div class="flex style" :class="{selected: $route.path == path}">
         <div v-if="stream.getPathType() === null">
-            <b class="text-sm">{{stream.getName()}}</b>
+            <b class="text-sm"><StreamName :name="stream.getName()" /></b>
         </div>
         <div class="grow" v-else-if="stream.getPathType() === 't'">
             <router-link :to="`${path}`">
                 <div class="flex">
-                    <div class="pl-2 font-bold grow"><span class="monoIcon">#</span> {{stream.getName()}}</div>
+                    <div class="flex gap-x-1 pl-2 font-bold grow"><span class="monoIcon">#</span> <StreamName :name="stream.getName()" /></div>
                     <div v-if="number && number != '0'"> 
                         <small class="number"><b>{{number}}</b></small>
                     </div>   
@@ -16,7 +16,7 @@
         <div class="grow" v-else-if="stream.getPathType() === 'g'">
             <router-link :to="`${path}`">
                 <div class="flex">
-                    <div class="pl-2 font-bold grow"><span class="oi oi-lock-locked"></span> {{stream.getName()}}</div>
+                    <div class="flex gap-x-1 pl-2 font-bold grow"><span class="oi oi-lock-locked"></span> <StreamName :name="stream.getName()" /></div>
                     <div v-if="number && number != '0'"> 
                         <small class="number"><b>{{number}}</b></small>
                     </div>   
@@ -26,25 +26,25 @@
         <div v-else-if="stream.getPathType() === 'u'">
             <a :href="path" target="_blank" rel="noreferrer noopener">
                 <div @mouseenter="tooltip($event.target, path)">
-                    <div class="fg70"><span class="oi oi-globe text-sm"></span> <span class="">{{stream.getName()}}</span></div>
+                    <div class="flex gap-x-1 fg70"><span class="oi oi-globe text-sm"></span> <StreamName :name="stream.getName()" /></div>
                 </div>
             </a>
         </div>
         <div v-else-if="stream.getPathType() === 'i'">
             <a v-if="path.startsWith('https://')" :href="path" target="_blank" rel="noreferrer noopener">
                 <div @mouseenter="tooltip($event.target, path)">
-                    <div class="fg70"><span class="oi oi-external-link text-sm"></span> <span class="">{{stream.getName()}}</span></div>
+                    <div class="flex gap-x-1 fg70"><span class="oi oi-external-link text-sm"></span> <StreamName :name="stream.getName()" /></div>
                 </div>
             </a>
             <router-link v-else :to="`${path}`">
                 <div>
-                    <div class="fg70"><span class="oi oi-info text-center" style="width:14px;"></span> <span class="">{{stream.getName()}}</span></div>
+                    <div class="fg70"><span class="oi oi-info text-center" style="width:14px;"></span> <StreamName :name="stream.getName()" /></div>
                 </div>
             </router-link>
         </div>
         <div v-else>
             <div>
-                <div>{{stream.getName()}}</div>
+                <div><StreamName :name="stream.getName()" /></div>
             </div>
         </div>
     </div>
@@ -73,8 +73,6 @@ function getPath() {
     return '';
 }
 const path = getPath(); 
-console.log("stream is");
-console.log(props.stream);
 </script>
 <style scoped>
 .style {
