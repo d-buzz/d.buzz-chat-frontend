@@ -28,7 +28,7 @@
                   style="overflow-wrap: normal; word-break: break-word;"
                   ref="box"
                   @keyup="onChange"
-                  @paste="onChange"
+                  @paste="onPaste"
                   @copy="onChange"
                   @cut="onChange"
                   @keydown.enter.exact.prevent="enterMessage"
@@ -88,17 +88,18 @@ function IfCanWrite(fn) {
         if(props.canWrite) fn();
     });
 }
-window.ondropfile.set("MessageBox.vue", (file)=>{
+function addFile(file) {
     if(stlib.Utils.isGuest(getManager().user)) return;
     if(!file.type.startsWith("image/")) return;
-    console.log("drop file", file);
+    console.log("add file", file);
     var obj = { file, name: file.name, image: null };
     obj.image = URL.createObjectURL(file);
     setTimeout(() => {
         URL.revokeObjectURL(obj.image);
     }, 1000);
     uploads.value.push(obj);
-});
+}
+window.ondropfile.set("MessageBox.vue", addFile);
 function delUpload(i) {
     if(i >= 0 && i < uploads.value.length)
         uploads.value.splice(i, 1);
@@ -137,6 +138,23 @@ function setText(text) {
     var nonBlank = text && text.trim() != '';
     box.value.style.marginTop = (nonBlank)?"20px":"0px";
     lastNonBlank = nonBlank;
+}
+function onPaste(e) {
+    console.log("paste", e, e.clipboardData);
+    var clipboard = e.clipboardData || window.clipboardData;
+    if(clipboard) {
+        console.log("files", clipboard.files, clipboard.files.length);
+        if(clipboard.files && clipboard.files.length > 0) {
+            console.log("paste files");
+            for(var file of clipboard.files) 
+                addFile(file);
+            e.preventDefault()
+            return;
+        }
+    }
+    let paste = (e.clipboardData || window.clipboardData).getData("text");
+    console.log("paste", paste);
+    onChange(e);
 }
 function onChange(e) {
     var text = e.target.innerText;
