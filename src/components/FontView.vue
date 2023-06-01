@@ -26,7 +26,7 @@
             <div>The quick dog jumps over the lazy brown fox.</div>
             <div class="font-bold">The quick dog jumps over the lazy brown fox.</div>
         </div>
-        <div class="mt-1">
+        <div class="mt-1" v-if="css">
             <button class="btn" @click="applyFont">Apply</button>
             <button class="btn2" @click="applyFontDefault">Reset to Default</button>
         </div>
@@ -35,8 +35,9 @@
 <script setup>
 const props = defineProps({
     name: String,
-    css: String
+    css: {type: String, default: null }
 });
+const emit = defineEmits(["update"]);
 const fontPreview = ref(null);
 const fontFamily = ref("Century Schoolbook L");
 const fontSize = ref(16);
@@ -80,9 +81,14 @@ function init() {
 }
 init();
 watch(() => fontFamily.value, (family) => {
-   fontPreview.value.style.setProperty('font-family', family);
+    fontPreview.value.style.setProperty('font-family', family);
+    emit("update");
 });
 watch(() => fontSize.value, (size) => {
     fontPreview.value.style.setProperty('font-size', size+'px');
+    emit("update");
+});
+defineExpose({
+    fontFamily, fontSize 
 });
 </script>

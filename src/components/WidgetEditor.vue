@@ -101,6 +101,14 @@
                         </div>
                     </div>
                 </div>
+                <div class="mt-3" style="max-width: 753px;">
+                    <small class="inner-block float-right text-right text-gray-700">{{$t("Home.Theme.Font.Info")}}</small>
+                    <div class="text-xl font-bold">Fonts</div>
+                    <hr/>
+                    <FontView name="Default Font" ref="appFont" @update="onChange"/>
+                    <hr/>
+                    <FontView name="Message Font" ref="appMessageFont" @update="onChange"/>
+                </div>
             </div>
             <div> 
                <div ref="widget" hidden></div>
@@ -129,6 +137,8 @@ import { useRoute } from "vue-router";
 const route = useRoute();
 const widget = ref();
 const widgetcode = ref("");
+const appFont = ref();
+const appMessageFont = ref();
 const preferences = ref([]);
 const updateKey = ref('#'+stlib.Utils.nextId());
 const width = ref("450");
@@ -162,7 +172,7 @@ const defaultPreferences = [
     {name: "homeTabThemes", display: "HomeTab: Themes", desc: "", value: true, newvalue:true}, 
     {name: "onlyPrependCommunities", display: "Only prepended communities", desc: "Show only communities specified in prependCommunties field.", value: false, newvalue:false},       
     {name: "prependCommunities", display: "Prepend Communities", desc: "", value: ["hive-163399"], newvalue:"hive-163399"},
-    {name: "defaultTheme", display: "Default Theme.", desc: "Eg.: Light, Ignite, Dark.", value: 'Light', newvalue:'Light'},
+    {name: "defaultTheme", display: "Default Theme.", desc: "Eg.: Light, Ignite, Dark, or exported JSON string.", value: 'Light', newvalue:'Light'},
 ];
 
 var currentProperties = {};
@@ -187,6 +197,19 @@ function updateCode() {
         var v = item.newvalue;
         if(Array.isArray(item.value)) v = v.trim().split(/[ ,]+/);
         obj[item.name] = v;
+    }
+    try {
+        if(obj['defaultTheme'].trim().startsWith("{")) 
+            obj['defaultTheme'] = JSON.parse(obj['defaultTheme'].trim());
+    }
+    catch(e) { console.log(e); }
+    if(appFont.value) { 
+        obj["--appFontFamily"] = `'${appFont.value.fontFamily}'`;
+        obj["--appFontSize"] = appFont.value.fontSize+'px';
+    }
+    if(appMessageFont.value) {
+        obj["--appMessageFontFamily"] = `'${appMessageFont.value.fontFamily}'`;
+        obj["--appMessageFontSize"] = appMessageFont.value.fontSize+'px';
     }
     var code = 
 `
@@ -219,12 +242,26 @@ function setMode(value) {
     onModeChange();
 }
 function onChange() {
+    console.log("onChange");
     var obj = {};
     var items = preferences.value;
     for(var item of items) {
         var v = item.newvalue;
         if(Array.isArray(item.value)) v = v.trim().split(/[ ,]+/);
         obj[item.name] = v;
+    }
+    try {
+        if(obj['defaultTheme'].trim().startsWith("{")) 
+            obj['defaultTheme'] = JSON.parse(obj['defaultTheme'].trim());
+    }
+    catch(e) { console.log(e); }
+    if(appFont.value) { 
+        obj["--appFontFamily"] = `'${appFont.value.fontFamily}'`;
+        obj["--appFontSize"] = appFont.value.fontSize+'px';
+    }
+    if(appMessageFont.value) {
+        obj["--appMessageFontFamily"] = `'${appMessageFont.value.fontFamily}'`;
+        obj["--appMessageFontSize"] = appMessageFont.value.fontSize+'px';
     }
     console.log(obj);
     currentProperties = obj;
