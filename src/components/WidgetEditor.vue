@@ -76,7 +76,7 @@
                 <div class="flex flex-row mt-1" v-for="item in preferences" :key="updateKey+'#3'">
                     <div v-if="item.options">
                         <div>
-                            <div><b>{{item.display}}</b></div>
+                            <div><b>{{item.display}}</b> <small class="fg70">({{item.name}})</small></div>
                             <div><small>{{item.desc}}</small></div>
                         </div>
                         <div>
@@ -87,7 +87,7 @@
                     </div>
                     <div v-else-if="Array.isArray(item.value) || typeof item.value === 'string'">
                         <div>
-                            <div><b>{{item.display}}</b></div>
+                            <div><b>{{item.display}}</b> <small class="fg70">({{item.name}})</small></div>
                             <div><small>{{item.desc}}</small></div>
                         </div>
                         <div>
@@ -96,7 +96,7 @@
                     </div>
                     <div v-else>
                         <div>
-                            <div><b>{{item.display}}</b></div>
+                            <div><b>{{item.display}}</b> <small class="fg70">({{item.name}})</small></div>
                             <div><input type="checkbox" v-model="item.newvalue" @change="onChange"> <small>{{item.desc}}</small></div>
                         </div>
                     </div>
@@ -105,8 +105,10 @@
                     <small class="inner-block float-right text-right text-gray-700">{{$t("Home.Theme.Font.Info")}}</small>
                     <div class="text-xl font-bold">Fonts</div>
                     <hr/>
+                    <small class="fg70 float-right">(--appFontFamily, --appFontSize)</small>
                     <FontView name="Default Font" ref="appFont" @update="onChange"/>
                     <hr/>
+                    <small class="fg70 float-right">(--appMessageFontFamily, --appMessageFontSize)</small>
                     <FontView name="Message Font" ref="appMessageFont" @update="onChange"/>
                 </div>
             </div>

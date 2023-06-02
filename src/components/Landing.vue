@@ -33,9 +33,9 @@
                     <button class="btn" data-mdb-ripple="true" data-mdb-ripple-color="light" @click="setAppAB('a')" role="button">{{$t("Landing.openApp")}}</button>
                     <button class="btn" data-mdb-ripple="true" data-mdb-ripple-color="light" @click="setAppAB('b')" role="button">Open with different UI</button>
                 </div>
-                <div><small class="fg70">Widget test page:</small></div>          
-                <a class="btn2 mr-1" data-mdb-ripple="true" data-mdb-ripple-color="light" href="/widgettest" role="button">Widget test page</a>
-                <a class="btn2 ml-1" data-mdb-ripple="true" data-mdb-ripple-color="light" href="/docs" role="button">api documentation</a>
+                <div><small class="fg70">Widget Editor and documentation:</small></div>          
+                <a class="btn2 mr-1" data-mdb-ripple="true" data-mdb-ripple-color="light" href="/widgeteditor" role="button">Widget Editor</a>
+                <a class="btn2 ml-1" data-mdb-ripple="true" data-mdb-ripple-color="light" href="/docs" role="button">Api documentation</a>
                 <div class="mt-20 fg70"><small>Frequently Asked Questions:</small></div> 
                 <div class="mt-1"><b>What is the app about?</b></div>
                 <div>This app brings decentralized messaging for hive users, guests and hive communities.</div>

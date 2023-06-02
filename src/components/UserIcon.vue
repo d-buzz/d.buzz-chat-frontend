@@ -5,7 +5,7 @@
             <span>{{profileLetter}}</span>
         </div>
         <div v-else class="">
-            <img v-if="size != 'small'" class="absolute iconborder sm:hidden" :class="`${imgCss}`" :src="`https://images.hive.blog/u/${name}/avatar/${size}`"/>     
+            <img v-if="size != 'small'" class="absolute iconborder hidden sm:block" :class="`${imgCss}`" :src="`https://images.hive.blog/u/${name}/avatar/${size}`"/>     
             <img class="iconborder" :class="`${imgCss}`" :src="`https://images.hive.blog/u/${name}/avatar/small`" @error="imgLoadError()" alt="" />     
         </div>
         <div v-if="online" class="onlineIcon"></div>

@@ -23,7 +23,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("./WidgetEditor.vue"),
   },
   {
-    path: "/docs",
+    path: "/docs/:page?",
     name: "@!ApiDocs",
     component: () => import("./ApiDocs.vue"),
   },

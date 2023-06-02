@@ -173,6 +173,9 @@ body {
 	margin: 0px;
 	/*margin: 0 0 .7em 0;*/
 }
+.mdh p {
+   margin: .35em 0 .35em 0;
+}
 .mdh h1, .mdh h2, .mdh h3, .mdh h4, .mdh h5, .mdh h6 {
     font-weight: bold;
     margin: .7em 0 .7em 0;
@@ -187,7 +190,8 @@ body {
 	padding: 3px 5px;
 	background-color: var(--apphg2);
 }
-.md a:hover { opacity: 0.75; }
+.md a { opacity: 0.75; text-decoration: underline; }
+.md a:hover { opacity: 1; text-decoration: none; }
 .md pre { display: grid; }
 .md pre > code { overflow: scroll; max-height: 270px; }
 .md-list {

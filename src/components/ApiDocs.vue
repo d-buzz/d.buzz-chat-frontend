@@ -23,13 +23,13 @@
         <div class="appbg1 appfg1 px-3 pt-5 pb-2 border-r-1 font-lg" style="min-width: 150px ">
             <b>Contents</b>
             <hr class="mb-1"/>
-            <div v-for="section in sections" class="cursor-pointer mt-1 mb-1 fg70 hover:opacity-100" @click="visit(section[1])">
+            <div v-for="section in sections" class="cursor-pointer mt-1 mb-1 fg70 hover:opacity-100" @click="visit(section[1], section[2])">
                 {{section[0]}}
             </div>
         </div>
         <div class="grow overflow-y-scroll scrollBox">
             <div class="scrollBoxContent">
-                <div class="px-5 pt-2 pb-10 mb-10 md mdh" ref="page"></div>
+                <div class="px-5 pt-2 pb-10 mb-10 md mdh" ref="page" style="max-width: 750px;"></div>
             </div>
         </div>
     </div>   
@@ -37,23 +37,36 @@
 </div>
 </template>
 <script setup>
-import intro from '../../docs/introduction-welcome.md?raw'
+import intro from '../../docs/introduction.md?raw'
 import quickstart from '../../docs/quickstart.md?raw'
+import widget from '../../docs/widget.md?raw'
+const router = useRouter();
+const route = useRoute();
 var page = ref(null);
 var sections = [
-    ["Introduction", intro],
-    ["Quickstart", quickstart],
-    ["Tutorial", "*to be added*"],
-    ["API", "*to be added*"],
-    ["Image Uploader", "*to be added*"],
-    ["Widget", "*to be added*"]
+    ["Introduction", intro, "intro"],
+    ["Quickstart", quickstart, "quickstart"],
+    ["Tutorial", "*to be added*", "tutorial"],
+    ["API", "*to be added*", "api"],
+    ["Image Uploader", "*to be added*", "uploader"],
+    ["Widget", widget, "widget"]
 ];
-function visit(text) {
+function visit(text, url) {
+    if(url != null) {
+        router.replace('/docs/'+url);
+    }
     var element = page.value;
     element.innerHTML = "";
     stlib.Markdown.simpleMarkdown(text, element);
 }
 function init() { 
+    var page = route.params.page;
+    for(var section of sections) {
+        if(section[2] === page) {
+            visit(section[1]);
+            return;
+        }
+    }
     visit(intro);
 }
 nextTick(init);
