@@ -3258,6 +3258,20 @@ class MessageManager {
                 throw result.getError();
             var messages = yield this.toDisplayable(result);
             this.resolveReferences(messages);
+            for (var displayableMessage of messages) {
+                var conversation = displayableMessage.getConversation();
+                var lastRead = this.conversationsLastReadData[conversation];
+                if (lastRead == null) {
+                    lastRead = { number: 0, timestamp: 0 };
+                    this.conversationsLastReadData[conversation] = lastRead;
+                }
+                if (this.selectedConversation === conversation)
+                    this.setLastRead(conversation, displayableMessage.getTimestamp());
+                else if (displayableMessage.getTimestamp() > lastRead.timestamp) {
+                    lastRead.number++;
+                    window.localStorage.setItem(this.user + "#lastReadData", JSON.stringify(this.conversationsLastReadData));
+                }
+            }
             return messages;
         });
     }

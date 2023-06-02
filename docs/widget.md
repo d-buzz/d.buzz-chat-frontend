@@ -124,6 +124,18 @@ Example:
 w.resize(500, 700);
 ```
 
+#### setLastReadCallback
+
+Sets the last read callback, the callback receives an object with direct and community notifications count.
+
+- `setLastReadCallback(fn)`
+
+```
+w.setLastReadCallback((obj)=>{
+   console.log("Direct and group: ", obj.group, "Community:", obj.community);
+});
+```
+
 #### navigate
 
 Navigate to a different page or messaging area.

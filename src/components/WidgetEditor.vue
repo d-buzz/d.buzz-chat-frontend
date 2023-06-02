@@ -18,7 +18,7 @@
         <div class="flex items-center lg:ml-auto">
           <span class="inline-block px-6 py-2 mr-2 bg-green-600 text-white font-medium text-xs leading-snug uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out" data-mdb-ripple="true" data-mdb-ripple-color="light"
              role="button" @click="toggleWidget()">
-                <span class="oi oi-envelope-open"></span> Open Widget
+                <span class="oi oi-envelope-open"></span> Open Widget {{lastRead}}
           </span>
         </div>
       </div>
@@ -150,6 +150,7 @@ const overlay = ref(true);
 const resizable = ref(true);
 const resizeCorner = ref("lb");
 const startPage = ref('/t/hive-163399/0');
+const lastRead = ref('');
 
 const defaultPreferences = [
     {name: "requireLogin", display: "Require Login:", desc: "If true, start on login page, otherwise show specified chat.", value: false, newvalue: false},
@@ -321,6 +322,10 @@ function initWidget() {
         "prependCommunities": ["hive-163399"]
     };*/
     //stwidget.setUser("username");
+    stwidget.setLastReadCallback((obj)=>{
+        console.log("LAST READ  ++++++++++++++++++ ", obj);     
+        lastRead.value = (obj.group === 0)?'':('('+obj.group+')');
+    });
     var element = stwidget.createElement(width.value.trim()+'px', height.value.trim()+'px', overlay.value, resizable.value);
     var obj = { };
     if(resizable.value) {

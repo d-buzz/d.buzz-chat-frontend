@@ -58,6 +58,7 @@ function setTitle(communityMessages, directGroupMessages) {
   }
   str += $t("App.Title");
   document.title = str;
+  window.sendNotificationsUpdate({community: communityMessages, group: directGroupMessages});
 }
 async function initCommunities() {
   var user = accountStore.account.name;

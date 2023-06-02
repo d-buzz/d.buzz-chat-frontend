@@ -45,6 +45,7 @@ function applyCssOverrides(properties) {
         if(name.startsWith("--")) 
             root.style.setProperty(name, properties[name]);
 }
+window.sendNotificationsUpdate = (obj)=>{};
 const isEmbed = new URLSearchParams(location.search).has("embed");
 var inited = false;
 //window.dhive = dhive;
@@ -124,6 +125,9 @@ var inited = false;
                 };
             }
         });
+        window.sendNotificationsUpdate = (obj)=>{
+            window.parent.postMessage(["stlib", -1, "notifications", obj], "*");
+        };
         window.parent.postMessage(["stlib", -1, "initialize"], "*");
     }
     try {

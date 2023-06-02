@@ -198,6 +198,7 @@ function setTitle(communityMessages, directGroupMessages) {
   }
   str += $t("App.Title");
   document.title = str;
+  window.sendNotificationsUpdate({community: communityMessages, group: directGroupMessages});
 }
 async function initCommunities() {
   var user = accountStore.account.name;
@@ -349,8 +350,8 @@ async function initConversations(route) {
     var messages = await manager.readCachedUserMessages();
     for (var message of messages) {
       var conversation = conversationMap[message.getConversation()];
-      if (conversation && message.isVerified() && message.getTimestamp() > conversation.tmp) {
-        conversation.lastReadNumber++;
+      if(conversation && message.isVerified() && message.getTimestamp() > conversation.tmp) {
+        //conversation.lastReadNumber++;
         conversation.timestamp = Math.max(conversation.timestamp, message.getTimestamp());
       }
     }

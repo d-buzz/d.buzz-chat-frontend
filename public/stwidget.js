@@ -105,8 +105,8 @@ class StWidget {
                     event.source.postMessage(this.postOnInit, event.origin);
                 event.source.postMessage(["stlib", "initMain", JSON.stringify("")], event.origin);
                 break;
-            case "lastRead":
-                this.onLastRead(args[0]);
+            case "notifications":
+                if(this.onLastRead) this.onLastRead(args);
                 break;
             case "requestCustomJson":
                 if(this.enableKeychainPassthrough && 
