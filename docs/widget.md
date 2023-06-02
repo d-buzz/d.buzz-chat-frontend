@@ -130,6 +130,7 @@ Sets the last read callback, the callback receives an object with direct and com
 
 - `setLastReadCallback(fn)`
 
+Example:
 ```
 w.setLastReadCallback((obj)=>{
    console.log("Direct and group: ", obj.group, "Community:", obj.community);

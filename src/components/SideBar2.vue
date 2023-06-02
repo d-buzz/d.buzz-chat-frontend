@@ -285,8 +285,6 @@ function toggleJoinModal() {
 }*/
 
 async function initConversations(route) {
-  console.log(route);
-  console.log("load community " + route.name);
   if (username == null || route.name == null) return;
   //isCommunity.value = route.name.startsWith('Community');
   const manager = getManager();
@@ -325,14 +323,11 @@ async function initConversations(route) {
     }
     else {*/
   var update = async () => {
-    console.log("Callback message update SideBar2.vue");
-
     var groupObjs = await manager.getJoinedAndCreatedGroups();
     var conversationArray = await manager.readUserConversations();
     var conversationObjects = [];
     for (var conversation in groupObjs) {
       var groupObj = groupObjs[conversation];
-      console.log("group obj", groupObj);
       groupObj.tmp = groupObj.timestamp;
       conversationObjects.push(groupObj);
     }
@@ -358,8 +353,6 @@ async function initConversations(route) {
     conversationObjects.sort((a, b) => b.timestamp - a.timestamp);
     conversations.value = conversationObjects;
     updateKey2.value = "#" + stlib.Utils.nextId();
-
-    console.log("Callback message end SideBar2.vue");
   };
   await update();
   manager.setCallback("SideBar.vue#2", update);

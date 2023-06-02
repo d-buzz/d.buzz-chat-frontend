@@ -323,7 +323,6 @@ function initWidget() {
     };*/
     //stwidget.setUser("username");
     stwidget.setLastReadCallback((obj)=>{
-        console.log("LAST READ  ++++++++++++++++++ ", obj);     
         lastRead.value = (obj.group === 0)?'':('('+obj.group+')');
     });
     var element = stwidget.createElement(width.value.trim()+'px', height.value.trim()+'px', overlay.value, resizable.value);

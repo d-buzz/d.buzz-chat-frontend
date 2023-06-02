@@ -625,7 +625,6 @@ async function addMentions(mentions, text, community) {
 const decode = async ()=>{ await getManager().decodeSelectedConversations(); };
 var sendingMessage = false;
 const enterMessage = async (message, contentMessage=null, block=true, clearBox=true, onsuccess=null) => {
-    console.log("message ", message);
     if(block && sendingMessage) return;
     var result = null;
     try {
@@ -673,7 +672,6 @@ const enterMessage = async (message, contentMessage=null, block=true, clearBox=t
 
         var mentionsArray = Object.keys(mentions);
         if(mentionsArray.length === 0) mentionsArray = null;
-        console.log(textMsg, mentionsArray);
         
         result = await manager.sendMessage(textMsg, conversation, mentionsArray);
         if(result.isSuccess()) {
@@ -681,7 +679,6 @@ const enterMessage = async (message, contentMessage=null, block=true, clearBox=t
             if(contentMsg.value !== null) contentMsg.value = null;
         }
         else { 
-            console.log(result);
             toggleErrorModal(result.getError());
         }
     }
@@ -701,7 +698,6 @@ const enterMessage = async (message, contentMessage=null, block=true, clearBox=t
     }
 };
 async function updateStatus(writing) {
-    console.log("update status ", writing);
     var manager = getManager();
     var conversation = manager.selectedConversation;
     if(conversation != null && conversation.length > 0 && conversation[0] === '#') return;

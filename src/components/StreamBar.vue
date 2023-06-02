@@ -89,7 +89,6 @@ function filterStreams(streams) {
 }
 function showMenu(element) {
     var community = communityName.value;
-    console.log("menu", element);
     var options = [
         ["About", ()=>{ router.push(`/i/${community}/about`); }, "oi-info"],
         ["Posts", ()=>{ window.open('https://peakd.com/c/'+community+'/created', '_blank', 'noopener=true'); }, "oi-external-link"]
@@ -102,8 +101,6 @@ function showMenu(element) {
     window.menu(element, options, null, true);
 }
 async function initConversations(route) {
-    console.log(route);
-    console.log("load community " + route.name);
     if(route.name == null) return;
     isCommunity.value = route.name.startsWith('Community');
     const manager = getManager();
@@ -128,13 +125,11 @@ async function initConversations(route) {
 
         
         var update = async() => {
-            console.log("Callback message update StreamBar.vue Community");
             for(var stream of streams.value) {
                 var path = stream.getPath();
                 stream.lastReadNumber = (path != null && path.getType() === 't')?
                     (await manager.getLastReadCommunityStream(path.getUser()+'/'+path.getPath())):'0';
             }
-            console.log("Callback message end StreamBar.vue Community");
         };
         await update();
         manager.setCallback("StreamBar.vue", update);
@@ -144,13 +139,11 @@ async function initConversations(route) {
     else {
         if(username == null) return;
         var update = async() => {
-            console.log("Callback message update StreamBar.vue");
-
             var groupObjs = await manager.getJoinedAndCreatedGroups();
             var conversationArray = await manager.readUserConversations();
             var conversationObjects = [];
             for(var conversation in groupObjs) {
-                var groupObj = groupObjs[conversation]; console.log("group obj", groupObj);
+                var groupObj = groupObjs[conversation];
                 groupObj.tmp = groupObj.timestamp;
                 conversationObjects.push(groupObj);
             }
@@ -177,8 +170,6 @@ async function initConversations(route) {
             conversationObjects.sort((a,b)=>b.timestamp-a.timestamp);
             conversations.value = conversationObjects;
             updateKey.value = '#'+stlib.Utils.nextId();
-
-            console.log("Callback message end StreamBar.vue");
         };
         await update();
         manager.setCallback("StreamBar.vue", update);
