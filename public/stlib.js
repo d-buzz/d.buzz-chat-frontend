@@ -1578,6 +1578,16 @@ class DisplayableMessage {
     }
     init() {
         this.usernames = this.message.getGroupUsernames();
+        var content = this.content;
+        if (content) {
+            if (content instanceof imports_1.Thread) {
+                var threadContent = content.getContent();
+                if (threadContent instanceof imports_1.Edit)
+                    this.isEdit = true;
+            }
+            else if (content instanceof imports_1.Edit)
+                this.isEdit = true;
+        }
     }
     getEmoteIndex(emote) {
         if (this.emotes === null)
@@ -1644,6 +1654,9 @@ class DisplayableMessage {
             this.edits.push(msg);
             this.edits.sort((a, b) => b.getTimestamp() - a.getTimestamp());
         }
+    }
+    isUnresolvedReference() {
+        return this.reference == null && this.isEmote() || this.isFlag() || this.content instanceof imports_1.Edit;
     }
     hasUser(user) { return this.usernames.indexOf(user) !== -1; }
     getUser() { return this.message.user; }
@@ -3483,6 +3496,8 @@ class MessageManager {
             this.resolveReference(messages, msg);
     }
     resolveReference(messages, msg) {
+        if (msg.reference != null)
+            return;
         try {
             var content = msg.content;
             if (content instanceof imports_1.Thread)
@@ -3508,7 +3523,7 @@ class MessageManager {
                         return;
                     }
                 }
-                console.log("did not find reference ", content.getReference());
+                //console.log("did not find reference ", content.getReference());
             }
         }
         catch (e) {
@@ -3637,7 +3652,7 @@ class MessageManager {
                         try {
                             var decodedMessage = yield this.decode(encodedMessage);
                             data.messages.push(decodedMessage);
-                            this.resolveReference(data.messages, decodedMessage);
+                            this.resolveReferences(data.messages);
                             this.postCallbackEvent(decodedMessage);
                         }
                         catch (e) {
