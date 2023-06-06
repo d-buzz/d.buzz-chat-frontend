@@ -57,7 +57,7 @@ var inited = false;
     if((isEmbed || window.hive_keychain === undefined) && window.parent != null && window.parent.postMessage) {
         var proxy = { id: 0, callbacks: {}, methods: {
             setUser: function (username) {
-                console.log("set user", username);
+                console.log("set user: ", username);
                 //if(window.setLogin) { 
                     //window.setLogin(username);
                     //getManager().setUser(username);
@@ -67,8 +67,18 @@ var inited = false;
                 //else {
                     if(getManager().user === username) return;
                     window.localStorage.setItem("_user", JSON.stringify({name:username,authenticated:true}));
-                    if(inited) window.location.reload();     
+                    if(window.localStorage.getItem("_user") == null) {
+                        console.log("warning: localStorage not present");                    
+                    }
+                    /*if(inited) {
+                        console.log("reload");
+                        window.location.reload();     
+                    }*/
                 //}
+            },
+            reload: function() {
+                console.log("reload: ");
+                window.location.reload();     
             },
             initMain: function() {
                 initMain();

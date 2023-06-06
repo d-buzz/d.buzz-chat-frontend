@@ -3,7 +3,7 @@ class StWidget {
         this.url = url.indexOf('?')===-1?(url+'?embed'):(url+'&embed');
         this.element = null;
         this.iframe = null;
-        this.postOnInit = null;
+        this.user = null;
         this.properties = null;
         this.initialized = false;
         this.enableKeychainPassthrough = true;
@@ -69,9 +69,11 @@ class StWidget {
     pause(value) { return this.postMessage(["stlib", "pause", JSON.stringify(value)]); }
     setUser(user) { 
         this.user = user;
-        if(!this.postMessage(["stlib", "setUser", JSON.stringify(user)])) {
-            this.postOnInit = ["stlib", "setUser", JSON.stringify(user)];
-        }
+        this.postMessage(["stlib", "setUser", JSON.stringify(user)])
+        this.reload();
+    }
+    reload() {
+        this.postMessage(["stlib", "reload", JSON.stringify("")])
     }
     navigate(url) {
         this.url = url.indexOf('?')===-1?(url+'?embed'):(url+'&embed');
@@ -101,8 +103,8 @@ class StWidget {
                 this.frameOrigin = event.origin; 
                 if(this.properties != null) 
                     event.source.postMessage(["stlib", "setProperties", JSON.stringify(this.properties)], event.origin);
-                if(this.postOnInit != null)
-                    event.source.postMessage(this.postOnInit, event.origin);
+                if(this.user != null)
+                    event.source.postMessage(["stlib", "setUser", JSON.stringify(this.user)], event.origin);
                 event.source.postMessage(["stlib", "initMain", JSON.stringify("")], event.origin);
                 break;
             case "notifications":

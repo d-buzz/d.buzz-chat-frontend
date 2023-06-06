@@ -435,7 +435,7 @@ class Community {
 exports.Community = Community;
 Community.MAX_TEXT_STREAMS = 64;
 
-},{"./data-path":19,"./data-stream":20,"./utils":29}],3:[function(require,module,exports){
+},{"./data-path":19,"./data-stream":20,"./utils":31}],3:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -792,7 +792,7 @@ Content.addType(encoded_1.Encoded); //'x'
 Content.addType(online_status_1.OnlineStatus); //'o'
 Content.addType(mention_1.Mention); //'m'
 
-},{"../signable-message":26,"../utils":29,"./content":3,"./edit":4,"./emote":5,"./encoded":6,"./flag":7,"./group-invite":8,"./images":9,"./jsoncontent":11,"./mention":12,"./online-status":13,"./preferences":14,"./quote":15,"./text":16,"./thread":17,"./with-reference":18}],11:[function(require,module,exports){
+},{"../signable-message":28,"../utils":31,"./content":3,"./edit":4,"./emote":5,"./encoded":6,"./flag":7,"./group-invite":8,"./images":9,"./jsoncontent":11,"./mention":12,"./online-status":13,"./preferences":14,"./quote":15,"./text":16,"./thread":17,"./with-reference":18}],11:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1306,7 +1306,7 @@ DataPath.TYPE_URL = "u";
 DataPath.TYPE_TEXT = "t";
 DataPath.TYPE_GROUP = "g";
 
-},{"./utils":29}],20:[function(require,module,exports){
+},{"./utils":31}],20:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DataStream = void 0;
@@ -1353,7 +1353,7 @@ class DataStream {
 }
 exports.DataStream = DataStream;
 
-},{"./data-path":19,"./permission-set":25}],21:[function(require,module,exports){
+},{"./data-path":19,"./permission-set":27}],21:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1548,7 +1548,7 @@ class DefaultStreamDataCache extends stream_data_cache_1.StreamDataCache {
 }
 exports.DefaultStreamDataCache = DefaultStreamDataCache;
 
-},{"./community":2,"./stream-data-cache":28,"./utils":29}],22:[function(require,module,exports){
+},{"./community":2,"./stream-data-cache":30,"./utils":31}],22:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1718,7 +1718,105 @@ class DisplayableFlag {
 }
 exports.DisplayableFlag = DisplayableFlag;
 
-},{"./content/imports":10,"./utils":29}],23:[function(require,module,exports){
+},{"./content/imports":10,"./utils":31}],23:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.LastRead = exports.LastReadRecord = void 0;
+class LastReadRecord {
+    constructor(timestamp, number) {
+        this.timestamp = timestamp;
+        this.number = number;
+    }
+}
+exports.LastReadRecord = LastReadRecord;
+class LastRead {
+    constructor() {
+        this.data = {};
+        this.updated = false;
+        this.storage = null;
+    }
+    lookup(conversation) {
+        var record = this.data[conversation];
+        return (record != null) ? record : null;
+    }
+    store(conversation, timestamp = 0, number = 0) {
+        var record = this.lookup(conversation);
+        if (record == null) {
+            record = new LastReadRecord(timestamp, number);
+            this.data[conversation] = record;
+        }
+        else {
+            record.timestamp = timestamp;
+            record.number = number;
+        }
+        this.updated = true;
+        this.updateStorage();
+        return record;
+    }
+    updateStorage() {
+        if (this.updated && this.storage)
+            this.storage.setItem("lastReadData", this.data);
+    }
+    load() {
+        if (this.storage) {
+            var data = this.storage.getItem("lastReadData");
+            if (data != null) {
+                this.data = data;
+            }
+        }
+    }
+    setStorageMethod(storage) {
+        this.storage = storage;
+        this.updateStorage();
+    }
+}
+exports.LastRead = LastRead;
+
+},{}],24:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.EncodedPublicStorage = exports.LocalUserStorage = void 0;
+class LocalUserStorage {
+    constructor(user) {
+        this.user = user;
+    }
+    getItem(name) {
+        try {
+            if (window.localStorage) {
+                var item = window.localStorage.getItem(this.user + '#' + name);
+                if (item)
+                    return JSON.parse(item);
+            }
+        }
+        catch (e) {
+            console.log(e);
+        }
+        return null;
+    }
+    setItem(name, value = null) {
+        try {
+            if (window.localStorage)
+                window.localStorage.setItem(this.user + '#' + name, JSON.stringify(value));
+        }
+        catch (e) {
+            console.log(e);
+        }
+    }
+}
+exports.LocalUserStorage = LocalUserStorage;
+class EncodedPublicStorage {
+    constructor(user) {
+        this.user = user;
+    }
+    getItem(name) {
+        return null;
+    }
+    setItem(name, value = null) {
+    }
+}
+exports.EncodedPublicStorage = EncodedPublicStorage;
+
+},{}],25:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Markdown = void 0;
@@ -1983,7 +2081,7 @@ class Markdown {
 exports.Markdown = Markdown;
 Markdown.imageProxy = (link) => { return link; };
 
-},{"markdown-ast":30}],24:[function(require,module,exports){
+},{"markdown-ast":32}],26:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -2001,6 +2099,8 @@ const community_1 = require("./community");
 const utils_1 = require("./utils");
 const signable_message_1 = require("./signable-message");
 const displayable_message_1 = require("./displayable-message");
+const user_storage_1 = require("./manager/user-storage");
+const last_read_1 = require("./manager/last-read");
 const imports_1 = require("./content/imports");
 class LoginKey {
     constructor(user, key) {
@@ -2125,7 +2225,7 @@ class MessageManager {
         this.cachedUserMessagesLoadedAll = false;
         this.cachedUserConversations = null;
         this.recentlySentEncodedContent = [];
-        this.conversationsLastReadData = {};
+        this.conversationsLastReadData = new last_read_1.LastRead();
         this.conversationsLastMessageTimestamp = {};
         this.cachedGroupLastMessageTimestamp = null;
         this.selectedCommunityPage = {};
@@ -2318,16 +2418,13 @@ class MessageManager {
             if (data != null) {
                 if (_this.hasMessage(data.encoded, displayableMessage) || _this.hasMessage(data.messages, displayableMessage))
                     return;
-                var lastRead = _this.conversationsLastReadData[conversation];
-                if (lastRead == null) {
-                    lastRead = { number: 0, timestamp: 0 };
-                    _this.conversationsLastReadData[conversation] = lastRead;
-                }
+                var lastRead = _this.conversationsLastReadData.lookup(conversation);
+                if (lastRead == null)
+                    lastRead = _this.conversationsLastReadData.store(conversation, 0, 0);
                 if (_this.selectedConversation === conversation)
                     _this.setLastRead(conversation, displayableMessage.getTimestamp());
                 else if (displayableMessage.getTimestamp() > lastRead.timestamp) {
-                    lastRead.number++;
-                    window.localStorage.setItem(_this.user + "#lastReadData", JSON.stringify(_this.conversationsLastReadData));
+                    _this.conversationsLastReadData.store(conversation, lastRead.timestamp, lastRead.number + 1);
                 }
                 if (data.encoded != null && displayableMessage.isEncoded()) {
                     var prefs = yield _this.getPreferences();
@@ -2398,9 +2495,8 @@ class MessageManager {
         this.user = user;
         if (user !== null) {
             try {
-                var lastReadData = window.localStorage.getItem(user + "#lastReadData");
-                if (lastReadData != null)
-                    this.conversationsLastReadData = JSON.parse(lastReadData);
+                this.conversationsLastReadData.setStorageMethod(new user_storage_1.LocalUserStorage(user));
+                this.conversationsLastReadData.load();
             }
             catch (e) {
                 console.log(e);
@@ -2971,24 +3067,19 @@ class MessageManager {
         });
     }
     getLastReadNumber(conversation) {
-        var lastRead = this.conversationsLastReadData[conversation];
+        var lastRead = this.conversationsLastReadData.lookup(conversation);
         return lastRead == null ? 0 : lastRead.number;
     }
     getLastRead(conversation) {
-        var lastRead = this.conversationsLastReadData[conversation];
+        var lastRead = this.conversationsLastReadData.lookup(conversation);
         return lastRead == null ? null : lastRead;
     }
     setLastRead(conversation, timestamp, number = 0) {
         var refreshNeeded = false;
-        var lastRead = this.conversationsLastReadData[conversation];
-        if (lastRead == null)
-            this.conversationsLastReadData[conversation] = { number: number, timestamp: timestamp };
-        else {
+        var lastRead = this.conversationsLastReadData.lookup(conversation);
+        if (lastRead != null)
             refreshNeeded = number === 0 && lastRead.number > 0;
-            lastRead.number = number;
-            lastRead.timestamp = timestamp;
-        }
-        window.localStorage.setItem(this.user + "#lastReadData", JSON.stringify(this.conversationsLastReadData));
+        this.conversationsLastReadData.store(conversation, timestamp, number);
         if (refreshNeeded)
             this.onlastread.post(lastRead);
         return refreshNeeded;
@@ -3062,7 +3153,7 @@ class MessageManager {
             var role = communityData.getRole(this.user);
             var titles = communityData.getTitles(this.user);
             var communityStreams = community + '/';
-            var data = this.conversationsLastReadData;
+            var data = this.conversationsLastReadData.data;
             var number = 0;
             for (var conversation in data) {
                 if (conversation === community || conversation.startsWith(communityStreams)) {
@@ -3273,16 +3364,14 @@ class MessageManager {
             this.resolveReferences(messages);
             for (var displayableMessage of messages) {
                 var conversation = displayableMessage.getConversation();
-                var lastRead = this.conversationsLastReadData[conversation];
+                var lastRead = this.conversationsLastReadData.lookup(conversation);
                 if (lastRead == null) {
-                    lastRead = { number: 0, timestamp: 0 };
-                    this.conversationsLastReadData[conversation] = lastRead;
+                    lastRead = this.conversationsLastReadData.store(conversation, 0, 0);
                 }
                 if (this.selectedConversation === conversation)
                     this.setLastRead(conversation, displayableMessage.getTimestamp());
                 else if (displayableMessage.getTimestamp() > lastRead.timestamp) {
-                    lastRead.number++;
-                    window.localStorage.setItem(this.user + "#lastReadData", JSON.stringify(this.conversationsLastReadData));
+                    this.conversationsLastReadData.store(conversation, lastRead.timestamp, lastRead.number + 1);
                 }
             }
             return messages;
@@ -3688,7 +3777,7 @@ class MessageManager {
 }
 exports.MessageManager = MessageManager;
 
-},{"./client":1,"./community":2,"./content/imports":10,"./displayable-message":22,"./signable-message":26,"./utils":29}],25:[function(require,module,exports){
+},{"./client":1,"./community":2,"./content/imports":10,"./displayable-message":22,"./manager/last-read":23,"./manager/user-storage":24,"./signable-message":28,"./utils":31}],27:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PermissionSet = void 0;
@@ -3773,7 +3862,7 @@ class PermissionSet {
 }
 exports.PermissionSet = PermissionSet;
 
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -4076,7 +4165,7 @@ SignableMessage.TYPE_ACCOUNT = 'a';
 SignableMessage.TYPE_MESSAGE = 'm';
 SignableMessage.TYPE_WRITE_MESSAGE = 'w';
 
-},{"./content/imports":10,"./utils":29}],27:[function(require,module,exports){
+},{"./content/imports":10,"./utils":31}],29:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("./client");
@@ -4099,7 +4188,7 @@ if (window !== undefined) {
     };
 }
 
-},{"./client":1,"./community":2,"./content/imports":10,"./data-path":19,"./data-stream":20,"./displayable-message":22,"./markdown":23,"./message-manager":24,"./permission-set":25,"./signable-message":26,"./utils":29}],28:[function(require,module,exports){
+},{"./client":1,"./community":2,"./content/imports":10,"./data-path":19,"./data-stream":20,"./displayable-message":22,"./markdown":25,"./message-manager":26,"./permission-set":27,"./signable-message":28,"./utils":31}],30:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -4210,7 +4299,7 @@ class StreamDataCache {
 }
 exports.StreamDataCache = StreamDataCache;
 
-},{}],29:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -5077,7 +5166,7 @@ const accountDataCache = new AccountDataCache();
 const communityDataCache = new AccountDataCache();
 var streamDataCache = null;
 
-},{"./community":2,"./default-stream-data-cache":21,"./permission-set":25,"./signable-message":26}],30:[function(require,module,exports){
+},{"./community":2,"./default-stream-data-cache":21,"./permission-set":27,"./signable-message":28}],32:[function(require,module,exports){
 const returnTrue = () => true
 
 // Returns true when the given string ends with an unescaped escape.
@@ -5423,4 +5512,4 @@ const parse = (input, top = []) => {
 Object.defineProperty(parse, 'default', { value: parse })
 module.exports = parse
 
-},{}]},{},[27]);
+},{}]},{},[29]);
