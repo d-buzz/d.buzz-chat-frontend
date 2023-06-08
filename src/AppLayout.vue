@@ -18,7 +18,7 @@ const router = useRouter();
 const updateKey = ref('#'+stlib.Utils.nextId());
 const globalProperties = ref(window.globalProperties);
 const streamBar = ref(null);
-const streambarDirectMessages = ref(true);
+const streambarDirectMessages = ref(false);
 const route = useRoute();
 function getKey(path) {
     return path + stlib.Utils.nextId();
