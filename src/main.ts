@@ -30,10 +30,11 @@ window.globalProperties = {
     "requireLogin": true,
     "prependCommunities": [],
     "defaultTheme": "Light",
+    "messageIconFlexClass": "block text-justify lg:text-left sm:flex",
+    "messageIconClass": "iconFloat",
     "onlyPrependCommunities": false,
     "--appCommunityIconFontSize": "20px",
     "--appCommunityIconSize": "52px"
-
     /*"sidebar": 2,
     "prependCommunities": ["hive-163399"]*/
 };

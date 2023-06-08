@@ -168,6 +168,20 @@ const defaultPreferences = [
      value: 1, newvalue:1, options:[
         [0, "'+' icon next to 'Direct', 'C/' [Sidebar (2)] (0)"],[1, "'+' bubble as first scrollable item (1)"], [2, "'+' bubble as last scrollable item (2)"]]}, 
     {name: "communityChannelNameFormat", display: "Community channel name format.", desc: "Eg.: 'C/<title>/<name> (<account>)'.", value: '<name>', newvalue:'C/<title>/<name>'},
+    {name: "messageIconFlexClass", display: "Message icon position, text alignment", desc: "On small screen can change the positioning of icon.",
+     value: "block text-justify lg:text-left sm:flex", newvalue:"block text-justify lg:text-left sm:flex", options:[
+        ["block text-justify lg:text-left sm:flex", 'On small screen float icon, justify text ("block text-justify lg:text-left sm:flex")'],
+        ["block sm:flex", 'On small screen float icon ("block sm:flex")'],
+        ["flex text-justify lg:text-left", 'On small screen justify text ("flex text-justify lg:text-left")'],
+        ["flex", 'Do not float icon ("flex")'],
+        ["flex text-justify", 'Justify text ("flex")'],
+    ]},
+    {name: "messageIconClass", display: "Message user icon class", desc: "show or hide user icon",
+     value: "iconFloat", newvalue:"iconFloat", options:[
+        ["iconFloat", 'Default, show icon (iconFloat)'],
+        ["iconFloat sm:hidden", 'On small screen hide icon ("iconFloat sm:hidden")'],
+        ["hidden", 'hide icon ("flex text-justify lg:text-left")'],
+    ]},
     {name: "--appCommunityIconFontSize", display: "Community Icon Font Size.", desc: "eg.: 20px", value: '18px', newvalue:'18px'},
     {name: "--appCommunityIconSize", display: "Community Icon Size.", desc: "eg.: 52px", value: '42px', newvalue:'42px'},    
     {name: "homeTabCommunities", display: "HomeTab: Communities", desc: "", value: false, newvalue:false},
@@ -333,6 +347,7 @@ function initWidget() {
         }
     }
     if(overlay.value) {
+        obj.position = 'fixed';
         obj.top = '51px';
         obj.right = '32px';
     }

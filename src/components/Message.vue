@@ -2,6 +2,9 @@
     <TransitionRoot :show="newUserMessageModalOpen">
         <NewUserMessageModal :selectedTab="2" :data="joinData" @close="toggleNewUserMessageModalOpen(false)"></NewUserMessageModal>
     </TransitionRoot>
+    <TransitionRoot :show="showUserModal">
+        <UserModal @close="toggleUserModal(null)" :user="userRef" :community="message.getCommunity()"></UserModal>
+    </TransitionRoot>
     <TransitionRoot :show="newViewEditHistoryModalOpen">
         <ViewEditHistoryModal :msg="message" @close="toggleViewEditHistoryModal"></ViewEditHistoryModal>
     </TransitionRoot>
@@ -28,16 +31,16 @@
     <div v-else class="mesageFont">
         <div v-if="hasQuotedText(message)" class="flex mb-1" style="margin-left:23px;">
             <div class="quoteIcon"></div>
-            <small class="break-word quoteText"><div class="float-left inline-block" style="padding-right:3px;"><UserCommunityIcon :name="message.reference.getUser()" :community="message.getCommunity()" 
+            <small class="break-word quoteText text-justify lg:text-left"><div class="float-left inline-block" style="padding-right:3px;"><UserCommunityIcon :name="message.reference.getUser()" :community="message.getCommunity()" 
                       :imgCss="`avMini`"/></div><b :class="roleReferenceColor?roleReferenceColor:''" style="opacity:0.5;">{{message.reference.getUser()}}</b> <span>{{getQuotedText(message)}}</span></small>
         </div>
-        <div class="message flex" :data-verified="message.isVerified()">
-            <div class="flex-shrink-0 mr-5px">
+        <div class="message" :class="iconFlexClass" :data-verified="message.isVerified()">
+            <div class="flex-shrink-0 mr-5px" :class="iconClass">
                 <UserCommunityIcon :name="message.getUser()" :community="message.getCommunity()"/>
             </div>
             <div class="grow relative" style="margin-top:-7px;" @click.right.prevent.stop="clickOnMsg($event)"> 
                 <div>
-                    <small :class="roleColor?roleColor:''"><b>{{message.getUser()}}</b></small>
+                    <small class="cursor-pointer" :class="roleColor?roleColor:''" @click="toggleUserModal(message.getUser())" ><b>{{message.getUser()}}</b></small>
                     <span class="pr-2 float-right fg70">
                         <small v-if="!displayOnly" class="messageButtons pr-3">
                             <span class="oi oi-heart col0" @click="toggleAddEmoteModal" @mouseenter="tooltip($event.target, $t('Message.AddEmote.Info'))"></span>
@@ -115,6 +118,9 @@ const props = defineProps({
   displayOnly: { type: Boolean, default: false },
   displayEdits: Boolean
 });
+const globalProperties = ref(window.globalProperties);
+const iconFlexClass = ref(globalProperties.value['messageIconFlexClass']);  
+const iconClass = ref(globalProperties.value['messageIconClass']);
 const roleColor = ref(null);
 const roleReferenceColor = ref(null);
 const hasJoinedGroup = ref(false);

@@ -223,6 +223,10 @@ body {
     min-width: 128px;
     min-height: 128px;
 }
+.iconFloat {
+    float: none;
+    margin-top: 0px;
+}
 @media (max-width: 640px) {
   .av128 {
     font-size: 24px;
@@ -230,6 +234,10 @@ body {
     height: 64px;
     min-width: 64px;
     min-height: 64px;
+  }
+  .iconFloat {
+    float: left;
+    margin-top: 7px;
   }
 }
 .avCommunity {
