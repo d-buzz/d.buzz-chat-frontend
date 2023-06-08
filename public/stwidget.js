@@ -1,3 +1,4 @@
+//version 1.0
 class StWidget {
     constructor(url) { 
         this.url = url.indexOf('?')===-1?(url+'?embed'):(url+'&embed');

@@ -163,10 +163,13 @@ function order() {
   if (showDirect.value && !showCommunities.value) {
     directPanel.value.style.order = "1";
     communityPanel.value.style.order = "0";
+    if(window.showStreambarDirectMessages) window.showStreambarDirectMessages(true);
+    return;
   } else if (!showDirect.value && showCommunities.value) {
     directPanel.value.style.order = "0";
     communityPanel.value.style.order = "1";
   }
+  if(window.showStreambarDirectMessages) window.showStreambarDirectMessages(false);
 }
 function toggleDirect() {
   showDirect.value = !showDirect.value;

@@ -42,6 +42,9 @@
 import { useAccountStore } from "../stores/account";
 import { useRoute } from "vue-router";
 import { ref } from 'vue'
+const props = defineProps({
+    showDirectMessages: { type: Boolean, default: false }
+});
 const route = useRoute();
 const router = useRouter();
 const accountStore = useAccountStore();
@@ -102,7 +105,7 @@ function showMenu(element) {
 }
 async function initConversations(route) {
     if(route.name == null) return;
-    isCommunity.value = route.name.startsWith('Community');
+    isCommunity.value = props.showDirectMessages !== true && route.name.startsWith('Community');
     const manager = getManager();
 
     if(isCommunity.value) {

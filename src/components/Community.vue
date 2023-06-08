@@ -518,6 +518,7 @@ function setThread(name, element) {
         if(window.showStreambar != null &&
             (route.name !== 'Group' && !route.name.startsWith('PrivateChat') ||
             window.globalProperties["sidebarToggleByChannelNameOnDirectGroup"])) {
+            if(window.showStreambarDirectMessages) window.showStreambarDirectMessages(false);
             window.toggleStreambar();
         }
         else if(route.name === 'Group' && element && groupId.value != null) {

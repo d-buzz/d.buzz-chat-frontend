@@ -6,7 +6,7 @@
     </div>
     <div class="flex flex-col appbg1 appfg1 border-r-1" 
         :class="globalProperties.streambarExpand?'streambar':'streambar2'" ref="streamBar">
-        <StreamBar :key="getKey(route.path)"></StreamBar>
+        <StreamBar :showDirectMessages="streambarDirectMessages" :key="getKey(route.path)"></StreamBar>
     </div>
     <div class="grow" @click="hideStreambar()">
         <router-view :key="getKey(route.path)"></router-view>
@@ -18,6 +18,7 @@ const router = useRouter();
 const updateKey = ref('#'+stlib.Utils.nextId());
 const globalProperties = ref(window.globalProperties);
 const streamBar = ref(null);
+const streambarDirectMessages = ref(true);
 const route = useRoute();
 function getKey(path) {
     return path + stlib.Utils.nextId();
@@ -32,11 +33,15 @@ function showStreambar(visible=true) {
 function hideStreambar() {
     streamBar.value.dataset.show = false;
 }
+function showStreambarDirectMessages(direct=true) {
+    streambarDirectMessages.value = direct;
+}
 function navigate(url) {
     router.push(url);
 }
 window.navigate = navigate;
 window.showStreambar = showStreambar;
+window.showStreambarDirectMessages = showStreambarDirectMessages;
 window.toggleStreambar = toggleStreambar;
 window.refreshApp = ()=>{ updateKey.value = '#'+stlib.Utils.nextId(); }; //debug purpose
 </script>
