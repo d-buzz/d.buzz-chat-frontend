@@ -28,7 +28,7 @@
     <div v-else class="mesageFont">
         <div v-if="hasQuotedText(message)" class="flex mb-1" style="margin-left:23px;">
             <div class="quoteIcon"></div>
-            <small class="break-word"><div class="float-left inline-block" style="padding-right:3px;"><UserCommunityIcon :name="message.reference.getUser()" :community="message.getCommunity()" 
+            <small class="break-word quoteText"><div class="float-left inline-block" style="padding-right:3px;"><UserCommunityIcon :name="message.reference.getUser()" :community="message.getCommunity()" 
                       :imgCss="`avMini`"/></div><b :class="roleReferenceColor?roleReferenceColor:''" style="opacity:0.5;">{{message.reference.getUser()}}</b> <span>{{getQuotedText(message)}}</span></small>
         </div>
         <div class="message flex" :data-verified="message.isVerified()">
@@ -380,6 +380,10 @@ init();
     height: 100%;
     margin-left:-5px;
     margin-top: 5px;
+}
+.quoteText {
+    max-height: 4.5em;
+    overflow: hidden;
 }
 .imgLimit {
     max-width: calc(min(100%, 500px));
