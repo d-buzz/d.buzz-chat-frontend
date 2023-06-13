@@ -7,9 +7,11 @@
                 <div>
                     <select class="inputSelect1 inline-block w-full" @change="setFontFamily">
                         <option disabled selected value="">Select Font</option>
-                        <option style="font-family:'Arial';" value="Arial">Arial</option>
+                        <option value="Arial">Arial</option>
                         <option value="Century Schoolbook L">Century Schoolbook L</option>
-                        <option style="font-family:'New Heterodox Mono';" value="New Heterodox Mono,mono">New Heterodox Mono</option>
+                        <option value="Lato">Lato</option>
+                        <option value="'New Heterodox Mono',monospace">New Heterodox Mono</option>
+                        <option value="Roboto">Roboto</option>
                     </select>
                 </div>
             </div>

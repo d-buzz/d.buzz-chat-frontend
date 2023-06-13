@@ -11,9 +11,6 @@
     <TransitionRoot :show="showImageViewModal">
         <ImageViewModal :src="imageViewSrc" @close="toggleImageViewModal"></ImageViewModal>
     </TransitionRoot>
-    <TransitionRoot :show="showAddEmoteModal">
-        <AddEmoteModal @oninput="emoteAction" @close="toggleAddEmoteModal"></AddEmoteModal>
-    </TransitionRoot>
     <TransitionRoot :show="showHideMessagesModal">
         <HideMessagesModal :user="message.getUser()" @close="toggleHideMessagesModal"></HideMessagesModal>
     </TransitionRoot>
@@ -156,7 +153,6 @@ const joinData = ref(null);
 const newUserMessageModalOpen = ref(false);
 const newViewEditHistoryModalOpen = ref(false);
 const showImageViewModal = ref(false);
-const showAddEmoteModal = ref(false);
 const showHideMessagesModal = ref(false);
 const imageViewSrc = ref("");
 const showUserModal = ref(false);
@@ -166,9 +162,6 @@ const toggleNewUserMessageModalOpen = () => {
 };    
 const toggleViewEditHistoryModal = () => {
   newViewEditHistoryModalOpen.value = !newViewEditHistoryModalOpen.value;
-};
-const toggleAddEmoteModal = () => {
-  showAddEmoteModal.value = !showAddEmoteModal.value;
 };
 const toggleHideMessagesModal = () => {
   showHideMessagesModal.value = !showHideMessagesModal.value;
@@ -183,6 +176,15 @@ function toggleUserModal(user) {
         userRef.value = user;
         showUserModal.value = true;
     }
+}
+function toggleAddEmoteModal() {
+    window.showModal('AddEmote', {oninput: (emote)=>{
+            console.log("emoteeeeeeeeeeeeeee ", emote);
+        window.setContentMessage({
+            msg: props.message,
+            type: stlib.Content.Emote.TYPE,
+            text: emote});
+    }});
 }
 function hasQuotedText(message) {
     return message && message.getContent() && message.getContent().getType() == 'q' && message.reference && message.reference.getContent() && message.reference.getContent().getText();

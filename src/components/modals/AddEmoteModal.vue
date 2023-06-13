@@ -1,5 +1,5 @@
 <template>
-   <DefaultModal>
+   <ReusableModal ref="modal" :unmount="false">
     <!--<TabGroup :selectedIndex="_selectedTab">
     <TabList class="tab">
       <Tab>Emote</Tab>
@@ -12,21 +12,20 @@
     </TabPanel>
 </TabPanels>
 </TabGroup>-->
-    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+   <div class="sm:mx-auto sm:w-full sm:max-w-md">
       <EmotePicker @oninput="oninput"/>
    </div>
-   </DefaultModal>          
+   </ReusableModal>          
 </template>
 
 <script setup lang="ts">
-import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
+//import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 const props = defineProps({
     selectedTab: {type: Number, default: 0}
 });
-const router = useRouter();
 const emit = defineEmits(["oninput"]);
 const isLoading = ref(false);
-const accountName = ref("");
+const modal = ref();
 
 const oninput = async (emote: any) => {
   if (isLoading.value) return;
@@ -38,4 +37,7 @@ const oninput = async (emote: any) => {
     isLoading.value = false;
   }
 };
+function open() { modal.value.open(); }
+function close() { modal.value.close(); }
+defineExpose({open, close});
 </script>

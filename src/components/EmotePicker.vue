@@ -7,12 +7,12 @@
 </div>
 <div class="flex">
     <div class="grow">
-        <div class="flex gap-x-2">
-            <div class="cursor-pointer" 
+        <div class="flex gap-x-1">
+            <div class="cursor-pointer apphg2 px-1 rounded" 
                 v-on:click.prevent="scrollBox.scrollTop = 0" @mouseenter="tooltip($event.target, 'Common & Recently Used')">
                 &#x1F44D;
             </div>
-            <div v-for="category in categories" class="cursor-pointer" 
+            <div v-for="category in categories" class="cursor-pointer apphg2 px-1 rounded" 
                 v-on:click.prevent="scrollIntoView($refs[category[0]])" @mouseenter="tooltip($event.target, category[0])">
                 {{category[1]}}
             </div>
@@ -88,7 +88,6 @@ const recentlyUsed = ref([]);
 var defaultCommunityList = [];
 
 function addRecentlyUsed(emote) {
-    console.log("add emote", emote);
     var emotes = recentlyUsed.value;
     var i = 0;
     for(var item of emotes) {

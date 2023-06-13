@@ -4,9 +4,11 @@ import { Theme, defaultTheme, applyTheme } from "./Theme.ts";
 import { defaultEmotes } from "./Emotes.ts";
 
 import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
-import './assets/styles/centuryschoolbookl.css';
-//import './assets/styles/vue3-emoji-picker.css'
 import './assets/styles/open-iconic.css';
+import './assets/styles/centuryschoolbookl.css';
+import './assets/styles/lato.css';
+import './assets/styles/roboto.css';
+//import './assets/styles/vue3-emoji-picker.css'
 import "./assets/styles/index.css";
 //import * as dhive from "@hiveio/dhive";
 
@@ -213,18 +215,22 @@ var inited = false;
     window.tooltip = function(element, text, ms=5000) {
         var el = document.getElementById("tooltip");  
         if(el == null) return;
-        el.innerText = text; 
-        var pos = element.getBoundingClientRect();
-        
-        el.hidden = false;
         el.currentElement = element;
+        if(element == null) { 
+            el.hidden = true;
+            return;
+        }
+        el.innerText = text; 
+        el.hidden = false;
+        var pos = element.getBoundingClientRect();
+
         var x = Math.min(0.5*(pos.left+pos.right), window.innerWidth-el.offsetWidth-10); 
         var y = Math.max(0, Math.min(pos.bottom, window.innerHeight-el.offsetHeight)); 
 
         el.setAttribute('style','left:'+x+'px;'+'top:'+y+'px;');
 
         var listener = null;
-        listener = ()=>{
+        listener = ()=>{ 
             element.removeEventListener("mouseleave", listener);
             el.hidden = true;
         };
@@ -233,6 +239,7 @@ var inited = false;
             if(el.currentElement == element) {
                 listener();
             }
+            else element.removeEventListener("mouseleave", listener);
         }, ms);
     };
     window.menu = function(element0, items, name=null, dropdown=false) {
