@@ -6,9 +6,6 @@
         <TransitionRoot :show="showAddImageModal">
             <AddImageModal @oninput="addImage" @close="toggleAddImageModal"></AddImageModal>
         </TransitionRoot>
-        <TransitionRoot :show="showAddEmoteModal">
-            <AddEmoteModal @oninput="addEmote" @close="toggleAddEmoteModal"></AddEmoteModal>
-        </TransitionRoot>
         <div v-if="uploads.length + images.length > 0" class="p-1 flex gap-x-1">
             <span v-for="(upload,i) in uploads" class="imgPreview">
                 <span class="oi oi-x closeButton" @click="delUpload(i)"></span>
@@ -72,7 +69,6 @@ const box = ref(null);
 const images = ref([]);
 const emit = defineEmits(["entermessage", "fullorblank"]);
 const showAddImageModal = ref(false);
-const showAddEmoteModal = ref(false);
 const uploads = ref([]);
 
 const loginModalOpen = ref(false);
@@ -108,11 +104,7 @@ function toggleAddImageModal() {
     showAddImageModal.value = !showAddImageModal.value;
 }
 const toggleAddEmoteModal = () => {
-    var value = !showAddEmoteModal.value;
-    if(value) {
-
-    }
-    showAddEmoteModal.value = value;
+    window.showModal('AddEmote', {oninput: addEmote });
 };
 function addImage(link) {
     images.value.push(link);
