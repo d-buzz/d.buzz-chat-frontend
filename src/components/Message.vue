@@ -179,7 +179,6 @@ function toggleUserModal(user) {
 }
 function toggleAddEmoteModal() {
     window.showModal('AddEmote', {oninput: (emote)=>{
-            console.log("emoteeeeeeeeeeeeeee ", emote);
         window.setContentMessage({
             msg: props.message,
             type: stlib.Content.Emote.TYPE,

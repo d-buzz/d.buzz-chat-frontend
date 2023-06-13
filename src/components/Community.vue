@@ -540,7 +540,6 @@ function setThread(name, element) {
 }
 const contentMsg = ref(null);
 async function setContentMessage(obj) {
-    console.log("setContentMessage", obj);
     if(obj == null) {
         var val = contentMsg.value; //clear message field if closing edit action
         if(val && val.type === stlib.Content.Edit.TYPE) messageBox.value.setText("");
