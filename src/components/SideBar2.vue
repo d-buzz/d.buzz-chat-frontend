@@ -21,6 +21,7 @@
           ><router-link to="/mentions">@{{ accountName }}</router-link></b
         >
       </div>
+      <div><router-link to="/mentions">Mentions</router-link></div>
       <div><router-link to="/preferences">Preferences</router-link></div>
       <div><router-link to="/themes">Themes</router-link></div>
       <div class="border-t-1" @click="logout">Logout</div>
