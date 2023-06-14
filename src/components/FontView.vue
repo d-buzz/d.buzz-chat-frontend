@@ -49,21 +49,21 @@ const DEFAULT_FALLBACK_FONT = ',"Century Schoolbook L",Arial,sans-serif';
 function setFontFamily(e) {
     fontFamily.value = e.target.value;
 }
-function applyFont() {
+function applyFont(add = true) {
     var css = props.css;
     var root = document.querySelector(':root');
     var family = fontFamily.value+DEFAULT_FALLBACK_FONT;
     root.style.setProperty('--'+css+'Family', family);
     root.style.setProperty('--'+css+'Size', fontSize.value+'px');
     var obj = {};
-    obj['--'+css+'Family'] = family;
-    obj['--'+css+'Size'] = fontSize.value+'px';
+    obj['--'+css+'Family'] = add?family:null;
+    obj['--'+css+'Size'] = add?(fontSize.value+'px'):null;
     window.defaultTheme.saveCssOverrides(obj, true);
 }
 function applyFontDefault() {
     fontFamily.value = "Century Schoolbook L";
     fontSize.value = 16;
-    applyFont();
+    applyFont(false);
 }
 function init() {
     try {

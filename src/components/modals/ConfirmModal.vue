@@ -1,5 +1,5 @@
 <template>
-  <DefaultModal :title="title">
+    <DefaultModal :title="title">
         <div class="mt-1">
             <label v-if="text0" class="text-sm font-medium text-gray-700 mb-1 whitespace-pre-wrap">
                 <span><b>{{text0}}</b></span>
@@ -8,7 +8,10 @@
                 <span>{{text}}</span>
             </label>
         </div> 
-        <div class="flex">
+        <div class="mt-1" v-if="input != null">
+            <input class="inputText1" v-model="inputValue">
+        </div>
+        <div class="flex mt-1">
           <button
             @click="action()"
             class="grow btn"
@@ -34,15 +37,17 @@ const props = defineProps({
     yes: {type: String, default: 'Yes'},
     no: {type: String, default: 'No'},
     text0: {type: String, default: null},
-    text: {type: String, default: null}
+    text: {type: String, default: null},
+    input: {type: String, default: null}
 });
+const inputValue = ref(props.input.value);
 const isLoading = ref(false);
 
 const action = async () => {
   if (isLoading.value) return;
   try {
     isLoading.value = true;
-    emit("action");
+    emit("action", inputValue.value);
     emit("close");
   } finally {
     isLoading.value = false;

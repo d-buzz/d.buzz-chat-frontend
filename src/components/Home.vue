@@ -45,6 +45,7 @@
                   <Tab v-if="tabMentions">{{$t("Home.Mentions")}}</Tab>
                   <Tab v-if="tabPreferences">{{$t("Home.Preferences")}}</Tab>
                   <Tab v-if="tabThemes">{{$t("Home.Themes")}}</Tab>
+                  <Tab v-if="tabFonts">{{$t("Home.Fonts")}}</Tab>
                 </TabList>
             <TabPanels class="mt-1">
                 <TabPanel v-if="tabCommunities">
@@ -104,6 +105,9 @@
                 <TabPanel v-if="tabThemes" :key="updateThemesKey">
                     <Themes/>
                 </TabPanel>
+                <TabPanel v-if="tabFonts" :key="updateThemesKey">
+                    <Fonts/>
+                </TabPanel>
             </TabPanels>
             </TabGroup>
         </div> 
@@ -117,6 +121,7 @@ const tabCommunities = ref(globalProperties.homeTabCommunities);
 const tabMentions = ref(globalProperties.homeTabMentions);
 const tabPreferences = ref(globalProperties.homeTabPreferences);
 const tabThemes = ref(globalProperties.homeTabThemes);
+const tabFonts = ref(globalProperties.homeTabFonts);
 const accountStore = useAccountStore();
 const router = useRouter();
 const homeheader = ref(0);

@@ -5,6 +5,7 @@
         <Mentions v-if="route.name === 'Mentions'"/>
         <Preferences v-else-if="route.name === 'Preferences'"/>
         <Themes v-else-if="route.name === 'Themes'"/>
+        <Fonts v-else-if="route.name === 'Fonts'"/>
     </div>
 </template>
 <script setup>

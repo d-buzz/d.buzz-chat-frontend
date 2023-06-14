@@ -171,9 +171,13 @@ export class ThemeColor {
     return new ThemeColor(this.name, this.type, this.color, this.defaultFn);
   }
 }
+var cssOverridePropertyName = "css";
+export function setCssOverridePropertyName(name) {
+    cssOverridePropertyName = (name == null)?"css":("css#"+name);
+}
 export function loadCssOverrides() {
   try {
-    var css = window.localStorage.getItem("css");
+    var css = window.localStorage.getItem(cssOverridePropertyName);
     if (css != null) {
       return JSON.parse(css);
     }
@@ -186,10 +190,13 @@ export function saveCssOverrides(css, append = false) {
   try {
     if (append) {
       var obj = loadCssOverrides();
-      for (var item in css) obj[item] = css[item];
+      for(var item in css) { 
+        if(css[item] == null) delete obj[item];
+        else obj[item] = css[item];
+      }
       css = obj;
     }
-    window.localStorage.setItem("css", JSON.stringify(css));
+    window.localStorage.setItem(cssOverridePropertyName, JSON.stringify(css));
   } catch (e) {
     console.log(e);
   }
@@ -233,6 +240,7 @@ export function initializeTheme() {
   theme.setTheme = setTheme;
   theme.findThemeByName = findThemeByName;
   theme.colorHexString = colorHexString;
+  theme.setCssOverridePropertyName = setCssOverridePropertyName;
   theme.loadCssOverrides = loadCssOverrides;
   theme.saveCssOverrides = saveCssOverrides;
   for (var array in defaultColors) {

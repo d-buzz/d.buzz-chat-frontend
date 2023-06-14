@@ -67,6 +67,11 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("./Page.vue"),
       },
       {
+        path: "/fonts",
+        name: "Fonts",
+        component: () => import("./Page.vue"),
+      },
+      {
         path: "/s/:user",
         name: "CommunitySettings",
         component: () => import("./CommunitySettings.vue"),

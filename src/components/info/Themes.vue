@@ -4,7 +4,7 @@
         <div class="text-xl font-bold">Themes</div>
         <hr/>
     </div>
-    <div :key="updateThemesKey">
+    <div :key="updateThemesKey" style="padding-bottom:150px;">
         <div v-for="(style, name) in themeObject.defaultThemes">
             <div class="mt-3">
                 <ThemeView :name="name" :style="style" :edit="false" @update="updateThemes"></ThemeView>
@@ -15,15 +15,6 @@
                 <ThemeView :name="name" :style="style" :edit="true" @update="updateThemes"></ThemeView>
             </div>
         </div> 
-    </div>      
-
-    <div class="mt-3" style="max-width: 753px;">
-        <small class="inner-block float-right text-right text-gray-700">{{$t("Home.Theme.Font.Info")}}</small>
-        <div class="text-xl font-bold">Fonts</div>
-        <hr/>
-        <FontView name="Default Font" css="appFont"/>
-        <hr/>
-        <FontView name="Message Font" css="appMessageFont"/>
     </div>
 </template>
 <script setup>

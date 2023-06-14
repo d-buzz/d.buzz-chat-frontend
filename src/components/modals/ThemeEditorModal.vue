@@ -1,10 +1,14 @@
 <template>
   <DefaultModal>
+    <TransitionRoot :show="showConfirmModal">
+      <ConfirmModal title="Import Theme" text0="Enter exported JSON." input="''"
+      @action="importColors" @close="toggleConfirmModal"></ConfirmModal>
+    </TransitionRoot> 
         <div>
             <b>Theme Editor</b>
             <div class="flex gap-x-1 float-right">
                 <button class="cursor-pointer" @click="exportColors()" title='export colors to JSON'><span class="oi oi-clipboard"></span></button>
-                <!--<button class="cursor-pointer" @click="importColors()" title='import colors from JSON in clipboard'><span class="oi oi-briefcase"></span></button> -->       
+                <button class="cursor-pointer" @click="toggleConfirmModal" title='import colors from JSON in clipboard'><span class="oi oi-briefcase"></span></button>      
             </div>        
         </div>        
         <table class="mt-1">
@@ -94,9 +98,21 @@ function copyToClipboard(text: string) {
         navigator.clipboard.writeText(text) 
     }
 }
-function importColors() {
+const showConfirmModal = ref(false);
+function toggleConfirmModal() {
+    showConfirmModal.value = !showConfirmModal.value;
+}
+function importColors(text) {
     try {
-        
+        console.log("import ", text);
+        if(text && typeof text === 'string' && text.length > 0) {
+            var style = JSON.parse(text);
+            console.log("style ", style);
+            for(var name in style) {
+                var color = defaultTheme.colorHexString(style[name]);
+                colors.value[name] = color;
+            }
+        }
     }
     catch(e) {
         console.log(e);
