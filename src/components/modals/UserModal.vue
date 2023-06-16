@@ -26,14 +26,14 @@
                         <button class="btn2" @click="discardChanges">Reset</button>
                         </div>
                     </div>
-                    <div v-else-if="isMod">
-                        <div><i>{{role}}</i><span class="cursor-pointer text-sm float-right" @click="toggleEditable" title="edit role, titles"><span class="oi oi-pencil"></span></span></div>
+                    <div v-else>
+                        <div><i>{{role}}</i><span v-if="isMod" class="cursor-pointer text-sm float-right" @click="toggleEditable" title="edit role, titles"><span class="oi oi-pencil"></span></span></div>
                         <div><span v-for="title in titles" class="rounded-lg bg-green-700 pr-1 pl-1 mr-1 text-white font-bold text-sm">{{title}}</span></div> 
                     </div>
                 </div>
             </div>
             <div>
-                <small>Visit on:
+                <small v-if="!isGuest">Visit on:
                     <a class="font-bold" :href="`https://peakd.com/@${user}`" @mouseenter="tooltip($event.target, `https://peakd.com/@${user}`)" target="_blank" rel="noreferrer noopener">Peakd <span class="oi oi-external-link text-xm"></span></a>
                 </small>            
             </div>
@@ -65,6 +65,7 @@ var roleSet = ref(new stlib.PermissionSet());
 var created = ref(null);
 var reputation = ref(null);
 var relations = ref(null);
+var isGuest = ref(false);
 async function saveChanges() {
     if(roleSet.value.role != role.value) await setRole(roleSet.value.role);
     var titleToSet = roleSet.value.titles.join(",");
@@ -188,6 +189,7 @@ async function init() {
     var community = props.community;
     if(!community) return;
     var user = props.user;
+    if(user) isGuest.value = stlib.Utils.isGuest(user);
     var data = await stlib.Community.load(community);
     if(user && data) {
         role.value = data.getRole(user);
