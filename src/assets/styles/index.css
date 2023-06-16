@@ -66,6 +66,9 @@ body {
     font-family: var(--appMessageFontFamily);
     font-size: var(--appMessageFontSize);
 }
+.messageFontFamily {
+    font-family: var(--appMessageFontFamily);
+}
 .btn {
     @apply inline-block font-medium text-sm
         mr-1 mb-2 py-2 px-4

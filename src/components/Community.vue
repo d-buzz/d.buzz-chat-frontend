@@ -30,14 +30,14 @@
                     </div>        
                     <div v-for="roleUsers in communityUsers">
                         <div v-if="roleUsers[0] != 'muted'">
-                            <small :class="roleCss(roleUsers[0])"><b class="mesageFont">{{roleUsers[0]}}</b></small>
+                            <small :class="roleCss(roleUsers[0])"><b class="messageFontFamily">{{roleUsers[0]}}</b></small>
                             <div class="p-1 flex" v-for="team in roleUsers[1]" :class="(team[3] == true)?'':'offline'">
                                 <div class="flex-shrink-0 mr-5px">
                                     <UserCommunityIcon :name="team[0]" :community="community.getName()" 
                                     :imgCss="`avConversation`" :displayOnlineStatus="team[3] == true"/>
                                 </div>
                                 <div class="grow relative" style="margin-top:-7px;">
-                                    <small :class="roleCss(team[1])"><b class="mesageFont">{{team[0]}}</b></small>
+                                    <small :class="roleCss(team[1])"><b class="messageFontFamily">{{team[0]}}</b></small>
                                     <div class="flex" v-if="team[2]"><small v-for="title in team[2]" 
                                         class="titlebg">{{title}}</small></div>
                                 </div>
@@ -184,7 +184,7 @@
             </div>
             <div>
                 <span v-if="writingUsers && writingUsers.length > 0">
-                    <small class="align-top"><span v-for="user in writingUsers" class="oiMini oi" :class="user[1]"><b class="mesageFont">{{user[0]}}&nbsp;</b></span>
+                    <small class="align-top"><span v-for="user in writingUsers" class="oiMini oi" :class="user[1]"><b class="messageFontFamily">{{user[0]}}&nbsp;</b></span>
                     <span class="oiMini oi text-gray-700">{{writingUsers.length==1?'is writing':' are writing'}}</span>
                     </small>
                 </span>

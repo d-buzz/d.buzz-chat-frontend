@@ -20,7 +20,7 @@
                     <UserCommunityIcon :name="team[0]" :community="community.getName()" :imgCss="`avConversation`"/>
                 </div>
                 <div class="grow relative" style="margin-top:-7px;">
-                    <small :class="roleCss(role)"><b>{{team[0]}}</b></small>
+                    <small :class="roleCss(team[1])"><b class="messageFontFamily">{{team[0]}}</b></small>
                     <div class="flex" v-if="team[2]"><small v-for="title in team[2].split(',')" class="titlebg">{{title}}</small></div>
                 </div>
             </div>

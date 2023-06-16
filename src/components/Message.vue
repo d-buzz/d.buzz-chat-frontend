@@ -17,7 +17,7 @@
     <div v-if="!displayEdits && message && (message.flagsNum >= 3 || hideMessage())" class="message mesageFont" 
             style="margin-top:-5px;margin-bottom:-25px;" @click.right.prevent.stop="clickOnMsg($event)"
          :data-verified="message.isVerified()">
-        <small style="margin-left:46px;opacity:0.5;" :class="roleColor?roleColor:''"><b class="mesageFont">{{message.getUser()}}</b></small>
+        <small style="margin-left:46px;opacity:0.5;" :class="roleColor?roleColor:''"><b class="messageFontFamily">{{message.getUser()}}</b></small>
         <span class="pr-2 float-right fg70">
             <small class="cursor-pointer fg70" @click="toggleViewEditHistoryModal()" @mouseenter="tooltip($event.target, 'Reason:\n'+getFlagReasons(message))">(hidden) </small>
             <small v-if="message.edits && message.edits.length > 0" class="cursor-pointer" @mouseenter="tooltip($event.target, toAbsoluteTimeString(message.edits[0].getTimestamp()))" @click="toggleViewEditHistoryModal()">(edited {{toRelativeTimeString(message.edits[0].getTimestamp())}}) </small>
@@ -29,7 +29,7 @@
         <div v-if="hasQuotedText(message)" class="flex mb-1" style="margin-left:23px;">
             <div class="quoteIcon"></div>
             <small class="break-word quoteText text-justify lg:text-left"><div class="float-left inline-block" style="padding-right:3px;"><UserCommunityIcon :name="message.reference.getUser()" :community="message.getCommunity()" 
-                      :imgCss="`avMini`"/></div><b :class="roleReferenceColor?roleReferenceColor:''" style="opacity:0.5;"><span class="mesageFont">{{message.reference.getUser()}}</span></b> <span>{{getQuotedText(message)}}</span></small>
+                      :imgCss="`avMini`"/></div><b :class="roleReferenceColor?roleReferenceColor:''" style="opacity:0.5;"><span class="messageFontFamily">{{message.reference.getUser()}}</span></b> <span>{{getQuotedText(message)}}</span></small>
         </div>
         <div v-if="!message.isVerified()" class="verifyColor pl-11 w-full text-sm font-bold pt-1 pb-2" style="line-height:1.25;"><span class="oi oi-warning"></span> <span class="">{{$t("Message.Warning")}}</span></div>
         <div class="message" :class="iconFlexClass" :data-verified="message.isVerified()">
@@ -38,7 +38,7 @@
             </div>
             <div class="grow relative" style="margin-top:-7px;" @click.right.prevent.stop="clickOnMsg($event)"> 
                 <div>
-                    <small class="cursor-pointer" :class="roleColor?roleColor:''" @click="toggleUserModal(message.getUser())" ><b class="mesageFont">{{message.getUser()}}</b></small>
+                    <small class="cursor-pointer" :class="roleColor?roleColor:''" @click="toggleUserModal(message.getUser())" ><b class="messageFontFamily">{{message.getUser()}}</b></small>
                     <span class="pr-2 float-right fg70">
                         <small v-if="!displayOnly" class="messageButtons pr-3">
                             <span class="oi oi-heart col0" @click="toggleAddEmoteModal" @mouseenter="tooltip($event.target, $t('Message.AddEmote.Info'))"></span>
