@@ -10,13 +10,10 @@
             </select>
         </div>
     </div>
-    <div v-else>
+    <div v-else class="mb-1">
         <div>
-            <div><b>{{item.display}}</b></div>
-            <div><small>{{item.desc}}</small></div>
-        </div>
-        <div>
-            <input type="checkbox" v-model="item.newvalue">
+            <div><input type="checkbox" v-model="item.newvalue"> <b>{{item.display}}</b></div>
+            <small class="block">{{item.desc}}</small>
         </div>
     </div>
 </template>

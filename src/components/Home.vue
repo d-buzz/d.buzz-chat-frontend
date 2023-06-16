@@ -1,5 +1,5 @@
 <template>
-    <div class="appbg2 w-full h-full break-all overflow-scroll" v-if="accountStore.account.name">
+    <div class="appbg2 appfg2 w-full h-full break-all overflow-scroll" v-if="accountStore.account.name">
 <!--HomeHeaderA-->
         <div v-if="!showDetailedProfile()" class="flex pt-3 pl-3 pr-3">
             <div class="grow" style="margin-top:-7px;">
