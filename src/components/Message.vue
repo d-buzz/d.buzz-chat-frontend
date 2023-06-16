@@ -31,6 +31,7 @@
             <small class="break-word quoteText text-justify lg:text-left"><div class="float-left inline-block" style="padding-right:3px;"><UserCommunityIcon :name="message.reference.getUser()" :community="message.getCommunity()" 
                       :imgCss="`avMini`"/></div><b :class="roleReferenceColor?roleReferenceColor:''" style="opacity:0.5;"><span class="mesageFont">{{message.reference.getUser()}}</span></b> <span>{{getQuotedText(message)}}</span></small>
         </div>
+        <div v-if="!message.isVerified()" class="verifyColor pl-11 w-full text-sm font-bold pt-1 pb-2" style="line-height:1.25;"><span class="oi oi-warning"></span> <span class="">{{$t("Message.Warning")}}</span></div>
         <div class="message" :class="iconFlexClass" :data-verified="message.isVerified()">
             <div class="flex-shrink-0 mr-5px" :class="iconClass">
                 <UserCommunityIcon :name="message.getUser()" :community="message.getCommunity()"/>
@@ -48,7 +49,6 @@
                         </small>
                         <small v-if="!displayEdits && message.edits && message.edits.length > 0" class="cursor-pointer" @mouseenter="tooltip($event.target, toAbsoluteTimeString(message.edits[0].getTimestamp()))" @click="toggleViewEditHistoryModal()">(edited {{toRelativeTimeString(message.edits[0].getTimestamp())}}) </small>
                         <small @mouseenter="tooltip($event.target, toRelativeTimeString(message.getTimestamp(),3)+'\n'+toAbsoluteTimeString(message.getTimestamp()))">{{toRelativeTimeString(message.getTimestamp())}}</small>
-                        <span v-if="!message.isVerified()" class="pl-1">&#10008;</span>
                     </span>
                 </div>
                 <!--<div v-if="!displayOnly" class="visibleOnHover absolute float-right" style="right: 8px;">
@@ -396,7 +396,8 @@ init();
     max-width: calc(min(100%, 500px));
     max-height: 275px;
 }
-.message { background-color: lightsalmon; }
+.message, .verifyColor { background-color: lightsalmon; }
+.verifyColor { color: #5b220b; }
 .message[data-verified="true"] {
     background-color: unset;
 }

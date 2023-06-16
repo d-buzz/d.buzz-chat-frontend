@@ -62,6 +62,7 @@
 "Message.Flag.Info": "Flag message.",
 "Message.Edit.Info": "Edit message.",
 "Message.Remove.Info": "Remove message.",
+"Message.Warning": "Warning: The verification of message failed. (Likely reason: failed to retrieve posting key of user, user changed their posting key or the message is not signed correctly.)",
 
 "JoinModalContent.Add": "Add",
 "JoinModalContent.Add.Tooltip": "Add community to sidebar.",
