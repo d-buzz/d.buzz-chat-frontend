@@ -30,7 +30,7 @@ function visit(message) {
         var communityName = data[0];
         var commuityPath = data[1];
         if(stlib.Utils.isValidGuestName(communityName) && /[a-zA-Z0-9-_]+/.test(commuityPath)) {
-            router.push(`/t/${communityName}/${commuityPath}`);
+            router.push(`/t/${communityName}/${commuityPath}?j=${message.message.getReference()}`);
         }
     }
 }

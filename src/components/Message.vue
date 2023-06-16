@@ -16,7 +16,7 @@
     </TransitionRoot>
     <div v-if="!displayEdits && message && (message.flagsNum >= 3 || hideMessage())" class="message mesageFont" 
             style="margin-top:-5px;margin-bottom:-25px;" @click.right.prevent.stop="clickOnMsg($event)"
-         :data-verified="message.isVerified()">
+         :data-verified="message.isVerified()" :data-reference="messageReference()">
         <small style="margin-left:46px;opacity:0.5;" :class="roleColor?roleColor:''"><b class="messageFontFamily">{{message.getUser()}}</b></small>
         <span class="pr-2 float-right fg70">
             <small class="cursor-pointer fg70" @click="toggleViewEditHistoryModal()" @mouseenter="tooltip($event.target, 'Reason:\n'+getFlagReasons(message))">(hidden) </small>
@@ -29,10 +29,10 @@
         <div v-if="hasQuotedText(message)" class="flex mb-1" style="margin-left:23px;">
             <div class="quoteIcon"></div>
             <small class="break-word quoteText text-justify lg:text-left"><div class="float-left inline-block" style="padding-right:3px;"><UserCommunityIcon :name="message.reference.getUser()" :community="message.getCommunity()" 
-                      :imgCss="`avMini`"/></div><b :class="roleReferenceColor?roleReferenceColor:''" style="opacity:0.5;"><span class="messageFontFamily">{{message.reference.getUser()}}</span></b> <span>{{getQuotedText(message)}}</span></small>
+                      :imgCss="`avMini`"/></div><span class="cursor-pointer" @click="jump()"><b :class="roleReferenceColor?roleReferenceColor:''" style="opacity:0.5;"><span class="messageFontFamily">{{message.reference.getUser()}}</span></b> <span>{{getQuotedText(message)}}</span></span></small>
         </div>
         <div v-if="!message.isVerified()" class="verifyColor pl-11 w-full text-sm font-bold pt-1 pb-2" style="line-height:1.25;"><span class="oi oi-warning"></span> <span class="">{{$t("Message.Warning")}}</span></div>
-        <div class="message" :class="iconFlexClass" :data-verified="message.isVerified()">
+        <div class="message" :class="iconFlexClass" :data-verified="message.isVerified()" :data-reference="messageReference()">
             <div class="flex-shrink-0 mr-5px" :class="iconClass">
                 <UserCommunityIcon :name="message.getUser()" :community="message.getCommunity()"/>
             </div>
@@ -108,7 +108,7 @@ import { ref, nextTick } from 'vue'
 const tooltip = ref(window.tooltip);
 const accountStore = useAccountStore();
 const account = accountStore.account.name;
-const emit = defineEmits(["quote", "action"]);
+const emit = defineEmits(["quote", "action", "jump"]);
 const msgMenuId = 'msgMenuId'+stlib.Utils.nextId();
 const props = defineProps({
   message: Object,
@@ -145,8 +145,14 @@ function initContent() {
     }
     return content;
 }
+function jump() {
+    emit('jump', props.message.reference.message.getReference());
+}
 function hideMessage() {
     return props.message && getManager().readHiddenUsers()[props.message.getUser()] === true;
+}
+function messageReference() {
+    return (props.message && props.message.message)?props.message.message.getReference():"";
 }
 const content = ref(initContent());
 const joinData = ref(null);

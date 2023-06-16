@@ -112,7 +112,7 @@
                                 <div v-if="message.getThreadName() === threadName">
                                     <hr style="margin:1px 0px;">
                                     <div :class="{'apphg2': highlight(message)}" style="padding-top: 0.5rem;padding-bottom: 0.25rem;">
-                                        <Message :message="message" @action="setContentMessage" />
+                                        <Message :message="message" @action="setContentMessage" @jump="scrollIntoView"/>
                                     </div>
                                 </div>
                             </div>
@@ -139,7 +139,7 @@
                                         <span class="hr grow"></span>
                                     </div>
                                     <div :class="{'apphg2': highlight(message)}" style="padding-top: 0.5rem;padding-bottom: 0.25rem;">
-                                        <Message :message="message" @action="setContentMessage" />
+                                        <Message :message="message" @action="setContentMessage" @jump="scrollIntoView"/>
                                     </div>
                                 </div>
                             </div>
@@ -148,7 +148,7 @@
                             <div v-for="(message, i) in messageArray" >
                                 <hr v-if="(!valueFlipMessageBox && i !== 0) || (valueFlipMessageBox && i !== messageArray.length-1)" style="margin:1px 0px;">
                                 <div :class="{'apphg2': highlight(message)}" style="padding-top: 0.5rem;padding-bottom: 0.25rem;">
-                                    <Message :message="message" @action="setContentMessage" />
+                                    <Message :message="message" @action="setContentMessage" @jump="scrollIntoView"/>
                                 </div>
                             </div>
                         </div>
@@ -309,6 +309,28 @@ function addCommunityName(community, streamName) {
     prepend = prepend.replaceAll("<title>", community.getTitle());
     return prepend;
 }
+function scrollIntoView(ref=null) {
+    if(!ref) return;
+    var ref2 = '|'+ref;
+    var container = messages.value;
+    if(container) { 
+        var list = container.getElementsByClassName("message");
+        for(var i in list) {
+            var item = list[i];
+            if(item && item.dataset) {
+                var reference = item.dataset.reference;
+                if(reference) {
+                    if(ref === reference || reference.endsWith(ref2)) {
+                        item.scrollIntoView();
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+var scrollReference = "mirafun|1682964273503";
 var isGroupOwner = false;
 var lastRead0 = 0;
 var groupId = ref(null);
@@ -322,6 +344,8 @@ async function initChat() {
     var user = accountStore.account.name;
     var user2 = route.params.user;
     if(user2 == null || user2 == "") return;
+    var query = route.query;
+    if(query && query.j) scrollReference = query.j;
 
     const manager = getManager();
     manager.setUser(user);
@@ -435,8 +459,12 @@ async function initChat() {
             }
             nextTick(async () => {
                 var container = messages.value;
-                if(container) container.scrollTop = scrollToBottom?
-                              container.scrollHeight:scrollTop;
+                if(container) { 
+                    container.scrollTop = scrollToBottom?container.scrollHeight:scrollTop;
+                    if(scrollReference) {
+                        if(scrollIntoView(scrollReference)) scrollReference = null;
+                    }
+                }
             });
             return data;
         };
