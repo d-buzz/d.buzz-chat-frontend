@@ -223,11 +223,7 @@ function getFlagReasons(message) {
         text += `${flag.user}: ${flag.reason}\n`;
     return text;
 }
-function imageProxy(url) {
-    if(url.endsWith(".gif")) 
-        return "https://chat-api.peakd.com/gif?path="+encodeURIComponent(url);
-    return "https://images.hive.blog/768x0/"+encodeURIComponent(url);
-} 
+function imageProxy(url) { return window.imageProxy(url); }
 function formatText(element, text) {
     if(element == null) return;
     if(text == null || typeof text !== 'string') text = "";

@@ -3,6 +3,7 @@ import App from "./App.vue";
 import { Theme, defaultTheme, applyTheme } from "./Theme.ts";
 import { initTooltipMenu } from "./TooltipMenu.ts";
 import { defaultEmotes } from "./Emotes.ts";
+import { imageProxy } from "./ImageProxy.ts";
 
 import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
 import './assets/styles/open-iconic.css';
@@ -43,6 +44,7 @@ window.globalProperties = {
     "prependCommunities": ["hive-163399"]*/
 };
 window.tmpProperties = {};
+window.imageProxy = imageProxy;
 stuploader.Uploader.uploaderDomain = UPLOADER_DOMAIN;
 function applyCssOverrides(properties) {
     var root = root = document.querySelector(':root');

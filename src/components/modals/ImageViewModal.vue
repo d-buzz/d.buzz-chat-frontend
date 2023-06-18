@@ -6,7 +6,7 @@
                 <button class="btn1" @click="$emit('close')" title="close"><span class="oi oi-x"></span></button>
             </div>
         </div>
-        <img class="" style="max-width: fit-content;" :src="`https://images.hive.blog/768x0/${src}`" :title="src"> 
+        <img class="" style="max-width: fit-content;" :src="imageProxy(src)" :title="src"> 
 
      <div class="text-right" style="margin-bottom:-16px;margin-top:3px;">
         <a class="btn" :href="src" target="_blank" rel="nofollow noopener" :title="`open ${src}`"><span class="oi oi-external-link"></span> open original</a>
@@ -20,6 +20,7 @@ const emit = defineEmits([]);
 const props = defineProps<{
     src: String
 }>();
+function imageProxy(url) { return window.imageProxy(url); }
 function copyToClipboard(text: string) {
     if(navigator.clipboard) {
         navigator.clipboard.writeText(text) 

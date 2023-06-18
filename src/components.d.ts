@@ -77,7 +77,6 @@ declare module '@vue/runtime-core' {
     TextIcon: typeof import('./components/TextIcon.vue')['default']
     ThemeEditorModal: typeof import('./components/modals/ThemeEditorModal.vue')['default']
     Themes: typeof import('./components/info/Themes.vue')['default']
-    'Themes (copy)': typeof import('./components/info/Themes (copy).vue')['default']
     ThemeView: typeof import('./components/ThemeView.vue')['default']
     ThreadModal: typeof import('./components/modals/ThreadModal.vue')['default']
     TransitionChild: typeof import('@headlessui/vue')['TransitionChild']
