@@ -132,18 +132,21 @@ async function initActiveCommunities() {
         }
         var sorted = [];
         for(var community in obj) {
-            var title = "";            
-            try { 
-                var community0 = await stlib.Community.load(community);
-                title = community0.getTitle();
-            }
-            catch(e) { console.log(e); }
-            sorted.push({name:community,title,number:obj[community]});
+            sorted.push({name:community,title:"",number:obj[community]});
         }
         sorted.sort((a,b)=>b.number-a.number);
         defaultActiveCommunities = sorted;
         communitiesActive.value = defaultActiveCommunities;
         updateKey.value = '#'+stlib.Utils.nextId(); 
+        nextTick(async ()=>{
+            for(var item of sorted) {
+                try { 
+                    var community0 = await stlib.Community.load(item.name);
+                    item.title = community0.getTitle();
+                }
+                catch(e) { console.log(e); }
+            }
+        });
     }
 }
 initActiveCommunities();
