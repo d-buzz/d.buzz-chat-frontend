@@ -361,12 +361,14 @@ async function findCommunities(text, nextPage=false) {
         communitiesActive.value = active;
     }
     else communitiesActive.value = defaultActiveCommunities;
+    updateKey.value = '#'+stlib.Utils.nextId(); 
 }
 function findReset() {
     communitiesActive.value = defaultActiveCommunities;
     communitiesFound.value = defaultCommunities;
     searchBar.value = "";
     hasNextPage.value = true;
+    updateKey.value = '#'+stlib.Utils.nextId(); 
 }
 function logout() {
   accountStore.signOut();
