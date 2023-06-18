@@ -138,6 +138,7 @@ const updateThemesKey = ref('#'+stlib.Utils.nextId());
 const updateMessage = ref("");
 const themeObject = ref(defaultTheme);
 const coverImage = ref(null);
+var defaultActiveCommunities = [];
 
 const defaultPreferences = [
     {name: "directMessage:s", display: "Direct Message", desc: "Permission to message directly is granted to:",
@@ -255,7 +256,6 @@ async function initCommunities() {
     updateKey.value = '#'+stlib.Utils.nextId(); 
 }
 initCommunities();
-var defaultActiveCommunities = [];
 async function initActiveCommunities() {
     var result = await getManager().getClient().readStats();
     if(result.isSuccess()) {
@@ -284,6 +284,7 @@ async function initActiveCommunities() {
                 }
                 catch(e) { console.log(e); }
             }
+            updateKey.value = '#'+stlib.Utils.nextId();
         });
     }
 }
@@ -349,6 +350,17 @@ async function findCommunities(text, nextPage=false) {
     hasNextPage.value = result.length >= query.limit;
     if(nextPage) communitiesFound.value.push.apply(communitiesFound.value, result);
     else communitiesFound.value = result;
+    var map = {};
+    for(var community of communitiesFound.value) 
+        map[community.name] = true;
+    if(text) {
+        var active = [];
+        for(var community of defaultActiveCommunities) {
+            if(map[community.name]) active.push(community);
+        }
+        communitiesActive.value = active;
+    }
+    else communitiesActive.value = defaultActiveCommunities;
 }
 function findReset() {
     communitiesActive.value = defaultActiveCommunities;
