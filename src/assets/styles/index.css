@@ -103,8 +103,12 @@ body {
 
 .inputSelect1 {
     @apply appearance-none px-2 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm;
-    color: inherit;
-    background: inherit;
+    color: var(--appfg2);
+    background: var(--appbg2);
+}
+.inputSelect1 > option {
+    color: var(--appfg2);
+    background: var(--appbg2);
 }
 
 .tab > button {
