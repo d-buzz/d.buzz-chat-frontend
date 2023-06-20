@@ -1724,6 +1724,15 @@ exports.DisplayableFlag = DisplayableFlag;
 
 },{"./content/imports":10,"./utils":31}],23:[function(require,module,exports){
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LastRead = exports.LastReadRecord = void 0;
 class LastReadRecord {
@@ -1762,12 +1771,19 @@ class LastRead {
             this.storage.setItem("lastReadData", this.data);
     }
     load() {
-        if (this.storage) {
-            var data = this.storage.getItem("lastReadData");
-            if (data != null) {
-                this.data = data;
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.storage) {
+                var data = yield this.storage.getItem("lastReadData");
+                if (data != null) {
+                    for (var conversation in this.data) {
+                        if (data[conversation] == null || this.data[conversation].timestamp > data[conversation].timestamp) {
+                            data[conversation] = this.data[conversation];
+                        }
+                    }
+                    this.data = data;
+                }
             }
-        }
+        });
     }
     setStorageMethod(storage) {
         this.storage = storage;
@@ -4396,7 +4412,7 @@ class Utils {
     }
     static getNetworkname() { return netname; }
     static getGuestAccountValidators() { return guestAccountValidators; }
-    static getVersion() { return 5; }
+    static getVersion() { return 7; }
     static getClient() {
         return client;
     }
