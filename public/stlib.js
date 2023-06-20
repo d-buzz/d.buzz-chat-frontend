@@ -546,8 +546,8 @@ function preferences(json = {}) {
     return new imports_1.Preferences([imports_1.Preferences.TYPE, json]);
 }
 exports.preferences = preferences;
-function onlineStatus(online, communities) {
-    return new imports_1.OnlineStatus([imports_1.OnlineStatus.TYPE, online, communities]);
+function onlineStatus(online, communities, lastReadNum, lastReadTimestamp) {
+    return new imports_1.OnlineStatus([imports_1.OnlineStatus.TYPE, online, communities, lastReadNum, lastReadTimestamp]);
 }
 exports.onlineStatus = onlineStatus;
 function encodeTextWithKey(text, privateK, publicK) {
@@ -915,6 +915,10 @@ class OnlineStatus extends imports_1.JSONContent {
     setStatus(value) { this.json[1] = value; }
     setCommunities(value) { this.json[2] = value; }
     getCommunities() { return this.json[2]; }
+    setLastReadNumber(n) { this.json[3] = n; }
+    getLastReadNumber() { return this.json[3] || 0; }
+    setLastReadTimestamp(timestamp) { this.json[4] = timestamp; }
+    getLastReadTimestamp() { return this.json[4] || 0; }
 }
 exports.OnlineStatus = OnlineStatus;
 OnlineStatus.TYPE = "o";
@@ -1774,49 +1778,92 @@ exports.LastRead = LastRead;
 
 },{}],24:[function(require,module,exports){
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EncodedPublicStorage = exports.LocalUserStorage = void 0;
+const utils_1 = require("../utils");
 class LocalUserStorage {
     constructor(user) {
         this.user = user;
     }
     getItem(name) {
-        try {
-            if (window.localStorage) {
-                var item = window.localStorage.getItem(this.user + '#' + name);
-                if (item)
-                    return JSON.parse(item);
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (window.localStorage) {
+                    var item = window.localStorage.getItem(this.user + '#' + name);
+                    if (item)
+                        return JSON.parse(item);
+                }
             }
-        }
-        catch (e) {
-            console.log(e);
-        }
-        return null;
+            catch (e) {
+                console.log(e);
+            }
+            return null;
+        });
     }
     setItem(name, value = null) {
-        try {
-            if (window.localStorage)
-                window.localStorage.setItem(this.user + '#' + name, JSON.stringify(value));
-        }
-        catch (e) {
-            console.log(e);
-        }
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (window.localStorage)
+                    window.localStorage.setItem(this.user + '#' + name, JSON.stringify(value));
+            }
+            catch (e) {
+                console.log(e);
+            }
+        });
     }
 }
 exports.LocalUserStorage = LocalUserStorage;
 class EncodedPublicStorage {
-    constructor(user) {
+    constructor(user, storageKey) {
+        if (utils_1.Utils.isGuest(user))
+            throw 'unsupported for guests';
         this.user = user;
+        this.storageKey = (typeof storageKey === 'string') ?
+            utils_1.Utils.dhive().PrivateKey.fromString(storageKey) : storageKey;
+        this.storagePublicKey = this.storageKey.createPublic('STM').toString();
     }
     getItem(name) {
-        return null;
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                //var text = "..."; //load
+                //text = Utils.decodeTextWithKey(text, this.storageKey);
+                //return text;
+            }
+            catch (e) {
+                console.log(e);
+            }
+            return null;
+        });
     }
     setItem(name, value = null) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!window.stuploader)
+                return;
+            var stuploader = window.stuploader;
+            var text = JSON.stringify(value);
+            text = utils_1.Utils.encodeTextWithKey(text, this.storageKey, this.storagePublicKey);
+            //store
+            //var upload = stuploader.Upload.create(this.user, 'file', 'text/octet-stream');
+            //var bytes = new Uint8Array(await file.arrayBuffer());
+            //upload.setData(bytes);
+            //var signature = await upload.signWithKey(this.storageKey);
+            //if(signature == null) return;
+            //upload = await upload.upload();
+        });
     }
 }
 exports.EncodedPublicStorage = EncodedPublicStorage;
 
-},{}],25:[function(require,module,exports){
+},{"../utils":31}],25:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Markdown = void 0;
@@ -2120,12 +2167,12 @@ class LoginKey {
     }
     encodeText(text) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield imports_1.Content.encodeTextWithKey(this.keystring, this.publickeystring, text);
+            return yield imports_1.Content.encodeTextWithKey(text, this.keystring, this.publickeystring);
         });
     }
     decodeText(text) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield imports_1.Content.decodeTextWithKey(this.keystring, text);
+            return yield imports_1.Content.decodeTextWithKey(text, this.keystring);
         });
     }
     encodeContent(content, user, groupUsers, keychainKeyType) {
@@ -3535,11 +3582,13 @@ class MessageManager {
                 return null;
             }
             var communities = [];
+            var lastReadNum = yield this.getLastReadTotal();
+            var lastReadTimestamp = utils_1.Utils.utcTime();
             var communities2 = yield this.getCommunities(user);
             if (communities2 != null)
                 for (var community of communities2)
                     communities.push(community[0]);
-            var msg = signable_message_1.SignableMessage.create(user, conversation, imports_1.Content.onlineStatus(online, communities), signable_message_1.SignableMessage.TYPE_MESSAGE);
+            var msg = signable_message_1.SignableMessage.create(user, conversation, imports_1.Content.onlineStatus(online, communities, lastReadNum, lastReadTimestamp), signable_message_1.SignableMessage.TYPE_MESSAGE);
             msg.signWithKey(onlineKey, '$');
             var client = this.getClient();
             return yield client.write(msg);

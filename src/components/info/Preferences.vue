@@ -20,7 +20,7 @@ const defaultPreferences = [
      value: '', newvalue:'', options:[
         ['everyone', 'Everyone'],['accounts', 'Hive users'],
         ['communities','Communities in common'], ['friends', 'Friends']]},
-    {name: "showOnline:b", display: "Online Status", desc: "Show online status.", value: true, newvalue:true},
+    {name: "showOnline:b", display: "Online Status", desc: "Show online status & notification count.", value: true, newvalue:true},
     {name: "autoDecode:b", display: "Auto Decode", desc: "Automatically decode private messages.", value: false, newvalue:false},
     {name: "flipMessageBox:b", display: "Flip Message Box", desc: "Flip message box on y-axis.", value: false, newvalue:false},
     {name: "showDetailedProfile:b", display: "Show Detailed Profile", desc: "Show user profile image and data.", value: false, newvalue:false}

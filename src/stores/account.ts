@@ -28,7 +28,10 @@ export const useAccountStore = defineStore("account", () => {
                         manager.setUseKeychain();
                     }
                     manager.setOnlineStatusTimer(true);
-                    manager.sendOnlineStatus(true);
+                    nextTick(async ()=>{
+                        await manager.getPreferences();
+                        manager.sendOnlineStatus(true);
+                    });
                 }
             }
             catch(e) {
