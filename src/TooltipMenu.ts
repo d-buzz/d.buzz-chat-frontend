@@ -113,10 +113,11 @@ export function initTooltipMenu() {
 }
 export function initSwipe() {
   window.onswipe = new stlib.EventQueue();
-  const pos = { x: -1, s: 0 };
+  const pos = { x: -1, y: -1, s: 0 };
   const app = document.getElementById("app");
   app.addEventListener("pointerdown", (e)=>{ 
       pos.x = e.clientX;
+      pos.y = e.clientY;
       pos.s = 0;
   });
   app.addEventListener("pointerup", (e)=>{
@@ -124,6 +125,7 @@ export function initSwipe() {
         window.onswipe.post(true);   
       }
       pos.x = -1;
+      pos.y = -1;
       pos.s = 0;
   });
   app.addEventListener("pointermove", (e)=>{
@@ -131,9 +133,20 @@ export function initSwipe() {
     var x = e.clientX;
     var y = e.clientY;
     var dx = x-pos.x;
+    var dy = y-pos.y;
+    if(Math.abs(dy) > 50) {
+      if(pos.s !== 0) {
+        window.onswipe.post(-pos.s);  
+        pos.s = 0;
+        pos.x = -1;
+        window.onswipe.post(true); 
+      }      
+      return;
+    }
     var s = Math.floor(dx/10);
     if(s !== pos.s) { 
-      window.onswipe.post((s-pos.s)*10);   
+      if(Math.abs(pos.s) > 3)
+        window.onswipe.post((s-pos.s)*10);   
       pos.s = s;
     }
   }); 
