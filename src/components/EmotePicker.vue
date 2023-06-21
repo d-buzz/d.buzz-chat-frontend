@@ -7,7 +7,7 @@
 </div>
 <div class="flex">
     <div class="grow">
-        <div class="flex gap-x-1">
+        <div class="flex flex-wrap gap-1">
             <div class="cursor-pointer apphg2 px-1 rounded" 
                 v-on:click.prevent="scrollBox.scrollTop = 0" @mouseenter="tooltip($event.target, 'Common & Recently Used')">
                 &#x1F44D;

@@ -239,6 +239,7 @@ function clickOnMsg(event) {
     if(props.displayOnly.value) return;
     var element = event.target;
     var options = [
+        ["emote", toggleAddEmoteModal],
         ["quote", quoteAction]
     ];
     if(props.message && props.message.getUser() === getManager().user) {
@@ -247,6 +248,7 @@ function clickOnMsg(event) {
     }
     else {
         options.push(["hide messages from user", toggleHideMessagesModal]);
+        options.push(["flag message", flagAction]);
     }
     window.menu(event, options);
 }
@@ -351,7 +353,7 @@ init();
 </script>
 <style scoped>
 .messageButtons {
-    visibility: hidden;
+    opacity: 0.5;
 }
 .messageButtons > span {
     cursor: pointer;
@@ -359,7 +361,7 @@ init();
     opacity: 0.55;
 }
 .message:hover .messageButtons {
-    visibility: visible;
+    opacity: 1;
 }
 .messageButtons > span:hover {
     opacity: 1;
