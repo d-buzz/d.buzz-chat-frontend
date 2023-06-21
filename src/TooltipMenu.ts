@@ -109,4 +109,35 @@ export function initTooltipMenu() {
     if(el == null || el.hidden) return;
     el.hidden = true;
   });
+  initSwipe();
 }
+export function initSwipe() {
+  window.onswipe = new stlib.EventQueue();
+  const pos = { x: -1, s: 0 };
+  const app = document.getElementById("app");
+  app.addEventListener("pointerdown", (e)=>{ 
+      pos.x = e.clientX;
+      pos.s = 0;
+  });
+  app.addEventListener("pointerup", (e)=>{
+      if(pos.s !== 0) {
+        window.onswipe.post(true);   
+      }
+      pos.x = -1;
+      pos.s = 0;
+  });
+  app.addEventListener("pointermove", (e)=>{
+    if(e.buttons === 0 || pos.x === -1) return; 
+    var x = e.clientX;
+    var y = e.clientY;
+    var dx = x-pos.x;
+    var s = Math.floor(dx/10);
+    if(s !== pos.s) { 
+      window.onswipe.post((s-pos.s)*10);   
+      pos.s = s;
+    }
+  }); 
+}
+
+
+

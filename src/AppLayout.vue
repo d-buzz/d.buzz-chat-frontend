@@ -1,7 +1,8 @@
 <template>
   <AddEmoteModal ref="AddEmoteDiv" @oninput="addEmoteOnInput" @close="showModal('AddEmote', false)"></AddEmoteModal>
   <div class="flex min-h-full h-screen appbg2 appfg2" :key="updateKey">
-    <div class="h-screen flex flex-col appbg0 appfg0 border-r-1 sidebar" :data-show="globalProperties.showSidebar">
+    <div class="h-screen flex flex-col appbg0 appfg0 border-r-1 sidebar" 
+      ref="sidebar" :data-show="globalProperties.showSidebar">
       <SideBar2 v-if="globalProperties.sidebar === 2" @toggleStreambar="toggleStreambar()"></SideBar2>
       <SideBar v-else @toggleStreambar="toggleStreambar()"></SideBar>
     </div>
@@ -41,7 +42,8 @@ function showModal(name, values) {
 const router = useRouter();
 const updateKey = ref('#'+stlib.Utils.nextId());
 const globalProperties = ref(window.globalProperties);
-const streamBar = ref(null);
+const sidebar = ref();
+;const streamBar = ref(null);
 const streambarDirectMessages = ref(false);
 const route = useRoute();
 function getKey(path) {
@@ -63,6 +65,17 @@ function showStreambarDirectMessages(direct=true) {
 function navigate(url) {
   router.push(url);
 }
+nextTick(()=>{
+  var pos = {x: 0};
+  window.onswipe.set("AppLayout.ts", (s)=>{ 
+    var element = sidebar.value;
+    if(s === true) {
+        pos.x = pos.x > -element.clientWidth*0.5?0:-element.clientWidth;
+    }
+    else pos.x = Math.max(-element.clientWidth, Math.min(0, pos.x+s));
+    element.style.marginLeft = pos.x+'px';
+  });
+});
 window.navigate = navigate;
 window.showModal = showModal;
 window.showStreambar = showStreambar;
