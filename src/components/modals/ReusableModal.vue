@@ -38,11 +38,13 @@ defineExpose({open, close});
 </script>
 <style scoped>
 .reusable-modal {
+  display: block;
   opacity: 1;
   /* transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1); */
   visibility: visible;  
 }
 .modal-hide {
+  display: none;
   visibility: hidden;
   transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 0;  
