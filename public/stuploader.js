@@ -33,11 +33,20 @@ class Upload {
         this.created = null;
         this.mime = null;
         this.data = null;
+        this.size = null;
         this.signature = null;
         this.link = null;
     }
     setSharedUsers(users) {
         this.shared = users.join('|');
+    }
+    hasReadPermission(user) {
+        var shared = this.shared;
+        if (shared != null && shared !== "") {
+            if (user == null || shared.split('|').indexOf(user) === -1)
+                return false;
+        }
+        return true;
     }
     setData(data) { this.data = data; }
     upload() {
@@ -82,6 +91,28 @@ class Upload {
         upload.name = filename;
         upload.mime = mime;
         return upload;
+    }
+    static fromJSON(obj) {
+        var file = new Upload();
+        if (obj.id !== undefined)
+            file.id = obj.id;
+        if (obj.user !== undefined)
+            file.user = obj.user;
+        if (obj.name !== undefined)
+            file.name = obj.name;
+        if (obj.mime !== undefined)
+            file.mime = obj.mime;
+        if (obj.accessed !== undefined)
+            file.accessed = obj.accessed;
+        if (obj.created !== undefined)
+            file.created = obj.created;
+        if (obj.size !== undefined)
+            file.size = obj.size;
+        if (obj.shared !== undefined)
+            file.shared = obj.shared;
+        if (obj.data !== undefined)
+            file.data = obj.data;
+        return file;
     }
 }
 exports.Upload = Upload;
@@ -221,16 +252,72 @@ class Uploader {
             });
         });
     }
-    static list(user) {
+    static downloadWithKeychain(user, id, time) {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield fetch(Uploader.uploaderDomain + '/uploadlist/' + user, {
+            var signature = yield new Promise((resolve, error) => {
+                window.hive_keychain.requestSignBuffer(user, 'download/' + id + '/' + time, "Posting", (result) => {
+                    if (result.success) {
+                        var signature = result.result;
+                        resolve(signature);
+                    }
+                    else
+                        error();
+                });
+            });
+            return yield Uploader.download(user, id, time, signature);
+        });
+    }
+    static downloadWithKey(user, id, time, privateK) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (typeof privateK === 'string')
+                privateK = dhive.PrivateKey.fromString(privateK);
+            var signableMessage = dhive.cryptoUtils.sha256('download/' + id + '/' + time);
+            var signature = privateK.sign(signableMessage).toString("hex");
+            return yield Uploader.download(user, id, time, signature);
+        });
+    }
+    static download(user, id, time, signature) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield fetch(Uploader.uploaderDomain + '/file/' + id +
+                '?user=' + encodeURIComponent(user) +
+                '&time=' + time +
+                '&signature=' + signature, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/octet-stream",
+                }
+            });
+            if (response.ok) {
+                var result = yield response.arrayBuffer();
+                return result;
+            }
+            if (response.status === 404)
+                return null;
+            throw "error " + response.status;
+        });
+    }
+    static list(user, query = null) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var params = '';
+            if (query != null) {
+                for (var param in query)
+                    params += (params.length === 0 ? '?' : '&') + param + '=' + encodeURIComponent(query[param]);
+            }
+            const response = yield fetch(Uploader.uploaderDomain + '/upload/list/' + user + params, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/octet-stream",
                 }
             });
-            var result = yield response.json();
-            console.log("result ", result);
+            if (response.ok) {
+                var result = yield response.json();
+                if (result.success) {
+                    var arr = [];
+                    for (var item of result.result)
+                        arr.push(upload_1.Upload.fromJSON(item));
+                    return arr;
+                }
+            }
             return null;
         });
     }

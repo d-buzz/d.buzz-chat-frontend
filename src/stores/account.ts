@@ -29,8 +29,9 @@ export const useAccountStore = defineStore("account", () => {
                     }
                     manager.setOnlineStatusTimer(true);
                     nextTick(async ()=>{
-                        await manager.getPreferences();
+                        var prefs = await manager.getPreferences();
                         manager.sendOnlineStatus(true);
+                        manager.setLastReadDataSync(prefs.getValue("syncReadData:b", false));
                     });
                 }
             }
@@ -81,6 +82,7 @@ export const useAccountStore = defineStore("account", () => {
             updateStore();
             manager.setOnlineStatusTimer(true);
             await manager.sendOnlineStatus(true);
+            manager.setLastReadDataSync(pref.getValue("syncReadData:b", false));
             return account.value;
         }
         catch(e) { 
@@ -107,6 +109,7 @@ export const useAccountStore = defineStore("account", () => {
             await manager.joinGroups();
             await manager.getPrivatePreferences();
             await manager.sendOnlineStatus(true);
+            manager.setLastReadDataSync(false);
         }
         catch(e) {
             account.value.authenticated = false;

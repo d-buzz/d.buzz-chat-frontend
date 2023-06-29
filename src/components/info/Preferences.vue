@@ -20,7 +20,8 @@ const defaultPreferences = [
      value: '', newvalue:'', options:[
         ['everyone', 'Everyone'],['accounts', 'Hive users'],
         ['communities','Communities in common'], ['friends', 'Friends']]},
-    {name: "showOnline:b", display: "Online Status", desc: "Show online status & notification count.", value: true, newvalue:true},
+    {name: "showOnline:b", display: "Online Status", desc: "Show online status & notification count.", value: false, newvalue:false},
+    {name: "syncReadData:b", display: "Sync Last Read", desc: "Sync last read data between devices.", value: false, newvalue:false},
     {name: "autoDecode:b", display: "Auto Decode", desc: "Automatically decode private messages.", value: false, newvalue:false},
     {name: "flipMessageBox:b", display: "Flip Message Box", desc: "Flip message box on y-axis.", value: false, newvalue:false},
     {name: "showDetailedProfile:b", display: "Show Detailed Profile", desc: "Show user profile image and data.", value: false, newvalue:false}
@@ -58,6 +59,7 @@ async function updatePreferences() {
     }
     var result;
     if(prefs.getValue("showOnline:b", false) === true) result = await manager.setupOnlineStatus(true);
+    else if(prefs.getValue("syncReadData:b", false) === true) result = await manager.setupOnlineKey(false, null, null, true)
     else result = await manager.updatePreferences(prefs);
     if(result.isSuccess()) updateMessage.value = "Succesfully updated settings.";
     else updateMessage.value = "Failed to update preferences. " + result.getError();

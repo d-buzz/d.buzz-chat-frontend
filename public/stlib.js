@@ -1746,7 +1746,10 @@ class LastRead {
     constructor() {
         this.data = {};
         this.updated = false;
+        this.updateShared = false;
         this.storage = null;
+        this.sharedStorage = null;
+        this.lastSyncTimestamp = 0;
     }
     lookup(conversation) {
         var record = this.data[conversation];
@@ -1763,6 +1766,8 @@ class LastRead {
             record.number = number;
         }
         this.updated = true;
+        if (this.sharedStorage != null)
+            this.updateShared = true;
         this.updateStorage();
         return record;
     }
@@ -1770,24 +1775,70 @@ class LastRead {
         if (this.updated && this.storage)
             this.storage.setItem("lastReadData", this.data);
     }
+    updateSharedStorage() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.sharedStorage) {
+                yield this.sharedStorage.setItem("lastReadData", this.data);
+                if (this.storage)
+                    this.storage.setItem("lastReadData", this.data);
+            }
+        });
+    }
+    loadData(data) {
+        var updated = false;
+        if (data != null) {
+            for (var conversation in data) {
+                if (this.data[conversation] == null || this.data[conversation].timestamp < data[conversation].timestamp) {
+                    this.data[conversation] = data[conversation];
+                    updated = true;
+                }
+            }
+        }
+        return updated;
+    }
     load() {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.storage) {
                 var data = yield this.storage.getItem("lastReadData");
-                if (data != null) {
-                    for (var conversation in this.data) {
-                        if (data[conversation] == null || this.data[conversation].timestamp > data[conversation].timestamp) {
-                            data[conversation] = this.data[conversation];
-                        }
-                    }
-                    this.data = data;
+                this.loadData(data);
+            }
+        });
+    }
+    sync() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.sharedStorage == null)
+                return false;
+            var update = this.updateShared;
+            var updated = false;
+            try {
+                var timestamp = yield this.sharedStorage.getTimestamp("lastReadData");
+                if (timestamp > this.lastSyncTimestamp) {
+                    this.lastSyncTimestamp = timestamp;
+                    var data = yield this.sharedStorage.getItem("lastReadData");
+                    updated = this.loadData(data);
                 }
             }
+            catch (e) {
+                console.log(e);
+            }
+            try {
+                if (update)
+                    this.updateSharedStorage();
+            }
+            catch (e) {
+                console.log(e);
+            }
+            this.updateShared = false;
+            return updated;
         });
     }
     setStorageMethod(storage) {
         this.storage = storage;
-        this.updateStorage();
+    }
+    setSharedStorage(storage) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.sharedStorage = storage;
+        });
     }
 }
 exports.LastRead = LastRead;
@@ -1847,12 +1898,32 @@ class EncodedPublicStorage {
             utils_1.Utils.dhive().PrivateKey.fromString(storageKey) : storageKey;
         this.storagePublicKey = this.storageKey.createPublic('STM').toString();
     }
+    getTimestamp(name) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                var result = yield stuploader.Uploader.list(this.user, { name: '#' + name, mime: 'jsonlastread/octet-stream' });
+                if (result != null && result.length > 0)
+                    return result[0].created;
+            }
+            catch (e) {
+                console.log(e);
+            }
+            return 0;
+        });
+    }
     getItem(name) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                //var text = "..."; //load
-                //text = Utils.decodeTextWithKey(text, this.storageKey);
-                //return text;
+                var result = yield stuploader.Uploader.list(this.user, { name: '#' + name, mime: 'jsonlastread/octet-stream' });
+                if (result != null && result.length > 0) {
+                    var id = result[0].id;
+                    var buf = yield stuploader.Uploader.downloadWithKey(this.user, id, utils_1.Utils.utcTime(), this.storageKey);
+                    if (buf != null) {
+                        var text = new window.TextDecoder().decode(buf);
+                        text = utils_1.Utils.decodeTextWithKey(text, this.storageKey);
+                        return JSON.parse(text);
+                    }
+                }
             }
             catch (e) {
                 console.log(e);
@@ -1867,13 +1938,14 @@ class EncodedPublicStorage {
             var stuploader = window.stuploader;
             var text = JSON.stringify(value);
             text = utils_1.Utils.encodeTextWithKey(text, this.storageKey, this.storagePublicKey);
-            //store
-            //var upload = stuploader.Upload.create(this.user, 'file', 'text/octet-stream');
-            //var bytes = new Uint8Array(await file.arrayBuffer());
-            //upload.setData(bytes);
-            //var signature = await upload.signWithKey(this.storageKey);
-            //if(signature == null) return;
-            //upload = await upload.upload();
+            var upload = stuploader.Upload.create(this.user, '#' + name + ':-1', 'jsonlastread/octet-stream');
+            upload.shared = this.user;
+            var bytes = new window.TextEncoder().encode(text);
+            upload.setData(bytes);
+            var signature = yield upload.signWithKey(this.storageKey);
+            if (signature == null)
+                return;
+            upload = yield upload.upload();
         });
     }
 }
@@ -2296,6 +2368,7 @@ class MessageManager {
         this.selectedOnlineStatus = null;
         this.conversations = new utils_1.AccountDataCache();
         this.communities = new utils_1.AccountDataCache();
+        this.lastReadDataTimer = null;
         this.onlineStatusTimer = null;
         this.paused = false;
         this.cachedGuestData = null;
@@ -2443,7 +2516,6 @@ class MessageManager {
         });
     }
     handleMessage(signableMessage) {
-        console.log("msg", signableMessage);
         if (signableMessage.getMessageType() !== signable_message_1.SignableMessage.TYPE_MESSAGE)
             return;
         var content = signableMessage.getContent();
@@ -2570,6 +2642,39 @@ class MessageManager {
                 this.join('$online');
             }
         }
+    }
+    setLastReadDataSync(enabled = true) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var user = this.user;
+            if (user == null || utils_1.Utils.isGuest(user))
+                enabled = false;
+            if (enabled) {
+                var onlineKey = yield this.getKeyFor('$');
+                if (onlineKey == null)
+                    return;
+                this.conversationsLastReadData.setSharedStorage(new user_storage_1.EncodedPublicStorage(user, onlineKey));
+                if (this.lastReadDataTimer != null)
+                    return;
+                var _this = this;
+                var fn = () => __awaiter(this, void 0, void 0, function* () {
+                    if (_this.paused)
+                        return;
+                    if (_this.conversationsLastReadData) {
+                        var updated = yield _this.conversationsLastReadData.sync();
+                        if (updated)
+                            this.onlastread.post(null);
+                    }
+                });
+                this.lastReadDataTimer = setInterval(fn, 5 * 60 * 1000);
+                fn();
+            }
+            else {
+                if (this.lastReadDataTimer == null)
+                    return;
+                clearInterval(this.lastReadDataTimer);
+                this.lastReadDataTimer = null;
+            }
+        });
     }
     readHiddenUsers() {
         if (this.cachedHiddenUsers != null)
@@ -3551,26 +3656,35 @@ class MessageManager {
             return null;
         });
     }
+    setupOnlineKey(storeLocally = false, onlinePrivateKey = null, onlinePublicKey = null, updatePrefs = false) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var pref = yield this.getPreferences();
+            var onlineKey = yield this.getKeyFor('$');
+            if (pref.getValue("$:s", null) == null || onlineKey == null) {
+                if (onlinePrivateKey == null && onlinePublicKey == null) {
+                    var entropy = utils_1.Utils.createRandomPassword() + Math.random();
+                    var privateK = utils_1.Utils.dhive().PrivateKey.fromLogin(this.user, entropy, 'online');
+                    var publicK = privateK.createPublic('STM');
+                    onlinePrivateKey = privateK.toString();
+                    onlinePublicKey = publicK.toString();
+                }
+                pref.setValue("$:s", onlinePublicKey);
+                if (storeLocally)
+                    yield this.storeKeyLocallyEncrypted('$', onlinePrivateKey);
+                else
+                    return yield this.storeKeyGloballyInPrivatePreferences('$', onlinePrivateKey);
+            }
+            if (updatePrefs)
+                return yield this.updatePreferences(pref);
+            return null;
+        });
+    }
     setupOnlineStatus(enabled, storeLocally = false, onlinePrivateKey = null, onlinePublicKey = null) {
         return __awaiter(this, void 0, void 0, function* () {
             var pref = yield this.getPreferences();
             pref.setValue("showOnline:b", enabled);
             if (enabled) {
-                var onlineKey = yield this.getKeyFor('$');
-                if (pref.getValue("$:s", null) == null || onlineKey == null) {
-                    if (onlinePrivateKey == null && onlinePublicKey == null) {
-                        var entropy = utils_1.Utils.createRandomPassword() + Math.random();
-                        var privateK = utils_1.Utils.dhive().PrivateKey.fromLogin(this.user, entropy, 'online');
-                        var publicK = privateK.createPublic('STM');
-                        onlinePrivateKey = privateK.toString();
-                        onlinePublicKey = publicK.toString();
-                    }
-                    pref.setValue("$:s", onlinePublicKey);
-                    if (storeLocally)
-                        yield this.storeKeyLocallyEncrypted('$', onlinePrivateKey);
-                    else
-                        return yield this.storeKeyGloballyInPrivatePreferences('$', onlinePrivateKey);
-                }
+                return yield this.setupOnlineKey(storeLocally, onlinePrivateKey, onlinePublicKey, true);
             }
             return yield this.updatePreferences(pref);
         });
@@ -4238,6 +4352,8 @@ const community_1 = require("./community");
 const imports_1 = require("./content/imports");
 const displayable_message_1 = require("./displayable-message");
 const message_manager_1 = require("./message-manager");
+const last_read_1 = require("./manager/last-read");
+const user_storage_1 = require("./manager/user-storage");
 const markdown_1 = require("./markdown");
 const utils_1 = require("./utils");
 const signable_message_1 = require("./signable-message");
@@ -4249,11 +4365,15 @@ if (window !== undefined) {
         Client: client_1.Client, Community: community_1.Community, Content: imports_1.Content, DataStream: data_stream_1.DataStream, DataPath: data_path_1.DataPath, DisplayableEmote: displayable_message_1.DisplayableEmote, DisplayableMessage: displayable_message_1.DisplayableMessage,
         EventQueue: message_manager_1.EventQueue, PermissionSet: permission_set_1.PermissionSet, Markdown: markdown_1.Markdown, MessageManager: message_manager_1.MessageManager, Utils: utils_1.Utils, SignableMessage: signable_message_1.SignableMessage, TransientCache: utils_1.TransientCache,
         newSignableMessage: signable_message_1.SignableMessage.create,
-        utcTime: utils_1.Utils.utcTime
+        utcTime: utils_1.Utils.utcTime,
+        manager: {
+            LastReadRecord: last_read_1.LastReadRecord, LastRead: last_read_1.LastRead,
+            LocalUserStorage: user_storage_1.LocalUserStorage, EncodedPublicStorage: user_storage_1.EncodedPublicStorage
+        }
     };
 }
 
-},{"./client":1,"./community":2,"./content/imports":10,"./data-path":19,"./data-stream":20,"./displayable-message":22,"./markdown":25,"./message-manager":26,"./permission-set":27,"./signable-message":28,"./utils":31}],30:[function(require,module,exports){
+},{"./client":1,"./community":2,"./content/imports":10,"./data-path":19,"./data-stream":20,"./displayable-message":22,"./manager/last-read":23,"./manager/user-storage":24,"./markdown":25,"./message-manager":26,"./permission-set":27,"./signable-message":28,"./utils":31}],30:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -4412,7 +4532,7 @@ class Utils {
     }
     static getNetworkname() { return netname; }
     static getGuestAccountValidators() { return guestAccountValidators; }
-    static getVersion() { return 7; }
+    static getVersion() { return 10; }
     static getClient() {
         return client;
     }
