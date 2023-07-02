@@ -185,7 +185,7 @@
             <div>
                 <span v-if="writingUsers && writingUsers.length > 0">
                     <small class="align-top"><span v-for="user in writingUsers" class="oiMini oi" :class="user[1]"><b class="messageFontFamily">{{user[0]}}&nbsp;</b></span>
-                    <span class="oiMini oi text-gray-700">{{writingUsers.length==1?'is writing':' are writing'}}</span>
+                    <span class="oiMini oi text-gray-700"><span class="messageFontFamily">{{writingUsers.length==1?'is writing':' are writing'}}</span></span>
                     </small>
                 </span>
                 &nbsp;
