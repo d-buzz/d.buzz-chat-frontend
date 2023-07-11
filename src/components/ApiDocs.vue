@@ -39,6 +39,7 @@
 <script setup>
 import intro from '../../docs/introduction.md?raw'
 import quickstart from '../../docs/quickstart.md?raw'
+import restapi from '../../docs/restapi.md?raw'
 import widget from '../../docs/widget.md?raw'
 const router = useRouter();
 const route = useRoute();
@@ -48,6 +49,7 @@ var sections = [
     ["Quickstart", quickstart, "quickstart"],
     ["Tutorial", "*to be added*", "tutorial"],
     ["API", "*to be added*", "api"],
+    ["Rest API", restapi, "restapi"],
     ["Image Uploader", "*to be added*", "uploader"],
     ["Widget", widget, "widget"]
 ];
