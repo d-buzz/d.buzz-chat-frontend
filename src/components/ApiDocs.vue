@@ -40,6 +40,7 @@
 import intro from '../../docs/introduction.md?raw'
 import quickstart from '../../docs/quickstart.md?raw'
 import restapi from '../../docs/restapi.md?raw'
+import websocketapi_helloworld from '../../docs/websocketapi_helloworld.md?raw'
 import widget from '../../docs/widget.md?raw'
 const router = useRouter();
 const route = useRoute();
@@ -47,7 +48,7 @@ var page = ref(null);
 var sections = [
     ["Introduction", intro, "intro"],
     ["Quickstart", quickstart, "quickstart"],
-    ["Tutorial", "*to be added*", "tutorial"],
+    ["Tutorial", websocketapi_helloworld, "tutorial"],
     ["API", "*to be added*", "api"],
     ["Rest API", restapi, "restapi"],
     ["Image Uploader", "*to be added*", "uploader"],
