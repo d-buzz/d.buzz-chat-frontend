@@ -1691,9 +1691,14 @@ class DisplayableMessage {
     }
     isVerified() {
         var edits = this.edits;
+        var value = null;
         if (edits !== null && edits.length > 0)
-            return edits[0].verified;
-        return this.verified;
+            value = edits[0].verified;
+        else
+            value = this.verified;
+        if (value === true)
+            return true;
+        return false;
     }
 }
 exports.DisplayableMessage = DisplayableMessage;
@@ -2376,6 +2381,7 @@ class MessageManager {
         this.keys = {};
         this.keychainPromise = null;
         this.pauseAutoDecode = false;
+        this.autoReconnect = false;
         this.defaultReadHistoryMS = 30 * 24 * 60 * 60000;
     }
     /*
@@ -2413,8 +2419,10 @@ class MessageManager {
             socket.on("connect_error", (err) => {
                 console.log(`connect_error ${err.message}`);
                 socket.disconnect();
-                this.nodeIndex = this.nodeIndex + 1;
-                this.connect();
+                if (_this.autoReconnect) {
+                    _this.nodeIndex = _this.nodeIndex + 1;
+                    _this.connect();
+                }
             });
             socket.on('disconnect', function () {
                 console.log("disconnected ");
@@ -2437,6 +2445,28 @@ class MessageManager {
         }
         catch (e) {
             console.log("connect error");
+            console.log(e);
+        }
+    }
+    close() {
+        try {
+            if (this.lastReadDataTimer != null) {
+                clearInterval(this.lastReadDataTimer);
+                this.lastReadDataTimer = null;
+            }
+            if (this.onlineStatusTimer != null) {
+                clearInterval(this.onlineStatusTimer);
+                this.onlineStatusTimer = null;
+            }
+        }
+        catch (e) {
+            console.log(e);
+        }
+        try {
+            if (this.client)
+                this.client.close();
+        }
+        catch (e) {
             console.log(e);
         }
     }
@@ -3328,7 +3358,7 @@ class MessageManager {
                     var lastRead = data[conversation];
                     if (lastRead != null) {
                         var stream = communityData.findTextStreamById(conversation.substring(communityStreams.length));
-                        if (stream == null || stream.readSet.validate(role, titles))
+                        if (stream != null && stream.readSet.validate(role, titles))
                             number += lastRead.number;
                     }
                 }
@@ -3341,7 +3371,7 @@ class MessageManager {
                     var timestamp = timestamps[conversation];
                     if (lastRead == null || lastRead.timestamp < timestamp) {
                         var stream = communityData.findTextStreamById(conversation.substring(communityStreams.length));
-                        if (stream == null || stream.readSet.validate(role, titles)) {
+                        if (stream != null && stream.readSet.validate(role, titles)) {
                             number++;
                             plus = '+';
                         }
@@ -3418,7 +3448,7 @@ class MessageManager {
             return data == null ? null : data;
         });
     }
-    getSelectedConversations(conversation = this.selectedConversation) {
+    getSelectedConversations(conversation = this.selectedConversation, asyncVerify = true) {
         return __awaiter(this, void 0, void 0, function* () {
             if (conversation == null)
                 return null;
@@ -3458,7 +3488,7 @@ class MessageManager {
                     }).then((result) => {
                         if (!result.isSuccess())
                             throw result.getError();
-                        return _this.toDisplayable(result);
+                        return _this.toDisplayable(result, asyncVerify);
                     }).then((messages) => {
                         _this.resolveReferences(messages);
                         if (messages.length < 100)
@@ -3798,7 +3828,7 @@ class MessageManager {
             console.log("error resolving reference ", msg, e);
         }
     }
-    toDisplayable(result) {
+    toDisplayable(result, asyncVerify = false) {
         return __awaiter(this, void 0, void 0, function* () {
             var list0 = [];
             var list = [];
@@ -3836,7 +3866,7 @@ class MessageManager {
             }
             for (var msg of list0) {
                 try {
-                    list.push(yield this.signableToDisplayable(msg));
+                    list.push(yield this.signableToDisplayable(msg, asyncVerify));
                 }
                 catch (e) {
                     console.log("Error reading message: ", msgJSON);
@@ -3866,12 +3896,12 @@ class MessageManager {
                     return true;
         return false;
     }
-    jsonToDisplayable(msgJSON) {
+    jsonToDisplayable(msgJSON, asyncVerify = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.signableToDisplayable(signable_message_1.SignableMessage.fromJSON(msgJSON));
+            return yield this.signableToDisplayable(signable_message_1.SignableMessage.fromJSON(msgJSON), asyncVerify);
         });
     }
-    signableToDisplayable(msg) {
+    signableToDisplayable(msg, asyncVerify = false) {
         return __awaiter(this, void 0, void 0, function* () {
             if (msg.isSignedWithGroupKey()) {
                 var key = yield this.getKeyFor(msg.getConversation());
@@ -3879,7 +3909,6 @@ class MessageManager {
                     throw 'key not found';
                 msg.decodeWithKey(key);
             }
-            var verified = yield msg.verify();
             var content = msg.getContent();
             if (content instanceof imports_1.Encoded) {
                 var decoded = this.popRecentlySentEncodedContent(content);
@@ -3903,7 +3932,18 @@ class MessageManager {
                 displayableMessage.isEdit = true;
             }
             displayableMessage.content = content;
-            displayableMessage.verified = verified;
+            if (asyncVerify) {
+                displayableMessage.verified = null;
+                setTimeout(() => {
+                    msg.verify().then((result) => {
+                        displayableMessage.verified = result;
+                    });
+                }, 10);
+            }
+            else {
+                var verified = yield msg.verify();
+                displayableMessage.verified = verified;
+            }
             displayableMessage.init();
             return displayableMessage;
         });

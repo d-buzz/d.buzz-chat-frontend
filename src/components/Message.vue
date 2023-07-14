@@ -16,13 +16,14 @@
     </TransitionRoot>
     <div v-if="!displayEdits && message && (message.flagsNum >= 3 || hideMessage())" class="message mesageFont" 
             style="margin-top:-5px;margin-bottom:-25px;" @click.right.prevent.stop="clickOnMsg($event)"
-         :data-verified="message.isVerified()" :data-reference="messageReference()">
+         :data-verified="isVerified !== false" :data-reference="messageReference()">
         <small style="margin-left:46px;opacity:0.5;" :class="roleColor?roleColor:''"><b class="messageFontFamily">{{message.getUser()}}</b></small>
         <span class="pr-2 float-right fg70">
             <small class="cursor-pointer fg70" @click="toggleViewEditHistoryModal()" @mouseenter="tooltip($event.target, 'Reason:\n'+getFlagReasons(message))">(hidden) </small>
             <small v-if="message.edits && message.edits.length > 0" class="cursor-pointer" @mouseenter="tooltip($event.target, toAbsoluteTimeString(message.edits[0].getTimestamp()))" @click="toggleViewEditHistoryModal()">(edited {{toRelativeTimeString(message.edits[0].getTimestamp())}}) </small>
             <small @mouseenter="tooltip($event.target, toRelativeTimeString(message.getTimestamp(),3)+'\n'+toAbsoluteTimeString(message.getTimestamp()))">{{toRelativeTimeString(message.getTimestamp())}}</small>
-            <span v-if="!message.isVerified()" class="pl-1">&#10008;</span>
+            <span v-if="isVerified === false" class="pl-1">&#10008;</span>
+            <span v-if="isVerified === null" class="pl-1">&#10008;</span>
         </span>
     </div>
     <div v-else class="mesageFont">
@@ -31,8 +32,8 @@
             <small class="break-word quoteText text-justify lg:text-left"><div class="float-left inline-block" style="padding-right:3px;"><UserCommunityIcon :name="message.reference.getUser()" :community="message.getCommunity()" 
                       :imgCss="`avMini`"/></div><span class="cursor-pointer" @click="jump()"><b :class="roleReferenceColor?roleReferenceColor:''" style="opacity:0.5;"><span class="messageFontFamily">{{message.reference.getUser()}}</span></b> <span>{{getQuotedText(message)}}</span></span></small>
         </div>
-        <div v-if="!message.isVerified()" class="verifyColor pl-11 w-full text-sm font-bold pt-1 pb-2" style="line-height:1.25;"><span class="oi oi-warning"></span> <span class="">{{$t("Message.Warning")}}</span></div>
-        <div class="message" :class="iconFlexClass" :data-verified="message.isVerified()" :data-reference="messageReference()">
+        <div v-if="isVerified === false" class="verifyColor pl-11 w-full text-sm font-bold pt-1 pb-2" style="line-height:1.25;"><span class="oi oi-warning"></span> <span class="">{{$t("Message.Warning")}}</span></div>
+        <div class="message" :class="iconFlexClass" :data-verified="isVerified !== false" :data-reference="messageReference()">
             <div class="flex-shrink-0 mr-5px" :class="iconClass">
                 <UserCommunityIcon :name="message.getUser()" :community="message.getCommunity()"/>
             </div>
@@ -121,14 +122,32 @@ const iconClass = ref(globalProperties.value['messageIconClass']);
 const roleColor = ref(null);
 const roleReferenceColor = ref(null);
 const hasJoinedGroup = ref(false);
+const isVerified = ref(null);
 async function hasJoinedGroupX(group) {
     const manager = getManager();
     var groups = await manager.getJoinedAndCreatedGroups();
     return groups[group] !== undefined;
 }
+function checkVerifyAsync(limit=5) {
+    if(props.message) {
+        var verified = props.message.verified;
+        if(verified === null) {
+            if(limit === 0) {
+                isVerified.value = false;
+            }
+            else {
+                setTimeout(()=>{
+                    checkVerifyAsync(limit-1);
+                }, 1000);
+            }
+        }
+        else isVerified.value = verified;
+    }
+}
 function initContent() {
     var content = null; 
     if(props.message) {
+        checkVerifyAsync();
         if(props.displayEdits && props.message.editContent)
             content = props.message.editContent;
         else {

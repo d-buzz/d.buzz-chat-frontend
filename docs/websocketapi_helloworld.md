@@ -73,6 +73,9 @@ async function helloWorld(username,  /* hive username */
         limit--;
         if(limit <= 0) break;
     }
+
+    /* Close the connetion*/
+    manager.close();
 }
 ```
 
