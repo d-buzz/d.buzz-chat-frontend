@@ -1586,11 +1586,17 @@ class DisplayableMessage {
         if (content) {
             if (content instanceof imports_1.Thread) {
                 var threadContent = content.getContent();
-                if (threadContent instanceof imports_1.Edit)
+                if (threadContent instanceof imports_1.Edit) {
+                    var editContent = threadContent.getEdit();
+                    this.editContent = imports_1.Content.thread(content.getName(), (editContent == null) ? null : imports_1.Content.fromJSON(editContent));
                     this.isEdit = true;
+                }
             }
-            else if (content instanceof imports_1.Edit)
+            else if (content instanceof imports_1.Edit) {
+                var editContent = content.getEdit();
+                this.editContent = (editContent == null) ? null : imports_1.Content.fromJSON(editContent);
                 this.isEdit = true;
+            }
         }
     }
     getEmoteIndex(emote) {
@@ -1655,6 +1661,8 @@ class DisplayableMessage {
         if (this.edits === null)
             this.edits = [msg];
         else {
+            if (this.edits.indexOf(msg) !== -1)
+                return;
             this.edits.push(msg);
             this.edits.sort((a, b) => b.getTimestamp() - a.getTimestamp());
         }
@@ -3918,19 +3926,6 @@ class MessageManager {
                 content = decoded;*/
             }
             var displayableMessage = new displayable_message_1.DisplayableMessage(msg);
-            if (content instanceof imports_1.Thread) {
-                var threadContent = content.getContent();
-                if (threadContent instanceof imports_1.Edit) {
-                    var editContent = threadContent.getEdit();
-                    displayableMessage.editContent = imports_1.Content.thread(content.getName(), (editContent == null) ? null : imports_1.Content.fromJSON(editContent));
-                    displayableMessage.isEdit = true;
-                }
-            }
-            else if (content instanceof imports_1.Edit) {
-                var editContent = content.getEdit();
-                displayableMessage.editContent = (editContent == null) ? null : imports_1.Content.fromJSON(editContent);
-                displayableMessage.isEdit = true;
-            }
             displayableMessage.content = content;
             if (asyncVerify) {
                 displayableMessage.verified = null;
