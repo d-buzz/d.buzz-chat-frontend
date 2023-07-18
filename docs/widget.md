@@ -79,6 +79,18 @@ Example:
 w.setUser(`user`);
 ```
 
+#### setPostingKey
+
+Set the logged in user's posting key. (The default is to use keychain)
+Requires dhive library as second parameter.
+
+- `setPostingKey(postingKey, dhive)`
+
+Example:
+```
+w.setPostingKey("5J123...", dhive);
+```
+
 #### setProperties
 
 Set widget properties. Refer to the [Widget editor](https://chat.peakd.com/widgeteditor) for a list of properties or use it to customize the widget and generate the code for setting it up.

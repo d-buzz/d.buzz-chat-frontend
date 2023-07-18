@@ -53,7 +53,9 @@ function applyCssOverrides(properties) {
             root.style.setProperty(name, properties[name]);
 }
 window.sendNotificationsUpdate = (obj)=>{};
-const isEmbed = new URLSearchParams(location.search).has("embed");
+const urlParams = new URLSearchParams(location.search);
+const isEmbed = urlParams.has("embed");
+const embedNumber = 'stlib'+(isEmbed?urlParams.get("embed"):'');
 var inited = false;
 //window.dhive = dhive;
 (()=>{
@@ -113,7 +115,7 @@ var inited = false;
             try {
                 if(event.data != null && Array.isArray(event.data)) {
                     var data = event.data;
-                    if(data.length === 3 && data[0] === 'stlib') {
+                    if(data.length === 3 && data[0] === embedNumber) {
                         if(typeof data[1] === 'string') {
                             var method = proxy.methods[data[1]];
                             if(method != null) method(JSON.parse(data[2]));
@@ -134,7 +136,7 @@ var inited = false;
             get(target, prop, receiver) {
                 return function () {
                     var msgId = proxy.id++; 
-                    var data = ["stlib", msgId, prop];
+                    var data = [embedNumber, msgId, prop];
                     var args = [];
                     for(var i = 0; i < arguments.length-1; i++)
                         args.push(arguments[i]);
@@ -145,9 +147,9 @@ var inited = false;
             }
         });
         window.sendNotificationsUpdate = (obj)=>{
-            window.parent.postMessage(["stlib", -1, "notifications", obj], "*");
+            window.parent.postMessage([embedNumber, -1, "notifications", obj], "*");
         };
-        window.parent.postMessage(["stlib", -1, "initialize"], "*");
+        window.parent.postMessage([embedNumber, -1, "initialize"], "*");
     }
     try {
         const isIframe = isEmbed || window.top !== window.self;

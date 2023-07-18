@@ -358,7 +358,9 @@ async function initChat() {
     if(conversation != null) {
         manager.setConversation(conversation);
         try {
-            canWrite.value = await stlib.Utils.verifyPermissions(user, null, conversation);
+            stlib.Utils.verifyPermissions(user, null, conversation).then((value)=>{
+                canWrite.value = value;
+            });
         }
         catch(e) { console.log(e); }
         var _lastRead = manager.getLastRead(conversation);

@@ -336,6 +336,7 @@ function initWidget() {
         "prependCommunities": ["hive-163399"]
     };*/
     //stwidget.setUser("username");
+    //stwidget.setPostingKey(window.testKey, window.dhive);
     stwidget.setLastReadCallback((obj)=>{
         lastRead.value = (obj.group === 0)?'':('('+obj.group+')');
     });
