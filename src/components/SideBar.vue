@@ -62,10 +62,11 @@ function setTitle(communityMessages, directGroupMessages) {
 }
 async function initCommunities() {
   var user = accountStore.account.name;
-  if (user == null) return;
   var manager = getManager();
-  manager.setUser(user);
-  manager.joinGroups();
+  if(user != null) {
+    manager.setUser(user);
+    manager.joinGroups();
+  }
   var _communities = globalProperties.onlyPrependCommunities ? [] : await manager.getCommunitiesSorted();
   {
     var tmp = {};
@@ -79,10 +80,12 @@ async function initCommunities() {
       }
     }
   }
-  manager.joinCommunities(_communities);
   communities.value = _communities;
   updateKey.value = "" + stlib.Utils.nextId();
-  var update = async () => {
+  if (user == null) return;
+  nextTick(async() => { 
+    await manager.joinCommunities(_communities);
+    var update = async () => {
     var totalCommunities = 0;
     for (var community of communities.value) {
       var lastReadNumber = await manager.getLastReadCommunity(community[0]);
@@ -98,10 +101,11 @@ async function initCommunities() {
       number.value = "" + directGroupTotal;
       updateKey.value = "" + stlib.Utils.nextId();
     });
-  };
-  await update();
-  manager.setCallback("SideBar.vue", update);
-  manager.onlastread.set("SideBar.vue", update);
+    };
+    await update();
+    manager.setCallback("SideBar.vue", update);
+    manager.onlastread.set("SideBar.vue", update);
+  });
 }
 async function init() {
   await initCommunities();

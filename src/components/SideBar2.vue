@@ -227,12 +227,13 @@ async function initCommunities() {
       }
     }
   }
-  if (user != null) manager.joinCommunities(_communities);
   communities.value = _communities;
   updateKey.value = "" + stlib.Utils.nextId();
   if (user == null) return;
   accountName.value = user;
-  var update = async () => {
+  nextTick(async () => {
+    await manager.joinCommunities(_communities);
+    var update = async () => {
     var totalCommunities = 0;
     var _communityNumber = 0;
     for (var community of communities.value) {
@@ -251,10 +252,11 @@ async function initCommunities() {
       communityNumber.value = _communityNumber + "";
       updateKey.value = "" + stlib.Utils.nextId();
     });
-  };
-  await update();
-  manager.setCallback("SideBar.vue", update);
-  manager.onlastread.set("SideBar.vue", update);
+    };
+    await update();
+    manager.setCallback("SideBar.vue", update);
+    manager.onlastread.set("SideBar.vue", update);
+  }); 
 }
 initCommunities();
 

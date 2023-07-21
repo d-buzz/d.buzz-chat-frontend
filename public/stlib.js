@@ -1662,7 +1662,7 @@ class DisplayableMessage {
             this.edits = [msg];
         else {
             if (this.edits.indexOf(msg) !== -1)
-                return;
+                return; //TODO compare actual data
             this.edits.push(msg);
             this.edits.sort((a, b) => b.getTimestamp() - a.getTimestamp());
         }
