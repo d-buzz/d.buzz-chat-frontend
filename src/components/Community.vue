@@ -101,7 +101,7 @@
                 <small class="font-normal fg40">messages protected by private {{route.name.startsWith('PrivateChat')?'posting':'group'}} key</small>            
             </div>
         </div>
-
+        
         <div ref="messages" :key="messageKey" class="grow overflow-y-scroll scrollBox" style="order:5;">
             <div class="scrollBoxContent flex flex-col pr-3">
                 <div v-if="threadName !== null" :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
@@ -194,6 +194,12 @@
 
    </div>
  </div>
+ <div v-else-if="errorMessage" class="flex h-full justify-center items-center"> 
+    <div class="font-bold text-xl pl-2 py-1"><span class="oi oi-link-broken"></span> {{errorMessage}}</div> 
+ </div>
+ <div v-else class="flex h-full justify-center items-center">
+    <div class="fg40"><i>loading</i></div>
+ </div>
 </template>
 <script setup lang="ts">
 import { useAccountStore } from "../stores/account";
@@ -235,6 +241,7 @@ const showErrorModal = ref(null);
 const showSidebar = ref(false);
 const flagMessageRef = ref();
 const deleteMessageRef = ref();
+const errorMessage = ref(null);
 
 function toggleRenameGroup() {
     showRenameGroupModal.value = !showRenameGroupModal.value;
@@ -369,6 +376,7 @@ async function initChat() {
             manager.setSelectedCommunityPage(user2, route.path);
 
             community0 = await stlib.Community.load(user2);
+            console.log("CommunityPath ", user2, community0);
             var stream = (community0)?community0.findTextStreamById(''+route.params.path):null;
             streamName.value = addCommunityName(community0, (stream?stream.getName():conversation));
             community.value = community0;
@@ -402,12 +410,18 @@ async function initChat() {
             updateOnlineUsers();
         }
         else if(route.name === 'CommunityGroup') {
-            manager.setSelectedCommunityPage(user2, route.path);
+            var communityPath = route.params.community;
+            manager.setSelectedCommunityPage(communityPath, route.path);
+            community0 = await stlib.Community.load(communityPath);
 
             var pref = await stlib.Utils.getAccountPreferences(user2);
             var groups = pref.getGroups();
             var group = groups[route.params.path];
-            if(group !== null && group.name != null) {
+            if(group == null) {
+                errorMessage.value = "Group not found.";
+                return;
+            }
+            if(group.name != null) {
                 streamName.value = addCommunityName(community0, group.name);
                 //streamName2.value = conversation;
             }
@@ -419,7 +433,11 @@ async function initChat() {
             var pref = await stlib.Utils.getAccountPreferences(user2);
             var groups = pref.getGroups();
             var group = groups[route.params.path];
-            if(group !== null && group.name != null) {
+            if(group == null) {
+                errorMessage.value = "Group not found.";
+                return;
+            }
+            if(group.name != null) {
                 streamName.value = group.name;
                 //streamName2.value = conversation;
             }
