@@ -138,158 +138,195 @@ class StWidget {
                 if(this.onLastRead) _this.onLastRead(args);
                 break;
             case "requestCustomJson":
-                if(this.allowedCustomJson.indexOf(args[1]) !== -1 &&
-                    args[2] === 'Posting') {
-                    if(this.postingKey) {
-                        if(this.dhive) {
-                            _this.getDhiveClient().broadcast.json({
-                                id: args[1],
-                                json: args[3],
-                                required_auths: [],
-                                required_posting_auths: [args[0]],
-                            }, _this.postingKey).then(function(result) {
-                                event.source.postMessage([_this.messageName, msgId, JSON.stringify({
-                                    success: true,
-                                    error: null,
-                                    result: result
-                                })], event.origin);
-                            }, function(error) { 
-                                event.source.postMessage([_this.messageName, msgId, JSON.stringify({
-                                    success: false,
-                                    error: error,
-                                    result: false
-                                })], event.origin);
-                            });
-                        }
-                        else {
-                            _this.hivejs.broadcast.customJson(_this.postingKey, [], [args[0]], args[1],
-                              args[3], function(error, result) {
-                                if(error == null) {
-                                    event.source.postMessage([_this.messageName, msgId, JSON.stringify({
-                                        success: true,
-                                        error: null,
-                                        result: result
-                                    })], event.origin);
-                                }
-                                else {
-                                    event.source.postMessage([_this.messageName, msgId, JSON.stringify({
-                                        success: false,
-                                        error: error,
-                                        result: false
-                                    })], event.origin);
-                                }
-                            });
-                        }
+            case "requestVerifyKey":
+            case "requestSignBuffer":
+            case "requestEncodeMessage":
+                if(_this.postingKey) {
+                    try {
+                        if(_this.dhive) _this.handleWithDhive(event, msgId, name, args)
+                        else if(_this.hivejs) _this.handleWithHivejs(event, msgId, name, args);
                     }
-                    else if(this.enableKeychainPassthrough)
-                        window.hive_keychain.requestCustomJson(args[0], args[1], 'Posting', args[3], args[4], (r)=>{
-                            event.source.postMessage([_this.messageName, msgId, JSON.stringify(r)], event.origin);
+                    catch(e) {
+                        event.source.postMessage([_this.messageName, msgId, JSON.stringify({
+                            success: false, error: e, result: null
+                        })], event.origin);
+                    }
+                }
+                else if(_this.enableKeychainPassthrough) {
+                    _this.handleWithKeychain(event, msgId, name, args);
+                }
+            break;
+        }
+    }
+    handleWithKeychain(event, msgId, name, args) {
+        var _this = this;
+        switch(name) {
+            case "requestCustomJson":
+                if(this.allowedCustomJson.indexOf(args[1]) !== -1 && args[2] === 'Posting') {
+                    window.hive_keychain.requestCustomJson(args[0], args[1], 'Posting', args[3], args[4], (r)=>{
+                        event.source.postMessage([_this.messageName, msgId, JSON.stringify(r)], event.origin);
+                    });
+                }
+            break;
+            case "requestVerifyKey":
+                if(args[2] === 'Posting')
+                    window.hive_keychain.requestVerifyKey(args[0], args[1], 'Posting', (r)=>{
+                        event.source.postMessage([_this.messageName, msgId, JSON.stringify(r)], event.origin);
+                    });
+            break;
+            case "requestSignBuffer":
+                if(args[2] === 'Posting')
+                    window.hive_keychain.requestSignBuffer(args[0], args[1], 'Posting', (r)=>{
+                        event.source.postMessage([_this.messageName, msgId, JSON.stringify(r)], event.origin);
+                    });
+            break;
+            case "requestEncodeMessage":
+                if(args[3] === 'Posting')
+                    window.hive_keychain.requestEncodeMessage(args[0], args[1], args[2], 'Posting', (r)=>{
+                        event.source.postMessage([_this.messageName, msgId, JSON.stringify(r)], event.origin);
+                    });
+            break;
+        }
+    }
+    handleWithDhive(event, msgId, name, args) {
+        var _this = this;
+        switch(name) {
+            case "requestCustomJson":
+                if(this.allowedCustomJson.indexOf(args[1]) !== -1 && args[2] === 'Posting') {
+                    _this.getDhiveClient().broadcast.json({
+                            id: args[1],
+                            json: args[3],
+                            required_auths: [],
+                            required_posting_auths: [args[0]],
+                        }, _this.postingKey).then(function(result) {
+                            event.source.postMessage([_this.messageName, msgId, JSON.stringify({
+                                success: true,
+                                error: null,
+                                result: result
+                            })], event.origin);
+                        }, function(error) { 
+                            event.source.postMessage([_this.messageName, msgId, JSON.stringify({
+                                success: false,
+                                error: error,
+                                result: false
+                            })], event.origin);
                         });
                 }
             break;
             case "requestVerifyKey":
-                if(args[2] === 'Posting') {
-                    if(this.postingKey) {
-                        try {
-                            var decoded = (_this.dhive)?_this.dhive.Memo.decode(_this.postingKey, args[1]):
-                                _this.hivejs.memo.decode(_this.postingKey, args[1]);
-                            if(decoded.startsWith("#")) decoded = decoded.substring(1);
+                if(args[2] !== 'Posting') return;
+                var decoded = _this.dhive.Memo.decode(_this.postingKey, args[1]);
+                if(decoded.startsWith("#")) decoded = decoded.substring(1);
+                event.source.postMessage([_this.messageName, msgId, JSON.stringify({
+                    success: true,
+                    error: null,
+                    result: decoded
+                })], event.origin);
+            break;
+            case "requestSignBuffer":
+                if(args[2] !== 'Posting') return;
+                var messageHash = _this.dhive.cryptoUtils.sha256(args[1]);
+                var result = _this.postingKey.sign(messageHash).toString("hex");
+                event.source.postMessage([_this.messageName, msgId, JSON.stringify({
+                    success: true,
+                    error: null,
+                    result: result
+                })], event.origin);
+            break;
+            case "requestEncodeMessage":
+                if(args[3] !== 'Posting') return;
+                if(args[0] == args[1]) {
+                    var publicKey = _this.postingKey.createPublic("STM");
+                    var result = _this.dhive.Memo.encode(_this.postingKey, publicKey, args[2]);
+                    event.source.postMessage([_this.messageName, msgId, JSON.stringify({
+                        success: true,
+                        error: null,
+                        result: result
+                    })], event.origin);
+                }
+                else {
+                    _this.getDhiveClient().database
+                        .getAccounts([args[1]]).then((array)=>{
+                        if(array.length > 0 && array[0].name == args[1]) {
+                            var publicKey = array[0].posting.key_auths[0][0];
+                            var result = _this.dhive.Memo.encode(_this.postingKey, publicKey, args[2]);
                             event.source.postMessage([_this.messageName, msgId, JSON.stringify({
                                 success: true,
                                 error: null,
-                                result: decoded
+                                result: result
                             })], event.origin);
                         }
-                        catch(e) {
+                    });
+                }
+            break;
+        }
+    }
+    handleWithHivejs(event, msgId, name, args) {
+        var _this = this;
+        switch(name) {
+            case "requestCustomJson":
+                if(this.allowedCustomJson.indexOf(args[1]) !== -1 && args[2] === 'Posting') {
+                    _this.hivejs.broadcast.customJson(_this.postingKey, [], [args[0]], args[1],
+                      args[3], function(error, result) {
+                        if(error == null) {
+                            event.source.postMessage([_this.messageName, msgId, JSON.stringify({
+                                success: true,
+                                error: null,
+                                result: result
+                            })], event.origin);
+                        }
+                        else {
                             event.source.postMessage([_this.messageName, msgId, JSON.stringify({
                                 success: false,
-                                error: e,
-                                result: null
+                                error: error,
+                                result: false
                             })], event.origin);
                         }
-                    }
-                    else if(this.enableKeychainPassthrough)
-                        window.hive_keychain.requestVerifyKey(args[0], args[1], 'Posting', (r)=>{
-                            event.source.postMessage([_this.messageName, msgId, JSON.stringify(r)], event.origin);
-                        });
+                    });
                 }
+            break;
+            case "requestVerifyKey":
+                if(args[2] !== 'Posting') return;
+                var decoded = _this.hivejs.memo.decode(_this.postingKey, args[1]);
+                if(decoded.startsWith("#")) decoded = decoded.substring(1);
+                event.source.postMessage([_this.messageName, msgId, JSON.stringify({
+                    success: true,
+                    error: null,
+                    result: decoded
+                })], event.origin);
             break;
             case "requestSignBuffer":
-                if(args[2] === 'Posting') {
-                    if(_this.postingKey) {
-                        try {
-                            if(_this.dhive) {
-                                var messageHash = _this.dhive.cryptoUtils.sha256(args[1]);
-                                var result = _this.postingKey.sign(messageHash).toString("hex");
-                                event.source.postMessage([_this.messageName, msgId, JSON.stringify({
-                                    success: true,
-                                    error: null,
-                                    result: result
-                                })], event.origin);
-                            }
-                            else {
-                                
-                            }
-                        }
-                        catch(e) {
-                            event.source.postMessage([_this.messageName, msgId, JSON.stringify({
-                                success: false,
-                                error: e,
-                                result: null
-                            })], event.origin);
-                        }
-                    }
-                    else if(this.enableKeychainPassthrough)
-                        window.hive_keychain.requestSignBuffer(args[0], args[1], 'Posting', (r)=>{
-                            event.source.postMessage([_this.messageName, msgId, JSON.stringify(r)], event.origin);
-                        });
-                }
+                if(args[2] !== 'Posting') return;
+                var result = _this.hivejs.auth.Signature.sign(args[1], _this.postingKey).toHex();
+                event.source.postMessage([_this.messageName, msgId, JSON.stringify({
+                    success: true,
+                    error: null,
+                    result: result
+                })], event.origin);
             break;
             case "requestEncodeMessage":
-                if(args[3] === 'Posting') {
-                    if(this.postingKey) {
-                        try {
-                            if(this.dhive) {
-                                if(args[0] == args[1]) {
-                                    var publicKey = _this.postingKey.createPublic("STM");
-                                    var result = _this.dhive.Memo.encode(_this.postingKey, publicKey, args[2]);
-                                    event.source.postMessage([_this.messageName, msgId, JSON.stringify({
-                                        success: true,
-                                        error: null,
-                                        result: result
-                                    })], event.origin);
-                                }
-                                else {
-                                    _this.getDhiveClient().database
-                                        .getAccounts([args[1]]).then((array)=>{
-                                        if(array.length > 0 && array[0].name == args[1]) {
-                                            var publicKey = array[0].posting.key_auths[0][0];
-                                            var result = _this.dhive.Memo.encode(_this.postingKey, publicKey, args[2]);
-                                            event.source.postMessage([_this.messageName, msgId, JSON.stringify({
-                                                success: true,
-                                                error: null,
-                                                result: result
-                                            })], event.origin);
-                                        }
-                                    });
-                                }
-                            }
-                            else {
-
-                            }
-                        }
-                        catch(e) {
+                if(args[3] !== 'Posting') return;
+                if(args[0] == args[1]) {
+                    var publicKey = _this.hivejs.auth.wifToPublic(_this.postingKey)
+                    var result = _this.hivejs.memo.encode(_this.postingKey, publicKey, args[2]);
+                    event.source.postMessage([_this.messageName, msgId, JSON.stringify({
+                        success: true,
+                        error: null,
+                        result: result
+                    })], event.origin);
+                }
+                else {
+                    _this.hivejs.api.getAccountsAsync([args[1]]).then((array)=>{
+                        if(array.length > 0 && array[0].name == args[1]) {
+                            var publicKey = array[0].posting.key_auths[0][0];
+                            var result = _this.hivejs.memo.encode(_this.postingKey, publicKey, args[2]);
                             event.source.postMessage([_this.messageName, msgId, JSON.stringify({
-                                success: false,
-                                error: e,
-                                result: null
+                                success: true,
+                                error: null,
+                                result: result
                             })], event.origin);
                         }
-                    }
-                    else if(this.enableKeychainPassthrough)
-                        window.hive_keychain.requestEncodeMessage(args[0], args[1], args[2], 'Posting', (r)=>{
-                            event.source.postMessage([_this.messageName, msgId, JSON.stringify(r)], event.origin);
-                        });
+                    });
                 }
             break;
         }

@@ -134,6 +134,7 @@ var inited = false;
         });
         window.hive_keychain = new Proxy({}, {
             get(target, prop, receiver) {
+                if (prop === "requests") return 0;
                 return function () {
                     var msgId = proxy.id++; 
                     var data = [embedNumber, msgId, prop];

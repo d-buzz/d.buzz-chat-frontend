@@ -673,12 +673,13 @@ async function addMentions(mentions, text, community) {
     }
 }
 const decode = async ()=>{ await getManager().decodeSelectedConversations(); };
-var sendingMessage = false;
+var sendingMessage = null;
 const enterMessage = async (message, contentMessage=null, block=true, clearBox=true, onsuccess=null) => {
-    if(block && sendingMessage) return;
+    var msgObj = message!=null?message:contentMessage;  
+    if(block && sendingMessage == msgObj) return;
     var result = null;
     try {
-        if(block) sendingMessage = true;
+        if(block) sendingMessage = msgObj;
         var conversation = getConversation();
         if(conversation == null) return;
         var thread = threadName.value;
@@ -743,7 +744,7 @@ const enterMessage = async (message, contentMessage=null, block=true, clearBox=t
         toggleErrorModal(errMsg);
     }
     finally { 
-        if(block) sendingMessage = false;
+        if(block) sendingMessage = null;
         if(onsuccess !== null && result !== null && result.isSuccess()) onsuccess();
     }
 };
