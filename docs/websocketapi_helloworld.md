@@ -5,11 +5,9 @@ The first tutorial shows how to send a 'Hello World!' message and read it back.
 
 ## Download or build the library and dependencies
 
-This messaging library uses [dhive](https://www.npmjs.com/package/@hiveio/dhive) and
- [socketio](https://gitlab.com/peakd/sting-message-frontend/-/blob/main/public/socket.io.js) as dependency.
+This messaging library uses [dhive](https://www.npmjs.com/package/@hiveio/dhive) and [socketio](https://gitlab.com/peakd/sting-message-frontend/-/blob/main/public/socket.io.js) as dependency.
 
-A prebuild bundled version is [available here](https://gitlab.com/peakd/sting-message-frontend/-/blob/main/public/stlib.js)
-For building the library from source refer to the section on bottom.
+A prebuild bundled version is [available here](https://gitlab.com/peakd/sting-message-frontend/-/blob/main/public/stlib.js) For building the library from source refer to the section on bottom.
 
 Include bundled libraries:
 ```
