@@ -23,8 +23,13 @@
         <div class="appbg1 appfg1 px-3 pt-5 pb-2 border-r-1 font-lg" style="min-width: 150px ">
             <b>Contents</b>
             <hr class="mb-1"/>
-            <div v-for="section in sections" class="cursor-pointer mt-1 mb-1 fg70 hover:opacity-100" @click="visit(section[1], section[2])">
-                {{section[0]}}
+            <div v-for="section in sections" class="mt-1 mb-1">
+                <div class="cursor-pointer fg70 hover:opacity-100" @click="visit(section[1], section[2])">{{section[0]}}</div>
+                <div v-if="section.length > 3 && route.params.page === section[2]" class="ml-3">
+                    <div class="cursor-pointer fg70 hover:opacity-100" v-for="subsection in section[3]" @click="">
+                        {{subsection}}
+                    </div>
+                </div>
             </div>
         </div>
         <div class="grow overflow-y-scroll scrollBox">
@@ -42,14 +47,74 @@ import quickstart from '../../docs/quickstart.md?raw'
 import restapi from '../../docs/restapi.md?raw'
 import websocketapi_helloworld from '../../docs/websocketapi_helloworld.md?raw'
 import widget from '../../docs/widget.md?raw'
+import docsRaw from '../../docs/stlibdocs.json?raw'
+const docs = JSON.parse(docsRaw);
+window.docs = docs;
+var stlibClasses = null;
+var stlibIntro = null;
 const router = useRouter();
 const route = useRoute();
 var page = ref(null);
+function toText(summary) {
+    var text = "";
+    for(var item of summary)
+        text += item.text;
+    return text;
+}
+function initDocs() {
+    var classArr = [];
+    var arr = [];    
+    for(var item of docs.children) {
+        if((item.kind & 0x84) !== 0) {
+            arr.push(item.name);
+            classArr.push(item);
+            if(item.children) {
+                for(var item2 of item.children) {
+                    if((item2.kind & 0x84) !== 0) {
+                        arr.push("↳ "+item2.name); 
+                        classArr.push(item2);
+                    }
+                }   
+            }
+        }
+    }
+    stlibClasses = arr;
+
+    stlibIntro = "# API\n";
+    for(var item of classArr) {
+        stlibIntro += `## ${item.name } \n`;
+        stlibIntro += `*${item.sources[0].fileName }* \n`;
+        if(item.comment) {
+            stlibIntro += toText(item.comment.summary) + '\n';
+        }
+        if(item.children) {
+            for(var item2 of item.children) {
+                if((item2.kind & 0x84) === 0) {
+                    stlibIntro += `**${item2.name }**`;
+                    if(item2.signatures) {  
+                        stlibIntro += `(`;
+                        var params = item2.signatures[0].parameters;
+                        if(params) {
+                            for(var param of params)
+                                stlibIntro += `${param.name}: ${param.type.name}, `;
+                        }
+                        stlibIntro += `)\n`;
+                        
+                        if(item2.signatures[0].comment)
+                            stlibIntro += toText(item2.signatures[0].comment.summary) + '\n';
+                    }
+                    else stlibIntro += `\n`;
+                }
+            }
+        }
+    }
+}
+initDocs();
 var sections = [
     ["Introduction", intro, "intro"],
     ["Quickstart", quickstart, "quickstart"],
     ["Tutorial", websocketapi_helloworld, "tutorial"],
-    ["API", "*to be added*", "api"],
+    ["API", stlibIntro, "api", stlibClasses],
     ["Rest API", restapi, "restapi"],
     ["Image Uploader", "*to be added*", "uploader"],
     ["Widget", widget, "widget"]
