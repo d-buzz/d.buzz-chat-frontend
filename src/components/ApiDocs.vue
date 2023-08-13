@@ -20,21 +20,30 @@
     </nav>
 
     <div class="flex min-h-full h-screen flex-row appbg2 appfg2 text-left">
-        <div class="appbg1 appfg1 px-3 pt-5 pb-2 border-r-1 font-lg" style="min-width: 150px ">
-            <b>Contents</b>
-            <hr class="mb-1"/>
-            <div v-for="section in sections" class="mt-1 mb-1">
-                <div class="cursor-pointer fg70 hover:opacity-100" @click="visit(section[1], section[2])">{{section[0]}}</div>
-                <div v-if="section.length > 3 && route.params.page === section[2]" class="ml-3">
-                    <div class="cursor-pointer fg70 hover:opacity-100" v-for="subsection in section[3]" @click="">
-                        {{subsection}}
+        <div class="appbg1 appfg1 px-3 pt-5 pb-2 border-r-1 font-lg overflow-y-scroll scrollBox" style="min-width: 200px ">
+            <div class="scrollBoxContent">
+                <b>Contents</b>
+                <hr class="mb-1"/>
+                <div v-for="section in sections" class="mt-1 mb-1">
+                    <div class="cursor-pointer fg70 hover:opacity-100" @click="visit(section[1], section[2])">{{section[0]}}</div>
+                    <div v-if="section.length > 3 && route.params.page === section[2]" class="ml-3">
+                        <div class="cursor-pointer fg70 hover:opacity-100" v-for="subsection in section[3]" @click="">
+                            <a class="break-none" :href="`#${subsectionHref(subsection)}`">{{subsection}}</a>
+                        </div>
                     </div>
                 </div>
+                <div class="pb-10 mb-10"></div>
             </div>
         </div>
         <div class="grow overflow-y-scroll scrollBox">
             <div class="scrollBoxContent">
-                <div class="px-5 pt-2 pb-10 mb-10 md mdh" ref="page" style="max-width: 750px;"></div>
+                <div class="px-5 pt-2 md mdh" ref="page" style="max-width: 750px;"></div>
+                <div class="px-5 pt-2 md mdh" v-if="route.params.page === 'api'">
+                    <div v-for="cls in stlibClassObjs">
+                        <ApiClass :cls="cls"></ApiClass>
+                    </div>
+                </div>
+                <div class="pb-10 mb-10"></div>
             </div>
         </div>
     </div>   
@@ -51,6 +60,7 @@ import docsRaw from '../../docs/stlibdocs.json?raw'
 const docs = JSON.parse(docsRaw);
 window.docs = docs;
 var stlibClasses = null;
+var stlibClassObjs = ref([]);
 var stlibIntro = null;
 const router = useRouter();
 const route = useRoute();
@@ -60,6 +70,9 @@ function toText(summary) {
     for(var item of summary)
         text += item.text;
     return text;
+}
+function subsectionHref(name) {
+    return "api_"+(name.startsWith("↳ ")?name.substring(2):name);
 }
 function initDocs() {
     var classArr = [];
@@ -79,9 +92,10 @@ function initDocs() {
         }
     }
     stlibClasses = arr;
+    stlibClassObjs.value = classArr;
 
     stlibIntro = "# API\n";
-    for(var item of classArr) {
+    /*for(var item of classArr) {
         stlibIntro += `## ${item.name } \n`;
         stlibIntro += `*${item.sources[0].fileName }* \n`;
         if(item.comment) {
@@ -107,7 +121,7 @@ function initDocs() {
                 }
             }
         }
-    }
+    }*/
 }
 initDocs();
 var sections = [
