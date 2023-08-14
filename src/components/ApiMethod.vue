@@ -1,7 +1,7 @@
 <template>
-  <div class="font-mono text-sm">
+  <div class="font-mono text-sm" v-if="item">
     <span v-if="item.flags.isStatic">static </span>
-    <a class="nameClass" href="#">{{item.name}}</a>(
+    <a class="nameClass" :href="`#${link(item)}.${item.name}`">{{item.name}}</a>(
     <span v-if="item.signatures && item.signatures.length > 0 && item.signatures[0].parameters">
       <span v-for="(param, i) in item.signatures[0].parameters">
         <span v-if="i > 0">, </span>
@@ -17,6 +17,11 @@
 const props = defineProps({
   item: Object
 });
+function link(item) {
+  if(item.sources) return item.sources[0].fileName;
+  var signature = item.signatures[0];  
+  return signature.type['package']+'.'+signature.type.name;
+}
 function typeText(type) {
   var text = "";  
   if(type.name) {

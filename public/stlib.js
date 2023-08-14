@@ -2840,7 +2840,6 @@ class MessageManager {
                 }
                 this.postCallbackEvent(null);
             }
-            console.log("join communities ", chanList);
         });
     }
     getPreferences() {
@@ -4091,10 +4090,33 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SignableMessage = void 0;
 const imports_1 = require("./content/imports");
 const utils_1 = require("./utils");
+/**
+ * SignableMessage represents a JSON message that can be signed
+ * and verified.
+ *
+ * Each message is composed of seven elements, namely:
+ * type, user/s, conversation, json content, timestamp, keytype and signature
+ *
+ * An example of a signable message in json format is:
+ * ["w", "usernameA", "hive-1111111/0", "[\"t\",\"hi\"]", 1692047295280, "p", "2019783ab..."]
+ *
+ */
 class SignableMessage {
+    /**
+     * Creates a new message with type TYPE_WRITE_MESSAGE
+     */
     constructor() {
         this.type = "w";
     }
+    /**
+     * Creates a new message with provided user, conversation, content and optional type
+     *
+     * @param user the user who can sign the message
+     * @param conversation conversation string eg.: "hive-1111111/0"
+     *         or array of strings of up to four users for direct message
+     * @param json json content
+     * @param type optional message type, default TYPE_WRITE_MESSAGE
+     */
     static create(user, conversation, json, type = 'w') {
         var s = new SignableMessage();
         s.setMessageType(type);
@@ -4103,7 +4125,24 @@ class SignableMessage {
         s.setJSON(json);
         return s;
     }
+    /**
+     * Set the message type.
+     *
+     * @param type message type, currently supported types:
+     *     TYPE_WRITE_MESSAGE - default, message is passed to backend peers and stored
+     *     TYPE_MESSAGE - message is passed to backend peers but not stored
+     *     TYPE_ACCOUNT - used for guest account creation
+     */
     setMessageType(type) { this.type = type; }
+    /**
+     * Sets the user who can sign this message.
+     * Additionaly, an `&` and another user can be added
+     * to be mentioned with this message. More than one
+     * mention can be added.
+     *
+     * @param user username who can sign the message and optional
+     *        `&` separated list of usernames to mention
+     */
     setUser(user) {
         var i = user.indexOf('&');
         if (i !== -1) {
@@ -4115,59 +4154,209 @@ class SignableMessage {
             this.mentions = null;
         }
     }
-    setUserMentions(user, mentions) { this.user = user; this.mentions = mentions; }
-    setConversation(a) {
-        if (Array.isArray(a))
-            this.setConversationGroup(a);
+    /**
+     * Set user and list of users to mention.
+     *
+     * @param user user who can sign the message
+     * @param mentions array of usernames to mention or null
+     */
+    setUserMentions(user, mentions = null) { this.user = user; this.mentions = mentions; }
+    /**
+     * Set conversation where to send the message to.
+     *
+     * Community conversations have the form of `hive-XXXXXXX/N`
+     * where `hive-XXXXXXX` is the username of community and `N` is number of channel.
+     *
+     * Direct messages have the form of `user1|user2` or `user1|user2|user3` or
+     * `user1|user2|user3|user4`; the usernames are presented in alphabetical order
+     * and separated by `|`
+     *
+     * Group messages have the form of `#userA/N` where `N` is the number of group
+     * created by `userA`
+     *
+     * @param conversation conversation string or unsorted array of usernames for direct message
+     */
+    setConversation(conversation) {
+        if (Array.isArray(conversation))
+            this.setConversationGroup(conversation);
         else
-            this.conversation = a;
+            this.conversation = conversation;
     }
+    /**
+     * Set conversation to a direct message between provided users.
+     *
+     * @param usernames unsorted array of usernames with length of at least 2
+     *          and at most 4 users
+     */
     setConversationGroup(usernames) {
         if (!(usernames.length > 1 && usernames.length <= 4))
             throw "Group Conversation requires [2-4] users.";
         usernames.sort();
         this.conversation = usernames.join('|');
     }
+    /**
+     * Set json content of this message.
+     *
+     * If object is provided and has method `toJSON`, it is called.
+     *
+     * @param js json content in either stringified format, object or object
+     *           with `toJSON` method
+     */
     setJSON(js) {
         js = (js.toJSON !== undefined) ? js.toJSON() : js;
         this.json = (typeof js === 'string') ? js : JSON.stringify(js);
     }
+    /**
+     * Returns the message type.
+     *
+     * Currently supported types:
+     *  TYPE_WRITE_MESSAGE - default, message is passed to backend peers and stored
+     *  TYPE_MESSAGE - message is passed to backend peers but not stored
+     *  TYPE_ACCOUNT - used for guest account creation
+     */
     getMessageType() { return this.type; }
+    /**
+     * Returns the user this message is signed or to be signed with.
+     */
     getUser() { return this.user; }
+    /**
+     * Returns an array of users to mention or null.
+     */
     getMentions() { return this.mentions; }
+    /**
+     * Returns a string of users to mention beginning and separated with '&' or null.
+     */
     getMentionsString() {
         var mentions = this.mentions;
         return mentions == null ? "" : ('&' + this.mentions.join('&'));
     }
+    /**
+     * Returns user {@see getUser} with mentions {@see getMentionsString} .
+     */
     getUserMentionsString() {
         var mentions = this.mentions;
         return this.hasMentions() ? (this.user + this.getMentionsString()) : this.user;
     }
+    /**
+     * Returns the conversation this message belongs to.
+     *
+     * {@see setConversation} for details on conversation format.
+     */
     getConversation() { return this.conversation; }
+    /**
+     * Returns the username of conversation: eg.: conversation "hive-1111111/0" => "hive-1111111" .
+     *
+     * Specifically, returns substring of up to character '/'.
+     */
     getConversationUsername() {
         var i = this.conversation.indexOf('/');
         return (i === -1) ? this.conversation : this.conversation.substring(0, i);
     }
+    /**
+     * Returns the content of this message in stringified JSON format.
+     *
+     * The predefined content has the form of `["type", ...]`, for example
+     * `["t", "hi"]` defines a text message
+     * Arbitrary content type is allowed, for list of predefined types see {@see Content}
+     */
     getJSONString() { return this.json; }
+    /**
+     * Parse content string of this message into {@see JSONContent} .
+     */
     getContent() { return imports_1.Content.fromJSON(JSON.parse(this.json)); }
+    /**
+     * Returns the timestamp in milliseconds.
+     */
     getTimestamp() { return this.timestamp; }
+    /**
+     * Returns an array of usernames if this conversation is a group conversation in format `user1|user2...` .
+     *
+     * Otherwise returns an array with this conversation.
+     */
     getGroupUsernames() { return utils_1.Utils.getGroupUsernames(this.conversation); }
+    /**
+     * Returns true is this conversation is a community conversation in form of `hive-XXXXXXX/N` .
+     */
     isCommunityConversation() { return utils_1.Utils.isCommunityConversation(this.conversation); }
+    /**
+     * Returns true if this conversation is a group conversation in form of `user1|user2...` ,
+     */
     isGroupConversation() { return utils_1.Utils.isGroupConversation(this.conversation); }
+    /**
+     * Returns true if this conversation is a joinable group conversation in form of `#user/N` .
+     */
     isJoinableGroupConversation() { return utils_1.Utils.isJoinableGroupConversation(this.conversation); }
+    /**
+     * Returns true if this message has mentions.
+     */
     hasMentions() { return this.mentions != null && this.mentions.length > 0; }
+    /**
+     * Returns ture if this conversation begins with `#` .
+     */
     isEncrypted() { return this.conversation.startsWith("#"); }
+    /**
+     * Returns true if this conversation is equal to `@` .
+     *
+     * Messages sent to this location are expected to have content type {@link Preferences}
+     * and are used to update user preferences.
+     */
     isPreference() { return this.conversation === "@"; }
+    /**
+     * Returns true if this conversation is equal to `$online` .
+     *
+     * Messages sent to this location are used for online status and writting status.
+     * The type of message TYPE_MESSAGE is used to not store such messages.
+     */
     isOnlineStatus() { return this.conversation === "$online"; }
+    /**
+     * Returns true if this message is signed.
+     */
     isSigned() { return this.signature != null; }
+    /**
+     * Returns true if this message is signed with memo key.
+     */
     isSignedWithMemo() { return this.keytype === "m"; }
+    /**
+     * Returns true if this message is signed with posting key.
+     */
     isSignedWithPosting() { return this.keytype === "p"; }
+    /**
+     * Returns true if this message is signed with group key.
+     *
+     * Group key is used to signing and encoding private group messages.
+     * A user can create a group by updating {@link Preferences} where
+     * group name and group public key is stored.
+     */
     isSignedWithGroupKey() { return this.keytype === "g"; }
+    /**
+     * Returns true if this message is signed with guest key.
+     *
+     * Guest accounts sign messages with guest key which is stored in
+     * user {@link Preferences}.
+     */
     isSignedWithGuestKey() { return this.keytype === "@"; }
+    /**
+     * Returns true if this message is signed with preferences key.
+     *
+     * Certain messages such as online status, writting status are signed
+     * with preferences key which is stored in {@link Preferences}.
+     */
     isSignedWithPreferencesKey() { return this.keytype.startsWith("$"); }
+    /**
+     * Returns the signature.
+     */
     getSignature() { return this.signature; }
+    /**
+     * Returns the signature as hex string.
+     */
     getSignatureHex() { return this.signature == null ? null : this.signature.toString('hex'); }
+    /**
+     * Returns the signature as base64 string.
+     */
     getSignatureBase64() { return this.signature == null ? null : this.signature.toString('base64'); }
+    /**
+     * Returns the first six bytes of signature.
+     */
     getSignatureStart() {
         var signature = this.signature;
         var start = 0;
@@ -4177,30 +4366,48 @@ class SignableMessage {
         }
         return start;
     }
+    /**
+     * Returns a reference to this message in form of `user|timestamp`.
+     */
     getReference() {
         return this.getUser() + "|" + this.getTimestamp();
     }
     validateDataLength() {
         //TODO 
     }
+    /**
+     * Returns this message in a signable text format.
+     */
     toSignableTextFormat() {
         var signableTextFormat = JSON.stringify(this.type) +
             ',' + JSON.stringify(this.getUserMentionsString()) + ',' + JSON.stringify(this.conversation) +
             ',' + JSON.stringify(this.json) + ',' + JSON.stringify(this.timestamp);
         return signableTextFormat;
     }
+    /**
+     * Returns signable hash of this message.
+     */
     toSignableHash() {
         return utils_1.Utils.dhive().cryptoUtils.sha256(this.toSignableTextFormat());
     }
+    /**
+     * Converts this message to array.
+     */
     toArray() {
         return [
             this.type, this.getUserMentionsString(), this.conversation, this.json,
             this.timestamp, this.keytype, this.signature.toString('hex')
         ];
     }
+    /**
+     * Converts this message to json string.
+     */
     toJSON() {
         return JSON.stringify(this.toArray());
     }
+    /**
+     * Created SignableMessage from json array or string.
+     */
     static fromJSON(json) {
         var array = (typeof json === 'string') ? JSON.parse(json) : json;
         var message = new SignableMessage();
@@ -4217,6 +4424,11 @@ class SignableMessage {
             }
         return message;
     }
+    /**
+     * Encodes this message with a private group key and optional recepient public key.
+     *
+     * Throws error if message is not signed or conversation does not begin with `#`.
+     */
     encodeWithKey(privateK, publicK = null) {
         if (!this.isSigned())
             throw 'message is not signed';
@@ -4227,11 +4439,11 @@ class SignableMessage {
         if (i === -1)
             throw 'message conversation is not valid';
         var groupOwner = conversation.substring(1, i);
-        if (publicK == null)
-            publicK = utils_1.Utils.randomPublicKey();
-        var encoded = imports_1.Content.encodedMessage(this, privateK, publicK);
         if (typeof privateK === 'string')
             privateK = utils_1.Utils.dhive().PrivateKey.fromString(privateK);
+        if (publicK == null)
+            publicK = privateK.createPublic("STM");
+        var encoded = imports_1.Content.encodedMessage(this, privateK, publicK);
         this.setUser(groupOwner);
         this.setJSON(encoded);
         var messageHash = this.toSignableHash();
@@ -4239,6 +4451,9 @@ class SignableMessage {
         this.signature = privateK.sign(messageHash).toBuffer();
         return this;
     }
+    /**
+     * Decodes this message with a private group key.
+     */
     decodeWithKey(privateK) {
         if (!this.isSignedWithGroupKey())
             return this;
@@ -4254,6 +4469,9 @@ class SignableMessage {
         this.signature = utils_1.Utils.Buffer().from(msg[3], 'hex');
         return this;
     }
+    /**
+     * Signs message with private key.
+     */
     signWithKey(privateK, keytype) {
         var _this = this;
         this.timestamp = utils_1.Utils.utcTime();
@@ -4266,6 +4484,9 @@ class SignableMessage {
         this.signature = privateK.sign(messageHash).toBuffer();
         return this;
     }
+    /**
+     * Signs message with keychain.
+     */
     signWithKeychain(keyChainKeyType = 'Posting') {
         var _this = this;
         this.timestamp = utils_1.Utils.utcTime();
@@ -4282,6 +4503,13 @@ class SignableMessage {
             });
         });
     }
+    /**
+     * Returns true if the signature matches the message hash.
+     *
+     * For verification, it might fetch the current public posting key of a user.
+     * However, if the user changed their keys after signing this message,
+     * the verification can fail as previous keys are currently not handled.
+     */
     verify() {
         return __awaiter(this, void 0, void 0, function* () {
             var user = this.getUser();
@@ -4347,6 +4575,9 @@ class SignableMessage {
             }
         });
     }
+    /**
+     * Verifies the message with account data continaing the public key of user.
+     */
     verifyWithAccountData(accountData) {
         var keys = this.isSignedWithMemo() ? [[accountData.memo_key]] : accountData.posting.key_auths;
         if (keys === null)
@@ -4361,6 +4592,9 @@ class SignableMessage {
         }
         return false;
     }
+    /**
+     * Verifies if this message is signed with given public key.
+     */
     verifyWithKey(publicKey) {
         //var signature = Signature.fromString(this.getSignature());
         var signature = utils_1.Utils.dhive().Signature.fromBuffer(this.getSignature());
@@ -4368,6 +4602,9 @@ class SignableMessage {
             publicKey = utils_1.Utils.dhive().PublicKey.fromString(publicKey);
         return publicKey.verify(this.toSignableHash(), signature);
     }
+    /**
+     * Verifies if the user has permission to post this message.
+     */
     verifyPermissions() {
         return __awaiter(this, void 0, void 0, function* () {
             return yield utils_1.Utils.verifyPermissions(this.getUser(), this.getMentions(), this.getConversation());
@@ -4453,37 +4690,44 @@ class StreamDataCache {
         this.customJSONCallbacks[id] = fn;
     }
     begin() {
-        var e_1, _a;
+        var _a, e_1, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 this.isRunning = true;
                 try {
-                    for (var _b = __asyncValues(this.getOps()), _c; _c = yield _b.next(), !_c.done;) {
-                        const tx = _c.value;
-                        if (!this.isRunning)
-                            return;
-                        var op = tx.op;
-                        var opName = op[0];
-                        if (opName === "custom_json") {
-                            var customJSON = op[1];
-                            var id = customJSON.id;
-                            var fnJSON = this.customJSONCallbacks[id];
-                            if (fnJSON) {
-                                var json = JSON.parse(customJSON.json);
-                                var auths = customJSON.required_auths;
-                                var postingAuths = customJSON.required_posting_auths;
-                                for (var user of auths)
-                                    fnJSON(user, json, false);
-                                for (var user of postingAuths)
-                                    fnJSON(user, json, true);
+                    for (var _d = true, _e = __asyncValues(this.getOps()), _f; _f = yield _e.next(), _a = _f.done, !_a;) {
+                        _c = _f.value;
+                        _d = false;
+                        try {
+                            const tx = _c;
+                            if (!this.isRunning)
+                                return;
+                            var op = tx.op;
+                            var opName = op[0];
+                            if (opName === "custom_json") {
+                                var customJSON = op[1];
+                                var id = customJSON.id;
+                                var fnJSON = this.customJSONCallbacks[id];
+                                if (fnJSON) {
+                                    var json = JSON.parse(customJSON.json);
+                                    var auths = customJSON.required_auths;
+                                    var postingAuths = customJSON.required_posting_auths;
+                                    for (var user of auths)
+                                        fnJSON(user, json, false);
+                                    for (var user of postingAuths)
+                                        fnJSON(user, json, true);
+                                }
                             }
+                        }
+                        finally {
+                            _d = true;
                         }
                     }
                 }
                 catch (e_1_1) { e_1 = { error: e_1_1 }; }
                 finally {
                     try {
-                        if (_c && !_c.done && (_a = _b.return)) yield _a.call(_b);
+                        if (!_d && !_a && (_b = _e.return)) yield _b.call(_e);
                     }
                     finally { if (e_1) throw e_1.error; }
                 }
@@ -4495,22 +4739,29 @@ class StreamDataCache {
     }
     getOps() {
         return __asyncGenerator(this, arguments, function* getOps_1() {
-            var e_2, _a;
+            var _a, e_2, _b, _c;
             try {
-                for (var _b = __asyncValues(this.client.blockchain.getOperations({ mode: this.modeType })), _c; _c = yield __await(_b.next()), !_c.done;) {
-                    const op = _c.value;
+                for (var _d = true, _e = __asyncValues(this.client.blockchain.getOperations({ mode: this.modeType })), _f; _f = yield __await(_e.next()), _a = _f.done, !_a;) {
+                    _c = _f.value;
+                    _d = false;
                     try {
-                        yield yield __await(op);
+                        const op = _c;
+                        try {
+                            yield yield __await(op);
+                        }
+                        catch (e) {
+                            console.log(e);
+                        }
                     }
-                    catch (e) {
-                        console.log(e);
+                    finally {
+                        _d = true;
                     }
                 }
             }
             catch (e_2_1) { e_2 = { error: e_2_1 }; }
             finally {
                 try {
-                    if (_c && !_c.done && (_a = _b.return)) yield __await(_a.call(_b));
+                    if (!_d && !_a && (_b = _e.return)) yield __await(_b.call(_e));
                 }
                 finally { if (e_2) throw e_2.error; }
             }

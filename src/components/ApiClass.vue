@@ -37,6 +37,37 @@
         </div>
       </template>
 
+      <h5>Fields</h5>
+
+      <template v-for="item in cls.children">
+        <div v-if="(item.kind & 0x420) !== 0">
+          <div class="font-mono text-sm">{{item.name}}</div>
+        </div>
+      </template>
+
+      <h5>Constructors</h5>
+
+      <template v-for="item in cls.children">
+        <div v-if="(item.kind & 0x200) !== 0">
+          <ApiMethod :item="item"/>
+          <div v-if="item.signatures && item.signatures[0].comment">
+            {{toText(item.signatures[0].comment.summary, false)}}
+          </div>
+        </div>
+      </template>
+
+      <h5>Methods</h5>
+
+      <template v-for="item in cls.children">
+        <div :id="`${link(item)}.${item.name}`" v-if="(item.kind & 0x840) !== 0" class="my-3">
+          <ApiMethod :item="item"/>
+          <div v-if="item.signatures && item.signatures[0].comment">
+            {{toText(item.signatures[0].comment.summary, false)}}
+          </div>
+        </div>
+      </template>
+      
+
     </div>
 
   </div>
@@ -45,6 +76,11 @@
 const props = defineProps({
   cls: Object
 });
+function link(item) {
+  if(item.sources) return item.sources[0].fileName;
+  var signature = item.signatures[0];  
+  return signature.type['package']+'.'+signature.type.name;
+}
 function typeText(type) {
   if(type.name) return type.name;
   if(type.type === "array")

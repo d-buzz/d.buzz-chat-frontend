@@ -27721,7 +27721,7 @@
 				"summary": [
 					{
 						"kind": "text",
-						"text": "SignableMessage represents a JSON message that can be signed \nand verified.\n\nEach message is composed of seven elements, namely:\ntype, user/s, conversation, content, timestamp, keytype and signature"
+						"text": "SignableMessage represents a JSON message that can be signed \nand verified.\n\nEach message is composed of seven elements, namely:\ntype, user/s, conversation, json content, timestamp, keytype and signature\n \nAn example of a signable message in json format is:\n[\"w\", \"usernameA\", \"hive-1111111/0\", \"[\\\"t\\\",\\\"hi\\\"]\", 1692047295280, \"p\", \"2019783ab...\"]"
 					}
 				]
 			},
@@ -27735,9 +27735,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 29,
+							"line": 32,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L29"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L32"
 						}
 					],
 					"signatures": [
@@ -27758,9 +27758,9 @@
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 29,
+									"line": 32,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L29"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L32"
 								}
 							],
 							"type": {
@@ -27781,9 +27781,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 20,
+							"line": 23,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L20"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L23"
 						}
 					],
 					"type": {
@@ -27800,9 +27800,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 21,
+							"line": 24,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L21"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L24"
 						}
 					],
 					"type": {
@@ -27819,9 +27819,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 23,
+							"line": 26,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L23"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L26"
 						}
 					],
 					"type": {
@@ -27838,9 +27838,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 19,
+							"line": 22,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L19"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L22"
 						}
 					],
 					"type": {
@@ -27860,9 +27860,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 24,
+							"line": 27,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L24"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L27"
 						}
 					],
 					"type": {
@@ -27879,9 +27879,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 22,
+							"line": 25,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L22"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L25"
 						}
 					],
 					"type": {
@@ -27898,9 +27898,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 17,
+							"line": 20,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L17"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L20"
 						}
 					],
 					"type": {
@@ -27917,9 +27917,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 18,
+							"line": 21,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L18"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L21"
 						}
 					],
 					"type": {
@@ -27938,9 +27938,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 14,
+							"line": 17,
 							"character": 11,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L14"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L17"
 						}
 					],
 					"type": {
@@ -27960,9 +27960,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 15,
+							"line": 18,
 							"character": 11,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L15"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L18"
 						}
 					],
 					"type": {
@@ -27982,9 +27982,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 16,
+							"line": 19,
 							"character": 11,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L16"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L19"
 						}
 					],
 					"type": {
@@ -28002,9 +28002,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 236,
+							"line": 379,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L236"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L379"
 						}
 					],
 					"signatures": [
@@ -28014,12 +28014,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Decodes this message with a private group key."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 236,
+									"line": 379,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L236"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L379"
 								}
 							],
 							"parameters": [
@@ -28053,9 +28061,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 214,
+							"line": 354,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L214"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L354"
 						}
 					],
 					"signatures": [
@@ -28065,12 +28073,28 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Encodes this message with a private group key and optional recepient public key.\n\nThrows error if message is not signed or conversation does not begin with "
+									},
+									{
+										"kind": "code",
+										"text": "`#`"
+									},
+									{
+										"kind": "text",
+										"text": "."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 214,
+									"line": 354,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L214"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L354"
 								}
 							],
 							"parameters": [
@@ -28116,9 +28140,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 146,
+							"line": 188,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L146"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L188"
 						}
 					],
 					"signatures": [
@@ -28128,12 +28152,29 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Parse content string of this message into "
+									},
+									{
+										"kind": "inline-tag",
+										"tag": "@see",
+										"text": "JSONContent"
+									},
+									{
+										"kind": "text",
+										"text": " ."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 146,
+									"line": 188,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L146"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L188"
 								}
 							],
 							"type": {
@@ -28154,9 +28195,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 140,
+							"line": 167,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L140"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L167"
 						}
 					],
 					"signatures": [
@@ -28166,12 +28207,29 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns the conversation this message belongs to.\n\n"
+									},
+									{
+										"kind": "inline-tag",
+										"tag": "@see",
+										"text": "setConversation"
+									},
+									{
+										"kind": "text",
+										"text": " for details on conversation format."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 140,
+									"line": 167,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L140"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L167"
 								}
 							],
 							"type": {
@@ -28190,9 +28248,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 141,
+							"line": 173,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L141"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L173"
 						}
 					],
 					"signatures": [
@@ -28202,12 +28260,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns the username of conversation: eg.: conversation \"hive-1111111/0\" => \"hive-1111111\" .\n\nSpecifically, returns substring of up to character '/'."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 141,
+									"line": 173,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L141"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L173"
 								}
 							],
 							"type": {
@@ -28226,9 +28292,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 148,
+							"line": 198,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L148"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L198"
 						}
 					],
 					"signatures": [
@@ -28238,12 +28304,28 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns an array of usernames if this conversation is a group conversation in format "
+									},
+									{
+										"kind": "code",
+										"text": "`user1|user2...`"
+									},
+									{
+										"kind": "text",
+										"text": " .\n\nOtherwise returns an array with this conversation."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 148,
+									"line": 198,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L148"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L198"
 								}
 							],
 							"type": {
@@ -28265,9 +28347,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 145,
+							"line": 184,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L145"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L184"
 						}
 					],
 					"signatures": [
@@ -28277,12 +28359,41 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns the content of this message in stringified JSON format.\n\nThe predefined content has the form of "
+									},
+									{
+										"kind": "code",
+										"text": "`[\"type\", ...]`"
+									},
+									{
+										"kind": "text",
+										"text": ", for example\n"
+									},
+									{
+										"kind": "code",
+										"text": "`[\"t\", \"hi\"]`"
+									},
+									{
+										"kind": "text",
+										"text": " defines a text message\nArbitrary content type is allowed, for list of predefined types see "
+									},
+									{
+										"kind": "inline-tag",
+										"tag": "@see",
+										"text": "Content"
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 145,
+									"line": 184,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L145"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L184"
 								}
 							],
 							"type": {
@@ -28301,9 +28412,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 131,
+							"line": 147,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L131"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L147"
 						}
 					],
 					"signatures": [
@@ -28313,12 +28424,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns an array of users to mention or null."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 131,
+									"line": 147,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L131"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L147"
 								}
 							],
 							"type": {
@@ -28340,9 +28459,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 132,
+							"line": 151,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L132"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L151"
 						}
 					],
 					"signatures": [
@@ -28352,12 +28471,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns a string of users to mention beginning and separated with '&' or null."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 132,
+									"line": 151,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L132"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L151"
 								}
 							],
 							"type": {
@@ -28376,9 +28503,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 129,
+							"line": 139,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L129"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L139"
 						}
 					],
 					"signatures": [
@@ -28388,12 +28515,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns the message type.\n\nCurrently supported types:\n TYPE_WRITE_MESSAGE - default, message is passed to backend peers and stored \n TYPE_MESSAGE - message is passed to backend peers but not stored\n TYPE_ACCOUNT - used for guest account creation"
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 129,
+									"line": 139,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L129"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L139"
 								}
 							],
 							"type": {
@@ -28412,9 +28547,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 174,
+							"line": 294,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L174"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L294"
 						}
 					],
 					"signatures": [
@@ -28424,12 +28559,28 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns a reference to this message in form of "
+									},
+									{
+										"kind": "code",
+										"text": "`user|timestamp`"
+									},
+									{
+										"kind": "text",
+										"text": "."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 174,
+									"line": 294,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L174"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L294"
 								}
 							],
 							"type": {
@@ -28448,9 +28599,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 162,
+							"line": 270,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L162"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L270"
 						}
 					],
 					"signatures": [
@@ -28460,12 +28611,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns the signature."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 162,
+									"line": 270,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L162"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L270"
 								}
 							],
 							"type": {
@@ -28484,9 +28643,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 164,
+							"line": 278,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L164"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L278"
 						}
 					],
 					"signatures": [
@@ -28496,12 +28655,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns the signature as base64 string."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 164,
+									"line": 278,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L164"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L278"
 								}
 							],
 							"type": {
@@ -28520,9 +28687,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 163,
+							"line": 274,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L163"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L274"
 						}
 					],
 					"signatures": [
@@ -28532,12 +28699,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns the signature as hex string."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 163,
+									"line": 274,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L163"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L274"
 								}
 							],
 							"type": {
@@ -28556,9 +28731,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 165,
+							"line": 282,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L165"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L282"
 						}
 					],
 					"signatures": [
@@ -28568,12 +28743,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns the first six bytes of signature."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 165,
+									"line": 282,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L165"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L282"
 								}
 							],
 							"type": {
@@ -28592,9 +28775,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 147,
+							"line": 192,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L147"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L192"
 						}
 					],
 					"signatures": [
@@ -28604,12 +28787,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns the timestamp in milliseconds."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 147,
+									"line": 192,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L147"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L192"
 								}
 							],
 							"type": {
@@ -28628,9 +28819,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 130,
+							"line": 143,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L130"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L143"
 						}
 					],
 					"signatures": [
@@ -28640,12 +28831,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns the user this message is signed or to be signed with."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 130,
+									"line": 143,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L130"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L143"
 								}
 							],
 							"type": {
@@ -28664,9 +28863,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 136,
+							"line": 158,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L136"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L158"
 						}
 					],
 					"signatures": [
@@ -28676,12 +28875,38 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns user "
+									},
+									{
+										"kind": "inline-tag",
+										"tag": "@see",
+										"text": "getUser"
+									},
+									{
+										"kind": "text",
+										"text": " with mentions "
+									},
+									{
+										"kind": "inline-tag",
+										"tag": "@see",
+										"text": "getMentionsString"
+									},
+									{
+										"kind": "text",
+										"text": " ."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 136,
+									"line": 158,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L136"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L158"
 								}
 							],
 							"type": {
@@ -28700,9 +28925,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 152,
+							"line": 214,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L152"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L214"
 						}
 					],
 					"signatures": [
@@ -28712,12 +28937,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns true if this message has mentions."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 152,
+									"line": 214,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L152"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L214"
 								}
 							],
 							"type": {
@@ -28736,9 +28969,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 149,
+							"line": 202,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L149"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L202"
 						}
 					],
 					"signatures": [
@@ -28748,12 +28981,28 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns true is this conversation is a community conversation in form of "
+									},
+									{
+										"kind": "code",
+										"text": "`hive-XXXXXXX/N`"
+									},
+									{
+										"kind": "text",
+										"text": " ."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 149,
+									"line": 202,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L149"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L202"
 								}
 							],
 							"type": {
@@ -28772,9 +29021,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 153,
+							"line": 218,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L153"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L218"
 						}
 					],
 					"signatures": [
@@ -28784,12 +29033,28 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns ture if this conversation begins with "
+									},
+									{
+										"kind": "code",
+										"text": "`#`"
+									},
+									{
+										"kind": "text",
+										"text": " ."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 153,
+									"line": 218,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L153"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L218"
 								}
 							],
 							"type": {
@@ -28808,9 +29073,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 150,
+							"line": 206,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L150"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L206"
 						}
 					],
 					"signatures": [
@@ -28820,12 +29085,28 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns true if this conversation is a group conversation in form of "
+									},
+									{
+										"kind": "code",
+										"text": "`user1|user2...`"
+									},
+									{
+										"kind": "text",
+										"text": " ,"
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 150,
+									"line": 206,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L150"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L206"
 								}
 							],
 							"type": {
@@ -28844,9 +29125,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 151,
+							"line": 210,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L151"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L210"
 						}
 					],
 					"signatures": [
@@ -28856,12 +29137,28 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns true if this conversation is a joinable group conversation in form of "
+									},
+									{
+										"kind": "code",
+										"text": "`#user/N`"
+									},
+									{
+										"kind": "text",
+										"text": " ."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 151,
+									"line": 210,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L151"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L210"
 								}
 							],
 							"type": {
@@ -28880,9 +29177,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 155,
+							"line": 232,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L155"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L232"
 						}
 					],
 					"signatures": [
@@ -28892,12 +29189,28 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns true if this conversation is equal to "
+									},
+									{
+										"kind": "code",
+										"text": "`$online`"
+									},
+									{
+										"kind": "text",
+										"text": " .\n\nMessages sent to this location are used for online status and writting status.\nThe type of message TYPE_MESSAGE is used to not store such messages."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 155,
+									"line": 232,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L155"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L232"
 								}
 							],
 							"type": {
@@ -28916,9 +29229,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 154,
+							"line": 225,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L154"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L225"
 						}
 					],
 					"signatures": [
@@ -28928,12 +29241,39 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns true if this conversation is equal to "
+									},
+									{
+										"kind": "code",
+										"text": "`@`"
+									},
+									{
+										"kind": "text",
+										"text": " .\n\nMessages sent to this location are expected to have content type "
+									},
+									{
+										"kind": "inline-tag",
+										"tag": "@link",
+										"text": "Preferences",
+										"target": 863,
+										"tsLinkText": ""
+									},
+									{
+										"kind": "text",
+										"text": "\nand are used to update user preferences."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 154,
+									"line": 225,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L154"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L225"
 								}
 							],
 							"type": {
@@ -28952,9 +29292,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 156,
+							"line": 236,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L156"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L236"
 						}
 					],
 					"signatures": [
@@ -28964,12 +29304,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns true if this message is signed."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 156,
+									"line": 236,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L156"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L236"
 								}
 							],
 							"type": {
@@ -28988,9 +29336,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 159,
+							"line": 252,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L159"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L252"
 						}
 					],
 					"signatures": [
@@ -29000,12 +29348,31 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns true if this message is signed with group key.\n\nGroup key is used to signing and encoding private group messages.\nA user can create a group by updating "
+									},
+									{
+										"kind": "inline-tag",
+										"tag": "@link",
+										"text": "Preferences",
+										"target": 863,
+										"tsLinkText": ""
+									},
+									{
+										"kind": "text",
+										"text": " where\ngroup name and group public key is stored."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 159,
+									"line": 252,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L159"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L252"
 								}
 							],
 							"type": {
@@ -29024,9 +29391,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 160,
+							"line": 259,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L160"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L259"
 						}
 					],
 					"signatures": [
@@ -29036,12 +29403,31 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns true if this message is signed with guest key.\n\nGuest accounts sign messages with guest key which is stored in\nuser "
+									},
+									{
+										"kind": "inline-tag",
+										"tag": "@link",
+										"text": "Preferences",
+										"target": 863,
+										"tsLinkText": ""
+									},
+									{
+										"kind": "text",
+										"text": "."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 160,
+									"line": 259,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L160"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L259"
 								}
 							],
 							"type": {
@@ -29060,9 +29446,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 157,
+							"line": 240,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L157"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L240"
 						}
 					],
 					"signatures": [
@@ -29072,12 +29458,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns true if this message is signed with memo key."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 157,
+									"line": 240,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L157"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L240"
 								}
 							],
 							"type": {
@@ -29096,9 +29490,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 158,
+							"line": 244,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L158"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L244"
 						}
 					],
 					"signatures": [
@@ -29108,12 +29502,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns true if this message is signed with posting key."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 158,
+									"line": 244,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L158"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L244"
 								}
 							],
 							"type": {
@@ -29132,9 +29534,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 161,
+							"line": 266,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L161"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L266"
 						}
 					],
 					"signatures": [
@@ -29144,12 +29546,31 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns true if this message is signed with preferences key.\n\nCertain messages such as online status, writting status are signed\nwith preferences key which is stored in "
+									},
+									{
+										"kind": "inline-tag",
+										"tag": "@link",
+										"text": "Preferences",
+										"target": 863,
+										"tsLinkText": ""
+									},
+									{
+										"kind": "text",
+										"text": "."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 161,
+									"line": 266,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L161"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L266"
 								}
 							],
 							"type": {
@@ -29168,9 +29589,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 100,
+							"line": 103,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L100"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L103"
 						}
 					],
 					"signatures": [
@@ -29267,9 +29688,9 @@
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 100,
+									"line": 103,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L100"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L103"
 								}
 							],
 							"parameters": [
@@ -29321,9 +29742,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 110,
+							"line": 113,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L110"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L113"
 						}
 					],
 					"signatures": [
@@ -29344,9 +29765,9 @@
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 110,
+									"line": 113,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L110"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L113"
 								}
 							],
 							"parameters": [
@@ -29389,9 +29810,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 124,
+							"line": 127,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L124"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L127"
 						}
 					],
 					"signatures": [
@@ -29420,9 +29841,9 @@
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 124,
+									"line": 127,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L124"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L127"
 								}
 							],
 							"parameters": [
@@ -29470,9 +29891,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 57,
+							"line": 60,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L57"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L60"
 						}
 					],
 					"signatures": [
@@ -29493,9 +29914,9 @@
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 57,
+									"line": 60,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L57"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L60"
 								}
 							],
 							"parameters": [
@@ -29535,9 +29956,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 67,
+							"line": 70,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L67"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L70"
 						}
 					],
 					"signatures": [
@@ -29566,9 +29987,9 @@
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 67,
+									"line": 70,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L67"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L70"
 								}
 							],
 							"parameters": [
@@ -29616,9 +30037,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 84,
+							"line": 87,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L84"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L87"
 						}
 					],
 					"signatures": [
@@ -29639,9 +30060,9 @@
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 84,
+									"line": 87,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L84"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L87"
 								}
 							],
 							"parameters": [
@@ -29704,9 +30125,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 249,
+							"line": 395,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L249"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L395"
 						}
 					],
 					"signatures": [
@@ -29716,12 +30137,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Signs message with private key."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 249,
+									"line": 395,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L249"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L395"
 								}
 							],
 							"parameters": [
@@ -29766,9 +30195,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 264,
+							"line": 413,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L264"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L413"
 						}
 					],
 					"signatures": [
@@ -29778,12 +30207,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Signs message with keychain."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 264,
+									"line": 413,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L264"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L413"
 								}
 							],
 							"parameters": [
@@ -29829,9 +30266,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 190,
+							"line": 319,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L190"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L319"
 						}
 					],
 					"signatures": [
@@ -29841,12 +30278,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Converts this message to array."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 190,
+									"line": 319,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L190"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L319"
 								}
 							],
 							"type": {
@@ -29868,9 +30313,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 196,
+							"line": 328,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L196"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L328"
 						}
 					],
 					"signatures": [
@@ -29880,12 +30325,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Converts this message to json string."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 196,
+									"line": 328,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L196"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L328"
 								}
 							],
 							"type": {
@@ -29904,9 +30357,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 187,
+							"line": 313,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L187"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L313"
 						}
 					],
 					"signatures": [
@@ -29916,12 +30369,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns signable hash of this message."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 187,
+									"line": 313,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L187"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L313"
 								}
 							],
 							"type": {
@@ -29940,9 +30401,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 181,
+							"line": 304,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L181"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L304"
 						}
 					],
 					"signatures": [
@@ -29952,12 +30413,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns this message in a signable text format."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 181,
+									"line": 304,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L181"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L304"
 								}
 							],
 							"type": {
@@ -29976,9 +30445,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 178,
+							"line": 298,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L178"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L298"
 						}
 					],
 					"signatures": [
@@ -29991,9 +30460,9 @@
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 178,
+									"line": 298,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L178"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L298"
 								}
 							],
 							"type": {
@@ -30012,9 +30481,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 281,
+							"line": 437,
 							"character": 10,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L281"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L437"
 						}
 					],
 					"signatures": [
@@ -30024,12 +30493,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Returns true if the signature matches the message hash.\n\nFor verification, it might fetch the current public posting key of a user.\nHowever, if the user changed their keys after signing this message,\nthe verification can fail as previous keys are currently not handled."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 281,
+									"line": 437,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L281"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L437"
 								}
 							],
 							"type": {
@@ -30059,9 +30536,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 355,
+							"line": 520,
 							"character": 10,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L355"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L520"
 						}
 					],
 					"signatures": [
@@ -30071,12 +30548,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Verifies if the user has permission to post this message."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 355,
+									"line": 520,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L355"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L520"
 								}
 							],
 							"type": {
@@ -30106,9 +30591,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 336,
+							"line": 495,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L336"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L495"
 						}
 					],
 					"signatures": [
@@ -30118,12 +30603,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Verifies the message with account data continaing the public key of user."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 336,
+									"line": 495,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L336"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L495"
 								}
 							],
 							"parameters": [
@@ -30155,9 +30648,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 348,
+							"line": 510,
 							"character": 4,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L348"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L510"
 						}
 					],
 					"signatures": [
@@ -30167,12 +30660,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Verifies if this message is signed with given public key."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 348,
+									"line": 510,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L348"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L510"
 								}
 							],
 							"parameters": [
@@ -30206,9 +30707,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 41,
+							"line": 44,
 							"character": 11,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L41"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L44"
 						}
 					],
 					"signatures": [
@@ -30229,9 +30730,9 @@
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 41,
+									"line": 44,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L41"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L44"
 								}
 							],
 							"parameters": [
@@ -30345,9 +30846,9 @@
 					"sources": [
 						{
 							"fileName": "signable-message.ts",
-							"line": 199,
+							"line": 334,
 							"character": 11,
-							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L199"
+							"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L334"
 						}
 					],
 					"signatures": [
@@ -30357,12 +30858,20 @@
 							"variant": "signature",
 							"kind": 4096,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Created SignableMessage from json array or string."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "signable-message.ts",
-									"line": 199,
+									"line": 334,
 									"character": 4,
-									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L199"
+									"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L334"
 								}
 							],
 							"parameters": [
@@ -30470,9 +30979,9 @@
 			"sources": [
 				{
 					"fileName": "signable-message.ts",
-					"line": 13,
+					"line": 16,
 					"character": 13,
-					"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L13"
+					"url": "https://gitlab.com/peakd/sting-message-backend/-/blob/6eab04b/libs/stlib/src/signable-message.ts#L16"
 				}
 			]
 		},
