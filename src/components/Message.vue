@@ -259,7 +259,8 @@ function clickOnMsg(event) {
     var element = event.target;
     var options = [
         ["emote", toggleAddEmoteModal],
-        ["quote", quoteAction]
+        ["quote", quoteAction],
+        ["copy link", copyLinkAction]
     ];
     if(props.message && props.message.getUser() === getManager().user) {
         options.push(["edit", editAction]);
@@ -300,6 +301,34 @@ function quoteAction() {
                 msg: props.message,
                 type: stlib.Content.Quote.TYPE,
                 text: selected, from: i, to: (i+selected.length)});
+    }
+}
+function copyLinkAction() {
+    if(navigator.clipboard) {
+        var conversation = props.message.getConversation();
+        var link = null;
+        if(stlib.Utils.isCommunityConversation(conversation)) {
+            var data = stlib.Utils.parseConversation(conversation);
+            var communityName = data[0];
+            var commuityPath = data[1];
+            if(stlib.Utils.isValidGuestName(communityName) && /[a-zA-Z0-9-_]+/.test(commuityPath)) {
+                link = `/t/${communityName}/${commuityPath}?j=${props.message.message.getReference()}`;
+            }
+        }
+        else if(stlib.Utils.isGroupConversation(conversation)) {
+            var user = getManager().user;
+            var users = stlib.Utils.getGroupUsernames(conversation);
+            link = '/p';
+            for(var user0 of users) {
+                if(user0 === user) continue;
+                link += '/'+user0;
+            }
+            link += `?j=${props.message.message.getReference()}`;
+        }
+        else if(stlib.Utils.isJoinableGroupConversation(conversation)) {
+            link = '/g/'+conversation.substring(1);
+        }
+        if(link !== null) navigator.clipboard.writeText(window.location.origin+link); 
     }
 }
 function editAction() {
