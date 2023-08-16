@@ -89,10 +89,39 @@ curl https://chat-api.peakd.com/api/readUserConversations/am7
 [true,["am7|am7-test"]]
 ```
 
+# /readNotifications/:from
+
+**@Get**
+Retrieve account notifications.
+
+The following types are returned:
+- `'direct'` on direct message,     
+- `'mention'` on quote or mention,
+- `'response'` on emote response,
+- `'continuation'` on continuing conversation in public channel
+
+#### Example:
+```
+curl https://chat-api.peakd.com/api/readNotifications/am7
+```
+
+#### Example: output:
+```
+[true, [
+    {
+     "type": "mention",
+     "date": "2023-08-13T11:24:37.105Z",
+     "msg":  "mention from @am7-test",
+     "url":  "/t/hive-163399/2?j=am7-test|1691925877105"
+    }
+]]
+```
+
 # /readNotificationCount/:from
 
 **@Get**
 If users has uploaded notification count, download it along with timestamp.
+This notification count is unrelated to the results returned by `/readNotifications`
 
 #### Example::
 ```
