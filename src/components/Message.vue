@@ -249,6 +249,12 @@ function formatText(element, text) {
     element.innerHTML = "";
     stlib.Markdown.imageProxy = imageProxy;
     stlib.Markdown.simpleMarkdown(text.trim(),element);
+    var imgs = element.getElementsByTagName("img");
+    for(var i = 0; i < imgs.length; i++) {
+        let img = imgs[i];
+        img.setAttribute("class", "imgBorder imgLimit cursor-pointer");
+        img.onclick = ()=>{ toggleImageViewModal(img.src); };
+    }
 }
 /*message menu*/
 const msgMenuOptions = ref([/*{name:"emote"},*/{name:"quote"},{name:"edit"},{name:"delete"}]);
@@ -443,10 +449,6 @@ init();
 .quoteText {
     max-height: 4.5em;
     overflow: hidden;
-}
-.imgLimit {
-    max-width: calc(min(100%, 500px));
-    max-height: 275px;
 }
 .message, .verifyColor { background-color: lightsalmon; }
 .verifyColor { color: #5b220b; }

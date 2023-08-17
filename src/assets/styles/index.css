@@ -171,6 +171,10 @@ body {
     overflow-wrap: normal;
     word-break: break-word;
 }
+.imgLimit {
+    max-width: calc(min(100%, 500px));
+    max-height: 275px;
+}
 .md { }
 .mdh {}
 .mdh h1 { font-size: 1.5rem }
