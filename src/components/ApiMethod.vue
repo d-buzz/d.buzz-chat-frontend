@@ -6,6 +6,7 @@
       <span v-for="(param, i) in item.signatures[0].parameters">
         <span v-if="i > 0">, </span>
         <span>{{param.name}}: {{typeText(param.type)}}</span>
+        <span v-if="param.defaultValue"> = {{param.defaultValue}}</span>
       </span>
       ):
       <span v-if="item.signatures[0].type">{{typeText(item.signatures[0].type)}}</span>
@@ -42,6 +43,8 @@ function typeText(type) {
       text += " | " + typeText(type.types[i]);
     return text;
   }
+  if(type.type === "query")
+    return "typeof " + type.queryType.name;
   return type;
 }
 function toText(summary) {

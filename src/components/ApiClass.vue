@@ -3,11 +3,11 @@
     <h2 :id="`api_${cls.name}`"><a :href="`#api_${cls.name}`">{{cls.name}}</a></h2>
     <hr/>
 
-    <div class="mt-3 mb-3" v-if="cls.comment">{{toText(cls.comment.summary)}}</div>
+    <div class="whitespace-pre mt-3 mb-3" v-if="cls.comment">{{toText(cls.comment.summary)}}</div>
 
     <div v-if="cls.children">
 
-      <h5>Field Summary</h5>
+      <h5 v-if="hasFields(cls.children)">Field Summary</h5>
 
       <template v-for="item in cls.children">
         <div v-if="(item.kind & 0x420) !== 0">
@@ -15,7 +15,7 @@
         </div>
       </template>
 
-      <h5>Constructor Summary</h5>
+      <h5 v-if="hasConstructor(cls.children)">Constructor Summary</h5>
 
       <template v-for="item in cls.children">
         <div v-if="(item.kind & 0x200) !== 0">
@@ -37,7 +37,7 @@
         </div>
       </template>
 
-      <h5>Fields</h5>
+      <h5 v-if="hasFields(cls.children)">Fields</h5>
 
       <template v-for="item in cls.children">
         <div v-if="(item.kind & 0x420) !== 0">
@@ -45,7 +45,7 @@
         </div>
       </template>
 
-      <h5>Constructors</h5>
+      <h5 v-if="hasConstructor(cls.children)">Constructors</h5>
 
       <template v-for="item in cls.children">
         <div v-if="(item.kind & 0x200) !== 0">
@@ -57,13 +57,14 @@
       </template>
 
       <h5>Methods</h5>
-
+      <hr/>
       <template v-for="item in cls.children">
         <div :id="`${link(item)}.${item.name}`" v-if="(item.kind & 0x840) !== 0" class="my-3">
           <ApiMethod :item="item"/>
-          <div v-if="item.signatures && item.signatures[0].comment">
+          <div class="whitespace-pre mt-3 mb-3" v-if="item.signatures && item.signatures[0].comment">
             {{toText(item.signatures[0].comment.summary, false)}}
           </div>
+          <hr/>
         </div>
       </template>
       
@@ -76,6 +77,18 @@
 const props = defineProps({
   cls: Object
 });
+function hasFields(list) {
+  for(var item of list)
+    if((item.kind & 0x420) !== 0)
+      return true;
+  return false;
+}
+function hasConstructor(list) {
+  for(var item of list)
+    if((item.kind & 0x200) !== 0)
+      return true;
+  return false;
+}
 function link(item) {
   if(item.sources) return item.sources[0].fileName;
   var signature = item.signatures[0];  
@@ -90,6 +103,9 @@ function typeText(type) {
 function toText(summary, short=false) {
   var text = "";
   for(var item of summary) {
+    if(item.kind === "inline-tag") {
+      text += item.tag+" ";
+    }
     text += item.text;
     if(short) {
       var i = text.indexOf('.');
