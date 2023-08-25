@@ -48,7 +48,7 @@
       <h5 v-if="hasConstructor(cls.children)">Constructors</h5>
 
       <template v-for="item in cls.children">
-        <div v-if="(item.kind & 0x200) !== 0">
+        <div :id="`${link(item)}.${item.name}`" v-if="(item.kind & 0x200) !== 0">
           <ApiMethod :item="item"/>
           <div v-if="item.signatures && item.signatures[0].comment">
             {{toText(item.signatures[0].comment.summary, false)}}
@@ -63,6 +63,13 @@
           <ApiMethod :item="item"/>
           <div class="whitespace-pre mt-3 mb-3" v-if="item.signatures && item.signatures[0].comment">
             {{toText(item.signatures[0].comment.summary, false)}}
+            <div v-if="item.signatures[0].parameters">
+              <div class="font-bold text-sm mt-2 mb-1">Parameters</div>           
+              <div v-for="param in item.signatures[0].parameters" class="font-mono text-sm">
+                <span>{{param.name}}</span>
+                <span v-if="param.comment"> - {{toText(param.comment.summary, false)}}</span>
+              </div>
+            </div>
           </div>
           <hr/>
         </div>
