@@ -75,26 +75,29 @@ export function initTooltipMenu() {
         div.innerText = name;
         el.appendChild(div);
     }
-    for(let item of items) {
-        var div = document.createElement("div");
-        if(item.length > 2 && item[2]) {
-            var icon = document.createElement("span");
-            icon.setAttribute("class", "oi "+item[2]);
-            div.appendChild(icon);
-            
-        } 
-        var text = document.createElement("span");
-        text.innerText = item[0];
-        div.appendChild(text);
-        div.addEventListener("click", ()=>{
-            try {
-                item[1]();
-            }
-            catch(e) { console.log(e); }
-            el.hidden = true;
-        });
-        el.appendChild(div);
+    if(Array.isArray(items)) {
+        for(let item of items) {
+            var div = document.createElement("div");
+            if(item.length > 2 && item[2]) {
+                var icon = document.createElement("span");
+                icon.setAttribute("class", "oi "+item[2]);
+                div.appendChild(icon);
+                
+            } 
+            var text = document.createElement("span");
+            text.innerText = item[0];
+            div.appendChild(text);
+            div.addEventListener("click", ()=>{
+                try {
+                    item[1]();
+                }
+                catch(e) { console.log(e); }
+                el.hidden = true;
+            });
+            el.appendChild(div);
+        }
     }
+    else el.appendChild(items);
     var pos = element.getBoundingClientRect();
     el.currentElement = element;
     el.hidden = false;
@@ -103,6 +106,10 @@ export function initTooltipMenu() {
     x = Math.min(x, window.innerWidth-el.offsetWidth-10); 
     y = Math.max(0, Math.min(y, window.innerHeight-el.offsetHeight)); 
     el.setAttribute('style','left:'+x+'px;'+'top:'+y+'px;');
+    window.tooltip(null);
+  };
+  window.upvotemenu = function(element0, options) {
+    window.menu(element0, options, null, true);
   };
   window.onclickoutside.set("main.ts", ()=>{ 
     var el = document.getElementById("menu");  
@@ -116,9 +123,11 @@ export function initSwipe() {
   const pos = { x: -1, y: -1, s: 0 };
   const app = document.getElementById("app");
   app.addEventListener("pointerdown", (e)=>{ 
-      pos.x = e.clientX;
-      pos.y = e.clientY;
-      pos.s = 0;
+      if(e.clientX < 250) {
+          pos.x = e.clientX;
+          pos.y = e.clientY;
+          pos.s = 0;
+      }
   });
   app.addEventListener("pointerup", (e)=>{
       if(pos.s !== 0) {

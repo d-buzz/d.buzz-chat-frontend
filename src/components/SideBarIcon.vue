@@ -55,13 +55,13 @@ async function onClick(community) {
 }
 function rightClickMenu(event) {
   window.menu(event, [
+    ["info", ()=>{ 
+      toggleJoinModal();
+    }, "oi-info"],
     ["hide", ()=>{ 
       var manager = getManager();
       manager.hideCommunity(props.img, true);
-    }, "oi-volume-low"],
-    ["info", ()=>{ 
-      toggleJoinModal();
-    }, "oi-info"]
+    }, "oi-shield"]
   ]);
 }
 function getPath(stream) {

@@ -40,8 +40,9 @@
             <div class="grow relative" style="margin-top:-7px;" @click.right.prevent.stop="clickOnMsg($event)"> 
                 <div>
                     <small class="cursor-pointer" :class="roleColor?roleColor:''" @click="toggleUserModal(message.getUser())" ><b class="messageFontFamily">{{message.getUser()}}</b></small>
-                    <span class="pr-2 float-right fg70">
+                    <span class="pr-2 float-right fg70" ref="buttons">
                         <small v-if="!displayOnly" class="messageButtons pr-3">
+                            <span v-if="account!==message.getUser()" class="oi oi-arrow-thick-top col1" @click.prevent.stop="upvoteAction()" @mouseenter="tooltip($event.target, $t('Message.Upvote.Info'))"></span>                        
                             <span class="oi oi-heart col0" @click="toggleAddEmoteModal" @mouseenter="tooltip($event.target, $t('Message.AddEmote.Info'))"></span>
                             <span class="oi oi-share col1" @click="quoteAction" @mouseenter="tooltip($event.target, $t('Message.Quote.Info'))"></span>
                             <span v-if="account!==message.getUser()" class="oi oi-flag col3" @click="flagAction" @mouseenter="tooltip($event.target, $t('Message.Flag.Info'))"></span>                        
@@ -52,15 +53,6 @@
                         <small @mouseenter="tooltip($event.target, toRelativeTimeString(message.getTimestamp(),3)+'\n'+toAbsoluteTimeString(message.getTimestamp()))">{{toRelativeTimeString(message.getTimestamp())}}</small>
                     </span>
                 </div>
-                <!--<div v-if="!displayOnly" class="visibleOnHover absolute float-right" style="right: 8px;">
-                    <div class="visibleOnHover flex">
-                        <span class="btn0 bg1" @click="toggleAddEmoteModal" ><span class="oi oi-heart"></span></span>
-                        <span class="btn0 bg2" @click="quoteAction" title="Quote, select text to quote part of message."><span class="oi oi-share"></span></span>
-                        <span v-if="account!==message.getUser()" class="btn0 bg4" @click="flagAction" title="Flag message."><span class="oi oi-flag"></span></span>                    
-                        <span v-if="account===message.getUser()" class="btn0 bg3" @click="editAction" title="Edit message."><span class="oi oi-pencil"></span></span>
-                        <span v-if="account===message.getUser()" class="btn0 bg4" @click="deleteAction" title="Delete message."><span class="oi oi-trash"></span></span>
-                    </div>
-                </div>-->
                 <div v-if="content">
                     <div v-if="content.getType() == 'x'">
                         <button class="bg-primary text-white font-bold py-1 px-2 rounded-full" v-on:click="decrypt(message)">Click to decrypt</button>
@@ -123,6 +115,7 @@ const roleColor = ref(null);
 const roleReferenceColor = ref(null);
 const hasJoinedGroup = ref(false);
 const isVerified = ref(null);
+const buttons = ref();
 async function hasJoinedGroupX(group) {
     const manager = getManager();
     var groups = await manager.getJoinedAndCreatedGroups();
@@ -262,19 +255,19 @@ const msgMenuOptions2 = ref([/*{name:"emote"},*/{name:"quote"}]);
 const msgMenu = ref(null);
 function clickOnMsg(event) {
     if(props.displayOnly.value) return;
-    var element = event.target;
     var options = [
-        ["emote", toggleAddEmoteModal],
-        ["quote", quoteAction],
-        ["copy link", copyLinkAction]
+        ["emote", toggleAddEmoteModal, "oi-heart"],
+        ["quote", quoteAction, "oi-share"],
+        ["copy link", copyLinkAction, "oi-clipboard"]
     ];
     if(props.message && props.message.getUser() === getManager().user) {
-        options.push(["edit", editAction]);
-        options.push(["delete", deleteAction]);
+        options.push(["edit", editAction, "oi-heart"]);
+        options.push(["delete", deleteAction, "oi-heart"]);
     }
     else {
-        options.push(["hide messages from user", toggleHideMessagesModal]);
-        options.push(["flag message", flagAction]);
+        options.unshift(["upvote", upvoteAction, "oi-arrow-thick-top"]);
+        options.push(["hide messages from user", toggleHideMessagesModal, "oi-shield"]);
+        options.push(["flag message", flagAction, "oi-flag"]);
     }
     window.menu(event, options);
 }
@@ -283,6 +276,11 @@ function emoteAction(emote) {
         msg: props.message,
         type: stlib.Content.Emote.TYPE,
         text: emote});
+}
+function upvoteAction(event=buttons.value) {
+    if(props.displayOnly.value) return;
+    console.log("event ", event);
+    window.upvotemenu(event, []);
 }
 function flagAction() {
     emit("action", {
@@ -421,9 +419,9 @@ init();
     opacity: 1;
 }
 .messageButtons > .col0:hover { color: #9d212c; }
-.messageButtons > .col0:hover { color: #2e8336; }
-.messageButtons > .col0:hover { color: #b95914; }
-.messageButtons > .col0:hover { color: #860e18; }
+.messageButtons > .col1:hover { color: #2e8336; }
+.messageButtons > .col2:hover { color: #b95914; }
+.messageButtons > .col3:hover { color: #860e18; }
 .quoteIcon {
     display: inline-block;
     position: relative;
