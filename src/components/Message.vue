@@ -96,8 +96,9 @@
     </div>
 </template>
 <script setup type="ts">
+import Upvote from './Upvote.vue'
 import { useAccountStore } from "../stores/account";
-import { ref, nextTick } from 'vue'
+import { ref, nextTick,  createVNode, render } from 'vue'
 const tooltip = ref(window.tooltip);
 const accountStore = useAccountStore();
 const account = accountStore.account.name;
@@ -280,7 +281,11 @@ function emoteAction(emote) {
 function upvoteAction(event=buttons.value) {
     if(props.displayOnly.value) return;
     console.log("event ", event);
-    window.upvotemenu(event, []);
+    var div = document.createElement("div");
+    let vnode = createVNode(Upvote, {});
+    //vnode.appContext = { ...appContext }
+    render(vnode, div);
+    window.upvotemenu(event, div);
 }
 function flagAction() {
     emit("action", {

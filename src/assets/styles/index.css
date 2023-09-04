@@ -148,6 +148,12 @@ body {
     padding-top: 2px;
     padding-bottom: 2px;
 }
+.menu-p0 {
+    padding: 0px;
+}
+.menu-p0 > div {
+    padding: 0px;
+}
 .menu > div:hover {
     background-color: var(--appsg1);
 }

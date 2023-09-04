@@ -76,6 +76,7 @@ export function initTooltipMenu() {
         el.appendChild(div);
     }
     if(Array.isArray(items)) {
+        el.setAttribute("class", "menu");
         for(let item of items) {
             var div = document.createElement("div");
             if(item.length > 2 && item[2]) {
@@ -97,7 +98,10 @@ export function initTooltipMenu() {
             el.appendChild(div);
         }
     }
-    else el.appendChild(items);
+    else {
+        el.setAttribute("class", "menu menu-p0");
+        el.appendChild(items);
+    }
     var pos = element.getBoundingClientRect();
     el.currentElement = element;
     el.hidden = false;
