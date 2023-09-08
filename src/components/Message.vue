@@ -280,12 +280,19 @@ function emoteAction(emote) {
 }
 function upvoteAction(event=buttons.value) {
     if(props.displayOnly.value) return;
-    console.log("event ", event);
-    var div = document.createElement("div");
-    let vnode = createVNode(Upvote, {});
-    //vnode.appContext = { ...appContext }
-    render(vnode, div);
-    window.upvotemenu(event, div);
+    window.upvotemenu(event, (w)=>{
+        var msg = props.message;
+        var parts = stlib.Utils.encodeUpvotePermlink(msg.getUser(), msg.getConversation(), msg.getTimestamp()); 
+        console.log("vote", w, parts);
+        //load comments X days
+        //apply upvotes to displayable message
+        //
+
+        //generate permlink
+        //find post if exists
+        //find votes if exists  
+        //create if not, set benficiary, upvote
+    });
 }
 function flagAction() {
     emit("action", {

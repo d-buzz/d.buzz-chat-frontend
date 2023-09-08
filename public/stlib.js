@@ -11,20 +11,82 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Client = exports.CallbackResult = void 0;
+/**
+ * CallbackResult represents result of request from backend node.
+ *
+ * Example of usage:
+ *
+ * var result: CallbackResult = await client.readInfo();
+ * if(result.isSuccess()) {
+ *     var data = result.getResult();
+ * }
+ * else {
+ *     console.log(result.getError());
+ * }
+ */
 class CallbackResult {
+    /**
+     * Creates a new CallbackResult.
+     *
+     * @param success
+     * @param result data or error message is call did not succeed
+     */
     constructor(success, result) {
+        /**
+         * Can hold extra data such as pagination id.
+         */
         this.extra = null;
         this.success = success;
         this.result = result;
     }
+    /**
+     * Returns true if the request suceeded.
+     */
     isSuccess() { return this.success; }
+    /**
+     * Returns the data of the result if the requests suceeded, otherwise null.
+     */
     getResult() { return this.isSuccess() ? this.result : null; }
+    /**
+     * Returns pagination id or -1 if there is none.
+     */
     getPaginationId() { return (this.extra != null && typeof this.extra === 'number') ? this.extra : -1; }
+    /**
+     * Returns error message or null if there is none.
+     */
     getError() { return this.isSuccess() ? null : this.result; }
 }
 exports.CallbackResult = CallbackResult;
+/**
+ * Client class represents a client which communicates with backend node.
+ */
 class Client {
+    /**
+     * Creates a new client instance with provided socket.
+     *
+     * Example:
+     * var socket = io("https://chat-api.peakd.com", {
+     *  transports:["websocket", "polling"]
+     * });
+     * var client = new stlib.Client(socket);
+     *
+     * @param socket socketio socket
+     */
     constructor(socket) {
+        /**
+         * Callback listener for on message events. Messages arrive in json format.
+         *
+         * Example:
+         * client.onmessage = (messageJSON)=>{ console.log(messageJSON); };
+         */
+        this.onmessage = null;
+        /**
+         * Callback listener for on update events such as community data update.
+         *
+         * Example:
+         * client.onmessage = (messageJSON)=>{ console.log(messageJSON); };
+         */
+        this.onupdate = null;
         this.io = socket;
         socket.on("w", (text) => {
             if (this.onmessage !== null)
@@ -35,51 +97,152 @@ class Client {
                 this.onupdate(data);
         });
     }
+    /**
+     * Reads usage stats from backend node.
+     *
+     * Returns an array of objects representing days, with each containing the
+     * a map of communities and the number of messages posted in it on that day.
+     *
+     * Up to 7 days of data is returned.
+     *
+     * @param conversations array of conversation strings
+     */
     readStats(conversations = null) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.emit('s', conversations);
         });
     }
+    /**
+     * Reads information from backend node.
+     *
+     * Returns a JSON object with the following properties:
+     * name: network name
+     * host: domain of the node
+     * account: hive account associated with the node or empty
+     * version: backend version
+     * nodes: array of domains of other backend nodes
+     * preferencesChecksum: checksum of user preferences
+     * messagesChecksum: checksums of messages group by timestamp
+     * time: timestamp
+     */
     readInfo() {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.emit('i', "");
         });
     }
+    /**
+     * Returns backend version.
+     */
     readNodeVersion() {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.emit('v', "");
         });
     }
+    /**
+     * Returns user preferences.
+     *
+     * The backend supports uploading user preferences for both hive accounts and guest accounts.
+     * For details on preferences {@see Preferences}
+     *
+     * @param username
+     */
     readPreferences(username) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.emit("r", ["r", '@', username]);
         });
     }
+    /**
+     * Returns an array of recent direct conversations.
+     *
+     * @param username
+     */
     readUserConversations(username) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.emit("r", ["r", '@@', username]);
         });
     }
+    /**
+     * Returns community data.
+     *
+     * @param username
+     */
     readCommunity(username) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.emit("rg", username);
         });
     }
+    /**
+     * Returns upvotes data.
+     *
+     * @param conversations array of conversation strings
+     */
+    readUpvotes(conversations = null) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.emit("ru", conversations);
+        });
+    }
+    /**
+     * Reads up to 100 messages in conversations with optional timestamps, pagination number and limit.
+     *
+     * Example to paginate the results:
+     * var result = await client.read(conversation);
+     * if(result.isSuccess()) {
+     *    var messages = result.getResult();
+     *    if(messages.length > 0) {
+     *       var oldestMessageTimestamp = messages[messages.length-1][4];
+     *       //Read next 100 messages:
+     *       var result200 = await client.read(conversation, -1,
+     *               oldestMessageTimestamp, result.getPaginationId());
+     *    }
+     * }
+     *
+     * @param conversation conversation to read messages from
+     * @param fromTimestamp timestamp in milliseconds or -1
+     * @param toTimestamp max timestamp in milliseconds or -1
+     * @param lastId paginationId or -1
+     * @param limit read at most this number of messages, default: 100, max: 100
+     */
     read(conversation, fromTimestamp = -1, toTimestamp = -1, lastId = -1, limit = 100) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.emit("r", ["r", conversation, fromTimestamp, toTimestamp, lastId, limit]);
         });
     }
+    /**
+     * Reads up to 100 user messages with optional timestamps, pagination number and limit.
+     *
+     * @param username username to read user messages from
+     * @param fromTimestamp timestamp in milliseconds or -1
+     * @param toTimestamp max timestamp in milliseconds or -1
+     * @param lastId paginationId or -1
+     * @param limit read at most this number of messages, default: 100, max: 100
+     *
+     */
     readUserMessages(username, fromTimestamp = -1, toTimestamp = -1, lastId = -1, limit = 100) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.read('@' + username, fromTimestamp, toTimestamp, lastId, limit);
         });
     }
+    /**
+     * Reads up to 100 mentions with optional timestamps, pagination number and limit.
+     *
+     * @param username username to read mentions from
+     * @param fromTimestamp timestamp in milliseconds or -1
+     * @param toTimestamp max timestamp in milliseconds or -1
+     * @param lastId paginationId or -1
+     * @param limit read at most this number of messages, default: 100, max: 100
+     *
+     */
     readMentions(username, fromTimestamp = -1, toTimestamp = -1, lastId = -1, limit = 100) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.read('&' + username, fromTimestamp, toTimestamp, lastId, limit);
         });
     }
+    /**
+     * Reads online status for one user or array of users.
+     *
+     * @param usernames username or array of usernames
+     * @param maxTimestamp timestamp to trim older results than specified timestamp
+     */
     readOnlineStatus(usernames, maxTimestamp = 0) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!Array.isArray(usernames))
@@ -87,16 +250,31 @@ class Client {
             return yield this.emit("r", ["r", '$online', usernames, maxTimestamp]);
         });
     }
+    /**
+     * Reads online status for community.
+     *
+     * @param username username of community
+     * @param maxTimestamp timestamp to trim older results than specified timestamp
+     */
     readOnlineStatusForCommunity(username, maxTimestamp = 0) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.emit("r", ["r", '$online', username, maxTimestamp]);
         });
     }
+    /**
+     * Creates guest account request.
+     *
+     * @param username username of guest account
+     * @param publicPostingKey new publc posting key of guest account
+     */
     createGuestAccount(username, publicPostingKey) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.emit("a", ["a", username, username, publicPostingKey]);
         });
     }
+    /**
+     * Broadcasts a SignableMessage. Throws error if message is not signed or not in valid format.
+     */
     write(msg) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!msg.isSigned())
@@ -106,6 +284,9 @@ class Client {
             return yield this.write0(msg);
         });
     }
+    /**
+     * Broadcasts a SignableMessage without additional validation.
+     */
     write0(msg) {
         return __awaiter(this, void 0, void 0, function* () {
             var result = yield this.emit('w', msg.toJSON());
@@ -113,16 +294,35 @@ class Client {
             return result;
         });
     }
+    /**
+     * Enable receiving events for specified conversation. The events call {@see onmessage} callback.
+     *
+     * @param conversation following formats of conversation can be used to receive messages:
+     * "hive-XXXXXXX/0": would receive messages posted in particular community in stream numbered 0
+     * "hive-XXXXXXX/*": would receive messages for all streams in specified community
+     * "userA": would receive messages for "userA"
+     * "&userA": would recieve mentions for "userA"
+     * "$online": would recieve online status changes
+     * "#userA/0": would receive messages from joinable group created by userA with numbered 0
+     */
     join(conversation) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.emit('j', conversation);
         });
     }
+    /**
+     * Disable receiving events for specified conversation.
+     *
+     * @param conversation conversation to not receive events from
+     */
     leave(conversation) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.emit('l', conversation);
         });
     }
+    /**
+     * Sends data to backend.
+     */
     emit(type, data) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, error) => {
@@ -140,6 +340,9 @@ class Client {
             });
         });
     }
+    /**
+     * Closes the connection.
+     */
     close() {
         this.io.close();
     }
@@ -447,7 +650,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.OnlineStatus = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.Mention = exports.Images = exports.GroupInvite = exports.Flag = exports.Encoded = exports.Edit = exports.JSONContent = exports.decodeTextWithKeychain = exports.encodeTextWithKeychain = exports.decodedMessage = exports.encodedMessage = exports.decodeTextWithKey = exports.encodeTextWithKey = exports.onlineStatus = exports.preferences = exports.groupInvite = exports.flag = exports.emote = exports.edit = exports.mention = exports.quote = exports.thread = exports.images = exports.text = exports.fromJSON = exports.type = exports.addType = void 0;
+exports.PrivatePreferences = exports.Preferences = exports.Emote = exports.OnlineStatus = exports.Quote = exports.Thread = exports.WithReference = exports.Text = exports.Mention = exports.Images = exports.GroupInvite = exports.Flag = exports.Encoded = exports.Edit = exports.JSONContent = exports.decodeTextWithKeychain = exports.encodeTextWithKeychain = exports.decodedMessage = exports.encodedMessage = exports.decodeTextWithKey = exports.encodeTextWithKey = exports.onlineStatus = exports.preferences = exports.groupInvite = exports.flag = exports.emote = exports.edit = exports.quote = exports.thread = exports.images = exports.text = exports.fromJSON = exports.type = exports.addType = void 0;
 const imports_1 = require("./imports");
 Object.defineProperty(exports, "JSONContent", { enumerable: true, get: function () { return imports_1.JSONContent; } });
 Object.defineProperty(exports, "Encoded", { enumerable: true, get: function () { return imports_1.Encoded; } });
@@ -465,6 +668,28 @@ Object.defineProperty(exports, "Mention", { enumerable: true, get: function () {
 Object.defineProperty(exports, "Preferences", { enumerable: true, get: function () { return imports_1.Preferences; } });
 Object.defineProperty(exports, "PrivatePreferences", { enumerable: true, get: function () { return imports_1.PrivatePreferences; } });
 var supportedTypes = {};
+/**
+ * Adds new custom type which extends JSONContent.
+ *
+ * The new type is to extend JSONContent and contain static variable TYPE
+ * with a string containing the type id. Type is is to be unique, if it is not
+ * an existing type will be overriden.
+ *
+ * A list of currently imported types include:
+ * Content.addType(Text);          //'t'
+ * Content.addType(Thread);        //'h'
+ * Content.addType(Quote);         //'q'
+ * Content.addType(Edit);          //'d'
+ * Content.addType(Emote);         //'e'
+ * Content.addType(Flag);          //'f'
+ * Content.addType(Images);        //'i'
+ * Content.addType(GroupInvite);   //'g'
+ * Content.addType(Preferences);   //'p'
+ * Content.addType(Encoded);       //'x'
+ * Content.addType(OnlineStatus);  //'o'
+ * Content.addType(Mention);       //'m'
+ *
+ */
 function addType(type, typeString = null) {
     if (typeString === null)
         typeString = type['TYPE'];
@@ -475,12 +700,23 @@ function addType(type, typeString = null) {
     supportedTypes[typeString] = type;
 }
 exports.addType = addType;
+/**
+ * Retrieves type from JSONContent in json form.
+ *
+ * Returns the first argument of json array or null if it is not an array or has no elements.
+ */
 function type(content) {
     if (Array.isArray(content) && content.length > 0)
         return content[0];
     return null;
 }
 exports.type = type;
+/**
+ * Parses JSONContent from json array.
+ *
+ * example usage:
+ * var textContent = Content.fromJSON(['t', 'hi']);
+ */
 function fromJSON(json) {
     var ty = type(json);
     if (ty === null)
@@ -489,20 +725,35 @@ function fromJSON(json) {
     return result == null ? null : new result(json);
 }
 exports.fromJSON = fromJSON;
+/**
+ * Creates new Text content from message.
+ */
 function text(message) {
     return new imports_1.Text([imports_1.Text.TYPE, message]);
 }
 exports.text = text;
+/**
+ * Creates new Images content from array of links.
+ */
 function images(...images) {
     return new imports_1.Images([imports_1.Images.TYPE, ...images]);
 }
 exports.images = images;
+/**
+ * Creates new Thread content with given thread name and JSONContent or json array.
+ */
 function thread(threadName, content) {
     if (content instanceof imports_1.JSONContent)
         content = content.toJSON();
     return new imports_1.Thread([imports_1.Thread.TYPE, threadName, content]);
 }
 exports.thread = thread;
+/**
+ * Creates new Quote content with message quoting a SignableMessage.
+ *
+ * Optionally quoteFrom and quoteTo can be set to partially quote
+ * a section of message.
+ */
 function quote(message, parentMessage, quoteFrom = 0, quoteTo = -1) {
     return new imports_1.Quote([imports_1.Quote.TYPE,
         message,
@@ -511,63 +762,112 @@ function quote(message, parentMessage, quoteFrom = 0, quoteTo = -1) {
     ]);
 }
 exports.quote = quote;
-function mention(parentMessage) {
-    return new imports_1.Mention([imports_1.Mention.TYPE,
-        parentMessage.getUser(),
-        parentMessage.getConversation(),
-        parentMessage.getTimestamp(),
-        parentMessage.getSignatureBase64()
-    ]);
-}
-exports.mention = mention;
+/**
+ * Creates new Edit content with edited JSONContent and SignableMessage to edit.
+ *
+ */
 function edit(editedContent, parentMessage) {
     return new imports_1.Edit([imports_1.Edit.TYPE, editedContent == null ? null : editedContent.toJSON(),
         parentMessage.getReference()
     ]);
 }
 exports.edit = edit;
+/**
+ * Creates new Emote content with unicode emote or link to emote image and SignableMessage respond to.
+ *
+ */
 function emote(emote, parentMessage) {
     return new imports_1.Emote([imports_1.Emote.TYPE, emote,
         parentMessage.getReference()
     ]);
 }
 exports.emote = emote;
+/**
+ * Creates new Flag content with reason for flagging a SignableMessage.
+ *
+ */
 function flag(reason, parentMessage) {
     return new imports_1.Flag([imports_1.Flag.TYPE, reason,
         parentMessage.getReference()
     ]);
 }
 exports.flag = flag;
+/**
+ * Creates new GroupInvite content with message, group and private key of the group.
+ *
+ * GroupInvite content is to be encoded and send as a direct message.
+ * Do not send group invite content to public channels as that would make the group public.
+ *
+ */
 function groupInvite(message, group, key) {
     return new imports_1.GroupInvite([imports_1.GroupInvite.TYPE, message, group, key]);
 }
 exports.groupInvite = groupInvite;
+/**
+ * Creates new Preferences content.
+ */
 function preferences(json = {}) {
     return new imports_1.Preferences([imports_1.Preferences.TYPE, json]);
 }
 exports.preferences = preferences;
+/**
+ * Creates new OnlineStatus content with online message.
+ *
+ * The online message can be set to "true", "writing", null.
+ * If set to "true" or null, send the conversation to '$online' to update the online status.
+ * eg:
+ * var conversation = '$online';
+ * var msg = SignableMessage.create(user, conversation,
+ *       Content.onlineStatus("true", communities, lastReadNum, lastReadTimestamp),
+ *        SignableMessage.TYPE_MESSAGE);
+ *
+ * The type of SignableMessage is set to SignableMessage.TYPE_MESSAGE for online status.
+ *
+ * If message is set to "writing", set the conversation in which to update the writing status.
+ * eg.: conversation = 'hive-1111111/0'
+ *
+ * @param online online message: "true", "writing", null
+ * @param communities array of communities where the user will appear online
+ * @param lastReadNum number of unread messages
+ * @param lastReadTimestamp current timestamp in milliseconds
+ */
 function onlineStatus(online, communities, lastReadNum, lastReadTimestamp) {
     return new imports_1.OnlineStatus([imports_1.OnlineStatus.TYPE, online, communities, lastReadNum, lastReadTimestamp]);
 }
 exports.onlineStatus = onlineStatus;
+/**
+ * Encodes text with private key and public key.
+ */
 function encodeTextWithKey(text, privateK, publicK) {
     return imports_1.Utils.encodeTextWithKey(text, privateK, publicK);
 }
 exports.encodeTextWithKey = encodeTextWithKey;
+/**
+ * Decodes text with private key.
+ */
 function decodeTextWithKey(text, privateK) {
     return imports_1.Utils.decodeTextWithKey(text, privateK);
 }
 exports.decodeTextWithKey = decodeTextWithKey;
+/**
+ * Encodes SignableMessage with private key and public key.
+ */
 function encodedMessage(msg, privateK, publicK) {
     var string = JSON.stringify([msg.getUserMentionsString(), msg.getJSONString(), msg.keytype, msg.getSignature().toString('hex')]);
     var encoded = [imports_1.Encoded.TYPE, 'g', imports_1.Utils.encodeTextWithKey(string, privateK, publicK)];
     return new imports_1.Encoded(encoded);
 }
 exports.encodedMessage = encodedMessage;
+/**
+ * Decodes Encoded content with private key.
+ */
 function decodedMessage(msg, privateK) {
     return JSON.parse(imports_1.Utils.decodeTextWithKey(msg.json[2], privateK));
 }
 exports.decodedMessage = decodedMessage;
+/**
+ * Encodes text with keychain.
+ */
 function encodeTextWithKeychain(user, message, keychainKeyType = 'Posting') {
     return __awaiter(this, void 0, void 0, function* () {
         var p = imports_1.Utils.queueKeychain((keychain, resolve, error) => {
@@ -582,6 +882,9 @@ function encodeTextWithKeychain(user, message, keychainKeyType = 'Posting') {
     });
 }
 exports.encodeTextWithKeychain = encodeTextWithKeychain;
+/**
+ * Decodes text with keychain.
+ */
 function decodeTextWithKeychain(user, message, keychainKeyType = 'Posting') {
     return __awaiter(this, void 0, void 0, function* () {
         var p = imports_1.Utils.queueKeychain((keychain, resolve, error) => {
@@ -806,13 +1109,42 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JSONContent = void 0;
 const imports_1 = require("./imports");
+/**
+ * JSONContent represents content in the form of json array.
+ *
+ * The first element of json array contains a unique name of the type.
+ * This class can be extended to create custom types.
+ *
+ * An example of class extending this class is Text type.
+ *
+ * class Text extends JSONContent {
+ *   static readonly TYPE:string = "t";
+ *   constructor(json: any[]) { super(json); }
+ *   getText(): string { return this.json[1]; }
+ *   setText(text: string) { this.json[1] = text; }
+ * }
+ *
+ * {@see Content.addType}
+ */
 class JSONContent {
     constructor(json) {
         this.json = json;
     }
+    /**
+     * Returns the type of this content.
+     */
     getType() { return this.json[0]; }
+    /**
+     * Returns this content as json array.
+     */
     toJSON() { return this.json; }
+    /**
+     * Creates a copy of this content.
+     */
     copy() { return new this.constructor(JSON.parse(JSON.stringify(this.json))); }
+    /**
+     * Encodes the content with key for each user in groupUsers except user.
+     */
     encodeWithKey(user, groupUsers, keytype, privateK, publicK = null) {
         return __awaiter(this, void 0, void 0, function* () {
             groupUsers.sort();
@@ -834,6 +1166,9 @@ class JSONContent {
             return new imports_1.Encoded(encoded);
         });
     }
+    /**
+     * Encodes this content for each user in groupUsers except user with keychain.
+     */
     encodeWithKeychain(user, groupUsers, keychainKeyType) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this instanceof imports_1.Encoded)
@@ -862,9 +1197,15 @@ class JSONContent {
             return new imports_1.Encoded(encoded);
         });
     }
+    /**
+     * Creates a SignableMessage to be signed with user and posted in conversation with this content.
+     */
     forUser(user, conversation) {
         return imports_1.SignableMessage.create(user, conversation, this.json);
     }
+    /**
+     * Returns true if this content and content are equal.
+     */
     isEqual(content) {
         var js0 = this.json;
         var js1 = content.json;
@@ -1567,19 +1908,58 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DisplayableFlag = exports.DisplayableEmote = exports.DisplayableMessage = void 0;
 const imports_1 = require("./content/imports");
 const utils_1 = require("./utils");
+/**
+  * DisplayableMessage wraps a SignableMessage and prepares it for displaying.
+  *
+  * Prior to displaying a message, signature verification, resolving of
+  * references, handling edited content, edit history, emote reactions,
+  * flags can take place. This class contains the results of these operations
+  * suitable for displaying.
+  *
+  */
 class DisplayableMessage {
+    /**
+      * Creates a new instance of DisplayableMessage
+      *
+      * @param message signable message
+      */
     constructor(message) {
+        /**
+          * Reference of DisplayableMessage this message is referencing. For example
+          * a message with Content.Quote can reference a message to quote.
+          */
         this.reference = null;
+        /**
+          * The edit history of this message or null.
+          */
         this.edits = null;
+        /**
+          * List of emote responses.
+          */
         this.emotes = null;
+        /**
+          * List of flags.
+          */
         this.flags = null;
+        /**
+          * Sum of flag weights.
+          */
         this.flagsNum = 0;
+        /**
+          * Contains edited content
+          */
         this.editContent = null;
+        /**
+          * True if this message content is instanceof Edit
+          */
         this.isEdit = false;
         this.message = message;
         this.content = undefined;
         this.verified = null;
     }
+    /**
+      * Initializes the DisplayableMessage
+      */
     init() {
         this.usernames = this.message.getGroupUsernames();
         var content = this.content;
@@ -1599,6 +1979,11 @@ class DisplayableMessage {
             }
         }
     }
+    /**
+      * Returns the index of emote response of -1 if there is none.
+      *
+      * @param emote
+      */
     getEmoteIndex(emote) {
         if (this.emotes === null)
             return -1;
@@ -1607,6 +1992,11 @@ class DisplayableMessage {
                 return i;
         return -1;
     }
+    /**
+      * Adds emote response.
+      *
+      * @param msg DisplayableMessage with content Content.Emote
+      */
     emote(msg) {
         var content = msg.content;
         if (!(content instanceof imports_1.Emote))
@@ -1626,6 +2016,11 @@ class DisplayableMessage {
         obj.add(msg);
         this.emotes.sort((a, b) => b.timestamp - a.timestamp);
     }
+    /**
+      * Adds flag response.
+      *
+      * @param msg DisplayableMessage with content Content.Flag
+      */
     flag(msg) {
         return __awaiter(this, void 0, void 0, function* () {
             var content = msg.content;
@@ -1644,19 +2039,34 @@ class DisplayableMessage {
                 this.flagsNum++;
         });
     }
+    /**
+      * Returns true if this content is inside a thread.
+      */
     isThread() {
         return this.getEditedContent() instanceof imports_1.Thread;
     }
+    /**
+      * Returns thread name if this content is inside a thread or null otherwise.
+      */
     getThreadName() {
         var content = this.getEditedContent();
         return (content instanceof imports_1.Thread) ? content.getName() : null;
     }
+    /**
+      * Returns true if this content of type Content.Emote.
+      */
     isEmote() {
         return this.content instanceof imports_1.Emote;
     }
+    /**
+      * Returns true if this content is of type Flag.
+      */
     isFlag() {
         return this.content instanceof imports_1.Flag;
     }
+    /**
+      * Adds an edit to this message.
+      */
     edit(msg) {
         if (this.edits === null)
             this.edits = [msg];
@@ -1667,13 +2077,33 @@ class DisplayableMessage {
             this.edits.sort((a, b) => b.getTimestamp() - a.getTimestamp());
         }
     }
+    /**
+      * Returns true if this message contains an unresolved reference.
+      */
     isUnresolvedReference() {
         return this.reference == null && this.isEmote() || this.isFlag() || this.content instanceof imports_1.Edit;
     }
+    /**
+      * Returns true if the message's conversation contains username.
+      *
+      * @param user
+      */
     hasUser(user) { return this.usernames.indexOf(user) !== -1; }
+    /**
+      * Returns the user associated with message signature.
+      */
     getUser() { return this.message.user; }
+    /**
+      * Returns the conversation.
+      */
     getConversation() { return this.message.conversation; }
+    /**
+      * Returns the timestamp.
+      */
     getTimestamp() { return this.message.timestamp; }
+    /**
+      * Returns the community name this convesation is in or null if it is not a community message.
+      */
     getCommunity() {
         var conversation = this.getConversation();
         if (conversation && conversation.startsWith("hive-")) {
@@ -1682,21 +2112,37 @@ class DisplayableMessage {
         }
         return null;
     }
+    /**
+      * Returns true if the content type is Content.Encode.
+      *
+      *
+      */
     isEncoded() {
         return this.content instanceof imports_1.Encoded;
     }
+    /**
+      * Returns the edited content.
+      */
     getEditedContent() {
         var edits = this.edits;
         if (edits !== null && edits.length > 0)
             return edits[0].editContent;
         return this.content;
     }
+    /**
+      * Returns the content to display. If there are edits, the newest
+      * edit of this content is returned. If the content is inside a thread
+      * the thread content is returned.
+      */
     getContent() {
         var content = this.getEditedContent();
         if (content instanceof imports_1.Thread)
             return content.getContent();
         return content;
     }
+    /**
+      * Returns true if this message is verified, false otherwise.
+      */
     isVerified() {
         var edits = this.edits;
         var value = null;
@@ -1710,13 +2156,33 @@ class DisplayableMessage {
     }
 }
 exports.DisplayableMessage = DisplayableMessage;
+/**
+  * DisplayableEmote represents a list of emote responses to a message.
+  */
 class DisplayableEmote {
+    /**
+      * Creates a new DisplayableEmote
+      *
+      * @param emote Unicode emote or link to emote image
+      * @timestamp message timestamp
+      */
     constructor(emote, timestamp) {
+        /**
+          * List of users who responded with this emote.
+          */
         this.users = [];
+        /**
+          * List of DisplayableMessage containing Emote content responses.
+          */
         this.messages = [];
         this.emote = emote;
         this.timestamp = timestamp;
     }
+    /**
+      * Add DisplayableMessage with Emote content type.
+      *
+      * @param msg DisplayableMessage with Emote content.
+      */
     add(msg) {
         var user = msg.getUser();
         if (this.users.indexOf(user) === -1)
@@ -1726,7 +2192,18 @@ class DisplayableEmote {
     }
 }
 exports.DisplayableEmote = DisplayableEmote;
+/**
+  * DisplayableFlag represents a list of flag responses to a message.
+  *
+  */
 class DisplayableFlag {
+    /**
+      * Creates a new DisplayableFlag message.
+      *
+      * @param user user who has posted a Flag message
+      * @param reason reason for flagging a message
+      * @param message DisplayableMessage with Flag content
+      */
     constructor(user, reason, message) {
         this.user = user;
         this.reason = reason;
@@ -4677,10 +5154,12 @@ var __asyncGenerator = (this && this.__asyncGenerator) || function (thisArg, _ar
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StreamDataCache = void 0;
+const utils_1 = require("./utils");
 class StreamDataCache {
     constructor(dhiveClient, modeType = 0) {
         this.client = null;
         this.isRunning = false;
+        this.stmsgCallback = null;
         this.customJSONCallbacks = {};
         this.modeType = 0;
         this.client = dhiveClient;
@@ -4694,6 +5173,7 @@ class StreamDataCache {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 this.isRunning = true;
+                var stmsgCallback;
                 try {
                     for (var _d = true, _e = __asyncValues(this.getOps()), _f; _f = yield _e.next(), _a = _f.done, !_a;) {
                         _c = _f.value;
@@ -4704,7 +5184,30 @@ class StreamDataCache {
                                 return;
                             var op = tx.op;
                             var opName = op[0];
-                            if (opName === "custom_json") {
+                            if (opName === "comment_options" && (stmsgCallback = this.stmsgCallback)) {
+                                var options = op[1];
+                                if (options.allow_votes && options.extensions.length > 0
+                                    && options.permlink.startsWith("stmsg--")) {
+                                    for (var extention of options.extensions) {
+                                        if (extention[0] === 'comment_payout_beneficiaries') {
+                                            var beneficiaries = extention[1];
+                                            if (beneficiaries.beneficiaries && beneficiaries.beneficiaries.length === 1) {
+                                                var beneficiary = beneficiaries.beneficiaries[0];
+                                                if (beneficiary.weight === 10000) {
+                                                    var parts = utils_1.Utils.decodeUpvotePermlink(options.permlink);
+                                                    if (parts !== null) {
+                                                        parts.push(options.author);
+                                                        parts.push(options.permlink);
+                                                        parts.push(new Date(tx.timestamp + "Z").getTime());
+                                                        stmsgCallback(parts);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else if (opName === "custom_json") {
                                 var customJSON = op[1];
                                 var id = customJSON.id;
                                 var fnJSON = this.customJSONCallbacks[id];
@@ -4770,7 +5273,7 @@ class StreamDataCache {
 }
 exports.StreamDataCache = StreamDataCache;
 
-},{}],31:[function(require,module,exports){
+},{"./utils":31}],31:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -4798,16 +5301,19 @@ var isNode = false;
 var readPreferencesFn = null;
 var lastRandomPublicKey = "";
 var uniqueId = 0;
+/**
+  * Utilities class.
+  */
 class Utils {
-    /*
-        Netname is an unique identifier of the network shared between
-        all nodes to determine whether they belong to each other.
-        Format: name[publickey,account1,account2]
-        where name is the name of the network
-        the part in [] is optional and provides a comma separated list of
-        either public keys or accountnames with the ability to validate
-        guest account creation requests.
-    */
+    /**
+      *  Netname is an unique identifier of the network shared between
+      *  all nodes to determine whether they belong to each other.
+      *  Format: name[publickey,account1,account2]
+      *  where name is the name of the network
+      *  the part in [] is optional and provides a comma separated list of
+      *  either public keys or accountnames with the ability to validate
+      *  guest account creation requests.
+      */
     static setNetworkname(name) {
         netname = name;
         var from = name.indexOf('[');
@@ -4816,18 +5322,39 @@ class Utils {
         var to = name.lastIndexOf(']');
         guestAccountValidators = name.substring(from + 1, to).trim().split(/[, ]+/);
     }
+    /**
+      * Returns the network name.
+      */
     static getNetworkname() { return netname; }
+    /**
+      * Returns list of guest account validators.
+      */
     static getGuestAccountValidators() { return guestAccountValidators; }
+    /**
+      * Returns version number.
+      */
     static getVersion() { return 10; }
+    /**
+      * Returns an instance of client set with Utils.setClient.
+      */
     static getClient() {
         return client;
     }
+    /**
+      * Stores an instance of client.
+      */
     static setClient(_client) {
         client = _client;
     }
+    /**
+      * Stores reference to dhive library.
+      */
     static setDhive(dhive0) {
         _dhive = dhive0;
     }
+    /**
+      * Returns an instance of dhive library.
+      */
     static dhive() {
         if (_dhive === null) {
             var dhive0 = dhive ? dhive : null;
@@ -4836,6 +5363,9 @@ class Utils {
         }
         return _dhive;
     }
+    /**
+      * Returns an instance of dhive client.
+      */
     static getDhiveClient() {
         if (dhiveclient === null) {
             var dhiveClient = Utils.dhive().Client;
@@ -4843,6 +5373,15 @@ class Utils {
         }
         return dhiveclient;
     }
+    /**
+      * Stores dhive client instance.
+      */
+    static setDhiveClient(dhiveClient) {
+        dhiveclient = dhiveClient;
+    }
+    /**
+      * Converts reptutation number.
+      */
     static reputation(value) {
         if (value == null || value === 0)
             return 25;
@@ -4852,10 +5391,19 @@ class Utils {
         v = neg ? -v : v;
         return (v * 9 + 25).toFixed(2);
     }
+    /**
+      * Returns an dhive Buffer constructor.
+      */
     static Buffer() { return Utils.dhive().NETWORK_ID.constructor; }
+    /**
+      * Set a function to generate secure random numbers.
+      */
     static setSecureRandom(fn) {
         secureRandomFn = fn;
     }
+    /**
+      * Generates random bytes of given length.
+      */
     static randomBytes(len) {
         var bytes = null;
         if (window != null && window.crypto != null && window.crypto.getRandomValues != null) {
@@ -4865,9 +5413,15 @@ class Utils {
             bytes = secureRandomFn(len);
         return bytes;
     }
+    /**
+      * Creates random password.
+      */
     static createRandomPassword() {
         return Utils.dhive().cryptoUtils.sha256(Utils.randomBytes(32)).toString();
     }
+    /**
+      * Creates random public key.
+      */
     static randomPublicKey(extraEntropy = "") {
         var seed = extraEntropy + new Date().getTime() + lastRandomPublicKey + Math.random();
         var pi = Utils.dhive().PrivateKey.fromSeed(seed);
@@ -4875,10 +5429,16 @@ class Utils {
         lastRandomPublicKey = key;
         return key;
     }
+    /**
+      * Encodes text with private key and public key.
+      */
     static encodeTextWithKey(text, privateK, publicK) {
         return Utils.dhive().Memo.encode(privateK, publicK, '#' + text);
         //return hive.memo.encode(privateK.toString(), publicK.toString(), '#'+text);
     }
+    /**
+      * Decodes text with private key.
+      */
     static decodeTextWithKey(text, privateK) {
         var decoded = Utils.dhive().Memo.decode(privateK, text);
         //var decoded = hive.memo.decode(privateK.toString(), text);
@@ -4886,8 +5446,13 @@ class Utils {
             decoded = decoded.substring(1);
         return decoded;
     }
+    /**
+      * Returns a unique id.
+      */
     static nextId() { return uniqueId++; }
-    /* Queue keychain requests. */
+    /**
+      * Queues keychain request.
+      */
     static queueKeychain(fn) {
         return __awaiter(this, void 0, void 0, function* () {
             var keychain = window.hive_keychain;
@@ -4924,23 +5489,40 @@ class Utils {
             return result;
         });
     }
-    static setDhiveClient(dhiveClient) {
-        dhiveclient = dhiveClient;
-    }
+    /**
+     * Can set to true if running on nodejs.
+     * Used by backend.
+     */
     static setNode(_isNode) {
         isNode = _isNode;
     }
+    /**
+     * Set function to read user preferences.
+     * Used by backend.
+     */
     static setReadPreferenceFunction(fn) {
         readPreferencesFn = fn;
     }
+    /**
+     * Copies a javascript object by converting it to and from JSON.
+     */
     static copy(object) {
         return JSON.parse(JSON.stringify(object));
     }
+    /**
+     * Sets local time offset.
+     */
     static setLocalTimeOffset(offset) {
         Utils.localTimeOffset = offset;
         return offset;
     }
+    /**
+     * Returns utc time synced with backend by adding localTimeOffset to local time.
+     */
     static utcTime() { return Utils.localTimeOffset + (new Date().getTime()); }
+    /**
+     * Fetches utc time from messaging backend.
+     */
     static utcNodeTime() {
         return __awaiter(this, void 0, void 0, function* () {
             var now = new Date().getTime();
@@ -4953,6 +5535,9 @@ class Utils {
             return null;
         });
     }
+    /**
+      * Fetches utc time from hive node.
+      */
     static utcTimeHive() {
         return __awaiter(this, void 0, void 0, function* () {
             var now = new Date().getTime();
@@ -4961,6 +5546,15 @@ class Utils {
             return new Date(props.time + "Z").getTime();
         });
     }
+    /**
+      * Synchronizes time, calculates localTimeOffset.
+      *
+      * This function help to deal with the situation when
+      * user local time is different from backend time.
+      *
+      * After calling this function, one can call Utils.utcTime()
+      * to obtain utc time synchronized with the backend.
+      */
     static synchronizeTime(minOffset = 3000) {
         return __awaiter(this, void 0, void 0, function* () {
             var start = new Date().getTime();
@@ -4997,6 +5591,9 @@ class Utils {
             return Utils.setLocalTimeOffset(roundTripNode);
         });
     }
+    /**
+      * Synchronized time with hive.
+      */
     static synchronizeTimeWithHive(minOffset = 3000) {
         return __awaiter(this, void 0, void 0, function* () {
             var start = new Date().getTime();
@@ -5007,10 +5604,16 @@ class Utils {
             return offset;
         });
     }
+    /**
+      * Returns conversation path, eg.: "hive-XXXXXXX/N" -> "N".
+      */
     static getConversationPath(conversation) {
         var i = conversation.indexOf('/');
         return i === -1 ? '' : conversation.substring(i + 1);
     }
+    /**
+      * Returns group name of conversation if any or conversation.
+      */
     static getGroupName(conversation) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!conversation.startsWith('#'))
@@ -5023,11 +5626,14 @@ class Utils {
             return (group !== null && group.name != null) ? group.name : conversation;
         });
     }
+    /**
+      * Returns public key of conversation if any or null.
+      */
     static getGroupKey(conversation) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (!conversation.startsWith('#'))
-                    return conversation;
+                    return null;
                 var username = Utils.getConversationUsername(conversation);
                 var path = Utils.getConversationPath(conversation);
                 var pref = yield Utils.getAccountPreferences(username);
@@ -5041,6 +5647,9 @@ class Utils {
             return null;
         });
     }
+    /**
+      * Returns creation timestamp of group conversation if any or 0.
+      */
     static getGroupTimestamp(conversation) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -5059,6 +5668,9 @@ class Utils {
             return 0;
         });
     }
+    /**
+      * Returns role of user in community of null.
+      */
     static getRole(community, user) {
         return __awaiter(this, void 0, void 0, function* () {
             var data = yield community_1.Community.load(community);
@@ -5067,6 +5679,9 @@ class Utils {
             return data.getRole(user);
         });
     }
+    /**
+      * Returns titles of user in community of null.
+      */
     static getTitles(community, user) {
         return __awaiter(this, void 0, void 0, function* () {
             var data = yield community_1.Community.load(community);
@@ -5075,6 +5690,9 @@ class Utils {
             return data.getTitles(user);
         });
     }
+    /**
+      * Returns flag weight of user in community or null.
+      */
     static getFlagNum(community, user) {
         return __awaiter(this, void 0, void 0, function* () {
             var data = yield community_1.Community.load(community);
@@ -5083,6 +5701,9 @@ class Utils {
             return data.getFlagNum(user);
         });
     }
+    /**
+      * Returns true if user can send a message with mentions to a conversation.
+      */
     static verifyPermissions(user, mentions, conversation) {
         return __awaiter(this, void 0, void 0, function* () {
             if (user == null || conversation == null)
@@ -5136,23 +5757,47 @@ class Utils {
             return true;
         });
     }
+    /**
+      * Returns conversation username, eg: "hive-XXXXXXX/N" -> "hive-XXXXXXX"
+      */
     static getConversationUsername(conversation) {
         var i = conversation.indexOf('/');
         return conversation.substring(conversation.startsWith('#') ? 1 : 0, i === -1 ? conversation.length : i);
     }
+    /**
+      * Returns true if conversation represents a joinable group, eg: "#userA/0" -> true.
+      */
     static isJoinableGroupConversation(conversation) {
         if (conversation === '' || conversation[0] != '#')
             return false;
         var i = conversation.indexOf('/');
         return i !== -1;
     }
+    /**
+      * Returns group usernames, eg: "userA|userB" -> ["userA", "userB"].
+      */
     static getGroupUsernames(conversation) { return conversation.split('|'); }
+    /**
+      * Returns mention usernames, eg: "hive-1111111/0&userA&userB" -> ["userA", "userB"].
+      */
     static getMentionUsernames(conversation) {
         return (conversation.length > 0 && conversation[0] === '&') ? conversation.substring(1).split('&') : [];
     }
+    /**
+      * Returns true if conversation is a community conversation, eg: "hive-XXXXXXX/N" -> true.
+      */
     static isCommunityConversation(conversation) { return conversation.startsWith('hive-') && conversation.indexOf('/') !== -1; }
+    /**
+      * Returns true if conversation is a group conversation, eg: "userA|userB" -> true.
+      */
     static isGroupConversation(conversation) { return conversation.indexOf('|') !== -1; }
+    /**
+      * Returns true if conversation is a mentions conversation, eg: "&userA" -> true.
+      */
     static isMentionConversation(conversation) { return conversation.startsWith('&'); }
+    /**
+      * Returns true user can direct message all users in array.
+      */
     static canDirectMessage(user, users) {
         return __awaiter(this, void 0, void 0, function* () {
             //TODO
@@ -5173,6 +5818,11 @@ class Utils {
             return true;
         });
     }
+    /**
+      * Returns cached account preferences.
+      *
+      * If isNode is true, returns result of readPreferencesFn.
+      */
     static getAccountPreferences(user) {
         return __awaiter(this, void 0, void 0, function* () {
             if (isNode) {
@@ -5211,6 +5861,10 @@ class Utils {
             }
         });
     }
+    /**
+      * Preloads account data for users in array.
+      * If reload is true, reloads cached data.
+      */
     static preloadAccountData(users, reload = false) {
         return __awaiter(this, void 0, void 0, function* () {
             var store = accountDataCache;
@@ -5240,6 +5894,9 @@ class Utils {
                 });
         });
     }
+    /**
+      * Returns the preferred public key to use for encoding direct message.
+      */
     static getPreferredKey(_user) {
         return __awaiter(this, void 0, void 0, function* () {
             var data = yield Utils.getAccountData(_user);
@@ -5257,6 +5914,9 @@ class Utils {
             return usePostingKey ? data.posting.key_auths[0][0] : data.memo_key;
         });
     }
+    /**
+      * Returns account data for user or guest.
+      */
     static getAccountData(_user) {
         return __awaiter(this, void 0, void 0, function* () {
             if (Utils.isGuest(_user)) {
@@ -5281,6 +5941,9 @@ class Utils {
             return yield Utils.getHAccountData(_user);
         });
     }
+    /**
+      * Returns hive account data.
+      */
     static getHAccountData(_user) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield accountDataCache.cacheLogic(_user, (user) => {
@@ -5304,9 +5967,15 @@ class Utils {
             }, 100);
         });
     }
+    /**
+      * Creates a promise that fulfills after delay.
+      */
     static delay(ms) {
         return __awaiter(this, void 0, void 0, function* () { return new Promise(r => { setTimeout(r, ms); }); });
     }
+    /**
+      * Retrieves all results of dhive.call(api, method, params).
+      */
     static retrieveAll(api, method, params, delayMs = 500) {
         return __awaiter(this, void 0, void 0, function* () {
             var array = [];
@@ -5336,6 +6005,9 @@ class Utils {
             }
         });
     }
+    /**
+      * Returns cached community data from backend node or hive.
+      */
     static getCommunityData(user, loadFromNode = true) {
         return __awaiter(this, void 0, void 0, function* () {
             if (isNode || !loadFromNode) {
@@ -5372,6 +6044,9 @@ class Utils {
             }
         });
     }
+    /**
+      * Returns group info.
+      */
     static findGroupInfo(conversation) {
         return __awaiter(this, void 0, void 0, function* () {
             var groupConversation = Utils.parseGroupConversation(conversation);
@@ -5383,6 +6058,9 @@ class Utils {
             return prefs.getGroup(groupConversation[2]);
         });
     }
+    /**
+      * Parses group conversation, eg: "#userA/0" -> ["#", "userA", 0]
+      */
     static parseGroupConversation(conversation) {
         var array = Utils.parseConversation(conversation);
         if (array.length !== 3 || array[0] !== '#' || !Utils.isWholeNumber(array[2]))
@@ -5395,6 +6073,9 @@ class Utils {
         }
         return array;
     }
+    /**
+      * Parses conversation, eg: "hive-1111111/0" -> ["hive-1111111", "0"].
+      */
     static parseConversation(conversation) {
         var result = [];
         if (conversation.startsWith('#')) {
@@ -5410,18 +6091,87 @@ class Utils {
         }
         return result;
     }
+    /**
+      * Encodes upvote permlink.
+      */
+    static encodeUpvotePermlink(user, conversation, timestamp) {
+        var str = "stmsg--";
+        var parts = [user, conversation];
+        for (var part of parts) {
+            for (var j = 0; j < part.length; j++) {
+                var ch = part[j];
+                if ((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'z'))
+                    str += ch;
+                else {
+                    str += "-";
+                    var char0 = ch.charCodeAt(0);
+                    if (char0 < 16)
+                        str += "0";
+                    str += char0.toString(16);
+                }
+            }
+            str += "--";
+        }
+        return str + timestamp;
+    }
+    /**
+      * Decodes upvote permlink.
+      */
+    static decodeUpvotePermlink(permlink) {
+        try {
+            if (!permlink.startsWith("stmsg--"))
+                return null;
+            var parts = permlink.substring(7).split("--");
+            if (parts.length !== 3)
+                return null;
+            for (var i = 0; i < parts.length; i++) {
+                var part = parts[i];
+                var p = "";
+                for (var j = 0; j < part.length; j++) {
+                    var ch = part[j];
+                    if (ch === '-') {
+                        if (j + 2 >= part.length)
+                            return null;
+                        p += String.fromCharCode(parseInt(part.substring(j + 1, j + 3), 16));
+                        j += 2;
+                    }
+                    else
+                        p += ch;
+                }
+                parts[i] = p;
+            }
+            parts[2] = Number(parts[2]);
+            return parts;
+        }
+        catch (e) {
+            console.log(e);
+        }
+        return null;
+    }
+    /**
+      * Returns true if text is whole number.
+      */
     static isWholeNumber(text) {
         return /^\d+$/.test(text);
     }
+    /**
+      * Returns true is user is guest, eg: "userA@1" -> true.
+      */
     static isGuest(user) {
         return user.indexOf(Utils.GUEST_CHAR) !== -1;
     }
+    /**
+      * Parses guest username, eg: "userA@1" -> ["userA", "1"].
+      */
     static parseGuest(guestName) {
         var i = guestName.indexOf(Utils.GUEST_CHAR);
         if (i === -1)
             return [guestName];
         return [guestName.substring(0, i), guestName.substring(i + 1)];
     }
+    /**
+      * Returns true if guestName is valid.
+      */
     static isValidGuestName(guestName) {
         if (guestName.length > 20)
             return false;
@@ -5434,6 +6184,9 @@ class Utils {
             return false;
         return /^[A-Za-z0-9-._]*$/.test(username);
     }
+    /**
+      * Xors array a and array b into array result.
+      */
     static xorArray(a, b, result = null) {
         var length = Math.min(a.length, b.length);
         if (result === null)
@@ -5442,6 +6195,9 @@ class Utils {
             result[i] = a[i] ^ b[i];
         return result;
     }
+    /**
+      * Returns true if arrays a equals array b.
+      */
     static arrayEquals(a, b) {
         if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length)
             return false;
@@ -5450,11 +6206,24 @@ class Utils {
                 return false;
         return true;
     }
+    /**
+      * Creates new instance of AccountDataCache.
+      */
     static newCache() {
         return new AccountDataCache();
     }
+    /**
+      * Returns instance of accountDataCache used to cache account data.
+      */
     static getAccountDataCache() { return accountDataCache; }
+    /**
+      * Returns instance of communityDataCache used to cache community data.
+      */
     static getCommunityDataCache() { return communityDataCache; }
+    /**
+      * Returns stream data cache.
+      * Used by backend.
+      */
     static getStreamDataCache() {
         if (streamDataCache === null)
             streamDataCache = new default_stream_data_cache_1.DefaultStreamDataCache();
@@ -5464,6 +6233,9 @@ class Utils {
 exports.Utils = Utils;
 Utils.localTimeOffset = 0;
 Utils.GUEST_CHAR = '@';
+/**
+  * Utility cache that stores transient entries for set amount of time.
+  */
 class TransientCache {
     constructor(duration, binDuration, newBinInstanceFn) {
         this.items = {};
@@ -5504,14 +6276,17 @@ class TransientCache {
 }
 exports.TransientCache = TransientCache;
 /*
-TODO a simple cache for now
-will have to discuss and redesign later
-server will most likely prefer to have up to date data
-it could do that by streaming blocks from hive
+    TODO a simple cache for now
+    will have to discuss and redesign later
+    server will most likely prefer to have up to date data
+    it could do that by streaming blocks from hive
 
-on the other hand client might prefer to cache
-account and community data for X time
+    on the other hand client might prefer to cache
+    account and community data for X time
 */
+/**
+  * AccountDataCache used to cache account and community data.
+  */
 class AccountDataCache {
     constructor() {
         this.data = {};

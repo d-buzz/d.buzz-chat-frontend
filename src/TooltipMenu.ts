@@ -1,3 +1,6 @@
+import Upvote from './components/Upvote.vue'
+import { createVNode, render } from 'vue'
+
 export function initTooltipMenu() {
   window.onclickoutside = new stlib.EventQueue();
   window.ondropfile = new stlib.EventQueue();
@@ -112,8 +115,31 @@ export function initTooltipMenu() {
     el.setAttribute('style','left:'+x+'px;'+'top:'+y+'px;');
     window.tooltip(null);
   };
-  window.upvotemenu = function(element0, options) {
-    window.menu(element0, options, null, true);
+  const upvoteData = { upvoteDiv: null, upvoteDivVNode: null};
+  window.upvotemenuFn = null;
+  window.upvotemenu = function(event, fn) {
+    if(fn === null) { 
+        var element = event;
+        if(element.target !== undefined) element = element.target;
+        var el = document.getElementById("menu");  
+        if(el == null) return;
+        if(!el.hidden && el.currentElement === element) {
+            el.hidden = true;   
+        }
+        window.upvotemenuFn = null;
+        return;
+    }
+    if(upvoteData.upvoteDiv === null) {
+        upvoteData.upvoteDiv = document.createElement("div");
+        upvoteData.upvoteDivVNode = createVNode(Upvote, {});
+        //upvoteDivVNode.appContext = { ...appContext }
+        render(upvoteData.upvoteDivVNode, upvoteData.upvoteDiv);
+    }
+    window.upvotemenuFn = (w)=>{ 
+        window.upvotemenu(event, null);     
+        fn(w);
+    };
+    window.menu(event, upvoteData.upvoteDiv, null, true);
   };
   window.onclickoutside.set("main.ts", ()=>{ 
     var el = document.getElementById("menu");  

@@ -1,18 +1,21 @@
 <template>
   <div class="appbg2 appfg2 p-2">
-    <div>
+    <div> {{message}}
       <button class="btn whitespace-pre" @click="action">Upvote</button>
       <div class="font-bold float-right">
-        <div>{{(voteEstimate*value/100).toFixed(3)}}</div>
+        <div>{{(voteEstimate*value/10000).toFixed(3)}}</div>
       </div>
     </div>
     <div class="flex flex-row gap-x-2">
-      <input class="inline-block" type="range" min="1" v-model="value" max="100" step="1">
+      <input class="inline-block" type="range" min="10" v-model="value" max="10000" step="10">
       <span class="font-bold fg70 percent">{{formatValue(value)}}</span>
     </div>
   </div>
 </template>
 <script setup>
+const props = defineProps({
+  message: {type: Object, default: null}
+});
 function toDouble(nu,defa=0) {
 	if(nu === undefined) return defa;
 	if(typeof nu === 'number') return nu;
@@ -59,18 +62,37 @@ function init() {
     var value = window.localStorage.getItem("#upvote");
     if(value) {
       value = Number(value);
-      if(value >= 1 && value <= 100) return value;
+      if(value >= 1 && value <= 10000) return value;
     }
   }
   catch(e) { console.log(e); }
-  return 100;
+  return 10000;
 }
 const voteEstimate = ref(0);
 const value = ref(init());
 function formatValue(v) {
-  if(v < 10) return "  "+v+"%";
-  if(v < 100) return " "+v+"%";
-  return v+"%";
+  v /= 100;
+  if(v < 10) return "  "+v.toFixed(1)+"%";
+  if(v < 100) return " "+v.toFixed(1)+"%";
+  return v.toFixed(1)+"%";
+}
+async function loadComments() {
+  /*var client = stlib.Utils.getDhiveClient();
+  var author = "";
+  var permlink = "";
+  var result = await client.call("bridge", "get_discussion", {author, permlink});
+  for(var link in result) {
+    var obj = result[link];
+    var permlink = obj.permlink;
+    var beneficiaries = obj.beneficiaries;
+    if(permlink.startsWith("stmsg") && beneficiaries.length === 1 && beneficiaries[0].weight === 100) {
+      var messageAccount = beneficiaries[0].account;
+      var parts = stlib.Utils.decodeUpvotePermlink(permlink);
+      if(parts !== null && parts[1] === messageAccount) {
+        
+      }
+    }
+  }*/
 }
 function action() {
   var v = value.value;
@@ -78,6 +100,9 @@ function action() {
     window.localStorage.setItem("#upvote", ""+v);
   }
   catch(e) { console.log(e); }
+
+  var fn = window.upvotemenuFn;
+  if(fn) fn(v);
 }
 init();
 async function initVoteValue() {
