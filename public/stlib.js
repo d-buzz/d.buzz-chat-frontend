@@ -1721,10 +1721,52 @@ Data is loaded on request and real-time updates are handled by block streaming.
 class DefaultStreamDataCache extends stream_data_cache_1.StreamDataCache {
     constructor() {
         super(utils_1.Utils.getDhiveClient());
+        this.onNewUpvotePost = null;
+        this.onNewUpvote = null;
         this.onUserJoin = null;
         this.onUpdateUser = null;
         this.onUpdateCommunity = null;
         var _this = this;
+        this.forOp("comment_options", (t) => {
+            var onNewUpvotePost = _this.onNewUpvotePost;
+            if (!onNewUpvotePost)
+                return;
+            var options = t.op[1];
+            if (options.allow_votes && options.extensions.length > 0
+                && options.permlink.startsWith("stmsg--")) {
+                for (var extention of options.extensions) {
+                    if (extention[0] === 'comment_payout_beneficiaries') {
+                        var beneficiaries = extention[1];
+                        if (beneficiaries.beneficiaries && beneficiaries.beneficiaries.length === 1) {
+                            var beneficiary = beneficiaries.beneficiaries[0];
+                            if (beneficiary.weight === 10000) {
+                                var parts = utils_1.Utils.decodeUpvotePermlink(options.permlink);
+                                if (parts !== null) {
+                                    parts.push(options.author);
+                                    parts.push(options.permlink);
+                                    parts.push(new Date(t.timestamp + "Z").getTime());
+                                    onNewUpvotePost(parts);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        this.forOp("vote", (t) => {
+            var onNewUpvote = _this.onNewUpvote;
+            if (!onNewUpvote)
+                return;
+            var options = t.op[1];
+            if (options.permlink.startsWith("stmsg--")) {
+                var parts = utils_1.Utils.decodeUpvotePermlink(options.permlink);
+                if (parts !== null) {
+                    parts.push(options.author);
+                    parts.push(options.permlink);
+                    onNewUpvote(parts);
+                }
+            }
+        });
         this.forCustomJSON("community", (user, json, posting) => __awaiter(this, void 0, void 0, function* () {
             console.log("community", user, json, posting);
             var type = json[0];
@@ -3443,6 +3485,87 @@ class MessageManager {
             return result;
         });
     }
+    findUpvote(array, permlink) {
+        for (var i = array.length - 1; i >= 0; i--)
+            if (array[i][4] === permlink)
+                return array[i];
+        return null;
+    }
+    upvote(msg, weight = 10000, content = null) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var user = this.user;
+            if (user === null || utils_1.Utils.isGuest(msg.getUser()) || msg.getUser() === user)
+                return false;
+            var conversation = msg.getConversation();
+            var permlink = utils_1.Utils.encodeUpvotePermlink(msg.getUser(), conversation, msg.getTimestamp());
+            //fetch upvotes  
+            var client = this.getClient();
+            var result = yield client.readUpvotes([conversation]);
+            if (result.isSuccess()) {
+                var map = result.getResult();
+                var array = map[conversation];
+                var upvote;
+                var ops = [];
+                var author;
+                if (array && (upvote = this.findUpvote(array, permlink))) {
+                    author = upvote[3];
+                    //post already exists, check if already upvoted
+                    var votes = yield utils_1.Utils.getDhiveClient().database
+                        .call('get_active_votes', [author, permlink]);
+                    for (var vote in votes)
+                        if (votes[vote].voter === user)
+                            return false;
+                }
+                else {
+                    //find newest parent container post
+                    //create new upvote post
+                    if (content == null)
+                        content = msg.getContent();
+                    if (content instanceof imports_1.Thread)
+                        content = content.getContent();
+                    var body;
+                    if (content["getText"] !== undefined) {
+                        var text = content.getText();
+                        body = `${text}`;
+                    }
+                    else
+                        return false;
+                    author = user;
+                    var parentAuthor = ""; //todo
+                    var parentPermlink = "";
+                    ops.push(["comment", {
+                            parent_author: parentAuthor,
+                            parent_permlink: parentPermlink,
+                            author,
+                            permlink,
+                            title: '',
+                            body,
+                            json_metadata: "{\"tags\":[]}"
+                        }]);
+                    ops.push(["comment_options", {
+                            author,
+                            permlink: permlink,
+                            max_accepted_payout: {
+                                "amount": "1000000",
+                                "precision": 3,
+                                "nai": "@@000000013"
+                            },
+                            "percent_hbd": 5000,
+                            "allow_votes": true,
+                            "allow_curation_rewards": true,
+                            "extensions": [[0, {
+                                        "beneficiaries": [{ "account": msg.getUser(), "weight": 10000 }]
+                                    }]]
+                        }]);
+                }
+                //upvote post
+                ops.push(["vote", { voter: user, author, permlink, weight }]);
+                console.log("prepared ops: ", ops);
+            }
+            else
+                return false;
+        });
+    }
     join(room) {
         if (room == null)
             return;
@@ -5154,16 +5277,18 @@ var __asyncGenerator = (this && this.__asyncGenerator) || function (thisArg, _ar
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StreamDataCache = void 0;
-const utils_1 = require("./utils");
 class StreamDataCache {
     constructor(dhiveClient, modeType = 0) {
         this.client = null;
         this.isRunning = false;
-        this.stmsgCallback = null;
+        this.opCallbacks = {};
         this.customJSONCallbacks = {};
         this.modeType = 0;
         this.client = dhiveClient;
         this.modeType = modeType;
+    }
+    forOp(name, fn) {
+        this.opCallbacks[name] = fn;
     }
     forCustomJSON(id, fn) {
         this.customJSONCallbacks[id] = fn;
@@ -5184,30 +5309,10 @@ class StreamDataCache {
                                 return;
                             var op = tx.op;
                             var opName = op[0];
-                            if (opName === "comment_options" && (stmsgCallback = this.stmsgCallback)) {
-                                var options = op[1];
-                                if (options.allow_votes && options.extensions.length > 0
-                                    && options.permlink.startsWith("stmsg--")) {
-                                    for (var extention of options.extensions) {
-                                        if (extention[0] === 'comment_payout_beneficiaries') {
-                                            var beneficiaries = extention[1];
-                                            if (beneficiaries.beneficiaries && beneficiaries.beneficiaries.length === 1) {
-                                                var beneficiary = beneficiaries.beneficiaries[0];
-                                                if (beneficiary.weight === 10000) {
-                                                    var parts = utils_1.Utils.decodeUpvotePermlink(options.permlink);
-                                                    if (parts !== null) {
-                                                        parts.push(options.author);
-                                                        parts.push(options.permlink);
-                                                        parts.push(new Date(tx.timestamp + "Z").getTime());
-                                                        stmsgCallback(parts);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            else if (opName === "custom_json") {
+                            var fn = this.opCallbacks[opName];
+                            if (fn)
+                                fn(tx);
+                            if (opName === "custom_json") {
                                 var customJSON = op[1];
                                 var id = customJSON.id;
                                 var fnJSON = this.customJSONCallbacks[id];
@@ -5273,7 +5378,7 @@ class StreamDataCache {
 }
 exports.StreamDataCache = StreamDataCache;
 
-},{"./utils":31}],31:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -6095,6 +6200,8 @@ class Utils {
       * Encodes upvote permlink.
       */
     static encodeUpvotePermlink(user, conversation, timestamp) {
+        if (Utils.isGuest(user))
+            return null;
         var str = "stmsg--";
         var parts = [user, conversation];
         for (var part of parts) {

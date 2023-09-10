@@ -42,7 +42,7 @@
                     <small class="cursor-pointer" :class="roleColor?roleColor:''" @click="toggleUserModal(message.getUser())" ><b class="messageFontFamily">{{message.getUser()}}</b></small>
                     <span class="pr-2 float-right fg70" ref="buttons">
                         <small v-if="!displayOnly" class="messageButtons pr-3">
-                            <span v-if="account!==message.getUser()" class="oi oi-arrow-thick-top col1" @click.prevent.stop="upvoteAction()" @mouseenter="tooltip($event.target, $t('Message.Upvote.Info'))"></span>                        
+                            <span v-if="canUpvote()" class="oi oi-arrow-thick-top col1" @click.prevent.stop="upvoteAction()" @mouseenter="tooltip($event.target, $t('Message.Upvote.Info'))"></span>                        
                             <span class="oi oi-heart col0" @click="toggleAddEmoteModal" @mouseenter="tooltip($event.target, $t('Message.AddEmote.Info'))"></span>
                             <span class="oi oi-share col1" @click="quoteAction" @mouseenter="tooltip($event.target, $t('Message.Quote.Info'))"></span>
                             <span v-if="account!==message.getUser()" class="oi oi-flag col3" @click="flagAction" @mouseenter="tooltip($event.target, $t('Message.Flag.Info'))"></span>                        
@@ -161,6 +161,9 @@ function initContent() {
 function jump() {
     emit('jump', props.message.reference.message.getReference());
 }
+function canUpvote() {
+    return props.message && account !== props.message.getUser() && !stlib.Utils.isGuest(account) && !stlib.Utils.isGuest(props.message.getUser())
+}
 function hideMessage() {
     return props.message && getManager().readHiddenUsers()[props.message.getUser()] === true;
 }
@@ -266,7 +269,9 @@ function clickOnMsg(event) {
         options.push(["delete", deleteAction, "oi-heart"]);
     }
     else {
-        options.unshift(["upvote", upvoteAction, "oi-arrow-thick-top"]);
+        if(!stlib.Utils.isGuest(props.message.getUser()) &&
+            !stlib.Utils.isGuest(account))
+            options.unshift(["upvote", upvoteAction, "oi-arrow-thick-top"]);
         options.push(["hide messages from user", toggleHideMessagesModal, "oi-shield"]);
         options.push(["flag message", flagAction, "oi-flag"]);
     }
@@ -284,14 +289,9 @@ function upvoteAction(event=buttons.value) {
         var msg = props.message;
         var parts = stlib.Utils.encodeUpvotePermlink(msg.getUser(), msg.getConversation(), msg.getTimestamp()); 
         console.log("vote", w, parts);
-        //load comments X days
-        //apply upvotes to displayable message
-        //
-
-        //generate permlink
-        //find post if exists
-        //find votes if exists  
-        //create if not, set benficiary, upvote
+        console.log(msg);
+        console.log(msg.message);
+        getManager().upvote(msg.message, w, msg.getContent());
     });
 }
 function flagAction() {
