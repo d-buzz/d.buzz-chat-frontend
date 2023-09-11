@@ -10,6 +10,7 @@ class StWidget {
         this.initialized = false;
         this.enableKeychainPassthrough = true;
         this.postingKey = null;
+        this.allowedOps = ["comment", "comment_options", "vote"];
         this.allowedCustomJson = ["community", "follow"];
         this.messageListener = null;
         this.onLastRead = null;
@@ -141,6 +142,7 @@ class StWidget {
             case "requestVerifyKey":
             case "requestSignBuffer":
             case "requestEncodeMessage":
+            case "requestBroadcast":
                 if(_this.postingKey) {
                     try {
                         if(_this.dhive) _this.handleWithDhive(event, msgId, name, args)
@@ -158,9 +160,22 @@ class StWidget {
             break;
         }
     }
+    isAllowedOperation(ops) {
+        if(!Array.isArray(ops)) return false;
+        for(var op of ops) 
+            if(this.allowedOps.indexOf(op[0]) === -1) return false;
+        return true;
+    }
     handleWithKeychain(event, msgId, name, args) {
         var _this = this;
         switch(name) {
+            case "requestBroadcast":
+                if(this.isAllowedOperation(args[1]) && args[2] === 'Posting') {
+                    window.hive_keychain.requestBroadcast(args[0], args[1], 'Posting', (r)=>{
+                        event.source.postMessage([_this.messageName, msgId, JSON.stringify(r)], event.origin);
+                    });
+                }
+            break;
             case "requestCustomJson":
                 if(this.allowedCustomJson.indexOf(args[1]) !== -1 && args[2] === 'Posting') {
                     window.hive_keychain.requestCustomJson(args[0], args[1], 'Posting', args[3], args[4], (r)=>{
@@ -191,6 +206,25 @@ class StWidget {
     handleWithDhive(event, msgId, name, args) {
         var _this = this;
         switch(name) {
+            case "requestBroadcast":
+                if(this.isAllowedOperation(args[1]) && args[2] === 'Posting') {
+                     _this.getDhiveClient().broadcast
+                        .sendOperations(args[1], _this.postingKey)
+                    .then(function(result) {
+                        event.source.postMessage([_this.messageName, msgId, JSON.stringify({
+                            success: true,
+                            error: null,
+                            result: result
+                        })], event.origin);
+                    }, function(error) { 
+                        event.source.postMessage([_this.messageName, msgId, JSON.stringify({
+                            success: false,
+                            error: error,
+                            result: false
+                        })], event.origin);
+                    });
+                }
+            break;
             case "requestCustomJson":
                 if(this.allowedCustomJson.indexOf(args[1]) !== -1 && args[2] === 'Posting') {
                     _this.getDhiveClient().broadcast.json({
@@ -264,6 +298,28 @@ class StWidget {
     handleWithHivejs(event, msgId, name, args) {
         var _this = this;
         switch(name) {
+            case "requestBroadcast":
+                if(this.isAllowedOperation(args[1]) && args[2] === 'Posting') {
+                    _this.hivejs.broadcast.send({
+                      extensions: [],
+                      operations: args[1]},
+                     _this.postingKey, (err, result) => {
+                      if(error == null) {
+                            event.source.postMessage([_this.messageName, msgId, JSON.stringify({
+                                success: true,
+                                error: null,
+                                result: result
+                            })], event.origin);
+                        }
+                        else {
+                            event.source.postMessage([_this.messageName, msgId, JSON.stringify({
+                                success: false,
+                                error: error,
+                                result: false
+                            })], event.origin);
+                        }
+                    });
+            break;
             case "requestCustomJson":
                 if(this.allowedCustomJson.indexOf(args[1]) !== -1 && args[2] === 'Posting') {
                     _this.hivejs.broadcast.customJson(_this.postingKey, [], [args[0]], args[1],
