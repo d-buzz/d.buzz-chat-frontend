@@ -1,4 +1,4 @@
-//version 1.01
+//version 1.03
 class StWidget {
     static widgetNum = 0;
     static dhiveClient = null;
@@ -353,7 +353,7 @@ class StWidget {
             break;
             case "requestSignBuffer":
                 if(args[2] !== 'Posting') return;
-                var result = _this.hivejs.auth.Signature.sign(args[1], _this.postingKey).toHex();
+                var result = _this.hivejs.auth.signMessage(args[1], _this.postingKey);
                 event.source.postMessage([_this.messageName, msgId, JSON.stringify({
                     success: true,
                     error: null,

@@ -1768,7 +1768,7 @@ class DefaultStreamDataCache extends stream_data_cache_1.StreamDataCache {
             }
         });
         this.forCustomJSON("community", (user, json, posting) => __awaiter(this, void 0, void 0, function* () {
-            console.log("community", user, json, posting);
+            //console.log("community", user, json, posting);
             var type = json[0];
             switch (type) {
                 case "setRole":
@@ -3547,7 +3547,7 @@ class MessageManager {
                 return array[i];
         return null;
     }
-    upvote(msg, weight = 10000, content = null, contentText = null) {
+    upvote(msg, weight = 10000, content = null, contentText = null, parentAuthor = "peak.open.chat") {
         return __awaiter(this, void 0, void 0, function* () {
             var user = this.user;
             if (user === null || utils_1.Utils.isGuest(msg.getUser()) || msg.getUser() === user)
@@ -3615,8 +3615,12 @@ class MessageManager {
     <sup> **Continue conversation >** ${conversationLink}</sup>`;
                     }
                     author = user;
-                    var parentAuthor = ""; //todo
-                    var parentPermlink = "";
+                    var containerThread = yield utils_1.Utils.getDhiveClient().database
+                        .getDiscussions("blog", { tag: parentAuthor, limit: 1 });
+                    if (containerThread.length <= 0 || containerThread[0].author !== parentAuthor) {
+                        return false;
+                    }
+                    var parentPermlink = containerThread[0].permlink;
                     ops.push(["comment", {
                             parent_author: parentAuthor,
                             parent_permlink: parentPermlink,
