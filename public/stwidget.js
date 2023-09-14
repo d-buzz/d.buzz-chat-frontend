@@ -303,8 +303,8 @@ class StWidget {
                     _this.hivejs.broadcast.send({
                       extensions: [],
                       operations: args[1]},
-                     _this.postingKey, (err, result) => {
-                      if(error == null) {
+                     _this.postingKey, (error, result) => {
+                        if(error == null) {
                             event.source.postMessage([_this.messageName, msgId, JSON.stringify({
                                 success: true,
                                 error: null,
@@ -319,6 +319,7 @@ class StWidget {
                             })], event.origin);
                         }
                     });
+                }
             break;
             case "requestCustomJson":
                 if(this.allowedCustomJson.indexOf(args[1]) !== -1 && args[2] === 'Posting') {
