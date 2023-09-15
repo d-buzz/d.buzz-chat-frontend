@@ -3117,7 +3117,7 @@ class MessageManager {
                                                 if (conversation === _this.selectedConversation) {
                                                     _this.postCallbackEvent(null);
                                                 }
-                                            });
+                                            }, 5000);
                                             return;
                                         }
                                     }
@@ -3712,12 +3712,13 @@ class MessageManager {
                         var msgLink = this.messageToLink(msg);
                         if (msgLink)
                             conversationLink += msgLink;
-                        contentText = `<sup> [Conversation ${titleText}](${conversationLink})</sup>
-    ![](https://images.hive.blog/u/${msg.getUser()}/avatar/small) @${msg.getUser()}
+                        contentText =
+                            `<sup> [Conversation ${titleText}](${conversationLink})</sup>
+![](https://images.hive.blog/u/${msg.getUser()}/avatar/small) @${msg.getUser()}
 
-    ${contentText}
+${contentText}
 
-    <sup> **Continue conversation** ${conversationLink}</sup>`;
+<sup>**Continue conversation** ${conversationLink}</sup>`;
                     }
                     author = user;
                     var containerThread = yield utils_1.Utils.getDhiveClient().database
@@ -4587,21 +4588,23 @@ class MessageManager {
             return result;
         });
     }
-    resolveUpvotes(message, votesCallback = null) {
+    resolveUpvotes(message, votesCallback = null, delay = 0) {
         return __awaiter(this, void 0, void 0, function* () {
             var upvote = yield this.findUpvoteForMessage(message.message);
             if (upvote) {
                 var author = upvote[3];
                 var link = upvote[4];
                 message.upvotes = [];
-                var promise = utils_1.Utils.getDhiveClient().database
-                    .call('get_active_votes', [author, link]).then((votes) => {
-                    var arr = [];
-                    for (var vote in votes)
-                        arr.push(votes[vote].voter);
-                    message.upvotes = arr;
-                    if (votesCallback)
-                        votesCallback();
+                var promise = utils_1.Utils.delay(delay).then(() => {
+                    return utils_1.Utils.getDhiveClient().database
+                        .call('get_active_votes', [author, link]).then((votes) => {
+                        var arr = [];
+                        for (var vote in votes)
+                            arr.push(votes[vote].voter);
+                        message.upvotes = arr;
+                        if (votesCallback)
+                            votesCallback();
+                    });
                 });
                 message.upvoteLink = author + '/' + link;
             }
@@ -6294,7 +6297,11 @@ class Utils {
       * Creates a promise that fulfills after delay.
       */
     static delay(ms) {
-        return __awaiter(this, void 0, void 0, function* () { return new Promise(r => { setTimeout(r, ms); }); });
+        return __awaiter(this, void 0, void 0, function* () {
+            if (ms <= 0)
+                return Promise.resolve(true);
+            return new Promise(r => { setTimeout(r, ms); });
+        });
     }
     /**
       * Retrieves all results of dhive.call(api, method, params).

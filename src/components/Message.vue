@@ -267,6 +267,8 @@ function clickOnMsg(event) {
         ["quote", quoteAction, "oi-share"],
         ["copy link", copyLinkAction, "oi-clipboard"]
     ];
+    if(props.message && props.upvoteLink)
+        options.push(["upvote details", upvoteDetails, "oi-comment"]);
     if(props.message && props.message.getUser() === getManager().user) {
         options.push(["edit", editAction, "oi-heart"]);
         options.push(["delete", deleteAction, "oi-heart"]);
@@ -285,6 +287,12 @@ function emoteAction(emote) {
         msg: props.message,
         type: stlib.Content.Emote.TYPE,
         text: emote});
+}
+function upvoteDetails() {
+    var link = props.message.upvoteLink;
+    if(!link) return;
+    var url = 'https://peakd.com/@'+link;
+    window.open(url, '_blank');
 }
 function upvoteAction(event=buttons.value) {
     if(props.displayOnly.value) return;
