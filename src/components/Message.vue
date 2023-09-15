@@ -165,7 +165,9 @@ function jump() {
     emit('jump', props.message.reference.message.getReference());
 }
 function canUpvote() {
-    return props.message && account !== props.message.getUser() && !stlib.Utils.isGuest(account) && !stlib.Utils.isGuest(props.message.getUser())
+    return props.message && account !== props.message.getUser() 
+            && stlib.Utils.isCommunityConversation(props.message.getConversation())
+            && !stlib.Utils.isGuest(account) && !stlib.Utils.isGuest(props.message.getUser())
 }
 function hideMessage() {
     return props.message && getManager().readHiddenUsers()[props.message.getUser()] === true;
@@ -267,15 +269,14 @@ function clickOnMsg(event) {
         ["quote", quoteAction, "oi-share"],
         ["copy link", copyLinkAction, "oi-clipboard"]
     ];
-    if(props.message && props.upvoteLink)
-        options.push(["upvote details", upvoteDetails, "oi-comment"]);
+    if(props.message && props.message.upvoteLink)
+        options.push(["open upvote post", upvoteDetails, "oi-bar-chart"]);
     if(props.message && props.message.getUser() === getManager().user) {
-        options.push(["edit", editAction, "oi-heart"]);
-        options.push(["delete", deleteAction, "oi-heart"]);
+        options.push(["edit", editAction, "oi-pencil"]);
+        options.push(["delete", deleteAction, "oi-trash"]);
     }
     else {
-        if(!stlib.Utils.isGuest(props.message.getUser()) &&
-            !stlib.Utils.isGuest(account))
+        if(canUpvote)
             options.unshift(["upvote", upvoteAction, "oi-arrow-thick-top"]);
         options.push(["hide messages from user", toggleHideMessagesModal, "oi-shield"]);
         options.push(["flag message", flagAction, "oi-flag"]);
