@@ -3678,6 +3678,7 @@ class MessageManager {
                 else {
                     //find newest parent container post
                     //create new upvote post
+                    var meta = { tags: [], app: "stmsg" };
                     if (contentText == null) {
                         if (content == null)
                             content = msg.getContent();
@@ -3692,6 +3693,7 @@ class MessageManager {
                             }
                             try {
                                 var communityUsername = utils_1.Utils.getConversationUsername(conversation);
+                                meta.tags.push(communityUsername);
                                 var communityPath = utils_1.Utils.getConversationPath(conversation);
                                 var community = yield community_1.Community.load(communityUsername);
                                 var stream = (community) ? community.findTextStreamById('' + communityPath) : null;
@@ -3731,16 +3733,12 @@ class MessageManager {
                             permlink,
                             title: '',
                             body: contentText,
-                            json_metadata: "{\"tags\":[]}"
+                            json_metadata: JSON.stringify(meta)
                         }]);
                     ops.push(["comment_options", {
                             author,
                             permlink: permlink,
-                            max_accepted_payout: {
-                                "amount": "1000000",
-                                "precision": 3,
-                                "nai": "@@000000013"
-                            },
+                            max_accepted_payout: "1000000.000 HBD",
                             "percent_hbd": 5000,
                             "allow_votes": true,
                             "allow_curation_rewards": true,
