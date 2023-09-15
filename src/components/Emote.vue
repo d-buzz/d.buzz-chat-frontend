@@ -2,6 +2,7 @@
     <div v-if="emote.startsWith('https://')" class="emote"><img class="inline-block"
         :src="`https://images.hive.blog/30x30/${emote}`">
     </div>
+    <small v-else-if="emote.startsWith('oi-')" :class="`oi ${emote}`"></small>
     <span v-else>{{emote}}</span>
 </template>
 <script setup>

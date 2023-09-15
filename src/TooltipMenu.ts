@@ -81,7 +81,7 @@ export function initTooltipMenu() {
     if(Array.isArray(items)) {
         el.setAttribute("class", "menu");
         for(let item of items) {
-            var div = document.createElement("div");
+            let div = document.createElement("div");
             if(item.length > 2 && item[2]) {
                 var icon = document.createElement("span");
                 icon.setAttribute("class", "oi "+item[2]);
@@ -91,12 +91,14 @@ export function initTooltipMenu() {
             var text = document.createElement("span");
             text.innerText = item[0];
             div.appendChild(text);
-            div.addEventListener("click", ()=>{
+            div.addEventListener("click", (event)=>{
+                el.hidden = true;
                 try {
-                    item[1]();
+                    event.preventDefault();
+                    event.stopPropagation();
+                    item[1](event);
                 }
                 catch(e) { console.log(e); }
-                el.hidden = true;
             });
             el.appendChild(div);
         }

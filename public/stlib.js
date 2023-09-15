@@ -1995,6 +1995,14 @@ class DisplayableMessage {
           * True if this message content is instanceof Edit
           */
         this.isEdit = false;
+        /**
+          * List of upvote usernames
+          */
+        this.upvotes = null;
+        /**
+          * Upvote post link
+          */
+        this.upvoteLink = null;
         this.message = message;
         this.content = undefined;
         this.verified = null;
@@ -2126,11 +2134,16 @@ class DisplayableMessage {
         return this.reference == null && this.isEmote() || this.isFlag() || this.content instanceof imports_1.Edit;
     }
     /**
+      * Returns true if the message contains resolved upvotes.
+      *
+      */
+    hasUpvotes() { return this.upvotes && this.upvotes.length > 0; }
+    /**
       * Returns true if the message's conversation contains username.
       *
       * @param user
       */
-    hasUser(user) { return this.usernames.indexOf(user) !== -1; }
+    hasUser(user) { return this.usernames && this.usernames.indexOf(user) !== -1; }
     /**
       * Returns the user associated with message signature.
       */
@@ -2923,6 +2936,7 @@ class MessageManager {
         this.selectedOnlineStatus = null;
         this.conversations = new utils_1.AccountDataCache();
         this.communities = new utils_1.AccountDataCache();
+        this.upvotes = new utils_1.AccountDataCache();
         this.lastReadDataTimer = null;
         this.onlineStatusTimer = null;
         this.paused = false;
@@ -2932,6 +2946,7 @@ class MessageManager {
         this.keychainPromise = null;
         this.pauseAutoDecode = false;
         this.autoReconnect = false;
+        this.clientInfo = null;
         this.defaultReadHistoryMS = 30 * 24 * 60 * 60000;
     }
     /*
@@ -2980,13 +2995,15 @@ class MessageManager {
             this.client = new client_1.Client(socket);
             socket.on("connect", function () {
                 console.log("connect");
+                _this.client.readInfo().then((result) => {
+                    if (result.isSuccess())
+                        _this.clientInfo = result.getResult();
+                });
                 for (var room in _this.joined)
                     _this.client.join(room);
                 _this.reload();
             });
-            this.client.onupdate = function (data) {
-                console.log("update", data);
-            };
+            this.client.onupdate = function (data) { _this.handleJSONUpdate(data); };
             this.client.onmessage = function (json) { _this.handleJSONMessage(json); };
             utils_1.Utils.setClient(this.client);
             this.connectionStart = false;
@@ -3074,6 +3091,44 @@ class MessageManager {
             }
             else {
                 this.connect();
+            }
+        });
+    }
+    handleJSONUpdate(json) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                switch (json[0]) {
+                    case "v":
+                        var upvoteParts = [json[1], json[2], json[3], json[4], json[5]];
+                        var conversation = upvoteParts[1];
+                        var data = this.upvotes.lookupValue(conversation);
+                        if (data) {
+                            var index = utils_1.Utils.indexOfArray(data, upvoteParts);
+                            if (index === -1) {
+                                data.push(upvoteParts);
+                                var data = this.conversations.lookupValue(conversation);
+                                if (data != null) {
+                                    for (var message of data.messages) {
+                                        if (message.getUser() === upvoteParts[0] &&
+                                            message.getConversation() === upvoteParts[1] &&
+                                            message.getTimestamp() == upvoteParts[2]) {
+                                            var _this = this;
+                                            this.resolveUpvotes(message, () => {
+                                                if (conversation === _this.selectedConversation) {
+                                                    _this.postCallbackEvent(null);
+                                                }
+                                            });
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
+            catch (e) {
+                console.log(e);
             }
         });
     }
@@ -3541,11 +3596,59 @@ class MessageManager {
         }
         return null;
     }
+    readUpvotes(conversation) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var client = this.client;
+            if (client == null)
+                return [];
+            if (!this.clientInfo || this.clientInfo.version <= 10)
+                return [];
+            return yield this.upvotes.cacheLogic(conversation, (conversation) => {
+                return client.readUpvotes([conversation]).then((result) => {
+                    if (result.isSuccess()) {
+                        var obj = result.getResult();
+                        if (obj[conversation])
+                            return obj[conversation];
+                    }
+                    return [];
+                });
+            });
+        });
+    }
+    findUpvoteForMessage(message) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var user = message.getUser();
+            var conversation = message.getConversation();
+            var timestamp = message.getTimestamp();
+            var array = yield this.readUpvotes(conversation);
+            for (var i = array.length - 1; i >= 0; i--)
+                if (array[i][0] === user && array[i][1] === conversation &&
+                    array[i][2] == timestamp)
+                    return array[i];
+            return null;
+        });
+    }
     findUpvote(array, permlink) {
         for (var i = array.length - 1; i >= 0; i--)
             if (array[i][4] === permlink)
                 return array[i];
         return null;
+    }
+    upvotePost(author, permlink, weight = 10000) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var user = this.user;
+            if (user === null || utils_1.Utils.isGuest(user))
+                return false;
+            var votes = yield utils_1.Utils.getDhiveClient().database
+                .call('get_active_votes', [author, permlink]);
+            for (var vote in votes)
+                if (votes[vote].voter === user)
+                    return false;
+            var ops = [];
+            ops.push(["vote", { voter: user, author, permlink, weight }]);
+            yield this.loginmethod.broadcastOps(ops, 'Posting');
+            return true;
+        });
     }
     upvote(msg, weight = 10000, content = null, contentText = null, parentAuthor = "peak.open.chat") {
         return __awaiter(this, void 0, void 0, function* () {
@@ -4486,6 +4589,26 @@ class MessageManager {
             return result;
         });
     }
+    resolveUpvotes(message, votesCallback = null) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var upvote = yield this.findUpvoteForMessage(message.message);
+            if (upvote) {
+                var author = upvote[3];
+                var link = upvote[4];
+                message.upvotes = [];
+                var promise = utils_1.Utils.getDhiveClient().database
+                    .call('get_active_votes', [author, link]).then((votes) => {
+                    var arr = [];
+                    for (var vote in votes)
+                        arr.push(votes[vote].voter);
+                    message.upvotes = arr;
+                    if (votesCallback)
+                        votesCallback();
+                });
+                message.upvoteLink = author + '/' + link;
+            }
+        });
+    }
     resolveReferences(messages) {
         for (var msg of messages)
             this.resolveReference(messages, msg);
@@ -4629,6 +4752,7 @@ class MessageManager {
                 displayableMessage.verified = verified;
             }
             displayableMessage.init();
+            yield this.resolveUpvotes(displayableMessage);
             return displayableMessage;
         });
     }
@@ -6408,6 +6532,15 @@ class Utils {
             if (a[i] !== b[i])
                 return false;
         return true;
+    }
+    /**
+      * Returns index of array b within array a or -1.
+      */
+    static indexOfArray(a, b) {
+        for (var i = 0; i < a.length; i++)
+            if (Utils.arrayEquals(a[i], b))
+                return i;
+        return -1;
     }
     /**
       * Creates new instance of AccountDataCache.

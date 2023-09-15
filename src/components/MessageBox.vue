@@ -176,18 +176,23 @@ async function enterMessage(e) {
         }
         uploads.value = [];
     }
-    if(images.value.length > 0) {
+    var text = target.innerText;
+    if(text && text.trim().length > 0) {
+        if(images.value.length > 0) {
+            var imgs = "";
+            for(var img of images.value)
+                imgs += `![](${img}) `;
+            text = imgs+" \n"+text;
+        }
+        emit("entermessage", text, null, true, true, ()=>{
+            images.value = [];
+        });
+    }
+    else if(images.value.length > 0) {
         var msg = { type: stlib.Content.Images.TYPE, images: images.value};
         emit("entermessage", null, msg, true, false, ()=>{
             images.value = [];
-            enterMessage(e);
         });
-    }
-    else {
-        var text = target.innerText;
-        if(text && text.trim().length > 0) {
-            emit("entermessage", text);
-        }
     }
     target.blur();
 }

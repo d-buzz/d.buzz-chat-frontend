@@ -75,6 +75,9 @@
                         Unsupported message type.
                     </div>
                     <div>
+                        <span v-if="message.hasUpvotes()">
+                            <UpvoteIcon :users="message.upvotes" @action="upvoteAction"/>
+                        </span>
                         <span v-if="message.emotes">
                             <span v-for="emote in message.emotes">
                                 <EmoteResponse :emote="emote.emote" :users="emote.users" @action="emoteAction"/>
@@ -289,9 +292,12 @@ function upvoteAction(event=buttons.value) {
         var msg = props.message;
         var parts = stlib.Utils.encodeUpvotePermlink(msg.getUser(), msg.getConversation(), msg.getTimestamp()); 
         console.log("vote", w, parts);
-        console.log(msg);
-        console.log(msg.message);
-        getManager().upvote(msg.message, w, msg.getContent());
+        
+        if(msg.upvoteLink) {
+            var linkParts = msg.upvoteLink.split('/');
+            getManager().upvotePost(linkParts[0], linkParts[1], w);
+        }
+        else getManager().upvote(msg.message, w, msg.getContent());
     });
 }
 function flagAction() {

@@ -290,7 +290,7 @@ function setMessages(messages) {
             array = [];
             array.type = type;
             result.push(array);
-        }  
+        }
         array.push(msg);
     }
     displayableMessages.value = result;
