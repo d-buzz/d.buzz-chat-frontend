@@ -3697,7 +3697,7 @@ class MessageManager {
                                 var communityPath = utils_1.Utils.getConversationPath(conversation);
                                 var community = yield community_1.Community.load(communityUsername);
                                 var stream = (community) ? community.findTextStreamById('' + communityPath) : null;
-                                titleText = `**${community.getTitle} > ${stream ? stream.getName() : ''}** | ${conversation}`;
+                                titleText = `**${community.getTitle()} | ${stream ? stream.getName() : ''}** | ${conversation}`;
                             }
                             catch (e) {
                                 console.log(e);
@@ -3717,7 +3717,7 @@ class MessageManager {
 
     ${contentText}
 
-    <sup> **Continue conversation >** ${conversationLink}</sup>`;
+    <sup> **Continue conversation** ${conversationLink}</sup>`;
                     }
                     author = user;
                     var containerThread = yield utils_1.Utils.getDhiveClient().database
