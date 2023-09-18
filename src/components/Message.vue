@@ -276,7 +276,7 @@ function clickOnMsg(event) {
         options.push(["delete", deleteAction, "oi-trash"]);
     }
     else {
-        if(canUpvote)
+        if(canUpvote())
             options.unshift(["upvote", upvoteAction, "oi-arrow-thick-top"]);
         options.push(["hide messages from user", toggleHideMessagesModal, "oi-shield"]);
         options.push(["flag message", flagAction, "oi-flag"]);
@@ -301,7 +301,7 @@ function upvoteAction(event=buttons.value) {
         var msg = props.message;
         var parts = stlib.Utils.encodeUpvotePermlink(msg.getUser(), msg.getConversation(), msg.getTimestamp()); 
         console.log("vote", w, parts);
-        
+        w = Number(w);
         if(msg.upvoteLink) {
             var linkParts = msg.upvoteLink.split('/');
             getManager().upvotePost(linkParts[0], linkParts[1], w);
