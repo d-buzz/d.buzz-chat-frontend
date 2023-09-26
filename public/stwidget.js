@@ -1,4 +1,4 @@
-//version 1.03
+//version 1.05
 class StWidget {
     static widgetNum = 0;
     static dhiveClient = null;
@@ -387,6 +387,59 @@ class StWidget {
                 }
             break;
         }
+    }
+    clearNotifications(notificationTimestamp, user=this.user, onSuccess, url="https://chat-api.peakd.com") {
+        if(user == null) throw 'user is null';
+        var ms = notificationTimestamp;
+        var array = ['m', user, '$online', JSON.stringify(['o',true,null,0,ms]),ms];
+        var signableText = array.map(JSON.stringify).join(",");
+        
+        var fnWrite = (result)=>{
+            array[5] = "p";
+            array[6] = result;
+            
+            StWidget.postJSON(url+'/api/write', array, (r)=>{
+                if(r.response[0] && onSuccess) onSuccess();
+            });
+        };
+        if(this.postingKey) {
+            try {
+                if(this.dhive)
+                    fnWrite(this.postingKey.sign(
+                        this.dhive.cryptoUtils.sha256(signableText))
+                        .toString("hex"));
+                else if(this.hivejs) 
+                    fnWrite(this.hivejs.auth.signMessage(signableText, this.postingKey));
+            }
+            catch(e) {
+                console.log(e);
+            }
+        }
+        else if(this.enableKeychainPassthrough) {
+            window.hive_keychain.requestSignBuffer(user, signableText, 'Posting', (result)=>{
+                if(result.success) fnWrite(result.result);
+            });
+        }        
+    }
+    static postJSON(url, data, onSuccess=null, onError=null) {
+        if (typeof data != 'string') data = JSON.stringify(data);
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.responseType = "json";
+        xmlHttp.onreadystatechange = function() {
+          if (xmlHttp.readyState == XMLHttpRequest.DONE) {
+            if (xmlHttp.status == 200 || xmlHttp.status == 201) {
+              if(onSuccess) onSuccess(xmlHttp);
+            } else {
+              if(onError) onError(xmlHttp, xmlHttp.status);
+            }
+          }
+        };
+        xmlHttp.addEventListener('error', function(e) {
+          if(onError) onError(xmlHttp, e);
+        });
+        xmlHttp.open('POST', url, true);
+        xmlHttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xmlHttp.send(data);
     }
     cleanup() {
         if(this.messageListener != null) {
