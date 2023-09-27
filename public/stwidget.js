@@ -388,10 +388,13 @@ class StWidget {
             break;
         }
     }
-    clearNotifications(notificationTimestamp, user=this.user, onSuccess, url="https://chat-api.peakd.com") {
+    clearNotifications(notificationTimestamp, user=this.user, 
+            onSuccess, utcTime=0, url="https://chat-api.peakd.com",
+            ) {
         if(user == null) throw 'user is null';
         var ms = notificationTimestamp;
-        var array = ['m', user, '$online', JSON.stringify(['o',true,null,0,ms]),ms];
+        if(utcTime === 0) utcTime = new Date().getTime();
+        var array = ['m', user, '$online', JSON.stringify(['o',true,null,0,ms]),utcTime];
         var signableText = array.map(JSON.stringify).join(",");
         
         var fnWrite = (result)=>{
