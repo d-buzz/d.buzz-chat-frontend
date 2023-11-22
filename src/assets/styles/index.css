@@ -3,22 +3,22 @@
     --appbg1: #9d212c; --appfg1: white; --appsg1: rgba(227, 19, 55, 0.37);
     --appbg2: #ffffff;        --appfg2: black;
     --appbg3: #ffffff;        --appfg3: black;
-    --appbgbtn1: #2e8336;     --appfgbtn1: white;
+    --appbgbtn1: #f50057;     --appfgbtn1: white;
     --appbgbtn2: #d9d9d7;     --appfgbtn2: white;
     /*#eab308; */
 
-    --appbgowner: #007b00;
+    --appbgowner: #f50057;
     --appbgadmin: #2368D5;
-    --appbgmod: #2e8336;
+    --appbgmod: #f50057;
 
-    --appbgconote: #00710c;
-    --appbgunote: #00710c;
+    --appbgconote: #f50057;
+    --appbgunote: #f50057;
 
     --appCommunityIconFontSize: 20px;
     --appCommunityIconSize: 52px;
-    --appFontFamily: "Century Schoolbook L", Arial, sans-serif;
+    --appFontFamily: "gg sans Normal Regular", Arial, sans-serif;
     --appFontSize: 16px;
-    --appMessageFontFamily: "Century Schoolbook L", Arial, sans-serif;
+    --appMessageFontFamily: "gg sans Normal Regular", Arial, sans-serif;
     --appMessageFontSize: 16px;
 }
 body {

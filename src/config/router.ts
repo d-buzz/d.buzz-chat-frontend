@@ -11,7 +11,7 @@ async function initApp() {
     initStarted = true;
     console.log("init app version", 100, "library version", stlib.Utils.getVersion());
     const NETWORK_NAME = import.meta.env.VITE_APP_NETWORK_NAME?import.meta.env.VITE_APP_NETWORK_NAME:null;
-    //const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_APP_STING_NODES.split(",") : ["http://localhost:3001"];
+    const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_APP_STING_NODES.split(",") : ["https://chat-api.d.buzz/"];
     /*var currentManager = null;
     window.getManager = function () {
       if (currentManager == null) {
@@ -37,7 +37,7 @@ async function initApp() {
     if(NETWORK_NAME == null) {
         try {
             var result = await manager.getClient().readInfo();
-            if(result.isSuccess()) 
+            if(result.isSuccess())
                 stlib.Utils.setNetworkname(result.getResult().name);
         }
         catch(e) {

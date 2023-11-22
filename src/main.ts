@@ -8,6 +8,7 @@ import { imageProxy } from "./ImageProxy.ts";
 import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
 import './assets/styles/open-iconic.css';
 import './assets/styles/centuryschoolbookl.css';
+import './assets/styles/ggsans.css';
 import './assets/styles/lato.css';
 import './assets/styles/roboto.css';
 //import './assets/styles/vue3-emoji-picker.css'
@@ -49,7 +50,7 @@ stuploader.Uploader.uploaderDomain = UPLOADER_DOMAIN;
 function applyCssOverrides(properties) {
     var root = root = document.querySelector(':root');
     for(var name in properties)
-        if(name.startsWith("--")) 
+        if(name.startsWith("--"))
             root.style.setProperty(name, properties[name]);
 }
 window.sendNotificationsUpdate = (obj)=>{};
@@ -60,7 +61,7 @@ var inited = false;
 //window.dhive = dhive;
 (()=>{
     if(isEmbed) defaultTheme.setCssOverridePropertyName(new URLSearchParams(location.search).get("embed"));
-    /*if(window.hive_keychain === undefined && window.parent != null && 
+    /*if(window.hive_keychain === undefined && window.parent != null &&
         window.parent.hive_keychain !== undefined) {
         window.hive_keychain = window.parent.hive_keychain;
     }*/
@@ -68,33 +69,33 @@ var inited = false;
         var proxy = { id: 0, callbacks: {}, methods: {
             setUser: function (username) {
                 console.log("set user: ", username);
-                //if(window.setLogin) { 
+                //if(window.setLogin) {
                     //window.setLogin(username);
                     //getManager().setUser(username);
-                    //window.refreshApp();                    
+                    //window.refreshApp();
                 //    window.location.reload();
                 //}
                 //else {
                     if(getManager().user === username) return;
                     window.localStorage.setItem("_user", JSON.stringify({name:username,authenticated:true}));
                     if(window.localStorage.getItem("_user") == null) {
-                        console.log("warning: localStorage not present");                    
+                        console.log("warning: localStorage not present");
                     }
                     /*if(inited) {
                         console.log("reload");
-                        window.location.reload();     
+                        window.location.reload();
                     }*/
                 //}
             },
             reload: function() {
                 console.log("reload: ");
-                window.location.reload();     
+                window.location.reload();
             },
             initMain: function() {
                 initMain();
             },
             navigate: function(url) {
-                if(window.navigate) window.navigate(url); 
+                if(window.navigate) window.navigate(url);
             },
             pause: function (paused) {
                 console.log("widget pause ", paused);
@@ -136,7 +137,7 @@ var inited = false;
             get(target, prop, receiver) {
                 if (prop === "requests") return 0;
                 return function () {
-                    var msgId = proxy.id++; 
+                    var msgId = proxy.id++;
                     var data = [embedNumber, msgId, prop];
                     var args = [];
                     for(var i = 0; i < arguments.length-1; i++)
@@ -195,7 +196,7 @@ var inited = false;
     console.log("Theme", Theme);
     applyCssOverrides(defaultTheme.loadCssOverrides());
     window.defaultEmotes = defaultEmotes;
-    
+
     initTooltipMenu();
     var currentManager = null;
     window.getManager = function () {

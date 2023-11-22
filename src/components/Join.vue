@@ -34,7 +34,7 @@
                       v-model="accountName"
                       type="username"
                       class="inputText1"
-                      @keyup.enter="loginKeychain(accountName)"                  
+                      @keyup.enter="loginKeychain(accountName)"
                       placeholder="hive username"
                       :read-only="isLoading"
                       :disabled="isLoading"
@@ -101,7 +101,7 @@
                       v-model="accountName2"
                       type="username"
                       class="inputText1"
-                      @keyup.enter="loginGuest(accountName2)"                  
+                      @keyup.enter="loginGuest(accountName2)"
                       placeholder="pick an username"
                       :read-only="isLoading"
                       :disabled="isLoading"
@@ -112,7 +112,7 @@
                     <div><b>Recent Logins</b></div>
                     <div class="flex">
                         <div v-for="name in guestAccounts">
-                            <button class="btn grow" @click="loginGuest(name)" 
+                            <button class="btn grow" @click="loginGuest(name)"
                                 :read-only="isLoading" :disabled="isLoading">{{name}}</button>
                         </div>
                     </div>
@@ -127,7 +127,7 @@
                     </div>
                     <div class="mt-2 mb-2 flex flex-row justify-evenly text-center">
                         <button class="btn grow" @click="updatePreferences" :read-only="isLoading" :disabled="isLoading">Update Preferences</button>
-                        <button class="btn2 grow" @click="skip" :read-only="isLoading" :disabled="isLoading">Maybe later</button>                
+                        <button class="btn2 grow" @click="skip" :read-only="isLoading" :disabled="isLoading">Maybe later</button>
                     </div>
                 </div>
                 <hr/>
@@ -138,8 +138,8 @@
                     <p class="text-xs text-gray-700">Use the Keychain "do not prompt" option to easily and quickly read encrypted messages.</p>
                 </div>
             </div>
-   
-        </div>    
+
+        </div>
     </div>
 </template>
 <script setup>
@@ -169,7 +169,7 @@ const defaultPreferences = [
         ['everyone', 'Everyone'],['accounts', 'Hive users'],
         ['communities','Communities in common'], ['friends', 'Friends']]},
     {name: "showOnline:b", display: "Online Status", desc: "Show online status.", value: true, newvalue:true},
-];  
+];
 
 function init() {
     var array = [];
@@ -186,10 +186,10 @@ async function initInfo() {
 init();
 initInfo();
 async function loginGuest(username) {
-    if(username == null || !((username=username.trim()).length > 0)) { 
+    if(username == null || !((username=username.trim()).length > 0)) {
         errorMessage.value = "enter username";
         return;
-    }    
+    }
     if(username.startsWith('@')) username = username.substring(1);
     try {
         isLoading.value = true;
@@ -206,11 +206,11 @@ async function loginGuest(username) {
         console.log(e);
     }
     finally {
-        isLoading.value = false;    
+        isLoading.value = false;
     }
 }
 async function loginKeychain(username) {
-    if(username == null || !((username=username.trim()).length > 0)) { 
+    if(username == null || !((username=username.trim()).length > 0)) {
         errorMessage.value = "enter username";
         return;
     }
@@ -220,10 +220,10 @@ async function loginKeychain(username) {
         console.log("authenticate" , username);
         await accountStore.authenticate(username);
         var user = accountStore.account.name;
-        
+        console.log(user)
         if(user != null) {
             var preferences = await stlib.Utils.getAccountPreferences(user);
-            if(preferences == null) {                
+            if(preferences == null) {
                 showWelcomeMessage.value = true;
                 return;
             }
@@ -235,7 +235,7 @@ async function loginKeychain(username) {
         console.log(e);
     }
     finally {
-        isLoading.value = false;    
+        isLoading.value = false;
     }
 }
 async function updatePreferences() {
@@ -251,7 +251,7 @@ async function updatePreferences() {
     if(prefs.getValue("showOnline:b", false) === true) result = await manager.setupOnlineStatus(true);
     else result = await manager.updatePreferences(prefs);
     if(result.isSuccess()) {
-        skip();    
+        skip();
     }
     else errorMessage.value = "Failed to update preferences. " + result.getError();
 }

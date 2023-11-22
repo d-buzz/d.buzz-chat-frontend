@@ -28,11 +28,11 @@ export const defaultThemes = {
     bg1: "#eeeeec",
     bg2: "#ffffff",
     bg3: "#eeeeec",
-    bgbtn1: "#2e8336",
+    bgbtn1: "#f50057",
     bgbtn2: "#d9d9d7",
     bgowner: "#007b00",
     bgadmin: "#2368D5",
-    bgmod: "#2e8336",
+    bgmod: "#f50057",
     bgconote: "#00710c",
     bgunote: "#00710c",
   },
@@ -41,11 +41,11 @@ export const defaultThemes = {
     bg1: "#9d212c",
     bg2: "#ffffff",
     bg3: "#ffffff",
-    bgbtn1: "#2e8336",
+    bgbtn1: "#f50057",
     bgbtn2: "#d9d9d7",
-    bgowner: "#007b00",
+    bgowner: "#15803D",
     bgadmin: "#2368D5",
-    bgmod: "#2e8336",
+    bgmod: "#f50057",
     bgconote: "#00710c",
     bgunote: "#00710c",
   },
@@ -54,7 +54,7 @@ export const defaultThemes = {
     bg1: "#424242",
     bg2: "#555753",
     bg3: "#424242",
-    bgbtn1: "#2e8336",
+    bgbtn1: "#f50057",
     bgbtn2: "#d9d9d7",
     bgowner: "#5aff5a",
     bgadmin: "#BBCEEC",
@@ -190,7 +190,7 @@ export function saveCssOverrides(css, append = false) {
   try {
     if (append) {
       var obj = loadCssOverrides();
-      for(var item in css) { 
+      for(var item in css) {
         if(css[item] == null) delete obj[item];
         else obj[item] = css[item];
       }
