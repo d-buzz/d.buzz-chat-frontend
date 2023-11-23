@@ -91,7 +91,7 @@
                   </div>
                 -->
                     <hr class="mt-3"/>
-                    <div class="mt-1">
+                    <div class="mt-3">
                         <b>Login as guest</b>
                     </div>
                     <label for="username" class="block text-sm font-bold text-gray-700">username</label>
@@ -107,7 +107,7 @@
                       :disabled="isLoading"
                     />
                   </div>
-                  <button class="btn grow" @click="loginGuest(accountName2)" :read-only="isLoading" :disabled="isLoading">Open as Guest</button>
+                  <button class="btn grow mt-3" @click="loginGuest(accountName2)" :read-only="isLoading" :disabled="isLoading">Open as Guest</button>
                   <div v-if="guestAccounts.length>0">
                     <div><b>Recent Logins</b></div>
                     <div class="flex">
