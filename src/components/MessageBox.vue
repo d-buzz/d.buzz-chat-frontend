@@ -19,9 +19,14 @@
             </span>
         </div>
         <div class="flex">
+            <span class="flipY my-3 cursor-pointer gap-x-3 pr-3 "
+                @click="IfCanWrite(toggleAddImageModal)"
+                @mouseenter="tooltip($event.target, $t('MessageBox.AddImage'))">
+                <span class="flipYItem oi oi-image"></span></span>
+
             <div class="flex relative fg70 shadow appearance-none border border-gray-700 rounded-xl w-[calc(100%)] leading-tight mr-1">
                 <div v-if="canWrite"
-                  class="box whitespace-pre-wrap appearance-none w-[calc(100%)] py-2 px-3 focus:outline-none focus:shadow-outline"
+                  class="box whitespace-pre-wrap appearance-none w-[calc(100%)] py-3 px-3 focus:outline-none focus:shadow-outline"
                   style="overflow-wrap: normal; word-break: break-word;"
                   ref="box"
                   @keyup="onChange"
@@ -43,23 +48,25 @@
                     >
                     Permission required
                 </div>
-                <div class="absolute float-right flex gap-x-3 pr-3" style="right: 0; max-height: 38px;">
-                    <div @click="IfCanWrite(()=>enterMessage(null))" class="my-2 cursor-pointer oi oi-envelope-open envelope" 
-                    @mouseenter="tooltip($event.target, $t('MessageBox.Send'))"></div>
-                    <span @click="IfCanWrite(toggleAddEmoteModal)" class="flipY my-2 cursor-pointer" 
+                <div class="absolute float-right flex gap-x-3 pr-3 x-5" style="right: 0; max-height: 50px;">
+                    <span @click="IfCanWrite(toggleAddEmoteModal)" class="flipY my-3 cursor-pointer"
                         @mouseenter="tooltip($event.target, $t('MessageBox.AddEmote'))">
                         <img class="flipYItem" src="/src/assets/images/icons/emoteicon.svg" style="max-width: 21px;">
                     </span>
-                    <span class="flipY my-2 cursor-pointer" style="font-size: 1.125rem;"
-                        @click="IfCanWrite(toggleAddImageModal)" 
-                        @mouseenter="tooltip($event.target, $t('MessageBox.AddImage'))">
-                        <span class="flipYItem oi oi-image"></span></span>
+
                 </div>
             </div>
+          <div @click="IfCanWrite(()=>enterMessage(null))" class="flipY my-3 cursor-pointer gap-x-3 pr-3"
+               @mouseenter="tooltip($event.target, $t('MessageBox.Send'))">
+            <Icon icon="mdi:send-circle" style="font-size: 28px;" />
+          </div>
         </div>
     </div>
 </template>
 <script setup type="ts">
+
+import {Icon} from "@iconify/vue";
+
 const tooltip = ref(window.tooltip);
 const props = defineProps({
     canWrite: {type: Boolean, default: true},
@@ -138,7 +145,7 @@ function onPaste(e) {
         console.log("files", clipboard.files, clipboard.files.length);
         if(clipboard.files && clipboard.files.length > 0) {
             console.log("paste files");
-            for(var file of clipboard.files) 
+            for(var file of clipboard.files)
                 addFile(file);
             e.preventDefault()
             return;
@@ -152,10 +159,9 @@ function onChange(e) {
     var text = e.target.innerText;
     var nonBlank = text && text.trim() != '';
     if(nonBlank !== lastNonBlank) {
-        e.target.style.marginTop = (nonBlank)?"20px":"0px";
         lastNonBlank = nonBlank;
         emit("fullorblank", nonBlank);
-    } 
+    }
 }
 async function enterMessage(e) {
     var target = box.value;
@@ -206,7 +212,7 @@ function setCaretAtEnd(element) {
         selection.removeAllRanges();
         selection.addRange(range);
     }
-    else if(document.selection) { 
+    else if(document.selection) {
         range = document.body.createTextRange();
         range.moveToElementText(element);
         range.collapse(false);

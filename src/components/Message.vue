@@ -14,7 +14,7 @@
     <TransitionRoot :show="showHideMessagesModal">
         <HideMessagesModal :user="message.getUser()" @close="toggleHideMessagesModal"></HideMessagesModal>
     </TransitionRoot>
-    <div v-if="!displayEdits && message && (message.flagsNum >= 3 || hideMessage())" class="message mesageFont" 
+    <div v-if="!displayEdits && message && (message.flagsNum >= 3 || hideMessage())" class="message mesageFont"
             style="margin-top:-5px;margin-bottom:-25px;" @click.right.prevent.stop="clickOnMsg($event)"
          :data-verified="isVerified !== false" :data-reference="messageReference()">
         <small style="margin-left:46px;opacity:0.5;" :class="roleColor?roleColor:''"><b class="messageFontFamily">{{message.getUser()}}</b></small>
@@ -29,7 +29,7 @@
     <div v-else class="mesageFont">
         <div v-if="hasQuotedText(message)" class="flex mb-1" style="margin-left:23px;">
             <div class="quoteIcon"></div>
-            <small class="break-word quoteText text-justify lg:text-left"><div class="float-left inline-block" style="padding-right:3px;"><UserCommunityIcon :name="message.reference.getUser()" :community="message.getCommunity()" 
+            <small class="break-word quoteText text-justify lg:text-left"><div class="float-left inline-block" style="padding-right:3px;"><UserCommunityIcon :name="message.reference.getUser()" :community="message.getCommunity()"
                       :imgCss="`avMini`"/></div><span class="cursor-pointer" @click="jump()"><b :class="roleReferenceColor?roleReferenceColor:''" style="opacity:0.5;"><span class="messageFontFamily">{{message.reference.getUser()}}</span></b> <span>{{getQuotedText(message)}}</span></span></small>
         </div>
         <div v-if="isVerified === false" class="verifyColor pl-11 w-full text-sm font-bold pt-1 pb-2" style="line-height:1.25;"><span class="oi oi-warning"></span> <span class="">{{$t("Message.Warning")}}</span></div>
@@ -37,15 +37,15 @@
             <div class="flex-shrink-0 mr-5px" :class="iconClass">
                 <UserCommunityIcon :name="message.getUser()" :community="message.getCommunity()"/>
             </div>
-            <div class="grow relative" style="margin-top:-7px;" @click.right.prevent.stop="clickOnMsg($event)"> 
+            <div class="grow relative" style="margin-top:-7px;" @click.right.prevent.stop="clickOnMsg($event)">
                 <div>
                     <small class="cursor-pointer" :class="roleColor?roleColor:''" @click="toggleUserModal(message.getUser())" ><b class="messageFontFamily">{{message.getUser()}}</b></small>
                     <span class="pr-2 float-right fg70" ref="buttons">
                         <small v-if="!displayOnly" class="messageButtons pr-3">
-                            <span v-if="canUpvote()" class="oi oi-arrow-thick-top col1" @click.prevent.stop="upvoteAction()" @mouseenter="tooltip($event.target, $t('Message.Upvote.Info'))"></span>                        
+                            <span v-if="canUpvote()" class="oi oi-arrow-thick-top col1" @click.prevent.stop="upvoteAction()" @mouseenter="tooltip($event.target, $t('Message.Upvote.Info'))"></span>
                             <span class="oi oi-heart col0" @click="toggleAddEmoteModal" @mouseenter="tooltip($event.target, $t('Message.AddEmote.Info'))"></span>
                             <span class="oi oi-share col1" @click="quoteAction" @mouseenter="tooltip($event.target, $t('Message.Quote.Info'))"></span>
-                            <span v-if="account!==message.getUser()" class="oi oi-flag col3" @click="flagAction" @mouseenter="tooltip($event.target, $t('Message.Flag.Info'))"></span>                        
+                            <span v-if="account!==message.getUser()" class="oi oi-flag col3" @click="flagAction" @mouseenter="tooltip($event.target, $t('Message.Flag.Info'))"></span>
                             <span v-if="account===message.getUser()" class="oi oi-pencil col2" @click="editAction" @mouseenter="tooltip($event.target, $t('Message.Edit.Info'))"></span>
                             <span v-if="account===message.getUser()" class="oi oi-trash col3" @click="deleteAction" @mouseenter="tooltip($event.target, $t('Message.Remove.Info'))"></span>
                         </small>
@@ -59,7 +59,7 @@
                     </div>
                     <div v-if="content.getType() == 'i'" class="flex gap-x-1">
                         <span v-for="i in content.length()">
-                            <img :src="`${imageProxy(content.getImage(i-1))}`" class="imgBorder imgLimit cursor-pointer" @click="toggleImageViewModal(content.getImage(i-1))"> 
+                            <img :src="`${imageProxy(content.getImage(i-1))}`" class="imgBorder imgLimit cursor-pointer" @click="toggleImageViewModal(content.getImage(i-1))">
                         </span>
                     </div>
                     <div v-else-if="content.getType() == 'g'" class="border border-solid border-green-700 rounded p-1">
@@ -92,7 +92,7 @@
                         <div class="fg70"><small>Reason:</small></div>
                         <small>{{getFlagReasons(message)}}</small>
                     </div>
-                    
+
                 </div>
             </div>
         </div>
@@ -113,7 +113,7 @@ const props = defineProps({
   displayEdits: Boolean
 });
 const globalProperties = ref(window.globalProperties);
-const iconFlexClass = ref(globalProperties.value['messageIconFlexClass']);  
+const iconFlexClass = ref(globalProperties.value['messageIconFlexClass']);
 const iconClass = ref(globalProperties.value['messageIconClass']);
 const roleColor = ref(null);
 const roleReferenceColor = ref(null);
@@ -142,13 +142,13 @@ function checkVerifyAsync(limit=5) {
     }
 }
 function initContent() {
-    var content = null; 
+    var content = null;
     if(props.message) {
         checkVerifyAsync();
         if(props.displayEdits && props.message.editContent)
             content = props.message.editContent;
         else {
-            if(props.displayEdits) 
+            if(props.displayEdits)
                 content = props.message.content;
             else content = props.message.getContent();
         }
@@ -165,7 +165,7 @@ function jump() {
     emit('jump', props.message.reference.message.getReference());
 }
 function canUpvote() {
-    return props.message && account !== props.message.getUser() 
+    return props.message && account !== props.message.getUser()
             && stlib.Utils.isCommunityConversation(props.message.getConversation())
             && !stlib.Utils.isGuest(account) && !stlib.Utils.isGuest(props.message.getUser())
 }
@@ -186,7 +186,7 @@ const showUserModal = ref(false);
 const userRef = ref();
 const toggleNewUserMessageModalOpen = () => {
   newUserMessageModalOpen.value = !newUserMessageModalOpen.value;
-};    
+};
 const toggleViewEditHistoryModal = () => {
   newViewEditHistoryModalOpen.value = !newViewEditHistoryModalOpen.value;
 };
@@ -196,7 +196,7 @@ const toggleHideMessagesModal = () => {
 const toggleImageViewModal = (src) => {
     showImageViewModal.value = !showImageViewModal.value;
     if(src) imageViewSrc.value = src;
-};    
+};
 function toggleUserModal(user) {
     if(user == null) showUserModal.value = false;
     else {
@@ -299,7 +299,7 @@ function upvoteAction(event=buttons.value) {
     if(props.displayOnly.value) return;
     window.upvotemenu(event, (w)=>{
         var msg = props.message;
-        var parts = stlib.Utils.encodeUpvotePermlink(msg.getUser(), msg.getConversation(), msg.getTimestamp()); 
+        var parts = stlib.Utils.encodeUpvotePermlink(msg.getUser(), msg.getConversation(), msg.getTimestamp());
         console.log("vote", w, parts);
         w = Number(w);
         if(msg.upvoteLink) {
@@ -320,10 +320,10 @@ const messageText = ref();
 function quoteAction() {
     var msg = messageText.value;
     if(msg != null) {
-        var text = msg.innerText; 
+        var text = msg.innerText;
         var selected = getSelectionText();
         var i;
-        if(selected == null || selected.length === 0 || (i=text.indexOf(selected))===-1) 
+        if(selected == null || selected.length === 0 || (i=text.indexOf(selected))===-1)
             emit("action", {
                 msg: props.message,
                 type: stlib.Content.Quote.TYPE,
@@ -359,7 +359,7 @@ function copyLinkAction() {
         else if(stlib.Utils.isJoinableGroupConversation(conversation)) {
             link = '/g/'+conversation.substring(1);
         }
-        if(link !== null) navigator.clipboard.writeText(window.location.origin+link); 
+        if(link !== null) navigator.clipboard.writeText(window.location.origin+link);
     }
 }
 function editAction() {
@@ -367,14 +367,14 @@ function editAction() {
         msg: props.message,
         type: stlib.Content.Edit.TYPE,
         text: 'editing message'
-    });  
+    });
 }
 function deleteAction() {
     emit("action", {
         msg: props.message,
         type: 'delete',
         text: 'delete message'
-    }); 
+    });
 }
 function getSelectionText() {
     var s = null;
@@ -398,7 +398,7 @@ function toAbsoluteTimeString(ti) {
 }
 function toRelativeTimeString(ti,maxLen=1,maxUnit='m') {
     ti = stlib.Utils.utcTime()-ti;
-	var d = Math.floor(ti/86400000); ti -= d*86400000;  
+	var d = Math.floor(ti/86400000); ti -= d*86400000;
 	var h = Math.floor(ti/3600000); ti -= h*3600000;
 	var m = Math.floor(ti/60000); ti -= m*60000;
     var s = Math.floor(ti/1000);
@@ -407,7 +407,7 @@ function toRelativeTimeString(ti,maxLen=1,maxUnit='m') {
     var time = [d,h,m,s];
     for(var i = 0; i < time.length; i++) {
         if((str === '' && time[i] > 0) || str !== '' || format[i] === 'maxUnit')
-            str += (str===''?'':' ')+time[i]+format[i]; 
+            str += (str===''?'':' ')+time[i]+format[i];
         if(format[i] === 'maxUnit' || (str !== '' && --maxLen === 0)) break;
     }
 	return str;
@@ -420,10 +420,10 @@ async function init() {
     var data = await stlib.Community.load(community);
     var role = data.getRole(message.getUser());
     var icon = {"owner":"oi-globe", "admin":"oi-cog", "mod":"oi-flag"};
-    if(role === "owner" || role === "admin" || role === "mod") 
+    if(role === "owner" || role === "admin" || role === "mod")
         roleColor.value = `oiMini oi ${icon[role]} color${role}`;
     if(hasQuotedText(message)) {
-        role = data.getRole(message.reference.getUser()); 
+        role = data.getRole(message.reference.getUser());
         if(role === "owner" || role === "admin" || role === "mod")
             roleReferenceColor.value = `oiMini oi ${icon[role]} color${role}`;
     }
@@ -496,16 +496,16 @@ init();
     color: #fffa;
     cursor: pointer;
 }
-.btn0:hover { 
+.btn0:hover {
     color: #fff;
     border-color: rgba(0,0,0,0.5);
 }
-.btn0 .oi { top: -1px; } 
+.btn0 .oi { top: -1px; }
 .bg1 { background-color: #ffab83;}
 .bg2 { background-color: #6aaeae;}
 .bg3 { background-color: #f2dd00;}
 .bg4 { background-color: #dd5169;}
-.btn0 .oi-share { top: -2px; } 
+.btn0 .oi-share { top: -2px; }
 .btn0 .oi-heart { top: 0px; }
 .btn0 .oi-pencil { top: 0px; }
 .btn0 .oi-trash { left: 1px; }
