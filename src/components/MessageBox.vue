@@ -56,8 +56,7 @@
 
                 </div>
             </div>
-          <div @click="IfCanWrite(()=>enterMessage(null))" class="flipY my-3 cursor-pointer gap-x-3 pr-3"
-               @mouseenter="tooltip($event.target, $t('MessageBox.Send'))">
+          <div @click="IfCanWrite(()=>enterMessage(null))" class="flipY my-3 cursor-pointer gap-x-3 pr-3">
             <Icon icon="mdi:send-circle" style="font-size: 28px;" />
           </div>
         </div>
