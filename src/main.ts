@@ -16,7 +16,7 @@ import "./assets/styles/index.css";
 //import * as dhive from "@hiveio/dhive";
 
 const NETWORK_NAME = import.meta.env.VITE_APP_NETWORK_NAME?import.meta.env.VITE_APP_NETWORK_NAME:null;
-const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_APP_STING_NODES.split(",") : ["https://chat-api.d.buzz"];
+const STING_NODES = import.meta.env.VITE_APP_STING_NODES ? import.meta.env.VITE_APP_STING_NODES.split(",") : ["https://chat-api.peakd.com"];
 const UPLOADER_DOMAIN = import.meta.env.VITE_APP_UPLOADER_DOMAIN?import.meta.env.VITE_APP_UPLOADER_DOMAIN:"https://chat-api.peakd.com";
 
 window.globalProperties = {
