@@ -38,8 +38,9 @@ nextTick(()=>{
 </script>
 <style scoped>
 .name {
-  display: inline-block;
-  font-size: smaller;
-  line-height: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 180px;
+  text-overflow: ellipsis;
 }
 </style>

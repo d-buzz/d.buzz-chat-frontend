@@ -1,8 +1,8 @@
 :root {
     --appbg0: #860e18; --appfg0: white; --appsg0: rgba(227, 19, 55, 0.37);
-    --appbg1: #9d212c; --appfg1: white; --appsg1: rgba(227, 19, 55, 0.37);
-    --appbg2: #ffffff;        --appfg2: black;
-    --appbg3: #ffffff;        --appfg3: black;
+    --appbg1: #9d212c; --appfg1: white; --appsg1: #404249;
+    --appbg2: #313338;        --appfg2: white;
+    --appbg3: #313338;        --appfg3: black;
     --appbgbtn1: #f50057;     --appfgbtn1: white;
     --appbgbtn2: #d9d9d7;     --appfgbtn2: white;
     /*#eab308; */
@@ -25,18 +25,18 @@ body {
     font-family: var(--appFontFamily);
     font-size: var(--appFontSize);
 }
-.appbg0 { background: var(--appbg0); }
-.appbg1 { background: var(--appbg1); }
-.appbg2 { background: var(--appbg2); }
-.appbg3 { background: var(--appbg3); }
+.appbg0 { background: #1e1f22; }
+.appbg1 { background: #2b2d31; }
+.appbg2 { background: #313338; }
+.appbg3 { background: #313338; }
 
-.appfg0 { color: var(--appfg0); }
-.appfg1 { color: var(--appfg1); }
-.appfg2 { color: var(--appfg2); }
-.appfg3 { color: var(--appfg3); }
+.appfg0 { color: #ffffff; }
+.appfg1 { color: #80848e; }
+.appfg2 { color: white; }
+.appfg3 { color: #b5bac1; }
 
 .appsg0 { background: var(--appsg0); }
-.appsg1 { background: var(--appsg1); }
+.appsg1 { background: #404249 !important; }
 .appsg2 { background: var(--appsg1); }
 .appsg3 { background: var(--appsg1); }
 .apphg2 { background: var(--apphg2); }
@@ -48,14 +48,14 @@ body {
 
 .appfg0 .fg40 { color: var(--appfg0); opacity: 0.4; }
 .appfg1 .fg40 { color: var(--appfg1); opacity: 0.4; }
-.appfg2 .fg40 { color: var(--appfg2); opacity: 0.4; }
-.appfg3 .fg40 { color: var(--appfg3); opacity: 0.4; }
+.appfg2 .fg40 { color: white; opacity: 0.4; }
+.appfg3 .fg40 { color: #b5bac1; opacity: 0.4; }
 
 .appfg0 .fg70, .appfg0 .text-gray-700 { color: var(--appfg0); opacity: 0.7; }
 .appfg1 .fg70, .appfg1 .text-gray-700 { color: var(--appfg1); opacity: 0.7; }
-.appfg2 .fg70, .appfg2 .text-gray-700 { color: var(--appfg2); opacity: 0.7; }
-.appfg3 .fg70, .appfg3 .text-gray-700 { color: var(--appfg3); opacity: 0.7; }
-.appfg2 .border-gray-700 { border-color: var(--appfg2) / 0.7; }
+.appfg2 .fg70, .appfg2 .text-gray-700 { color: white; opacity: 0.7; }
+.appfg3 .fg70, .appfg3 .text-gray-700 { color: #b5bac1; opacity: 0.7; }
+.appfg2 .border-gray-700 { border-color: white / 0.7; background-color: #383a40; }
 
 .colorowner { color:var(--appbgowner); }
 .coloradmin { color:var(--appbgadmin); }
@@ -103,12 +103,12 @@ body {
 
 .inputSelect1 {
     @apply appearance-none px-2 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm;
-    color: var(--appfg2);
-    background: var(--appbg2);
+    color: white;
+    background: #313338;
 }
 .inputSelect1 > option {
-    color: var(--appfg2);
-    background: var(--appbg2);
+    color: white;
+    background: #313338;
 }
 
 .tab > button {
@@ -330,12 +330,12 @@ body {
     font-size: 13px;
     vertical-align: text-top;
     padding-left: 5px;
-    color: var(--appfg2);
+    color: white;
     padding-top: 2px;
     position: relative;
     top: 0;
 }
-.w-200 { width: 200px; }
+.w-200 { width: 240px; }
 .mr-5px { margin-right: 5px;}
 .oi-x { top: 0px;}
 .oiMini:before { font-size: 11px; padding-right: 1px; }

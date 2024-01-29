@@ -389,7 +389,8 @@ window.onclickoutside.set("SideBar.vue", () => {
   padding-bottom: 2px;
 }
 .menu > div:hover {
-  background-color: var(--appsg1);
+  background-color: #404249;
+  color: white;
 }
 .number {
   display: block;
