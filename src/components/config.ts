@@ -61,16 +61,16 @@ const routes: Array<RouteRecordRaw> = [
         name: "Preferences",
         component: () => import("./Page.vue"),
       },
-      {
-        path: "/themes",
-        name: "Themes",
-        component: () => import("./Page.vue"),
-      },
-      {
-        path: "/fonts",
-        name: "Fonts",
-        component: () => import("./Page.vue"),
-      },
+      // {
+      //   path: "/themes",
+      //   name: "Themes",
+      //   component: () => import("./Page.vue"),
+      // },
+      // {
+      //   path: "/fonts",
+      //   name: "Fonts",
+      //   component: () => import("./Page.vue"),
+      // },
       {
         path: "/s/:user",
         name: "CommunitySettings",

@@ -6,7 +6,7 @@
         <div class="grow" v-else-if="stream.getPathType() === 't'">
             <router-link :to="`${path}`">
                 <div class="flex">
-                    <div class="flex gap-x-1 pl-2 font-bold grow"><span class="monoIcon">#</span> <StreamName :name="stream.getName()" /></div>
+                    <div class="flex gap-x-1 pl-2 font-bold grow"><img :src="HashIcon" class="w-5 h-5 appfg1" aria-hidden="true" /> <StreamName :name="stream.getName()" /></div>
                     <div v-if="number && number != '0'"> 
                         <small class="number"><b>{{number}}</b></small>
                     </div>   
@@ -16,7 +16,7 @@
         <div class="grow" v-else-if="stream.getPathType() === 'g'">
             <router-link :to="`${path}`">
                 <div class="flex">
-                    <div class="flex gap-x-1 pl-2 font-bold grow"><span class="oi oi-lock-locked"></span> <StreamName :name="stream.getName()" /></div>
+                    <div class="flex gap-x-1 pl-2 font-bold grow"><img :src="HashLockIcon" class="w-5 h-5 appfg1" aria-hidden="true" /> <StreamName :name="stream.getName()" /></div>
                     <div v-if="number && number != '0'"> 
                         <small class="number"><b>{{number}}</b></small>
                     </div>   
@@ -50,6 +50,8 @@
     </div>
 </template>
 <script setup type="ts">
+import HashIcon from "../assets/images/icons/hashicon.svg";
+import HashLockIcon from "../assets/images/icons/hashlockicon.svg";
 const tooltip = ref(window.tooltip);
 const props = defineProps({
     stream: Object,
@@ -77,15 +79,16 @@ const path = getPath();
 <style scoped>
 .style {
     border: 1px solid transparent;
-    padding:0px;
+    padding:3px;
 }
 .selected { 
     @apply rounded;
     /*background: linear-gradient(rgba(255,255,255,0.25), rgba(0,0,0,0.1));*/
     /*background: rgba(255,255,255,0.37);*/
-    background: var(--appsg1);
+    background: #404249;
     border: 1px solid rgba(0,0,0,0.01);
     border-top-color: rgba(255,255,255,0.1);
+    color: white;
 }
 .number {
     display: block;

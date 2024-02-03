@@ -82,13 +82,14 @@ function randomColor(text) {
 .iconborder {
     @apply border border-solid rounded-full;
     border-color: #0003;
+    background-color: #313338;
 }
 .textIcon span { align-self: center; margin-top: -2px; }
 .onlineIcon {
     position: absolute;
     width: 11px;
     height: 11px;
-    border: 2px solid var(--appbg3);
+    border: 2px solid #313338;
     border-radius: 7px;
     background-color: green;
     left: 0;

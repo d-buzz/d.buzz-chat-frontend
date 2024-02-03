@@ -19,6 +19,7 @@ const props = defineProps({
 .iconborder {
     @apply border border-solid rounded-full;
     border-color: #0003;
+    background-color: #313338;
 }
 .textIcon span { align-self: center; margin-top: -2px; }
 </style>
