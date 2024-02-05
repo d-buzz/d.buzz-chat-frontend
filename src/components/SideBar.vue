@@ -10,8 +10,8 @@
       <span class="oi oi-menu" style="font-size: 30px"></span>
     </button>
   </div>-->
-  <div class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox hideScrollbar" style="overflow-x: clip" @dragover.prevent @drop.stop.prevent="onDrop">
-    <div class="scrollBoxContent flex flex-col">
+  <div class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox hideScrollbar" style="overflow-x: clip; width: 72px; align-items: center;" @dragover.prevent @drop.stop.prevent="onDrop">
+    <div class="scrollBoxContent flex flex-col" style="width: 72px; align-items: center;">
       <TextIcon v-if="addButton === 1" class="p-1 cursor-pointer" :text="'+'" @click.stop="toggleAddCommunityModal" />
       <Draggable v-model="communities" :key="updateKey">
         <template v-slot:item="{ item }">

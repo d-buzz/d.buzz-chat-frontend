@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex items-center justify-start pt-1 pr-1 pl-1 pb-1" :class="{selected: $route.name == 'Home'}">
+  <div class="relative flex items-center justify-start pr-1 pl-1 pb-1" :class="{selected: $route.name == 'Home'}" style="padding-top: 14px;">
     <small v-if="number && number != '0'" class="number"><b>{{number}}</b></small>
     <div class="flex-shrink-0" style="width:54px;height:54px;">
       <div v-if="accountStore.account.authenticated" class="nameParent">
