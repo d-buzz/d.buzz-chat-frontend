@@ -63,7 +63,7 @@
   <div
     v-if="showDirect"
     class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox hideScrollbar border-b-1"
-    style="overflow-x: clip"
+    style="overflow-x: clip; width: 72px; align-items: center;"
     @dragover.prevent
     @drop.stop.prevent="onDrop"
   >
@@ -101,7 +101,7 @@
   <div
     v-if="showCommunities"
     class="h-screen m-0 shadow-lg overflow-y-scroll scrollBox hideScrollbar"
-    style="overflow-x: clip"
+    style="overflow-x: clip; width: 72px; align-items: center;"
     @dragover.prevent
     @drop.stop.prevent="onDrop"
   >

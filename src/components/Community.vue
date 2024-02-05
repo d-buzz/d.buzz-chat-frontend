@@ -71,7 +71,7 @@
         </div>
     </div>
     <div class="appbg2 appfg2 h-full flex flex-col justify-between">
-        <div class="font-bold border-b-1 mr-3" style="order:1;padding-top:3px; padding-bottom:3px;">
+        <div class="font-bold border-b-1 mr-3" style="order:1;padding-top: 12px; padding-bottom: 12px; vertical-align: middle;">
             <span v-if="$route.name === 'Group' || $route.name === 'CommunityGroup' || route.name.startsWith('PrivateChat')" class="oi oi-lock-locked mr-1 lockColor" @mouseenter="tooltip($event.target, $t('Community.MessagesLock'))"></span>
             <span class="cursor-pointer" @click.stop="setThread(null, $event.target)"><span class="oi oi-menu font-sm lineIcon md:hidden"></span>{{streamName}} <small class="streamName2">{{streamName2}}</small></span> <span v-if="threadName !== null" class="font-normal"><span class="oi oi-chevron-right cursor-pointer" style="font-size:10px;vertical-align:top;margin-top:6px;" @click="setThread(null)"></span> {{threadName}}</span>
             <span class="inline-block" v-if="sharedCommunities">

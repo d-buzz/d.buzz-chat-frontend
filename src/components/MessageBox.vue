@@ -24,7 +24,7 @@
                 @mouseenter="tooltip($event.target, $t('MessageBox.AddImage'))">
                 <span class="flipYItem oi oi-image"></span></span>
 
-            <div class="flex relative fg70 shadow appearance-none border border-gray-700 rounded-xl w-[calc(100%)] leading-tight mr-1">
+            <div class="flex relative custom-fg70 shadow appearance-none border border-gray-700 rounded-xl w-[calc(100%)] leading-tight mr-1">
                 <div v-if="canWrite"
                   class="box whitespace-pre-wrap appearance-none w-[calc(100%)] py-3 px-3 focus:outline-none focus:shadow-outline"
                   style="overflow-wrap: normal; word-break: break-word;"

@@ -2,7 +2,7 @@
   <AddEmoteModal ref="AddEmoteDiv" @oninput="addEmoteOnInput" @close="showModal('AddEmote', false)"></AddEmoteModal>
   <div class="flex min-h-full h-screen appbg2 appfg2" :key="updateKey">
     <div class="h-screen flex flex-col appbg0 appfg0 border-r-1 sidebar" 
-      ref="sidebar" :data-show="globalProperties.showSidebar">
+      ref="sidebar" :data-show="globalProperties.showSidebar" style="align-items: center;">
       <SideBar2 v-if="globalProperties.sidebar === 2" @toggleStreambar="toggleStreambar()"></SideBar2>
       <SideBar v-else @toggleStreambar="toggleStreambar()"></SideBar>
     </div>
