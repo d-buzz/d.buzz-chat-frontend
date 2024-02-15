@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import { eventBus } from '../eventBus'; // Import the event bus
 import { ViteSetupModule } from "../config/types/ViteSetupModule";
 import { useModulesStore } from "../stores/modules";
 import { useAccountStore } from "../stores/account";
@@ -78,6 +79,7 @@ export const install: ViteSetupModule = ({ app }) => {
         routes,
     });
     router.beforeEach(async (to, from, next) => {
+        eventBus.$emit('loading', true); // Emit loading start event
         //redirect if not logged and login is required
         if(!to.name || !to.name.startsWith('@!')) await initApp();
         if(to.name && !to.name.startsWith('@')) {
@@ -92,6 +94,10 @@ export const install: ViteSetupModule = ({ app }) => {
         }
         next();
     });
+
+    router.afterEach(() => {
+        eventBus.$emit('loading', false); // Emit loading end event
+      });
     app.router = router;
     app.use(router);
 };

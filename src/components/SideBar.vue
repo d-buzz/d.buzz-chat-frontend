@@ -22,6 +22,10 @@
       <div style="height: 60px"></div>
     </div>
   </div>
+
+  <div class="mt-4 text-center">
+    <p class="text-md mb-4 font-bold text-gray-200">v{{ appVersion }}</p>
+  </div>
 </template>
 
 <script setup>
@@ -112,4 +116,6 @@ async function init() {
   getManager().oncommunityhide.set("SideBar.vue", initCommunities);
 }
 init();
+
+const appVersion = import.meta.env.VITE_APP_VERSION;
 </script>
