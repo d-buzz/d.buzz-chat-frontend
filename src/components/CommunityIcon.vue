@@ -85,7 +85,7 @@ function getImgCss() {
     pointer-events: none;
     color: white;
     z-index: 5;
-    background: rgb(0, 113, 12);
+    background: #a00000;
     top: 0;
     right: 0;
     margin-right: 3px;

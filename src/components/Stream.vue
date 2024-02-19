@@ -94,7 +94,7 @@ const path = getPath();
     display: block;
     pointer-events: none;
     color: white;
-    background: rgb(0, 113, 12);
+    background: #a00000;
     border-radius: 10px;
     margin-top: 5px;
     padding: 2px 4px;
