@@ -20,14 +20,14 @@
     <TransitionRoot :show="showErrorModal != null">
         <ErrorModal title="Error sending message." :text="showErrorModal" @close="toggleErrorModal"></ErrorModal>
     </TransitionRoot>
-  <div class="appbg3 appfg3 h-full break-all ml-3" v-if='messageKey'>
+  <div class="appbg3 appfg3 h-full break-all" v-if='messageKey'>
      <div class="border-l-1 h-full float-right sidebar" v-if="$route.name === 'CommunityPath' && community" ref="sidebar" :key="communityUsersKey">
-         <div class="appbg3 appfg3 h-full w-200 overflow-y-scroll scrollBox">
+        <div class="text-right border-bottom-highlight pt-3" style="padding-bottom: 19px;" @mouseenter="tooltip($event.target, $t('Community.OnlineJoined', [onlineCount]))"><small class="fg70">
+            {{onlineCount}}</small>
+        </div>  
+         <div class="appbg3 appfg3 w-200 overflow-y-scroll scrollBox pl-3" style="height: 90%;">
             <div class="scrollBoxContent">
-                <div class="pr-1 pl-1 appbg3">
-                    <div class="text-right" @mouseenter="tooltip($event.target, $t('Community.OnlineJoined', [onlineCount]))"><small class="fg70">
-                        {{onlineCount}}</small>
-                    </div>        
+                <div class="appbg3">
                     <div v-for="roleUsers in communityUsers">
                         <div v-if="roleUsers[0] != 'muted'">
                             <small :class="roleCss(roleUsers[0])"><b class="messageFontFamily">{{roleUsers[0]}}</b></small>
@@ -71,7 +71,7 @@
         </div>
     </div>
     <div class="appbg2 appfg2 h-full flex flex-col justify-between">
-        <div class="font-bold border-b-1 mr-3" style="order:1;padding-top: 12px; padding-bottom: 12px; vertical-align: middle;">
+        <div class="font-bold border-b-1 border-bottom-highlight pl-3" style="order:1; padding-top: 19px; padding-bottom: 12px; vertical-align: middle;">
             <span v-if="$route.name === 'Group' || $route.name === 'CommunityGroup' || route.name.startsWith('PrivateChat')" class="oi oi-lock-locked mr-1 lockColor" @mouseenter="tooltip($event.target, $t('Community.MessagesLock'))"></span>
             <span class="cursor-pointer" @click.stop="setThread(null, $event.target)"><span class="oi oi-menu font-sm lineIcon md:hidden"></span>{{streamName}} <small class="streamName2">{{streamName2}}</small></span> <span v-if="threadName !== null" class="font-normal"><span class="oi oi-chevron-right cursor-pointer" style="font-size:10px;vertical-align:top;margin-top:6px;" @click="setThread(null)"></span> {{threadName}}</span>
             <span class="inline-block" v-if="sharedCommunities">
@@ -102,7 +102,7 @@
             </div>
         </div>
         
-        <div ref="messages" :key="messageKey" class="grow overflow-y-scroll scrollBox" style="order:5;">
+        <div ref="messages" :key="messageKey" class="grow overflow-y-scroll scrollBox pl-3" style="order:5;">
             <div class="scrollBoxContent flex flex-col pr-3">
                 <div v-if="threadName !== null" :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
                     <button v-if="canLoadPreviousMessages" class="btn" @click="loadPrevious()">{{loadingPreviousMessages?'loading':'load previous messages'}}</button>
@@ -157,7 +157,7 @@
             </div>
         </div>
         
-        <div :class="[valueFlipMessageBox?'flex flex-col-reverse pr-3':'flex flex-col pr-3']" 
+        <div :class="[valueFlipMessageBox?'flex flex-col-reverse pr-3 pl-3':'flex flex-col pr-3 pl-3']" 
              :style="[valueFlipMessageBox?'order:3;':'order:7;']">
             <div v-if="decodeNMessages>0">
                 <hr>
