@@ -110,7 +110,8 @@
                         <div v-if="messageArray.type === 'h'" :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
                             <div v-for="message in messageArray">
                                 <div v-if="message.getThreadName() === threadName">
-                                    <hr style="margin:1px 0px;">
+                                    <div v-if="setPreviousDate(toRelativeTimeString(message.getTimestamp()))" class="separator-div" aria-label="{{toRelativeTimeString(message.getTimestamp())}}">
+                                    <span class="separator-span">{{toRelativeTimeString(message.getTimestamp())}}</span></div>
                                     <div :class="{'apphg2': highlight(message)}" style="padding-top: 0.5rem;padding-bottom: 0.25rem;">
                                         <Message :message="message" @action="setContentMessage" @jump="scrollIntoView"/>
                                     </div>
@@ -146,7 +147,8 @@
                         </div>
                         <div v-else :class="[valueFlipMessageBox?'flex flex-col-reverse':'flex flex-col']">
                             <div v-for="(message, i) in messageArray" >
-                                <hr v-if="(!valueFlipMessageBox && i !== 0) || (valueFlipMessageBox && i !== messageArray.length-1)" style="margin:1px 0px;">
+                                <div v-if="setPreviousDate(toRelativeTimeString(message.getTimestamp()))" class="separator-div" aria-label="{{toRelativeTimeString(message.getTimestamp())}}">
+                                    <span class="separator-span">{{toRelativeTimeString(message.getTimestamp())}}</span></div>
                                 <div :class="{'apphg2': highlight(message)}" style="padding-top: 0.5rem;padding-bottom: 0.25rem;">
                                     <Message :message="message" @action="setContentMessage" @jump="scrollIntoView"/>
                                 </div>
@@ -242,6 +244,7 @@ const showSidebar = ref(false);
 const flagMessageRef = ref();
 const deleteMessageRef = ref();
 const errorMessage = ref(null);
+let prevDate = '';
 
 function toggleRenameGroup() {
     showRenameGroupModal.value = !showRenameGroupModal.value;
@@ -775,6 +778,36 @@ async function loadPrevious() {
         loadingPreviousMessages.value = false;
     }
 }
+
+function setPreviousDate(prev_date) {
+    const compare_result = (prev_date !== prevDate)
+    if(compare_result) prevDate = prev_date
+    return compare_result
+}
+
+function toRelativeTimeString(ti) {
+    var date = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).format(new Date(ti))
+    ti = stlib.Utils.utcTime()-ti;
+	var d = Math.floor(ti/86400000); ti -= d*86400000;
+	var h = Math.floor(ti/3600000); ti -= h*3600000;
+	var m = Math.floor(ti/60000); ti -= m*60000;
+    var s = Math.floor(ti/1000);
+	var str = '';
+    
+    if(d > 2){
+        str = date
+    }else if(d > 1){
+        str = "Yesterday"
+    }else{
+        if(h > 0) str = h + "hours ago"
+        else{
+            if(m > 0) str = m + "minutes ago"
+            else str = s + "seconds ago"
+        }
+    }
+	return str;
+}
+
 /*app.router.beforeEach(async (to, from, next) => {
     await initChat();
     next();
@@ -833,5 +866,35 @@ async function loadPrevious() {
   vertical-align: top;
   margin-top: 2px;
   font-size:13px;
+}
+
+.separator-div {
+    margin-top: 15px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.25rem;
+    z-index: 1;
+    height: 0;
+    border-top: thin solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex: 0 0 auto;
+    pointer-events: none;
+    box-sizing: border-box;
+    --divider-color: white;
+}
+
+.separator-span {
+    display: block;
+    flex: 0 0 auto;
+    padding: 2px 4px;
+    color: white;
+    background: #313338;
+    line-height: 13px;
+    font-size: 12px;
+    margin-top: -16px;
+    font-weight: 600;
+    border-radius: 8px;
 }
 </style>
