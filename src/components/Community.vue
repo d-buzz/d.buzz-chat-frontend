@@ -73,29 +73,42 @@
     <div class="appbg2 appfg2 h-full flex flex-col justify-between">
         <div class="font-bold border-b-1 mr-3" style="order:1;padding-top: 12px; padding-bottom: 12px; vertical-align: middle;">
             <span v-if="$route.name === 'Group' || $route.name === 'CommunityGroup' || route.name.startsWith('PrivateChat')" class="oi oi-lock-locked mr-1 lockColor" @mouseenter="tooltip($event.target, $t('Community.MessagesLock'))"></span>
-            <span class="cursor-pointer" @click.stop="setThread(null, $event.target)"><span class="oi oi-menu font-sm lineIcon md:hidden"></span>{{streamName}} <small class="streamName2">{{streamName2}}</small></span> <span v-if="threadName !== null" class="font-normal"><span class="oi oi-chevron-right cursor-pointer" style="font-size:10px;vertical-align:top;margin-top:6px;" @click="setThread(null)"></span> {{threadName}}</span>
-            <span class="inline-block" v-if="sharedCommunities">
-                <span class="flex">
-                    <SideBarIcon v-for="community in sharedCommunities" :img="community[0]" :name="community[1]" :community="community" :imgCss="`avMini`" />
+            <div class='flex' style="justify-content: space-between;">
+                <!-- hashtag label -->
+                <span class="cursor-pointer" @click.stop="setThread(null, $event.target)" >
+                <span  class='flex'>
+                    <span class="oi oi-menu font-sm lineIcon md:hidden fle">
+                    </span><img v-if="dataPath === 't'" :src="HashIcon" class="w-5 h-5 appfg1" aria-hidden="true" /><img v-if="dataPath === 'g'" :src="HashLockIcon" class="w-5 h-5 appfg1" aria-hidden="true" />
+                    &nbsp;{{streamName}} 
+                    <small class="streamName2">{{streamName2}}</small>
+                    </span> 
                 </span>
-            </span>
-            <span class="float-right">
-                <button class="text-sm mr-3" @click="toggleThreads" @mouseenter="tooltip($event.target, $t('Community.Threads'))">
-                    <span class="oi oi-fork"></span>
-                </button>
-                <button v-if="($route.name === 'CommunityPath' && community) || $route.name === 'Group'" 
-                    class="text-sm mr-3" @click="toggleSideBar" @mouseenter="tooltip($event.target, $t('Community.ToggleSidebar'))">
-                    <span class="oi oi-people"></span>
-                </button>
-                <span v-if="route.name === 'Group' || route.name === 'CommunityGroup'">
-                    <button class="text-sm mr-3" @click="toggleShareGroup" @mouseenter="tooltip($event.target, $t('Community.ShareGroup'))">
-                        <span class="oi oi-share-boxed"></span>
-                    </button>
-                    <button class="text-sm" @click="toggleCloseGroup" @mouseenter="tooltip($event.target, $t('Community.CloseGroup'))">
-                        <span class="oi oi-x align-top"></span>
-                    </button>
+                <span v-if="threadName !== null" class="font-normal"><span class="oi oi-chevron-right cursor-pointer" style="font-size:10px;vertical-align:top;margin-top:6px;" @click="setThread(null)"></span> {{threadName}}</span>
+                <span class="inline-block" v-if="sharedCommunities">
+                    <span class="flex">
+                        <SideBarIcon v-for="community in sharedCommunities" :img="community[0]" :name="community[1]" :community="community" :imgCss="`avMini`" />
+                    </span>
                 </span>
-            </span>
+                <!-- icons -->
+                <span class="float-right">
+                    <button class="text-sm mr-3" @click="toggleThreads" @mouseenter="tooltip($event.target, $t('Community.Threads'))">
+                        <span class="oi oi-fork"></span>
+                    </button>
+                    <button v-if="($route.name === 'CommunityPath' && community) || $route.name === 'Group'" 
+                        class="text-sm mr-3" @click="toggleSideBar" @mouseenter="tooltip($event.target, $t('Community.ToggleSidebar'))">
+                        <span class="oi oi-people"></span>
+                    </button>
+                    <span v-if="route.name === 'Group' || route.name === 'CommunityGroup'">
+                        <button class="text-sm mr-3" @click="toggleShareGroup" @mouseenter="tooltip($event.target, $t('Community.ShareGroup'))">
+                            <span class="oi oi-share-boxed"></span>
+                        </button>
+                        <button class="text-sm" @click="toggleCloseGroup" @mouseenter="tooltip($event.target, $t('Community.CloseGroup'))">
+                            <span class="oi oi-x align-top"></span>
+                        </button>
+                    </span>
+                </span>
+            </div>
+            
             <div v-if="$route.name === 'Group' || $route.name === 'CommunityGroup' || route.name.startsWith('PrivateChat')"
                 class="line-height-1" style="line-height:1;margin-top:-5px;">
                 <small class="font-normal fg40">messages protected by private {{route.name.startsWith('PrivateChat')?'posting':'group'}} key</small>            
@@ -205,6 +218,8 @@
 import { useAccountStore } from "../stores/account";
 import { useRoute } from "vue-router";
 import { ref, nextTick } from 'vue';
+import HashIcon from "../assets/images/icons/hashicon.svg";
+import HashLockIcon from "../assets/images/icons/hashlockicon.svg";
 const tooltip = ref(window.tooltip);
 const route = useRoute();
 const accountStore = useAccountStore();
@@ -215,6 +230,7 @@ const messageKey = ref("");
 const communityUsersKey = ref("#"+stlib.Utils.nextId());
 const sidebar = ref(null);
 const streamName = ref("");
+const dataPath = ref("");
 const streamName2 = ref("");
 const threadName = ref(null);
 const community = ref(null);
@@ -379,6 +395,7 @@ async function initChat() {
             console.log("CommunityPath ", user2, community0);
             var stream = (community0)?community0.findTextStreamById(''+route.params.path):null;
             streamName.value = addCommunityName(community0, (stream?stream.getName():conversation));
+            dataPath.value = stream.dataPath ? stream.dataPath.type : ""
             community.value = community0;
 
             updateOnlineUsers = async ()=> {
