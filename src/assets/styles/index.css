@@ -58,7 +58,7 @@ body {
 .appfg3 .fg70, .appfg3 .text-gray-700 { color: white !important; }
 .appfg2 .border-gray-700 { border-color: white / 0.7; background-color: #383a40; }
 
-.app-name-row { min-height: 24px; padding-top: 12px; padding-bottom: 12px; vertical-align: middle;}
+.app-name-row { min-height: 24px; padding-top: 13px; padding-bottom: 12px; vertical-align: middle;}
 
 .colorowner { color:var(--appbgowner); }
 .coloradmin { color:var(--appbgadmin); }
@@ -352,6 +352,9 @@ hr {
     height: 1px;
     width: 100%;
     margin: 3px 0px 0px 0px;
+}
+.border-bottom-highlight {
+    border-bottom: 2px solid #1f2124;
 }
 .vue-simple-context-menu {
     border: 1px solid #c7c7c7;

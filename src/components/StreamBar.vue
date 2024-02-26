@@ -8,35 +8,51 @@
     <TransitionRoot :show="showConfirmModal!=null">
         <ConfirmModal :title="showConfirmModal.title" @close="showConfirmModal=null"></ConfirmModal>
     </TransitionRoot>
-  <div class="m-0 overflow-y-scroll scrollBox pl-1 w-200" :key="updateKey">
-    <div class="scrollBoxContent flex flex-col pr-1">
-        <div v-if="isCommunity">
-            <div class="flex justify-between mb-1 app-name-row">
-                <b class="border-b-1 cursor-pointer p3033" @click.stop.prevent="showMenu($event.target)">C/{{title}}</b>
-                <router-link v-if="isAdmin" :to="`/s/${route.params.user}`">
-                   <span class="oi oi-cog"></span>
-                </router-link>
-            </div>
-            <div v-for="stream in streams" >
-                <Stream v-if="stream.visible" :community="communityName"
-                     :stream="stream" :number="''+stream.lastReadNumber"/>
+    <!-- <div class="grow"> -->
+        <!-- <div v-if="isCommunity">
+                    <div class="flex justify-between mb-1 app-name-row">
+                        <b class="cursor-pointer p3033" @click.stop.prevent="showMenu($event.target)">C/{{title}}</b>
+                        <router-link v-if="isAdmin" :to="`/s/${route.params.user}`">
+                        <span class="oi oi-cog"></span>
+                        </router-link>
+                    </div>
+                    <div v-for="stream in streams" >
+                        <Stream v-if="stream.visible" :community="communityName"
+                            :stream="stream" :number="''+stream.lastReadNumber"/>
+                    </div>
+                </div> -->
+                <div>
+                    <div class="flex justify-between mb-1 app-name-row border-bottom-highlight pl-3">
+                        <b class="cursor-pointer p3033" @click.stop.prevent="showMenu($event.target)">C/{{title}}</b>
+                        <router-link v-if="isAdmin" :to="`/s/${route.params.user}`">
+                        <span class="oi oi-cog"></span>
+                        </router-link>
+                    </div>
+                </div>
+        <div class="m-0 overflow-y-scroll scrollBox w-200" :key="updateKey">
+            <div class="scrollBoxContent flex flex-col pl-3">
+                <div v-if="isCommunity">
+                    <div v-for="stream in streams" >
+                        <Stream v-if="stream.visible" :community="communityName"
+                            :stream="stream" :number="''+stream.lastReadNumber"/>
+                    </div>
+                </div>
+                <div v-else>
+                    <div class="flex justify-between mb-1">
+                        <b class="border-b-1 p3033">{{$t("StreamBar.DirectMessages")}}</b>
+                        <button class="text-sm" @click="toggleNewUserMessageModalOpen">
+                            <span class="oi oi-plus"></span>
+                        </button>
+                    </div>
+                    <div v-for="conversation in conversations">
+                        <Conversation v-if="conversation.id !== undefined" :conversation="conversation.conversation" :id="conversation.id" :username="conversation.username" :number="conversation.lastReadNumber+conversation.plus"/>
+                        <Conversation v-else :conversation="conversation.conversation"
+                        :username="username" :number="''+conversation.lastReadNumber" />
+                    </div>
+                </div>
             </div>
         </div>
-        <div v-else>
-            <div class="flex justify-between mb-1">
-                <b class="border-b-1 p3033">{{$t("StreamBar.DirectMessages")}}</b>
-                <button class="text-sm" @click="toggleNewUserMessageModalOpen">
-                    <span class="oi oi-plus"></span>
-                </button>
-            </div>
-            <div v-for="conversation in conversations">
-                <Conversation v-if="conversation.id !== undefined" :conversation="conversation.conversation" :id="conversation.id" :username="conversation.username" :number="conversation.lastReadNumber+conversation.plus"/>
-                <Conversation v-else :conversation="conversation.conversation"
-                 :username="username" :number="''+conversation.lastReadNumber" />
-            </div>
-        </div>
-    </div>
-  </div>
+    <!-- </div> -->
 </template>
 <script setup>
 import { useAccountStore } from "../stores/account";
