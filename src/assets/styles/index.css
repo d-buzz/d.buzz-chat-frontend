@@ -3,16 +3,16 @@
     --appbg1: #9d212c; --appfg1: white; --appsg1: #404249;
     --appbg2: #313338;        --appfg2: white;
     --appbg3: #313338;        --appfg3: black;
-    --appbgbtn1: #f50057;     --appfgbtn1: white;
+    --appbgbtn1: #a00000;     --appfgbtn1: white;
     --appbgbtn2: #d9d9d7;     --appfgbtn2: white;
     /*#eab308; */
 
-    --appbgowner: #f50057;
+    --appbgowner: #a00000;
     --appbgadmin: #2368D5;
-    --appbgmod: #f50057;
+    --appbgmod: #a00000;
 
-    --appbgconote: #f50057;
-    --appbgunote: #f50057;
+    --appbgconote: #a00000;
+    --appbgunote: #a00000;
 
     --appCommunityIconFontSize: 20px;
     --appCommunityIconSize: 52px;
