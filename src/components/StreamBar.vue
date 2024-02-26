@@ -12,7 +12,7 @@
     <div class="scrollBoxContent flex flex-col pr-1">
         <div v-if="isCommunity">
             <div class="flex justify-between mb-1 app-name-row">
-                <b class="border-b-1 cursor-pointer p3033" @click.stop.prevent="showMenu($event.target)">C/{{title}}</b>
+                <b class="border-b-1 cursor-pointer p3033 appfg2" @click.stop.prevent="showMenu($event.target)">C/{{title}}</b>
                 <router-link v-if="isAdmin" :to="`/s/${route.params.user}`">
                    <span class="oi oi-cog"></span>
                 </router-link>
