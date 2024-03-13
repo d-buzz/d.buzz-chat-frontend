@@ -1,5 +1,5 @@
 <template>
-   <DefaultModal dialogPanelCss='max-width:820px;width:auto;'> 
+   <DefaultModal dialogPanelCss='max-width:820px;width:auto;' showCloseButton='false'> 
         <div class="w-full text-gray-400 text-sm" style="margin-top:-18px;">
             <div class="float-right flex gap-x-1" style="margin-right:-15px;">
                 <button class="btn1" @click="copyToClipboard(src)" title="copy url to clipboard"><span class="oi oi-clipboard"></span></button>

@@ -26,7 +26,7 @@
             <DialogPanel
               class="appbg2 appfg2 rounded-lg px-6 pt-5 pb-5 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 max-w-md w-full" :style="`${dialogPanelCss}`"
             >
-              <small class="closeButton oi oi-x" @click="$emit('close')"></small>
+              <small v-if="showCloseButton==='true'" class="closeButton oi oi-x" @click="$emit('close')"></small>
               <div class="min-h-full flex flex-col justify-center">
                  <b v-if="title!=null">{{title}}</b>
                  <slot></slot>
@@ -41,7 +41,8 @@
 const emit = defineEmits(["close"]);
 const props = defineProps<{
     title: {type: String, default: ''},
-    dialogPanelCss: {type: String, default: ''}
+    dialogPanelCss: {type: String, default: ''},
+    showCloseButton: {type: String, default: 'true'}
 }>();
 var closed = false;
 function close() {
