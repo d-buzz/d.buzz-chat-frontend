@@ -41,14 +41,14 @@
                 <div>
                     <small class="cursor-pointer" :class="roleColor?roleColor:''" @click="toggleUserModal(message.getUser())" ><b class="messageFontFamily">{{message.getUser()}}</b></small>
                     <span class="pr-2 float-right fg70" ref="buttons">
-                        <small v-if="!displayOnly" class="messageButtons pr-3">
+                        <span v-if="!displayOnly" class="messageButtons pr-3" style="font-size: 120%;">
                             <span v-if="canUpvote()" class="oi oi-arrow-thick-top col1" @click.prevent.stop="upvoteAction()" @mouseenter="tooltip($event.target, $t('Message.Upvote.Info'))"></span>
                             <span class="oi oi-heart col0" @click="toggleAddEmoteModal" @mouseenter="tooltip($event.target, $t('Message.AddEmote.Info'))"></span>
                             <span class="oi oi-share col1" @click="quoteAction" @mouseenter="tooltip($event.target, $t('Message.Quote.Info'))"></span>
                             <span v-if="account!==message.getUser()" class="oi oi-flag col3" @click="flagAction" @mouseenter="tooltip($event.target, $t('Message.Flag.Info'))"></span>
                             <span v-if="account===message.getUser()" class="oi oi-pencil col2" @click="editAction" @mouseenter="tooltip($event.target, $t('Message.Edit.Info'))"></span>
                             <span v-if="account===message.getUser()" class="oi oi-trash col3" @click="deleteAction" @mouseenter="tooltip($event.target, $t('Message.Remove.Info'))"></span>
-                        </small>
+                        </span>
                         <small v-if="!displayEdits && message.edits && message.edits.length > 0" class="cursor-pointer" @mouseenter="tooltip($event.target, toAbsoluteTimeString(message.edits[0].getTimestamp()))" @click="toggleViewEditHistoryModal()">(edited {{toRelativeTimeString(message.edits[0].getTimestamp())}}) </small>
                         <small @mouseenter="tooltip($event.target, toRelativeTimeString(message.getTimestamp(),3)+'\n'+toAbsoluteTimeString(message.getTimestamp()))">{{toRelativeTimeString(message.getTimestamp())}}</small>
                     </span>

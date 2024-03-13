@@ -161,8 +161,9 @@ body {
     background-color: var(--appsg1);
 }
 .menu .oi {
-    width: 17px;
-    margin-left: -2px;
+    font-size: 120%;
+    width: 22px;
+    margin-left: -1px;
     padding-right: 2px;
 }
 .tooltip {
